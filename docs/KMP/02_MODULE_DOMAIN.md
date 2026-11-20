@@ -30,6 +30,7 @@ domain/src/commonMain/kotlin/fr/skyle/scanny/domain/
 ├── payload/                       (le texte d'un code, dans les deux sens)
 │   ├── BarcodeContentEncoder.kt
 │   ├── BarcodeContentParser.kt
+│   ├── ContentLinks.kt            (les liens qui ouvrent l'app d'un contenu : mailto:, sms:)
 │   └── PayloadSyntax.kt           (préfixes et caractères échappés, communs aux deux)
 └── usecase/
     ├── scan/
@@ -87,7 +88,11 @@ parseur, et obtiennent le même résultat.
 | SMS | `SMSTO:numéro:message` (`sms:` n'est que lu) |
 | WiFi | `WIFI:T:…;S:…;P:…;H:true;;`, `T:nopass` et pas de `P:` pour un réseau ouvert, `SAE` pour le WPA3, `H:true` seulement pour un réseau masqué |
 | Contact | vCard 3.0 ; seules les propriétés texte (`N`, `FN`, `ORG`, `TITLE`, `ADR`) sont échappées |
-- Le parseur et l'encodeur sont `internal` : `shared` les utilise à travers les UseCases.
+- Le parseur et l'encodeur sont `internal` : `shared` les utilise à travers les UseCases. Seuls sont
+  publics les liens qui ouvrent l'app d'un contenu (`toMailtoLink()`, `toSmsLink()`, dans
+  `ContentLinks.kt`) : `shared` les ouvre tels quels, et leur encodage `%` est celui de l'encodeur.
+  Le lien `sms:` suit la RFC 5724 (`sms:numéro?body=…`) ; ce qu'en fait chaque plateforme est dit dans
+  [KMP/03_CODE_PLATEFORME.md](./03_CODE_PLATEFORME.md).
 - Chaque format a ses tests, dans `commonTest` (voir [Common/03_TESTS.md](../Common/03_TESTS.md)).
 
 `BarcodeFormat` liste les formats reconnus par les deux moteurs de détection (QR Code, Data Matrix,
