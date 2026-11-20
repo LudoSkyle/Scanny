@@ -1,7 +1,6 @@
 package fr.skyle.scanny.di
 
 import fr.skyle.scanny.domain.di.domainModule
-import fr.skyle.scanny.ui.screen.about.ui.AboutViewModel
 import fr.skyle.scanny.ui.screen.scan.ui.ScanViewModel
 import fr.skyle.scanny.ui.screen.scandetail.ui.ScanDetailViewModel
 import fr.skyle.scanny.ui.screen.scangroup.ui.ScanGroupViewModel
@@ -26,7 +25,6 @@ val sharedModule = module {
     viewModelOf(::ScanGroupViewModel)
     viewModelOf(::ScanHistoryViewModel)
     viewModelOf(::SettingsViewModel)
-    viewModelOf(::AboutViewModel)
 }
 
 // The native actions, implemented by each platform

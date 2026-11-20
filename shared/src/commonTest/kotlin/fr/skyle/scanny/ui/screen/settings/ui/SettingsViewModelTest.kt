@@ -3,6 +3,7 @@ package fr.skyle.scanny.ui.screen.settings.ui
 import fr.skyle.scanny.domain.model.ScanSetting
 import fr.skyle.scanny.domain.model.ScanSettings
 import fr.skyle.scanny.fake.FakeAppVersion
+import fr.skyle.scanny.fake.FakeDeleteAllScansUseCase
 import fr.skyle.scanny.fake.FakeSetScanSettingUseCase
 import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +42,8 @@ class SettingsViewModelTest {
         val viewModel = settingsViewModel(
             watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(
                 isVibrationAfterScanEnabled = true,
+                isBeepAfterScanEnabled = true,
+                isCopyAfterScanEnabled = false,
                 isOpenLinkAfterScanEnabled = false,
                 isRawContentShown = true,
             ),
@@ -53,7 +56,7 @@ class SettingsViewModelTest {
                 build = "21",
                 settings = ScanSettings(
                     isVibrationAfterScanEnabled = true,
-                    isBeepAfterScanEnabled = false,
+                    isBeepAfterScanEnabled = true,
                     isCopyAfterScanEnabled = false,
                     isOpenLinkAfterScanEnabled = false,
                     isRawContentShown = true,
@@ -117,13 +120,52 @@ class SettingsViewModelTest {
         )
     }
 
+    @Test
+    fun `clearing the history deletes all the scans and says it`() = runTest(testDispatcher) {
+        // Given
+        val deleteAllScansUseCase = FakeDeleteAllScansUseCase()
+        val viewModel = settingsViewModel(deleteAllScansUseCase = deleteAllScansUseCase)
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onClearHistoryConfirmed()
+
+        // Then
+        assertEquals(
+            expected = 1,
+            actual = deleteAllScansUseCase.clearCount,
+        )
+        assertEquals(
+            expected = listOf(SettingsViewModel.SettingsEvent.HistoryCleared),
+            actual = events,
+        )
+    }
+
+    @Test
+    fun `a history that cannot be cleared is reported`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = settingsViewModel(deleteAllScansUseCase = FakeDeleteAllScansUseCase(error = IllegalStateException("Disk full")))
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onClearHistoryConfirmed()
+
+        // Then
+        assertEquals(
+            expected = listOf(SettingsViewModel.SettingsEvent.HistoryNotCleared),
+            actual = events,
+        )
+    }
+
     private fun settingsViewModel(
         watchScanSettingsUseCase: FakeWatchScanSettingsUseCase = FakeWatchScanSettingsUseCase(),
         setScanSettingUseCase: FakeSetScanSettingUseCase = FakeSetScanSettingUseCase(),
+        deleteAllScansUseCase: FakeDeleteAllScansUseCase = FakeDeleteAllScansUseCase(),
     ): SettingsViewModel =
         SettingsViewModel(
             watchScanSettingsUseCase = watchScanSettingsUseCase,
             setScanSettingUseCase = setScanSettingUseCase,
+            deleteAllScansUseCase = deleteAllScansUseCase,
             appVersion = FakeAppVersion(
                 name = "2.1",
                 build = "21",

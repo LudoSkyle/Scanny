@@ -34,10 +34,11 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 
 - [x] Réglages : vibration après un scan, ouverture automatique des liens, affichage du contenu
       brut
-- [x] Liens : À propos, Feedback, noter l'app (Android ; iOS une fois l'app sur l'App Store),
-      politique de confidentialité, site d'Openium, version et build
+- [x] Liens : Feedback, noter l'app (Android ; iOS une fois l'app sur l'App Store), politique de
+      confidentialité, site d'Openium, version et build
 - [x] Feedback : choix d'un sujet (scan, détection du type, autre) et message, envoyés par mail
-- [x] À propos : version, auteur, lien GitHub, description
+- [x] À propos : version, auteur, lien GitHub, description, dans l'en-tête et les liens des réglages
+      (l'écran À propos de la v1 n'existe plus)
 
 ## Nouveautés
 
@@ -45,6 +46,8 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [x] Historique des scans : liste, détail, suppression
 - [x] Scan multiple : un mode qu'on active, on passe autant de codes qu'on veut devant la caméra, on
       termine, et la liste dédoublonnée des codes trouvés s'affiche et s'enregistre comme un groupe
+- [x] Bip après un scan et copie du code après un scan (réglages) *(bip testé, non entendu)*
+- [x] Effacer l'historique depuis les réglages
 - [ ] Création de QR codes : texte, URL, email, SMS, WiFi
 - [ ] Personnalisation d'un QR code : couleurs, logo au centre, formes
 - [ ] Modifier un code scanné : reprendre son contenu, le modifier, le personnaliser et générer le
@@ -147,13 +150,27 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
           version et le build
     - [x] `Route.Feedback` : un sujet, un message, envoyés par l'app de mail (`mailto:` vers
           scanny.contact@gmail.com, le tag du sujet en objet)
-    - [x] `Route.About` : logo, version, description, auteur, lien GitHub
+    - [x] `Route.About` : logo, version, description, auteur, lien GitHub (retiré au lot 10 bis, son
+          contenu est passé dans l'en-tête des réglages)
     - La politique de confidentialité de la v1 (`skylekayma.github.io`) répond 404 depuis le
       renommage du compte GitHub : l'app pointe vers `ludoskyle.github.io/scanny.github.io`. Le lien
       GitHub pointe vers `LudoSkyle/Scanny`, où l'ancien redirige.
     - Vérifié sur l'émulateur Android (Play Store, Gmail ouvert par le feedback) et sur le simulateur
       iOS (tests d'interface : le réglage du contenu brut jusque dans un détail, À propos, feedback,
       politique de confidentialité dans Safari, textes français)
+10 bis. **Peaufinage avant la création**
+    - [x] Feedback : le sujet se choisit dans un menu qui se déplie sous son champ
+    - [x] Scan multiple : un code ne compte qu'une fois lu trois fois en une seconde, pour écarter
+          les lectures erronées d'un code tenu devant la caméra
+    - [x] Réglages redécoupés : un en-tête (logo, nom, version, description), puis « Préférences du
+          scan » (vibration, bip, copie, ouverture des liens), « Réglages de l'app » (contenu brut,
+          effacer l'historique) et « Support » (étoile sur GitHub, feedback, noter l'app, politique
+          de confidentialité, Openium) ; des lignes à icône ronde ; l'écran À propos est retiré, son
+          contenu passe dans l'en-tête
+    - Vérifié sur l'émulateur Android (écran, effacement de l'historique) et sur le simulateur iOS
+      (tests d'interface : en-tête et sections, copie d'un code scanné collée dans le feedback,
+      effacement de l'historique, textes français)
+    - [ ] Transitions entre les écrans : un glissement horizontal, sans réduction de l'écran quitté
 11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
     (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre
     l'éditeur prérempli avec son contenu.

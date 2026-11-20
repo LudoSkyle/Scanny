@@ -25,22 +25,38 @@ import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.ScanSetting
 import fr.skyle.scanny.domain.model.ScanSettings
 import fr.skyle.scanny.resources.Res
-import fr.skyle.scanny.resources.about
-import fr.skyle.scanny.resources.app_name
-import fr.skyle.scanny.resources.feedback
-import fr.skyle.scanny.resources.general
+import fr.skyle.scanny.resources.app_settings
+import fr.skyle.scanny.resources.beep_after_scan
+import fr.skyle.scanny.resources.clear_history
+import fr.skyle.scanny.resources.copy_after_scan
+import fr.skyle.scanny.resources.give_feedback
+import fr.skyle.scanny.resources.ic_chat
 import fr.skyle.scanny.resources.ic_chevron_right
+import fr.skyle.scanny.resources.ic_content_copy
+import fr.skyle.scanny.resources.ic_data_object
+import fr.skyle.scanny.resources.ic_delete
+import fr.skyle.scanny.resources.ic_domain
 import fr.skyle.scanny.resources.ic_open_in_new
+import fr.skyle.scanny.resources.ic_shield
+import fr.skyle.scanny.resources.ic_star
+import fr.skyle.scanny.resources.ic_thumb_up
+import fr.skyle.scanny.resources.ic_vibration
+import fr.skyle.scanny.resources.ic_volume_up
+import fr.skyle.scanny.resources.made_by_skyle
 import fr.skyle.scanny.resources.open_links_after_scan
 import fr.skyle.scanny.resources.openium
 import fr.skyle.scanny.resources.privacy_policy
 import fr.skyle.scanny.resources.rate_app
+import fr.skyle.scanny.resources.scan_preferences
 import fr.skyle.scanny.resources.settings
 import fr.skyle.scanny.resources.show_raw_content
-import fr.skyle.scanny.resources.version_and_build
+import fr.skyle.scanny.resources.star_project
+import fr.skyle.scanny.resources.support
 import fr.skyle.scanny.resources.vibrate_after_scan
-import fr.skyle.scanny.ui.core.link.component.LinkRow
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
+import fr.skyle.scanny.ui.screen.settings.ui.component.SettingsActionRow
+import fr.skyle.scanny.ui.screen.settings.ui.component.SettingsHeader
+import fr.skyle.scanny.ui.screen.settings.ui.component.SettingsRowDivider
 import fr.skyle.scanny.ui.screen.settings.ui.component.SettingsSwitchRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -54,7 +70,8 @@ fun SettingsScreen(
     snackbarState: SCSnackbarState,
     onBackClicked: () -> Unit,
     onSettingChanged: (setting: ScanSetting, isEnabled: Boolean) -> Unit,
-    onAboutClicked: () -> Unit,
+    onClearHistoryClicked: () -> Unit,
+    onStarProjectClicked: () -> Unit,
     onFeedbackClicked: () -> Unit,
     onRateAppClicked: () -> Unit,
     onPrivacyPolicyClicked: () -> Unit,
@@ -83,31 +100,56 @@ fun SettingsScreen(
                     vertical = 8.dp,
                 ),
         ) {
+            SettingsHeader(
+                modifier = Modifier.fillMaxWidth(),
+                versionName = versionName,
+                build = build,
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             if (settings != null) {
                 SCCardStructure(
                     modifier = Modifier.fillMaxWidth(),
-                    title = stringResource(Res.string.general),
+                    title = stringResource(Res.string.scan_preferences),
                     style = SCCardDefaults.Style.LIGHT,
                 ) {
                     SettingsSwitchRow(
                         modifier = Modifier.fillMaxWidth(),
+                        icon = painterResource(Res.drawable.ic_vibration),
                         title = stringResource(Res.string.vibrate_after_scan),
                         isChecked = settings.isVibrationAfterScanEnabled,
                         onCheckedChange = { isEnabled -> onSettingChanged(ScanSetting.VIBRATION_AFTER_SCAN, isEnabled) },
                     )
 
-                    SettingsSwitchRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        title = stringResource(Res.string.open_links_after_scan),
-                        isChecked = settings.isOpenLinkAfterScanEnabled,
-                        onCheckedChange = { isEnabled -> onSettingChanged(ScanSetting.OPEN_LINK_AFTER_SCAN, isEnabled) },
-                    )
+                    SettingsRowDivider(modifier = Modifier.fillMaxWidth())
 
                     SettingsSwitchRow(
                         modifier = Modifier.fillMaxWidth(),
-                        title = stringResource(Res.string.show_raw_content),
-                        isChecked = settings.isRawContentShown,
-                        onCheckedChange = { isEnabled -> onSettingChanged(ScanSetting.RAW_CONTENT_SHOWN, isEnabled) },
+                        icon = painterResource(Res.drawable.ic_volume_up),
+                        title = stringResource(Res.string.beep_after_scan),
+                        isChecked = settings.isBeepAfterScanEnabled,
+                        onCheckedChange = { isEnabled -> onSettingChanged(ScanSetting.BEEP_AFTER_SCAN, isEnabled) },
+                    )
+
+                    SettingsRowDivider(modifier = Modifier.fillMaxWidth())
+
+                    SettingsSwitchRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = painterResource(Res.drawable.ic_content_copy),
+                        title = stringResource(Res.string.copy_after_scan),
+                        isChecked = settings.isCopyAfterScanEnabled,
+                        onCheckedChange = { isEnabled -> onSettingChanged(ScanSetting.COPY_AFTER_SCAN, isEnabled) },
+                    )
+
+                    SettingsRowDivider(modifier = Modifier.fillMaxWidth())
+
+                    SettingsSwitchRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = painterResource(Res.drawable.ic_open_in_new),
+                        title = stringResource(Res.string.open_links_after_scan),
+                        isChecked = settings.isOpenLinkAfterScanEnabled,
+                        onCheckedChange = { isEnabled -> onSettingChanged(ScanSetting.OPEN_LINK_AFTER_SCAN, isEnabled) },
                     )
                 }
 
@@ -116,43 +158,84 @@ fun SettingsScreen(
 
             SCCardStructure(
                 modifier = Modifier.fillMaxWidth(),
-                title = stringResource(Res.string.app_name),
+                title = stringResource(Res.string.app_settings),
                 style = SCCardDefaults.Style.LIGHT,
             ) {
-                LinkRow(
+                if (settings != null) {
+                    SettingsSwitchRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = painterResource(Res.drawable.ic_data_object),
+                        title = stringResource(Res.string.show_raw_content),
+                        isChecked = settings.isRawContentShown,
+                        onCheckedChange = { isEnabled -> onSettingChanged(ScanSetting.RAW_CONTENT_SHOWN, isEnabled) },
+                    )
+
+                    SettingsRowDivider(modifier = Modifier.fillMaxWidth())
+                }
+
+                SettingsActionRow(
                     modifier = Modifier.fillMaxWidth(),
-                    title = stringResource(Res.string.about),
-                    icon = painterResource(Res.drawable.ic_chevron_right),
-                    onClick = onAboutClicked,
+                    icon = painterResource(Res.drawable.ic_delete),
+                    title = stringResource(Res.string.clear_history),
+                    trailingIcon = null,
+                    onClick = onClearHistoryClicked,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            SCCardStructure(
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(Res.string.support),
+                style = SCCardDefaults.Style.LIGHT,
+            ) {
+                SettingsActionRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    icon = painterResource(Res.drawable.ic_star),
+                    title = stringResource(Res.string.star_project),
+                    trailingIcon = painterResource(Res.drawable.ic_open_in_new),
+                    onClick = onStarProjectClicked,
                 )
 
-                LinkRow(
+                SettingsRowDivider(modifier = Modifier.fillMaxWidth())
+
+                SettingsActionRow(
                     modifier = Modifier.fillMaxWidth(),
-                    title = stringResource(Res.string.feedback),
-                    icon = painterResource(Res.drawable.ic_chevron_right),
+                    icon = painterResource(Res.drawable.ic_chat),
+                    title = stringResource(Res.string.give_feedback),
+                    trailingIcon = painterResource(Res.drawable.ic_chevron_right),
                     onClick = onFeedbackClicked,
                 )
 
                 if (isRateAppAvailable) {
-                    LinkRow(
+                    SettingsRowDivider(modifier = Modifier.fillMaxWidth())
+
+                    SettingsActionRow(
                         modifier = Modifier.fillMaxWidth(),
+                        icon = painterResource(Res.drawable.ic_thumb_up),
                         title = stringResource(Res.string.rate_app),
-                        icon = painterResource(Res.drawable.ic_open_in_new),
+                        trailingIcon = painterResource(Res.drawable.ic_open_in_new),
                         onClick = onRateAppClicked,
                     )
                 }
 
-                LinkRow(
+                SettingsRowDivider(modifier = Modifier.fillMaxWidth())
+
+                SettingsActionRow(
                     modifier = Modifier.fillMaxWidth(),
+                    icon = painterResource(Res.drawable.ic_shield),
                     title = stringResource(Res.string.privacy_policy),
-                    icon = painterResource(Res.drawable.ic_open_in_new),
+                    trailingIcon = painterResource(Res.drawable.ic_open_in_new),
                     onClick = onPrivacyPolicyClicked,
                 )
 
-                LinkRow(
+                SettingsRowDivider(modifier = Modifier.fillMaxWidth())
+
+                SettingsActionRow(
                     modifier = Modifier.fillMaxWidth(),
+                    icon = painterResource(Res.drawable.ic_domain),
                     title = stringResource(Res.string.openium),
-                    icon = painterResource(Res.drawable.ic_open_in_new),
+                    trailingIcon = painterResource(Res.drawable.ic_open_in_new),
                     onClick = onOpeniumClicked,
                 )
             }
@@ -161,7 +244,7 @@ fun SettingsScreen(
 
             SCText(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.version_and_build, versionName, build),
+                text = stringResource(Res.string.made_by_skyle),
                 style = SCTheme.typography.caption,
                 color = SCTheme.colors.text,
                 textAlign = TextAlign.Center,
@@ -188,7 +271,8 @@ private fun PreviewSettingsScreen() {
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
             onSettingChanged = { _, _ -> },
-            onAboutClicked = {},
+            onClearHistoryClicked = {},
+            onStarProjectClicked = {},
             onFeedbackClicked = {},
             onRateAppClicked = {},
             onPrivacyPolicyClicked = {},

@@ -1,11 +1,12 @@
 <resources>
-    <string name="about">À propos</string>
     <string name="add_contact">Ajouter le contact</string>
     <string name="address">Adresse</string>
     <string name="all_scans_deleted">Tous les scans seront supprimés.</string>
     <string name="allow_camera">Autoriser la caméra</string>
     <string name="app_description">Scanny scanne les QR codes et les codes-barres, avec les dernières technologies et sans publicité, tout en restant légère et fiable.</string>
+    <string name="app_settings">Réglages de l'app</string>
     <string name="at_time">%1$s à %2$s</string>
+    <string name="beep_after_scan">Bip après un scan</string>
     <string name="camera_blocked">La caméra est bloquée pour Scanny. Autorisez-la dans les réglages de votre appareil pour scanner des codes.</string>
     <string name="camera_needed">Scanny a besoin de la caméra pour scanner des codes.</string>
     <string name="camera_unavailable">Aucune caméra n'est disponible sur cet appareil. Vous pouvez toujours scanner un code dans une image.</string>
@@ -27,8 +28,7 @@
     <string name="copied">Copié</string>
     <string name="copied_to_clipboard">Copié dans le presse-papiers</string>
     <string name="copy">Copier</string>
-    <string name="created_by">Créé par</string>
-    <string name="created_by_skyle">Skyle avec ❤️ chez Openium</string>
+    <string name="copy_after_scan">Copier le code après un scan</string>
     <string name="day_date">%1$d %2$s %3$d</string>
     <string name="delete">Supprimer</string>
     <string name="delete_code_question">Supprimer ce code ?</string>
@@ -41,15 +41,17 @@
     <string name="feedback_about_scan">Le scan</string>
     <string name="feedback_about_type_detection">La détection du type d'un code</string>
     <string name="finish">Terminer</string>
-    <string name="general">Général</string>
+    <string name="give_feedback">Donner votre avis</string>
     <string name="group">Groupe</string>
     <string name="group_codes_removed_from_history">Ses codes seront retirés de l'historique.</string>
     <string name="group_not_deleted">Le groupe n'a pas pu être supprimé</string>
     <string name="history">Historique</string>
+    <string name="history_cleared">L'historique est effacé</string>
     <string name="history_not_cleared">L'historique n'a pas pu être effacé</string>
     <string name="job_title">Fonction</string>
     <string name="join_network">Rejoindre le réseau</string>
     <string name="link">Lien</string>
+    <string name="made_by_skyle">Fait par Skyle avec ❤️ chez Openium</string>
     <string name="mail_app_opens_with_message">Votre app de mail s'ouvre avec votre message, prêt à être envoyé.</string>
     <string name="message">Message</string>
     <string-array name="months">
@@ -87,6 +89,7 @@
     <string name="recipient">Destinataire</string>
     <string name="scan_image">Scanner une image</string>
     <string name="scan_not_saved">Le scan n'a pas pu être enregistré</string>
+    <string name="scan_preferences">Préférences du scan</string>
     <string name="scanned_codes_appear_here">Les codes que vous scannez apparaissent ici.</string>
     <string name="security">Sécurité</string>
     <string name="see_detail">Voir le détail</string>
@@ -96,9 +99,10 @@
     <string name="settings">Réglages</string>
     <string name="share">Partager</string>
     <string name="show_raw_content">Afficher le contenu brut</string>
+    <string name="star_project">Mettre une étoile au projet sur GitHub</string>
     <string name="subject">Objet</string>
+    <string name="support">Support</string>
     <string name="text">Texte</string>
-    <string name="thanks_for_using_app">Merci d'utiliser l'app !</string>
     <string name="today">Aujourd'hui</string>
     <string name="turn_off_torch">Éteindre la lampe</string>
     <string name="turn_on_torch">Allumer la lampe</string>
