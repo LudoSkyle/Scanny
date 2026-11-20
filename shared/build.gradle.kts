@@ -39,6 +39,7 @@ kotlin {
             // Navigation and lifecycle
             implementation(libs.navigation3Multiplatform.ui)
             implementation(libs.lifecycleMultiplatform.runtime.compose)
+            implementation(libs.lifecycleMultiplatform.viewmodel)
             implementation(libs.lifecycleMultiplatform.viewmodel.navigation3)
 
             // Kotlinx
@@ -47,6 +48,7 @@ kotlin {
 
             // Koin
             implementation(libs.koin.core)
+            implementation(libs.koin.compose.viewmodel)
 
             // Logs
             implementation(libs.kermit)

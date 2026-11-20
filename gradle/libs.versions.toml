@@ -71,6 +71,7 @@ composeMultiplatform-ui-tooling = { module = "org.jetbrains.compose.ui:ui-toolin
 navigation3Multiplatform-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3Multiplatform" }
 
 # Lifecycle
+lifecycleMultiplatform-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleMultiplatform" }
 lifecycleMultiplatform-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleMultiplatform" }
 lifecycleMultiplatform-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleMultiplatform" }
 
