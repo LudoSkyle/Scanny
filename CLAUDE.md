@@ -42,9 +42,9 @@ Quatre règles à ne jamais perdre de vue :
 
 ## État du projet
 
-La migration vers KMP/CMP est en cours, directement sur `develop`. La fondation et l'hôte iOS sont
-en place (modules, Koin, navigation, thème, app Xcode) ; les écrans arrivent lot par lot, dans
-l'ordre de la [feuille de route](./docs/ROADMAP.md).
+La migration vers KMP/CMP est en cours, lot par lot, par pull request. La fondation, l'hôte iOS, la
+base du design system et le contenu des codes (`domain`) sont en place ; la suite arrive dans l'ordre
+de la [feuille de route](./docs/ROADMAP.md).
 
 ## Commandes
 
@@ -79,7 +79,13 @@ document du projet (JUnit 4 et Robolectric partout), c'est le document du projet
   commit.
 - Le dépôt privé `private/` (sous-module : clés de signature, fichiers Firebase) n'est jamais
   modifié ni affiché.
-- Ne commiter et ne pousser que sur demande explicite.
+- **Chaque lot est livré par une pull request vers `develop`**, jamais poussé directement : une
+  branche `<type>/<description-courte>` partie de `develop` à jour, poussée, puis la PR, fusionnée
+  par l'agent lui-même **en rebase** (historique linéaire) une fois les vérifications du lot passées,
+  et la branche supprimée. Une PR qui suit une autre est rebasée sur `develop` à jour avant d'être
+  poussée. Le titre de la PR est le sujet du commit principal, sa description, en anglais, dit ce qui
+  change et ce qui a été vérifié.
+- Rien ne se pousse en dehors de ce circuit : pas de push direct sur `develop` ni sur `main`.
 
 ## Mise à jour de cette documentation
 
