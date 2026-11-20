@@ -37,6 +37,7 @@ fun ScanRoute(
     navigateToScanDetail: (codeId: Long) -> Unit,
     navigateToScanGroup: (scanId: Long) -> Unit,
     navigateToScanHistory: () -> Unit,
+    navigateToSettings: () -> Unit,
     viewModel: ScanViewModel = koinViewModel(),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -126,6 +127,7 @@ fun ScanRoute(
         onMultipleScanClicked = viewModel::onMultipleScanClicked,
         onMultipleScanFinished = viewModel::onMultipleScanFinished,
         onHistoryClicked = navigateToScanHistory,
+        onSettingsClicked = navigateToSettings,
         onResultActionClicked = { action ->
             when (action) {
                 // Under the sheet, a message would not be seen: the failure is only logged

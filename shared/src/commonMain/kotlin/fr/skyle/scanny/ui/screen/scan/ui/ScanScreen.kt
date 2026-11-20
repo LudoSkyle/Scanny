@@ -31,12 +31,12 @@ import fr.skyle.scanny.resources.place_code_in_frame
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
 import fr.skyle.scanny.ui.screen.scan.ui.component.CameraMessage
+import fr.skyle.scanny.ui.screen.scan.ui.component.MultipleScanBar
 import fr.skyle.scanny.ui.screen.scan.ui.component.ScanCameraLayer
 import fr.skyle.scanny.ui.screen.scan.ui.component.ScanControls
+import fr.skyle.scanny.ui.screen.scan.ui.component.ScanGroupResultSheet
 import fr.skyle.scanny.ui.screen.scan.ui.component.ScanResultSheet
 import fr.skyle.scanny.ui.screen.scan.ui.component.ScanTopActions
-import fr.skyle.scanny.ui.screen.scan.ui.component.MultipleScanBar
-import fr.skyle.scanny.ui.screen.scan.ui.component.ScanGroupResultSheet
 import fr.skyle.scanny.ui.screen.scan.ui.model.MultipleScanSession
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResult
 import org.jetbrains.compose.resources.stringResource
@@ -61,6 +61,7 @@ fun ScanScreen(
     onMultipleScanClicked: () -> Unit,
     onMultipleScanFinished: () -> Unit,
     onHistoryClicked: () -> Unit,
+    onSettingsClicked: () -> Unit,
     onResultActionClicked: (CodeAction) -> Unit,
     onCopyResultClicked: (text: String) -> Unit,
     onSeeResultDetailClicked: () -> Unit,
@@ -126,6 +127,7 @@ fun ScanScreen(
                     .padding(all = 16.dp)
                     .wrapContentSize(),
                 onHistoryClicked = onHistoryClicked,
+                onSettingsClicked = onSettingsClicked,
             )
 
             // Scanning an image needs no camera: it stays available whatever the permission
@@ -212,6 +214,7 @@ private fun PreviewScanScreen() {
             onMultipleScanClicked = {},
             onMultipleScanFinished = {},
             onHistoryClicked = {},
+            onSettingsClicked = {},
             onResultActionClicked = {},
             onCopyResultClicked = {},
             onSeeResultDetailClicked = {},
@@ -249,6 +252,7 @@ private fun PreviewScanScreen_MultipleScan() {
             onMultipleScanClicked = {},
             onMultipleScanFinished = {},
             onHistoryClicked = {},
+            onSettingsClicked = {},
             onResultActionClicked = {},
             onCopyResultClicked = {},
             onSeeResultDetailClicked = {},
@@ -282,6 +286,7 @@ private fun PreviewScanScreen_CameraBlocked() {
             onMultipleScanClicked = {},
             onMultipleScanFinished = {},
             onHistoryClicked = {},
+            onSettingsClicked = {},
             onResultActionClicked = {},
             onCopyResultClicked = {},
             onSeeResultDetailClicked = {},
