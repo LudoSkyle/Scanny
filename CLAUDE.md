@@ -39,20 +39,20 @@ Trois règles à ne jamais perdre de vue :
 
 ## État du projet
 
-La migration vers KMP/CMP est en cours, directement sur `develop`. Tant que le lot « Fondation » de
-la [feuille de route](./docs/ROADMAP.md) n'est pas terminé, le module `app/` est encore l'ancienne
-base Android (Hilt) et ne suit pas cette documentation : il se migre, il ne s'étend pas.
+La migration vers KMP/CMP est en cours, directement sur `develop`. La fondation est en place
+(modules, Koin, navigation, thème) ; les écrans arrivent lot par lot, dans l'ordre de la
+[feuille de route](./docs/ROADMAP.md).
 
 ## Commandes
-
-Une fois la fondation en place :
 
 ```bash
 ./gradlew :domain:allTests :data:allTests :shared:allTests   # tests (JVM et simulateur iOS)
 ./gradlew :androidApp:assembleDebug                          # app Android
+./gradlew :shared:linkDebugFrameworkIosSimulatorArm64        # framework iOS
 ```
 
-L'app iOS se lance depuis Xcode (`iosApp/`) : une phase de build y construit le framework `Shared`.
+L'app iOS se lancera depuis Xcode (`iosApp/`, lot 2 de la feuille de route) : une phase de build y
+construit le framework `Shared`.
 
 Lance les tests du module touché avant de considérer une modification comme terminée.
 
