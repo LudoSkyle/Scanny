@@ -89,9 +89,10 @@ actual fun ScanCamera(
                 ContextCompat.getMainExecutor(context),
             ) { result ->
                 if (currentIsDetectionEnabled) {
+                    // Every code of the frame: a multiple scan keeps them all, a simple one the first
                     result.getValue(barcodeScanner)
-                        ?.firstNotNullOfOrNull { barcode -> barcode.toDetectedBarcode() }
-                        ?.let { detectedBarcode -> currentOnBarcodeDetected(detectedBarcode) }
+                        ?.mapNotNull { barcode -> barcode.toDetectedBarcode() }
+                        ?.forEach { detectedBarcode -> currentOnBarcodeDetected(detectedBarcode) }
                 }
             },
         )

@@ -292,16 +292,17 @@ private class MetadataDelegate(
         didOutputMetadataObjects: List<*>,
         fromConnection: AVCaptureConnection,
     ) {
+        // Every code of the frame: a multiple scan keeps them all, a simple one the first
         didOutputMetadataObjects
             .filterIsInstance<AVMetadataMachineReadableCodeObject>()
-            .firstNotNullOfOrNull { code ->
-                val rawValue = code.stringValue ?: return@firstNotNullOfOrNull null
-                val format = metadataObjectTypeToBarcodeFormat(type = code.type) ?: return@firstNotNullOfOrNull null
+            .mapNotNull { code ->
+                val rawValue = code.stringValue ?: return@mapNotNull null
+                val format = metadataObjectTypeToBarcodeFormat(type = code.type) ?: return@mapNotNull null
                 DetectedBarcode(
                     rawValue = rawValue,
                     format = format,
                 )
             }
-            ?.let(onBarcodeDetected)
+            .forEach(onBarcodeDetected)
     }
 }
