@@ -1,4 +1,4 @@
-package fr.skyle.scanny.ui.screen.scanhistory.ui.component
+package fr.skyle.scanny.ui.core.history.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,6 +13,7 @@ import fr.skyle.scanny.resources.clear_history_question
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
 import org.jetbrains.compose.resources.stringResource
 
+/** Asked before the whole history of the scans is deleted, from the history or the settings. */
 @Composable
 fun ClearHistoryDialog(
     onConfirmClicked: () -> Unit,

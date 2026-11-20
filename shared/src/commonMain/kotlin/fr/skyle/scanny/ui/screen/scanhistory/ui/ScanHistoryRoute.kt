@@ -13,7 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.history_not_cleared
-import fr.skyle.scanny.ui.screen.scanhistory.ui.component.ClearHistoryDialog
+import fr.skyle.scanny.ui.core.history.component.ClearHistoryDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
