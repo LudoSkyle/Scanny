@@ -1,6 +1,5 @@
-package fr.skyle.scanny.platform.camera
+package fr.skyle.scanny.domain.model
 
-import fr.skyle.scanny.domain.model.BarcodeFormat
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

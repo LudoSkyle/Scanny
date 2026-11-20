@@ -2,10 +2,10 @@ package fr.skyle.scanny.ui.screen.scan.ui
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.DetectedBarcode
 import fr.skyle.scanny.fake.FakeRecordScanUseCase
 import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
 import fr.skyle.scanny.platform.camera.CameraCapabilities
-import fr.skyle.scanny.platform.camera.DetectedBarcode
 import fr.skyle.scanny.platform.gallery.ImageScanResult
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultItem
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultType

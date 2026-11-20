@@ -2,6 +2,7 @@ package fr.skyle.scanny.platform.camera
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import fr.skyle.scanny.domain.model.DetectedBarcode
 
 /** What the camera of the device can do, known once it is open. */
 data class CameraCapabilities(

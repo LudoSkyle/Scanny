@@ -36,6 +36,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import co.touchlab.kermit.Logger
 import com.google.mlkit.vision.barcode.BarcodeScanning
+import fr.skyle.scanny.domain.model.DetectedBarcode
 import kotlinx.coroutines.awaitCancellation
 import java.util.concurrent.Executors
 
