@@ -11,13 +11,16 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 
 ### Scan
 
-- [ ] Aperçu caméra plein écran, détection de tous les formats de `BarcodeFormat`
-- [ ] Lampe torche
-- [ ] Détection dans une image de la galerie, avec un message si aucun code n'est trouvé
-- [ ] Écran de permission refusée, avec un accès aux réglages de l'app
-- [ ] Vibration après un scan (réglage)
-- [ ] Ouverture automatique des liens après un scan (réglage)
-- [ ] Détection en pause tant qu'un résultat est affiché
+- [x] Aperçu caméra plein écran, détection de tous les formats de `BarcodeFormat` *(détection en
+      direct à vérifier sur appareil)*
+- [x] Lampe torche *(à vérifier sur appareil)*
+- [x] Détection dans une image de la galerie, avec un message si aucun code n'est trouvé *(iOS à
+      vérifier sur iPhone)*
+- [x] Écran de permission refusée, avec un accès aux réglages de l'app
+- [x] Vibration après un scan (réglage) *(testée, non observée)*
+- [x] Ouverture automatique des liens après un scan (réglage ; l'écran des réglages arrive au lot 9)
+      *(testée, non observée)*
+- [x] Détection en pause tant qu'un résultat est affiché *(testée)*
 
 ### Détail d'un scan
 
@@ -38,7 +41,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 
 ## Nouveautés
 
-- [ ] Zoom (pincement) et mise au point (appui)
+- [x] Zoom (pincement) et mise au point (appui) *(à vérifier sur appareil)*
 - [ ] Historique des scans : liste, détail, suppression
 - [ ] Création de QR codes : texte, URL, email, SMS, WiFi
 - [ ] Partager et enregistrer un QR code créé
@@ -85,13 +88,23 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
    - [x] `ScanRepository`, `SettingsRepository`
    - [x] Modèle `Scan`, réglages, et les UseCases qui les exposent, avec leurs tests
    - Le câblage Koin n'est vérifié à l'exécution qu'au lot 6, quand le premier ViewModel s'en sert.
-6. **Scan** : `ScanCamera` Android puis iOS, permission, torche, galerie, zoom et mise au point.
-   Un premier essai CameraX (sur l'ancienne base Hilt) est gardé comme exemple dans le stash
-   « WIP scan screen (CameraX + Hilt)… » (`git stash list`) : il se consulte, il ne s'applique pas.
-   Les icônes de la barre d'état doivent passer en clair sur l'écran noir : elles sont aujourd'hui
-   sombres sur fond noir sur Android (la v1 le gérait), à vérifier aussi sur iOS en mode clair.
+6. **Scan**
+   - [x] `ScanCamera` Android et iOS, permission, torche, zoom et mise au point, scan d'une image
+   - [x] Icônes des barres système claires sur l'écran noir
+   - [x] `ScanViewModel` : enregistrement dans l'historique, vibration et ouverture des liens selon
+         les réglages, pause de la détection, avec ses tests
+   - [x] Feuille de résultat minimale : le type et le texte brut du code scanné
+   - Vérifié sur l'émulateur Android : permission (refus, refus définitif, accord), aperçu, scan
+     d'une image jusqu'à la base. Sur le simulateur iOS : lancement, demande de permission et sa
+     description. **Reste à vérifier sur un appareil** : détection en direct, torche, zoom, mise au
+     point sur Android et iPhone, et le scan d'une image sur iPhone (le simulateur n'a pas de caméra
+     et Vision n'y détecte rien).
 7. **Détail d'un scan et actions natives** : interfaces de plateforme de la matrice de
-   [KMP/03_CODE_PLATEFORME.md](./KMP/03_CODE_PLATEFORME.md)
+   [KMP/03_CODE_PLATEFORME.md](./KMP/03_CODE_PLATEFORME.md). La feuille de résultat du lot 6 devient
+   le détail complet : une route `Route.ScanDetail(scanId)` présentée en bottom sheet, pour que
+   l'historique (lot 8) ouvre le même détail. Deux remarques d'ergonomie relevées au lot 6 : le
+   message « aucun code trouvé » masque le bouton galerie le temps de son affichage, et le Photo
+   Picker range les images de la plus récente à la plus ancienne.
 8. **Historique des scans**
 9. **Réglages, Feedback, À propos**
 10. **Création de QR codes et historique des créations**

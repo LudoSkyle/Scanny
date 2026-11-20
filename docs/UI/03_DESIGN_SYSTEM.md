@@ -11,9 +11,10 @@ palette, la police Lato et l'identité de l'app (icône, ton des textes) servent
 On y trouve :
 
 - le thème : `SCColors`, `SCTypography`, `SCShapes`, `SCTheme` ;
-- les composants génériques : aujourd'hui `SCScreenStructure`, `SCTopAppBar` et `SCIconButton`.
-  Les autres (bouton, dialog, champ de texte, interrupteur…) arrivent avec le premier écran qui en a
-  besoin ;
+- les composants génériques : `SCScreenStructure` (fond, insets, barre du haut, messages, couleur
+  des icônes système), `SCTopAppBar`, `SCIconButton`, `SCButton`, `SCText`, `SCBottomSheet` et
+  `SCSnackbarState`. Les autres (dialog, champ de texte, interrupteur…) arrivent avec le premier écran
+  qui en a besoin ;
 - les polices (Lato), les icônes et les textes des composants, dans Compose Resources.
 
 On n'y trouve pas :
@@ -31,10 +32,16 @@ designSystem/src/commonMain/
 │   │   ├── SCTheme.kt         (composable SCTheme et objet SCTheme)
 │   │   └── SCTypography.kt    (SCTypography, LocalTypography, famille Lato)
 │   └── core/
+│       ├── bottomsheet/       (SCBottomSheet : ouverte en entier ou fermée)
+│       ├── button/
+│       │   ├── SCButton.kt
+│       │   └── SCButtonDefaults.kt
 │       ├── iconbutton/
 │       │   ├── SCIconButton.kt
 │       │   └── SCIconButtonDefaults.kt
-│       ├── screenstructure/   (SCScreenStructure : fond, insets, barre du haut)
+│       ├── screenstructure/   (SCScreenStructure, et la couleur des icônes système par plateforme)
+│       ├── snackbar/          (SCSnackbarState : les messages courts d'un écran)
+│       ├── text/              (SCText : un texte dans un style du thème)
 │       └── topappbar/         (SCTopAppBar : retour, titre, actions)
 └── composeResources/
     ├── drawable/              (icônes des composants)
@@ -92,7 +99,10 @@ object SCTheme {
 - La typographie lit les polices de Compose Resources (`Font(Res.font.lato_regular, ...)`), ce qui
   ne se fait que dans un composable : `scannyTypography()` est donc `@Composable`.
 - `SCShapes` ne porte que les formes utilisées : `medium` (coins arrondis de 10 dp, ceux des
-  boutons et des cellules de la v1). Une forme s'ajoute avec le composant qui en a besoin.
+  boutons et des cellules de la v1) et `sheet` (le haut arrondi d'une bottom sheet). Une forme
+  s'ajoute avec le composant qui en a besoin.
+- Un écran affiche un texte avec `SCText` et un message court par un `SCSnackbarState` donné à
+  `SCScreenStructure` : il ne voit jamais `Text` ni `SnackbarHostState` de Material.
 - `SCTheme` fournit aussi le style de texte par défaut (`body1`) et le ripple de Material comme
   retour au toucher de tout élément cliquable.
 - Tant que l'app n'a qu'un thème, on n'en prévoit qu'un. Le second viendra avec son besoin.
