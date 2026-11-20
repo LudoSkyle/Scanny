@@ -21,7 +21,7 @@ Chercher d'abord l'API commune :
 | Le besoin… | Se déclare… | Utilisé par |
 |---|---|---|
 | passe par une API de Compose (lien, vibration, presse-papiers) | rien à déclarer : `LocalUriHandler`, `LocalHapticFeedback`, `LocalClipboard` | la `Route`, en réaction à un clic ou à un event du ViewModel |
-| est une action système sans lien avec la composition (partager, ajouter un contact, rejoindre un WiFi, ouvrir les réglages de l'app, noter l'app) | une **interface** en `commonMain`, une implémentation par plateforme, fournies par le module Koin de plateforme | le ViewModel, qui la reçoit par constructeur (et un fake dans ses tests) |
+| est une action système sans lien avec la composition (partager, ajouter un contact, rejoindre un WiFi, noter l'app) | une **interface** en `commonMain`, une implémentation par plateforme, fournies par le module Koin de plateforme | le ViewModel, qui la reçoit par constructeur (et un fake dans ses tests) |
 | a besoin de la composition (aperçu caméra, demande de permission, sélecteur d'image) | une fonction `@Composable` `expect`, avec un `actual` par plateforme | l'écran, via ses composants |
 
 - Un `expect` porte sur une fonction ou une propriété, jamais sur une classe : les classes
@@ -109,15 +109,45 @@ iOS :
 
 ### Caméra et détection
 
-- `ScanCamera` (`expect` composable) affiche l'aperçu et remonte chaque code détecté sous une forme
-  commune : son texte brut et son `BarcodeFormat`. Jamais un type de ML Kit ou d'AVFoundation au-delà
-  de l'`actual`.
-- Il reçoit de l'écran l'état à appliquer (détection active ou en pause, torche, niveau de zoom) et
-  remonte ce que seul l'appareil connaît (plage de zoom disponible, présence d'une torche).
-- La détection est en pause tant qu'un résultat est affiché : un même code n'est pas traité deux
-  fois.
-- Le geste de zoom (pincement) et le geste de mise au point (appui) sont détectés en commun ; seule
-  leur application à la caméra est native.
+Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
+
+| Déclaration commune | Rôle | Android | iOS |
+|---|---|---|---|
+| `ScanCamera(...)` | Aperçu de la caméra arrière et détection en direct | CameraX (`CameraXViewfinder`) + ML Kit (`MlKitAnalyzer`) | `AVCaptureSession`, `AVCaptureVideoPreviewLayer` dans une `UIView` (`UIKitView`), `AVCaptureMetadataOutput` |
+| `rememberCameraPermissionState()` | Statut de la permission, la demander, ouvrir les réglages de l'app | `RequestPermission`, `shouldShowRequestPermissionRationale` | `AVCaptureDevice.requestAccess`, `UIApplicationOpenSettingsURLString` |
+| `rememberImageBarcodeScanner(...)` | Choisir une image et y lire un code | Photo Picker + ML Kit | `PHPickerViewController` + Vision |
+
+- `ScanCamera` est piloté par l'état de l'écran : détection active ou en pause, torche, niveau de
+  zoom, demande de mise au point (`FocusRequest`, un point en fraction de l'aperçu et un id qui
+  distingue deux appuis au même endroit). Il remonte ce que seul l'appareil connaît
+  (`CameraCapabilities` : torche, plage de zoom) et l'absence de caméra (le simulateur iOS).
+- Un code détecté remonte sous la forme commune `DetectedBarcode` (texte brut et `BarcodeFormat`),
+  jamais sous un type de ML Kit, d'AVFoundation ou de Vision. `normalized()` en fait le même code sur
+  les deux plateformes (un EAN-13 qui commence par `0` est un UPC-A) : le ViewModel l'applique à tout
+  code reçu.
+- La détection est mise en pause par le ViewModel **avant** tout traitement, de façon synchrone : la
+  caméra lit le même code plusieurs fois de suite, et chaque lecture serait sinon enregistrée.
+- Le geste de zoom (pincement, plafonné à ×8) et le geste de mise au point (appui) sont détectés en
+  commun, dans `ScanCameraLayer` ; seule leur application à la caméra est native.
+- La permission a quatre statuts : `UNKNOWN` (pas encore demandée, ou réponse attendue), `GRANTED`,
+  `DENIED` (Android laisse encore la redemander) et `DENIED_FOREVER` (seuls les réglages peuvent
+  l'accorder : après deux refus sur Android, dès le premier sur iOS). L'écran la demande à son
+  ouverture quand elle est `UNKNOWN`, et le statut est relu à chaque retour au premier plan.
+- Android : la permission `CAMERA` est déclarée dans le manifeste de `shared/src/androidMain`, fusionné
+  dans celui de l'app. Sans elle, Android refuse la demande sans rien afficher.
+- iOS : `NSCameraUsageDescription` est dans l'`Info.plist`, traduite dans `en.lproj` et `fr.lproj`.
+- Le scan d'une image ne demande aucune permission : il reste proposé quand la caméra est refusée ou
+  absente.
+- **Sur le simulateur iOS, rien de tout cela ne se vérifie** : il n'a pas de caméra, et Vision n'y
+  détecte aucun code dans une image (limite connue du simulateur, quelle que soit la révision de la
+  requête). La détection iOS se vérifie sur un iPhone.
+
+### Couleur des icônes des barres système
+
+Elle suit le style de `SCScreenStructure` : clair sur le style `BLACK`, sombre sinon. Android règle
+les icônes de la fenêtre (`WindowCompat`). iOS n'a rien à faire pour l'instant : sur l'écran noir,
+ses icônes ont été vues claires sur le simulateur ; à confirmer sur un iPhone, et au premier écran sur
+fond clair.
 
 ### Matrice des capacités
 
@@ -126,18 +156,18 @@ livrée ; le tableau est mis à jour dans le même commit.
 
 | Capacité | Android | iOS | Forme |
 |---|---|---|---|
-| Aperçu et détection en direct | CameraX + ML Kit Barcode Scanning | `AVCaptureSession` + `AVCaptureMetadataOutput` | `expect` composable |
-| Zoom, mise au point | `CameraControl` (`setZoomRatio`, `startFocusAndMetering`) | `AVCaptureDevice` (`videoZoomFactor`, `focusPointOfInterest`) | `expect` composable |
-| Torche | `CameraControl.enableTorch` | `AVCaptureDevice.torchMode` | `expect` composable |
-| Permission caméra | `RequestPermission` | `AVCaptureDevice.requestAccess` | `expect` composable |
-| Détection dans une image | Photo Picker + ML Kit (`InputImage`) | `PHPickerViewController` + Vision (`VNDetectBarcodesRequest`) | `expect` composable |
+| Aperçu et détection en direct | ✅ aperçu vérifié (émulateur) ; détection en direct à vérifier sur un appareil — CameraX + ML Kit Barcode Scanning | Livré, à vérifier sur un iPhone — `AVCaptureSession` + `AVCaptureMetadataOutput` | `expect` composable |
+| Zoom, mise au point | Livré, à vérifier sur un appareil — `CameraControl` (`setZoomRatio`, `startFocusAndMetering`) | Livré, à vérifier sur un iPhone — `AVCaptureDevice` (`videoZoomFactor`, `focusPointOfInterest`) | `expect` composable |
+| Torche | Livré, à vérifier sur un appareil (l'émulateur n'a pas de flash) — `CameraControl.enableTorch` | Livré, à vérifier sur un iPhone — `AVCaptureDevice.torchMode` | `expect` composable |
+| Permission caméra | ✅ (refus, refus définitif, accord) — `RequestPermission` | ✅ demande et description affichées (simulateur) — `AVCaptureDevice.requestAccess` | `expect` composable |
+| Détection dans une image | ✅ (émulateur : code lu, enregistré ; image sans code signalée) — Photo Picker + ML Kit (`InputImage`) | Livré, à vérifier sur un iPhone — `PHPickerViewController` + Vision (`VNDetectBarcodesRequest`) | `expect` composable |
 | Ouvrir un lien, un mail, un SMS | `LocalUriHandler` | `LocalUriHandler` | Compose |
-| Vibration | `LocalHapticFeedback` | `LocalHapticFeedback` | Compose |
+| Vibration | `LocalHapticFeedback` (`Confirm`) | `LocalHapticFeedback` (`Confirm`) | Compose |
 | Copier | `LocalClipboard` | `LocalClipboard` | Compose (+ `expect` pour créer le `ClipEntry` si besoin) |
 | Partager un texte | `ACTION_SEND` | `UIActivityViewController` | interface |
 | Partager, enregistrer un QR code | `FileProvider` + `ACTION_SEND`, `MediaStore` | `UIActivityViewController`, Photos | interface |
 | Ajouter un contact | `ACTION_INSERT_OR_EDIT` | `CNContactViewController` | interface |
 | Rejoindre un réseau WiFi | `Settings.ACTION_WIFI_ADD_NETWORKS` | Reporté (`NEHotspotConfigurationManager` exige l'entitlement *Hotspot Configuration*, donc un compte payant) : action non proposée | interface |
-| Ouvrir les réglages de l'app | `ACTION_APPLICATION_DETAILS_SETTINGS` | `UIApplicationOpenSettingsURLString` | interface |
+| Ouvrir les réglages de l'app | ✅ `ACTION_APPLICATION_DETAILS_SETTINGS` | `UIApplicationOpenSettingsURLString` | dans l'état de permission caméra |
 | Noter l'app | Lien Play Store | Lien App Store | interface |
 | Version de l'app | `PackageManager` (`versionName`, `longVersionCode`) | `CFBundleShortVersionString`, `CFBundleVersion` | interface |

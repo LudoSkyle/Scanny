@@ -144,6 +144,26 @@ Kotlin/Native impose quelques règles au code de `commonTest` :
   depuis le `backgroundScope` avec un `UnconfinedTestDispatcher(testScheduler)`, puis fait le
   changement et compare la liste.
 
+### ViewModels
+
+- Un test de ViewModel pose `Dispatchers.setMain` sur l'`UnconfinedTestDispatcher` qu'il passe à
+  `runTest`, dans un `@BeforeTest` de la classe de test : le temps est alors virtuel, et un `delay` du
+  ViewModel s'avance avec `advanceTimeBy` puis `runCurrent`.
+- Ses events (`Channel`) se collectent dans une liste, comme un `Flow` (voir ci-dessus).
+- Pour vérifier ce qui se passe pendant un appel en cours (une deuxième détection pendant un
+  enregistrement), la doublure attend un `CompletableDeferred` que le test complète quand il veut.
+  Une doublure qui répond tout de suite ne fait jamais apparaître la course.
+- Dans `shared`, `withHostTest { isReturnDefaultValues = true }` : les logs de Kermit passent par
+  `android.util.Log`, absent de la JVM des tests hôtes.
+- Un test qui croit vérifier un comportement le prouve en échouant quand on casse ce comportement :
+  avant de livrer, on retire le code protégé, on voit le test échouer, on le remet.
+
+### Ce que les tests ne couvrent pas
+
+La détection des codes par la caméra et dans une image ne se teste pas sur le simulateur iOS : il n'a
+pas de caméra, et Vision n'y trouve aucun code (limite du simulateur, constatée quelle que soit la
+révision de la requête). Elle se vérifie à la main, sur un appareil.
+
 ### Accès aux `internal` depuis les tests
 
 Les source sets de test voient les déclarations `internal` de leur module : c'est ce qui permet de
