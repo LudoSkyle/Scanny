@@ -16,11 +16,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.platform.clipboard.isCopyConfirmedBySystem
 import fr.skyle.scanny.platform.clipboard.textClipEntry
+import fr.skyle.scanny.platform.wifi.rememberWifiNetworkJoiner
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.code_not_deleted
 import fr.skyle.scanny.resources.copied_to_clipboard
 import fr.skyle.scanny.resources.no_app_to_open
 import fr.skyle.scanny.ui.core.code.action.open
+import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.screen.scandetail.ui.component.DeleteCodeDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -37,6 +39,7 @@ fun ScanDetailRoute(
     val uriHandler = LocalUriHandler.current
     val clipboard = LocalClipboard.current
     val coroutineScope = rememberCoroutineScope()
+    val joinWifiNetwork = rememberWifiNetworkJoiner()
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -54,6 +57,10 @@ fun ScanDetailRoute(
 
                     ScanDetailViewModel.ScanDetailEvent.DeleteFailed -> launch {
                         snackbarState.show(message = getString(Res.string.code_not_deleted))
+                    }
+
+                    ScanDetailViewModel.ScanDetailEvent.ContactNotAdded -> launch {
+                        snackbarState.show(message = getString(Res.string.no_app_to_open))
                     }
                 }
             }
@@ -78,10 +85,15 @@ fun ScanDetailRoute(
             }
         },
         onActionClicked = { action ->
-            if (!uriHandler.open(action = action)) {
-                coroutineScope.launch {
-                    snackbarState.show(message = getString(Res.string.no_app_to_open))
+            when (action) {
+                is CodeAction.Link -> if (!uriHandler.open(action = action)) {
+                    coroutineScope.launch {
+                        snackbarState.show(message = getString(Res.string.no_app_to_open))
+                    }
                 }
+
+                is CodeAction.AddContact -> viewModel.onAddContactClicked(contact = action.contact)
+                is CodeAction.JoinWifi -> joinWifiNetwork(action.wifi)
             }
         },
     )

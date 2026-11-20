@@ -4,10 +4,13 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.fake.FakeContactAdder
 import fr.skyle.scanny.fake.FakeDeleteScannedCodeUseCase
 import fr.skyle.scanny.fake.FakeTextSharer
 import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
 import fr.skyle.scanny.fake.FakeWatchScannedCodeUseCase
+import fr.skyle.scanny.fake.FakeWifiNetworkSupport
+import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
 import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
 import fr.skyle.scanny.ui.core.code.model.CodeType
@@ -83,6 +86,51 @@ class ScanDetailViewModelTest {
                 action = null,
             ),
             actual = viewModel.uiState.value.code,
+        )
+    }
+
+    @Test
+    fun `a network the device can join is shown with the action to join it`() = runTest(testDispatcher) {
+        // When
+        val viewModel = scanDetailViewModel(wifiNetworkSupport = FakeWifiNetworkSupport(canJoin = true))
+
+        // Then
+        assertEquals(
+            expected = CodeAction.JoinWifi(wifi = WIFI),
+            actual = viewModel.uiState.value.code?.action,
+        )
+    }
+
+    @Test
+    fun `adding the contact opens the contacts`() = runTest(testDispatcher) {
+        // Given
+        val contactAdder = FakeContactAdder()
+        val viewModel = scanDetailViewModel(contactAdder = contactAdder)
+        val contact = BarcodeContent.Contact(formattedName = "John Doe")
+
+        // When
+        viewModel.onAddContactClicked(contact = contact)
+
+        // Then
+        assertEquals(
+            expected = listOf(contact),
+            actual = contactAdder.addedContacts,
+        )
+    }
+
+    @Test
+    fun `a contact that cannot be added is reported`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanDetailViewModel(contactAdder = FakeContactAdder(error = IllegalStateException("No contacts app")))
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onAddContactClicked(contact = BarcodeContent.Contact(formattedName = "John Doe"))
+
+        // Then
+        assertEquals(
+            expected = listOf(ScanDetailViewModel.ScanDetailEvent.ContactNotAdded),
+            actual = events,
         )
     }
 
@@ -197,6 +245,8 @@ class ScanDetailViewModelTest {
         watchScanSettingsUseCase: FakeWatchScanSettingsUseCase = FakeWatchScanSettingsUseCase(),
         deleteScannedCodeUseCase: FakeDeleteScannedCodeUseCase = FakeDeleteScannedCodeUseCase(),
         textSharer: FakeTextSharer = FakeTextSharer(),
+        contactAdder: FakeContactAdder = FakeContactAdder(),
+        wifiNetworkSupport: FakeWifiNetworkSupport = FakeWifiNetworkSupport(),
     ): ScanDetailViewModel =
         ScanDetailViewModel(
             codeId = CODE_ID,
@@ -204,6 +254,8 @@ class ScanDetailViewModelTest {
             watchScanSettingsUseCase = watchScanSettingsUseCase,
             deleteScannedCodeUseCase = deleteScannedCodeUseCase,
             textSharer = textSharer,
+            contactAdder = contactAdder,
+            wifiNetworkSupport = wifiNetworkSupport,
         )
 
     private fun TestScope.collectEvents(viewModel: ScanDetailViewModel): List<ScanDetailViewModel.ScanDetailEvent> {
@@ -217,11 +269,7 @@ class ScanDetailViewModelTest {
     private fun wifiCode(): ScannedCode =
         scannedCode(
             rawValue = WIFI_RAW_VALUE,
-            content = BarcodeContent.Wifi(
-                ssid = "Scanny",
-                encryption = WifiEncryption.WPA,
-                password = "secret",
-            ),
+            content = WIFI,
         )
 
     private fun scannedCode(
@@ -240,5 +288,11 @@ class ScanDetailViewModelTest {
     private companion object {
         const val CODE_ID = 7L
         const val WIFI_RAW_VALUE = "WIFI:T:WPA;S:Scanny;P:secret;;"
+
+        val WIFI = BarcodeContent.Wifi(
+            ssid = "Scanny",
+            encryption = WifiEncryption.WPA,
+            password = "secret",
+        )
     }
 }

@@ -21,8 +21,8 @@ Chercher d'abord l'API commune :
 | Le besoin… | Se déclare… | Utilisé par |
 |---|---|---|
 | passe par une API de Compose (lien, vibration, presse-papiers) | rien à déclarer : `LocalUriHandler`, `LocalHapticFeedback`, `LocalClipboard` | la `Route`, en réaction à un clic ou à un event du ViewModel |
-| est une action système sans lien avec la composition (partager, ajouter un contact, rejoindre un WiFi, noter l'app) | une **interface** en `commonMain`, une implémentation par plateforme, fournies par le module Koin de plateforme | le ViewModel, qui la reçoit par constructeur (et un fake dans ses tests) |
-| a besoin de la composition (aperçu caméra, demande de permission, sélecteur d'image) | une fonction `@Composable` `expect`, avec un `actual` par plateforme | l'écran, via ses composants |
+| est une action système sans lien avec la composition (partager, ajouter un contact, noter l'app) | une **interface** en `commonMain`, une implémentation par plateforme, fournies par le module Koin de plateforme | le ViewModel, qui la reçoit par constructeur (et un fake dans ses tests) |
+| a besoin de la composition (aperçu caméra, demande de permission, sélecteur d'image, rejoindre un WiFi) | une fonction `@Composable` `expect`, avec un `actual` par plateforme | l'écran, via ses composants, ou la `Route` |
 
 - Un `expect` porte sur une fonction ou une propriété, jamais sur une classe : les classes
   `expect`/`actual` sont encore en bêta. Un état natif à exposer se décrit par une interface
@@ -159,6 +159,22 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
 - Partager passe par `TextSharer`, une interface, et partage la valeur brute du code : c'est ce
   qu'une autre app, ou un autre scanner, sait relire. Le module Koin de plateforme
   (`platformSharedModule`) fournit son implémentation.
+- Ajouter un contact passe par `ContactAdder`, une interface appelée par le ViewModel. Android ouvre
+  l'app Contacts (`ACTION_INSERT_OR_EDIT`), qui laisse créer un contact ou compléter un contact
+  existant ; téléphones, e-mails, adresses et sites passent en lignes de données
+  (`Insert.DATA`), sans la limite de trois des extras `PHONE` ou `EMAIL`. iOS présente
+  `CNContactViewController.viewControllerForNewContact` dans un `UINavigationController`, pour ses
+  boutons Annuler et OK ; son délégué ferme l'écran, et l'adder le garde, car le contrôleur ne le
+  retient pas. Cet écran ne devrait demander aucune autorisation d'accès aux contacts, puisque c'est
+  lui qui enregistre : à confirmer sur un iPhone. S'il en demandait une, il faudrait déclarer
+  `NSContactsUsageDescription` dans l'`Info.plist`, sans quoi l'app s'arrêterait.
+- Rejoindre un WiFi est en deux morceaux. `WifiNetworkSupport` (interface, ViewModel) dit si
+  l'appareil peut rejoindre le réseau ; l'action n'est proposée que dans ce cas. Android : à partir
+  d'Android 11, ni WEP ni mot de passe que le système refuserait (8 à 63 caractères ASCII
+  imprimables). iOS : jamais, tant qu'il manque l'entitlement *Hotspot Configuration*.
+  `rememberWifiNetworkJoiner()` (`expect` composable, appelé par la `Route`) ouvre l'écran des
+  réglages `ACTION_WIFI_ADD_NETWORKS` : les réglages ne s'affichent qu'à une app qui attend leur
+  résultat, d'où `rememberLauncherForActivityResult` et non un `startActivity` depuis le ViewModel.
 
 ### Couleur des icônes des barres système
 
@@ -184,8 +200,8 @@ livrée ; le tableau est mis à jour dans le même commit.
 | Copier | ✅ (émulateur : confirmation du système, Android 13 et plus) — `LocalClipboard`, `ClipData` | Livré, à vérifier sur un iPhone — `LocalClipboard`, `ClipEntry.withPlainText` | Compose + `expect` pour créer le `ClipEntry` |
 | Partager un texte | ✅ (émulateur : feuille de partage) — `ACTION_SEND` | Livré, à vérifier sur un iPhone — `UIActivityViewController` | interface |
 | Partager, enregistrer un QR code | `FileProvider` + `ACTION_SEND`, `MediaStore` | `UIActivityViewController`, Photos | interface |
-| Ajouter un contact | `ACTION_INSERT_OR_EDIT` | `CNContactViewController` | interface |
-| Rejoindre un réseau WiFi | `Settings.ACTION_WIFI_ADD_NETWORKS` | Reporté (`NEHotspotConfigurationManager` exige l'entitlement *Hotspot Configuration*, donc un compte payant) : action non proposée | interface |
+| Ajouter un contact | ✅ (émulateur : Contacts prérempli, tous les champs) — `ACTION_INSERT_OR_EDIT` | Livré, à vérifier sur un iPhone — `CNContactViewController` | interface |
+| Rejoindre un réseau WiFi | ✅ (émulateur : réseau WPA2 enregistré par l'écran des réglages ; non proposé pour un mot de passe invalide) — `Settings.ACTION_WIFI_ADD_NETWORKS`, Android 11 et plus | Reporté (`NEHotspotConfigurationManager` exige l'entitlement *Hotspot Configuration*, donc un compte payant) : action non proposée | `expect` composable + interface |
 | Ouvrir les réglages de l'app | ✅ `ACTION_APPLICATION_DETAILS_SETTINGS` | `UIApplicationOpenSettingsURLString` | dans l'état de permission caméra |
 | Noter l'app | Lien Play Store | Lien App Store | interface |
 | Version de l'app | `PackageManager` (`versionName`, `longVersionCode`) | `CFBundleShortVersionString`, `CFBundleVersion` | interface |

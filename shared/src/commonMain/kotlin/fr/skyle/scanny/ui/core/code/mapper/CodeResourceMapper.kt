@@ -2,6 +2,7 @@ package fr.skyle.scanny.ui.core.code.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.add_contact
 import fr.skyle.scanny.resources.address
 import fr.skyle.scanny.resources.aztec
 import fr.skyle.scanny.resources.codabar
@@ -21,6 +22,7 @@ import fr.skyle.scanny.resources.ic_sms
 import fr.skyle.scanny.resources.ic_wifi
 import fr.skyle.scanny.resources.itf
 import fr.skyle.scanny.resources.job_title
+import fr.skyle.scanny.resources.join_network
 import fr.skyle.scanny.resources.link
 import fr.skyle.scanny.resources.message
 import fr.skyle.scanny.resources.name
@@ -109,4 +111,6 @@ internal fun CodeAction.toText(): StringResource =
         is CodeAction.OpenLink -> Res.string.open_link
         is CodeAction.WriteEmail -> Res.string.write_email
         is CodeAction.WriteSms -> Res.string.write_sms
+        is CodeAction.AddContact -> Res.string.add_contact
+        is CodeAction.JoinWifi -> Res.string.join_network
     }

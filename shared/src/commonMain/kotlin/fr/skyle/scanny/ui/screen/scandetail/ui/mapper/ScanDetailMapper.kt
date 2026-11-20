@@ -7,7 +7,10 @@ import fr.skyle.scanny.ui.core.code.mapper.toCodeFields
 import fr.skyle.scanny.ui.core.code.mapper.toCodeType
 import fr.skyle.scanny.ui.screen.scandetail.ui.model.ScanDetailItem
 
-internal fun ScannedCode.toScanDetailItem(isRawContentShown: Boolean): ScanDetailItem =
+internal fun ScannedCode.toScanDetailItem(
+    isRawContentShown: Boolean,
+    canJoinWifi: (BarcodeContent.Wifi) -> Boolean,
+): ScanDetailItem =
     ScanDetailItem(
         type = content.toCodeType(),
         format = format,
@@ -15,5 +18,5 @@ internal fun ScannedCode.toScanDetailItem(isRawContentShown: Boolean): ScanDetai
         rawValue = rawValue,
         // A text or a link is its own raw value, already shown
         isRawValueShown = isRawContentShown && content !is BarcodeContent.Text && content !is BarcodeContent.Url,
-        action = content.toCodeAction(),
+        action = content.toCodeAction(canJoinWifi = canJoinWifi),
     )
