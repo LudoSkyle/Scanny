@@ -39,5 +39,12 @@ sealed interface BarcodeContent {
         val emails: List<String> = emptyList(),
         val addresses: List<String> = emptyList(),
         val urls: List<String> = emptyList(),
-    ) : BarcodeContent
+    ) : BarcodeContent {
+
+        /** The name to show: the formatted one, or else the first and last names. */
+        val displayName: String?
+            get() = formattedName ?: listOfNotNull(firstName, lastName)
+                .joinToString(separator = " ")
+                .ifEmpty { null }
+    }
 }
