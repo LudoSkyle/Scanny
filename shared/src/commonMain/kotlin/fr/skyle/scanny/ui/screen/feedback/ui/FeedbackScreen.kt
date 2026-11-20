@@ -14,8 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.button.SCButton
 import fr.skyle.scanny.designsystem.core.button.SCButtonDefaults
-import fr.skyle.scanny.designsystem.core.card.SCCardDefaults
-import fr.skyle.scanny.designsystem.core.card.SCCardStructure
+import fr.skyle.scanny.designsystem.core.dropdownfield.SCDropdownField
 import fr.skyle.scanny.designsystem.core.screenstructure.SCScreenStructure
 import fr.skyle.scanny.designsystem.core.screenstructure.SCScreenStructureDefaults
 import fr.skyle.scanny.designsystem.core.snackbar.SCSnackbarState
@@ -27,13 +26,14 @@ import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBar
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBarDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.choose_subject
 import fr.skyle.scanny.resources.feedback
-import fr.skyle.scanny.resources.feedback_subject_question
 import fr.skyle.scanny.resources.mail_app_opens_with_message
 import fr.skyle.scanny.resources.message
 import fr.skyle.scanny.resources.send_email
+import fr.skyle.scanny.resources.subject
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
-import fr.skyle.scanny.ui.screen.feedback.ui.component.FeedbackSubjectRow
+import fr.skyle.scanny.ui.screen.feedback.ui.mapper.toText
 import fr.skyle.scanny.ui.screen.feedback.ui.model.FeedbackSubject
 import org.jetbrains.compose.resources.stringResource
 
@@ -70,20 +70,16 @@ fun FeedbackScreen(
                     vertical = 8.dp,
                 ),
         ) {
-            SCCardStructure(
+            SCDropdownField(
                 modifier = Modifier.fillMaxWidth(),
-                title = stringResource(Res.string.feedback_subject_question),
-                style = SCCardDefaults.Style.LIGHT,
-            ) {
-                FeedbackSubject.entries.forEach { feedbackSubject ->
-                    FeedbackSubjectRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        subject = feedbackSubject,
-                        isSelected = feedbackSubject == subject,
-                        onClick = { onSubjectSelected(feedbackSubject) },
-                    )
-                }
-            }
+                label = stringResource(Res.string.subject),
+                placeholder = stringResource(Res.string.choose_subject),
+                options = FeedbackSubject.entries,
+                selectedOption = subject,
+                optionText = { feedbackSubject -> stringResource(feedbackSubject.toText()) },
+                onOptionSelected = onSubjectSelected,
+                style = SCTextFieldDefaults.Style.LIGHT,
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 

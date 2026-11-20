@@ -66,8 +66,15 @@ final class SettingsUITests: XCTestCase {
         XCTAssertTrue(sendButton.waitForExistence(timeout: 5))
         XCTAssertFalse(sendButton.isEnabled)
 
-        element(labelled: "The scan", in: app).tap()
-        let messageField = app.textFields.firstMatch.exists ? app.textFields.firstMatch : app.textViews.firstMatch
+        // The subject is chosen in a menu that unfolds under its field
+        app.textViews["Subject"].tap()
+        let scanSubject = element(labelled: "The scan", in: app)
+        XCTAssertTrue(scanSubject.waitForExistence(timeout: 5))
+        keepScreenshot(named: "feedback-subjects", of: app)
+        scanSubject.tap()
+        XCTAssertFalse(sendButton.isEnabled)
+
+        let messageField = app.textViews["Message"].exists ? app.textViews["Message"] : app.textFields["Message"]
         messageField.tap()
         messageField.typeText("The scan is slow on a curved bottle")
         XCTAssertTrue(sendButton.isEnabled)
@@ -96,6 +103,7 @@ final class SettingsUITests: XCTestCase {
 
         element(labelled: "Votre avis", in: app).tap()
         XCTAssertTrue(app.buttons["Envoyer l'e-mail"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.textViews["Objet"].exists)
         keepScreenshot(named: "french-feedback", of: app)
     }
 
