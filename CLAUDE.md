@@ -27,6 +27,7 @@ tâche en cours, chacun est autonome.
 | Persistance, historiques, réglages | [docs/KMP/01_MODULE_DATA.md](./docs/KMP/01_MODULE_DATA.md) |
 | Logique métier, contenu d'un code, UseCase | [docs/KMP/02_MODULE_DOMAIN.md](./docs/KMP/02_MODULE_DOMAIN.md) |
 | Caméra, détection, actions système, tout ce qui diffère par plateforme | [docs/KMP/03_CODE_PLATEFORME.md](./docs/KMP/03_CODE_PLATEFORME.md) |
+| Toucher au projet Xcode, à l'`Info.plist`, à la signature iOS | [iosApp/CLAUDE.md](./iosApp/CLAUDE.md) |
 
 Trois règles à ne jamais perdre de vue :
 
@@ -39,9 +40,9 @@ Trois règles à ne jamais perdre de vue :
 
 ## État du projet
 
-La migration vers KMP/CMP est en cours, directement sur `develop`. La fondation est en place
-(modules, Koin, navigation, thème) ; les écrans arrivent lot par lot, dans l'ordre de la
-[feuille de route](./docs/ROADMAP.md).
+La migration vers KMP/CMP est en cours, directement sur `develop`. La fondation et l'hôte iOS sont
+en place (modules, Koin, navigation, thème, app Xcode) ; les écrans arrivent lot par lot, dans
+l'ordre de la [feuille de route](./docs/ROADMAP.md).
 
 ## Commandes
 
@@ -51,8 +52,8 @@ La migration vers KMP/CMP est en cours, directement sur `develop`. La fondation 
 ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64        # framework iOS
 ```
 
-L'app iOS se lancera depuis Xcode (`iosApp/`, lot 2 de la feuille de route) : une phase de build y
-construit le framework `Shared`.
+L'app iOS se lance depuis Xcode (`iosApp/iosApp.xcodeproj`, schéma `iosApp`) : une phase de build
+y construit le framework `Shared`. Voir [iosApp/CLAUDE.md](./iosApp/CLAUDE.md).
 
 Lance les tests du module touché avant de considérer une modification comme terminée.
 

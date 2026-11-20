@@ -76,8 +76,13 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 - Le projet Xcode le construit et l'intègre par une phase de build qui lance
   `./gradlew :shared:embedAndSignAppleFrameworkForXcode`.
 - Le projet Xcode est généré par XcodeGen depuis `iosApp/project.yml`, seul fichier à éditer : le
-  `.pbxproj` ne se modifie jamais à la main, il se régénère (`xcodegen generate`).
-- `CFBundleShortVersionString` suit le `versionName` d'Android.
+  `.pbxproj` ne se modifie jamais à la main, il se régénère (`xcodegen generate`). Le projet généré
+  est commité.
+- Bundle ID `fr.skyle.scanny`, cible minimale iOS 18.5, iPhone en portrait. `MARKETING_VERSION` et
+  `CURRENT_PROJECT_VERSION` suivent `versionName` et `versionCode` d'Android.
+- Aucune équipe Apple n'est commitée : l'équipe personnelle se déclare dans
+  `iosApp/Configuration/Local.xcconfig`, ignoré par git. Le détail est dans
+  [iosApp/CLAUDE.md](../../iosApp/CLAUDE.md).
 
 ### Commandes utiles
 

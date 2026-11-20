@@ -1,0 +1,44 @@
+name: iosApp
+options:
+  deploymentTarget:
+    iOS: "18.5"
+  createIntermediateGroups: true
+settings:
+  base:
+    MARKETING_VERSION: "2.0"
+    CURRENT_PROJECT_VERSION: "20"
+targets:
+  iosApp:
+    type: application
+    platform: iOS
+    scheme: {}
+    configFiles:
+      Debug: Configuration/Scanny.xcconfig
+      Release: Configuration/Scanny.xcconfig
+    sources:
+      - iosApp
+    settings:
+      base:
+        PRODUCT_NAME: Scanny
+        PRODUCT_BUNDLE_IDENTIFIER: fr.skyle.scanny
+        INFOPLIST_FILE: iosApp/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_VERSION: "6.0"
+        CODE_SIGN_STYLE: Automatic
+        # The Gradle build phase reads and writes outside of the Xcode project
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        FRAMEWORK_SEARCH_PATHS: $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - -framework
+          - Shared
+        LD_RUNPATH_SEARCH_PATHS:
+          - $(inherited)
+          - "@executable_path/Frameworks"
+    preBuildScripts:
+      - name: Compile Kotlin Framework
+        basedOnDependencyAnalysis: false
+        script: |
+          cd "$SRCROOT/.."
+          ./gradlew :shared:embedAndSignAppleFrameworkForXcode

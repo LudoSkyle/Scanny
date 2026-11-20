@@ -1,0 +1,5 @@
+# Per-user state of Xcode
+xcuserdata/
+
+# Personal build settings (DEVELOPMENT_TEAM…)
+Configuration/Local.xcconfig

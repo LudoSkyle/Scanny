@@ -1,0 +1,3 @@
+// Settings of the iOS app shared by everyone. Local.xcconfig, ignored by git, holds what is
+// personal, such as DEVELOPMENT_TEAM to run the app on an iPhone
+#include? "Local.xcconfig"
