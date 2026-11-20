@@ -58,12 +58,15 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
    - Les textes de la v1 (anglais et français) ne sont pas repris en bloc : chacun revient avec son
      écran, sa clé renommée selon la convention. Ils se retrouvent dans `app/src/main/res/` au
      commit `c38ffc5`.
-2. **Hôte iOS** *(reste bloqué par l'identité iOS, voir les décisions ouvertes)*
-   - [ ] Projet Xcode généré par XcodeGen (`iosApp/project.yml`), app SwiftUI qui affiche
+2. **Hôte iOS**
+   - [x] Projet Xcode généré par XcodeGen (`iosApp/project.yml`), app SwiftUI qui affiche
          `ScannyApp`, démarrage de Koin
-   - [ ] Phase de build du framework `Shared`, `Info.plist`, icône, signature
-   - [ ] Firebase Crashlytics par SPM, branché sur les logs Kermit
-   - [ ] `iosApp/CLAUDE.md` pour les règles propres au projet Xcode
+   - [x] Phase de build du framework `Shared`, `Info.plist`, icône, signature locale (l'équipe Apple
+         se déclare dans `Configuration/Local.xcconfig`, ignoré par git)
+   - [ ] Firebase Crashlytics par SPM, branché sur les logs Kermit. *Bloqué : il faut le
+         `GoogleService-Info.plist` d'une app iOS `fr.skyle.scanny` déclarée dans la console
+         Firebase, à déposer dans `private/firebase/`.*
+   - [x] `iosApp/CLAUDE.md` pour les règles propres au projet Xcode
 3. **Design system** : `SCTheme` (couleurs, Lato, formes), structure d'écran, puis les composants au
    fil des écrans
 4. **Domain** : `BarcodeContent`, `BarcodeFormat`, parseur et encodeur, avec leurs tests
@@ -80,9 +83,14 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
 
 ## Décisions prises
 
-- **Projet Xcode** : généré par XcodeGen (`iosApp/project.yml`), jamais édité à la main.
-  L'installation des outils iOS nécessaires est acceptée.
-- **Crashlytics sur iOS** : oui, par SPM dans `iosApp`, au lot 2.
+- **Projet Xcode** : généré par XcodeGen (`iosApp/project.yml`), jamais édité à la main ; le projet
+  généré est commité.
+- **Identité iOS** : bundle ID `fr.skyle.scanny`, comme sur Android. Cible minimale iOS 18.5 : les
+  mêmes iPhone que les iOS 17 et 18 (XS/XR et plus récents) ; en dessous, l'éditeur de liens avertit
+  qu'un objet embarqué par Compose Multiplatform est compilé pour 18.5. Pas encore de compte Apple : le
+  développement se fait sur simulateur, un Apple ID gratuit suffit pour un iPhone, le programme
+  payant n'est nécessaire que pour TestFlight, l'App Store et le WiFi.
+- **Crashlytics sur iOS** : oui, par SPM dans `iosApp`, dès que le `GoogleService-Info.plist` iOS est fourni.
 - **WiFi sur iOS** : reporté jusqu'à l'obtention d'un compte développeur payant (l'entitlement
   *Hotspot Configuration* l'exige). En attendant, l'action WiFi n'est pas proposée sur iOS.
 - **Génération des QR codes** : qrose (`io.github.alexzhirkevich:qrose`), la plus maintenue, la plus
@@ -94,7 +102,6 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
 
 ## Décisions ouvertes
 
-- **Identité iOS** : bundle ID, team Apple, version iOS minimale.
 - **Material 3 (lot 3)** : la dernière version stable pour Compose Multiplatform (1.9.0) est en
   retard sur Compose Multiplatform 1.12 ; les versions alignées sont des alphas (1.12.0-alpha03).
   À trancher quand le design system enveloppera son premier composant Material.
