@@ -25,15 +25,18 @@ object SCIconBadgeDefaults {
     }
 
     enum class Size {
+        MEDIUM,
         LARGE;
 
         val badgeSize: Dp
             get() = when (this) {
+                MEDIUM -> 40.dp
                 LARGE -> 48.dp
             }
 
         val iconSize: Dp
             get() = when (this) {
+                MEDIUM -> 20.dp
                 LARGE -> 24.dp
             }
     }

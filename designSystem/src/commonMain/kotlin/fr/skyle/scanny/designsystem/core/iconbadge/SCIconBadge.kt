@@ -20,11 +20,14 @@ import fr.skyle.scanny.designsystem.resources.ic_arrow_back
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import org.jetbrains.compose.resources.painterResource
 
-/** An icon in a round badge, not clickable: what a thing is, such as the type of a content. */
+/**
+ * An icon in a round badge, not clickable: what a thing is, such as the type of a content. Its
+ * [contentDescription] is null when a text beside it already says what it shows.
+ */
 @Composable
 fun SCIconBadge(
     icon: Painter,
-    contentDescription: String,
+    contentDescription: String?,
     style: SCIconBadgeDefaults.Style,
     size: SCIconBadgeDefaults.Size,
     modifier: Modifier = Modifier,
