@@ -21,6 +21,10 @@ import kotlin.time.Duration.Companion.milliseconds
 
 private val SIMULATED_READING_INTERVAL = 500.milliseconds
 
+// A real camera reads a code held in front of it several times, as a multiple scan expects
+private const val SIMULATED_READINGS_PER_CODE = 5
+private val SIMULATED_READINGS_GAP = 100.milliseconds
+
 /**
  * Debug tool, never in a release build: stands for the camera where there is none, as on the iOS
  * simulator, and reads the codes [takeBarcodes] gives, after [firstReadingDelay] then one by one, for
@@ -52,7 +56,10 @@ internal fun SimulatedScanCamera(
             // A camera takes a moment before it reads a code
             delay(firstReadingDelay)
             takeBarcodes().forEach { barcode ->
-                currentOnBarcodeDetected(barcode)
+                repeat(SIMULATED_READINGS_PER_CODE) {
+                    currentOnBarcodeDetected(barcode)
+                    delay(SIMULATED_READINGS_GAP)
+                }
                 delay(SIMULATED_READING_INTERVAL)
             }
         }

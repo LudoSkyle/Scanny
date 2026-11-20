@@ -25,13 +25,16 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 class ScanViewModel(
     private val recordScanUseCase: RecordScanUseCase,
     private val watchScanSettingsUseCase: WatchScanSettingsUseCase,
     private val contactAdder: ContactAdder,
     private val wifiNetworkSupport: WifiNetworkSupport,
+    private val clock: Clock,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ScanUIState())
@@ -44,6 +47,9 @@ class ScanViewModel(
 
     // The codes of the multiple scan in progress, in their order, each once
     private val multipleScanBarcodes = mutableListOf<DetectedBarcode>()
+
+    // The codes the camera has read, not yet read steadily enough to be counted
+    private val multipleScanCandidates = mutableMapOf<DetectedBarcode, Candidate>()
 
     fun onBarcodeDetected(barcode: DetectedBarcode) {
         if (_uiState.value.multipleScan != null) {
@@ -95,8 +101,35 @@ class ScanViewModel(
         }
     }
 
-    // The camera reads the same codes again and again while they are in front of it: each counts once
+    /**
+     * The camera reads a code in front of it again and again, and a misreading of something else, such
+     * as a barcode decoded in the pattern of a QR code, once: a code counts once read steadily, and
+     * then once only.
+     */
     private fun onMultipleScanBarcodeDetected(barcode: DetectedBarcode) {
+        val session = _uiState.value.multipleScan ?: return
+        if (session.isRecording || barcode in multipleScanBarcodes) {
+            return
+        }
+
+        val now = clock.now()
+        val candidate = multipleScanCandidates[barcode]
+            ?.takeIf { candidate -> now - candidate.firstReadingAt <= CONFIRMATION_WINDOW }
+            ?.let { candidate -> candidate.copy(readingCount = candidate.readingCount + 1) }
+            ?: Candidate(
+                firstReadingAt = now,
+                readingCount = 1,
+            )
+        if (candidate.readingCount < CONFIRMATION_READINGS) {
+            multipleScanCandidates[barcode] = candidate
+            return
+        }
+
+        multipleScanCandidates -= barcode
+        addToMultipleScan(barcode = barcode)
+    }
+
+    private fun addToMultipleScan(barcode: DetectedBarcode) {
         val session = _uiState.value.multipleScan ?: return
         if (session.isRecording || barcode in multipleScanBarcodes) {
             return
@@ -118,6 +151,7 @@ class ScanViewModel(
         when {
             session == null -> {
                 multipleScanBarcodes.clear()
+                multipleScanCandidates.clear()
                 _uiState.update { uiState ->
                     uiState.copy(
                         multipleScan = MultipleScanSession(codeCount = 0),
@@ -139,6 +173,7 @@ class ScanViewModel(
 
     fun onMultipleScanDiscarded() {
         multipleScanBarcodes.clear()
+        multipleScanCandidates.clear()
         _uiState.update { uiState ->
             uiState.copy(multipleScan = null)
         }
@@ -162,6 +197,7 @@ class ScanViewModel(
                 val scan = recordScanUseCase(barcodes = multipleScanBarcodes.toList())
 
                 multipleScanBarcodes.clear()
+                multipleScanCandidates.clear()
                 _uiState.update { uiState ->
                     uiState.copy(
                         multipleScan = null,
@@ -186,7 +222,13 @@ class ScanViewModel(
 
     fun onImageScanned(result: ImageScanResult) {
         when (result) {
-            is ImageScanResult.Detected -> onBarcodeDetected(barcode = result.barcode)
+            // Read once on purpose, from a still image: counted at once by a multiple scan
+            is ImageScanResult.Detected -> if (_uiState.value.multipleScan != null) {
+                addToMultipleScan(barcode = result.barcode)
+            } else {
+                onBarcodeDetected(barcode = result.barcode)
+            }
+
             ImageScanResult.NoBarcode -> viewModelScope.launch {
                 _event.send(ScanEvent.NoCodeInImage)
             }
@@ -287,7 +329,14 @@ class ScanViewModel(
         data object ConfirmCodesDiscard : ScanEvent
     }
 
+    private data class Candidate(
+        val firstReadingAt: Instant,
+        val readingCount: Int,
+    )
+
     internal companion object {
         val LINK_OPENING_PAUSE = 2.seconds
+        const val CONFIRMATION_READINGS = 3
+        val CONFIRMATION_WINDOW = 1.seconds
     }
 }

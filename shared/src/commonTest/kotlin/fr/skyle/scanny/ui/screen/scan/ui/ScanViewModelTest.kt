@@ -8,6 +8,7 @@ import fr.skyle.scanny.fake.FakeContactAdder
 import fr.skyle.scanny.fake.FakeRecordScanUseCase
 import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
 import fr.skyle.scanny.fake.FakeWifiNetworkSupport
+import fr.skyle.scanny.fake.TestClock
 import fr.skyle.scanny.platform.camera.CameraCapabilities
 import fr.skyle.scanny.platform.gallery.ImageScanResult
 import fr.skyle.scanny.ui.core.code.model.CodeAction
@@ -35,12 +36,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 
 // The test dispatchers of kotlinx-coroutines-test are still experimental
 @OptIn(ExperimentalCoroutinesApi::class)
 class ScanViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
+
+    private val testClock = TestClock()
 
     @BeforeTest
     fun setMainDispatcher() {
@@ -372,9 +376,9 @@ class ScanViewModelTest {
         viewModel.onMultipleScanClicked()
 
         // When
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Second"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "First"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "First"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "Second"))
 
         // Then
         assertEquals(
@@ -391,9 +395,9 @@ class ScanViewModelTest {
         val events = collectEvents(viewModel = viewModel)
 
         // When
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Second"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "First"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "First"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "Second"))
 
         // Then
         assertEquals(
@@ -411,8 +415,8 @@ class ScanViewModelTest {
         val recordScanUseCase = FakeRecordScanUseCase()
         val viewModel = scanViewModel(recordScanUseCase = recordScanUseCase)
         viewModel.onMultipleScanClicked()
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Second"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "First"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "Second"))
 
         // When
         viewModel.onMultipleScanFinished()
@@ -455,7 +459,7 @@ class ScanViewModelTest {
         // Given
         val viewModel = scanViewModel()
         viewModel.onMultipleScanClicked()
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Alone"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "Alone"))
 
         // When
         viewModel.onMultipleScanFinished()
@@ -493,7 +497,7 @@ class ScanViewModelTest {
         // Given
         val viewModel = scanViewModel(watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isVibrationAfterScanEnabled = false))
         viewModel.onMultipleScanClicked()
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "First"))
         val events = collectEvents(viewModel = viewModel)
 
         // When
@@ -516,12 +520,12 @@ class ScanViewModelTest {
         val recordScanUseCase = FakeRecordScanUseCase()
         val viewModel = scanViewModel(recordScanUseCase = recordScanUseCase)
         viewModel.onMultipleScanClicked()
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Forgotten"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "Forgotten"))
 
         // When
         viewModel.onMultipleScanDiscarded()
         viewModel.onMultipleScanClicked()
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Kept"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "Kept"))
         viewModel.onMultipleScanFinished()
 
         // Then
@@ -552,7 +556,7 @@ class ScanViewModelTest {
             watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isVibrationAfterScanEnabled = false),
         )
         viewModel.onMultipleScanClicked()
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "First"))
         val events = collectEvents(viewModel = viewModel)
 
         // When
@@ -574,8 +578,8 @@ class ScanViewModelTest {
         // Given
         val viewModel = scanViewModel(watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isVibrationAfterScanEnabled = false))
         viewModel.onMultipleScanClicked()
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Second"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "First"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "Second"))
         viewModel.onMultipleScanFinished()
         val events = collectEvents(viewModel = viewModel)
 
@@ -596,8 +600,8 @@ class ScanViewModelTest {
         // Given
         val viewModel = scanViewModel(watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isVibrationAfterScanEnabled = false))
         viewModel.onMultipleScanClicked()
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
-        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Second"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "First"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "Second"))
         viewModel.onMultipleScanFinished()
         val events = collectEvents(viewModel = viewModel)
 
@@ -608,6 +612,58 @@ class ScanViewModelTest {
         assertEquals(
             expected = listOf(ScanViewModel.ScanEvent.OpenScanDetail(codeId = 2)),
             actual = events,
+        )
+    }
+
+    @Test
+    fun `a code read only once by a multiple scan is not counted`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel()
+        viewModel.onMultipleScanClicked()
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Misread"))
+
+        // Then
+        assertEquals(
+            expected = MultipleScanSession(codeCount = 0),
+            actual = viewModel.uiState.value.multipleScan,
+        )
+    }
+
+    @Test
+    fun `a code read again too late is not counted`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel()
+        viewModel.onMultipleScanClicked()
+        repeat(ScanViewModel.CONFIRMATION_READINGS - 1) {
+            viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Misread"))
+        }
+
+        // When
+        testClock.advanceBy(ScanViewModel.CONFIRMATION_WINDOW + 1.milliseconds)
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Misread"))
+
+        // Then
+        assertEquals(
+            expected = MultipleScanSession(codeCount = 0),
+            actual = viewModel.uiState.value.multipleScan,
+        )
+    }
+
+    @Test
+    fun `a code found in an image is counted at once by a multiple scan`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel()
+        viewModel.onMultipleScanClicked()
+
+        // When
+        viewModel.onImageScanned(result = ImageScanResult.Detected(barcode = qrCode(rawValue = "From an image")))
+
+        // Then
+        assertEquals(
+            expected = MultipleScanSession(codeCount = 1),
+            actual = viewModel.uiState.value.multipleScan,
         )
     }
 
@@ -659,6 +715,7 @@ class ScanViewModelTest {
             watchScanSettingsUseCase = watchScanSettingsUseCase,
             contactAdder = contactAdder,
             wifiNetworkSupport = wifiNetworkSupport,
+            clock = testClock,
         )
 
     private fun TestScope.collectEvents(viewModel: ScanViewModel): List<ScanViewModel.ScanEvent> {
@@ -667,6 +724,13 @@ class ScanViewModelTest {
             viewModel.event.toList(events)
         }
         return events
+    }
+
+    // As the camera reads a code held in front of it
+    private fun ScanViewModel.readSteadily(barcode: DetectedBarcode) {
+        repeat(ScanViewModel.CONFIRMATION_READINGS) {
+            onBarcodeDetected(barcode = barcode)
+        }
     }
 
     private fun qrCode(rawValue: String): DetectedBarcode =

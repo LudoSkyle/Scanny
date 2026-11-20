@@ -21,7 +21,8 @@ natif iOS des écrans (dans `shared/src/iosMain`, voir
   Debug y lit le code donné dans la variable d'environnement `SCANNY_SIMULATED_CODE` (et son format
   dans `SCANNY_SIMULATED_FORMAT`, `QR_CODE` par défaut) comme si la caméra le voyait, une fois par
   lancement. Pour un scan multiple, `SCANNY_SIMULATED_CODES` donne plusieurs codes séparés par le
-  séparateur d'enregistrements (U+001E), lus l'un après l'autre, et `SCANNY_SIMULATED_DELAY_MS`
+  séparateur d'enregistrements (U+001E), lus l'un après l'autre (chacun plusieurs fois, comme le fait
+  une caméra, et comme l'attend le scan multiple), et `SCANNY_SIMULATED_DELAY_MS`
   retarde la première lecture (une seconde par défaut), le temps d'activer le mode. Les tests les
   passent par `launchEnvironment` ; à la main :
   `SIMCTL_CHILD_SCANNY_SIMULATED_CODE='https://scanny.app' xcrun simctl launch booted fr.skyle.scanny`.
