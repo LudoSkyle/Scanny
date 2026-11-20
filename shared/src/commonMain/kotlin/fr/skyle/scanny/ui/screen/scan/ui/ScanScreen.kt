@@ -23,6 +23,7 @@ import fr.skyle.scanny.resources.camera_blocked
 import fr.skyle.scanny.resources.camera_needed
 import fr.skyle.scanny.resources.camera_unavailable
 import fr.skyle.scanny.resources.open_settings
+import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
 import fr.skyle.scanny.ui.screen.scan.ui.component.CameraMessage
 import fr.skyle.scanny.ui.screen.scan.ui.component.ScanCameraLayer
@@ -47,6 +48,9 @@ fun ScanScreen(
     onOpenSettingsClicked: () -> Unit,
     onScanImageClicked: () -> Unit,
     onTorchClicked: () -> Unit,
+    onResultActionClicked: (CodeAction) -> Unit,
+    onCopyResultClicked: (text: String) -> Unit,
+    onSeeResultDetailClicked: () -> Unit,
     onResultDismissed: () -> Unit,
 ) {
     SCScreenStructure(
@@ -116,6 +120,9 @@ fun ScanScreen(
         ScanResultSheet(
             modifier = Modifier.fillMaxWidth(),
             result = result,
+            onActionClicked = onResultActionClicked,
+            onCopyClicked = { onCopyResultClicked(result.rawValue) },
+            onSeeDetailClicked = onSeeResultDetailClicked,
             onDismissRequest = onResultDismissed,
         )
     }
@@ -144,6 +151,9 @@ private fun PreviewScanScreen() {
             onOpenSettingsClicked = {},
             onScanImageClicked = {},
             onTorchClicked = {},
+            onResultActionClicked = {},
+            onCopyResultClicked = {},
+            onSeeResultDetailClicked = {},
             onResultDismissed = {},
         )
     }
@@ -168,6 +178,9 @@ private fun PreviewScanScreen_CameraBlocked() {
             onOpenSettingsClicked = {},
             onScanImageClicked = {},
             onTorchClicked = {},
+            onResultActionClicked = {},
+            onCopyResultClicked = {},
+            onSeeResultDetailClicked = {},
             onResultDismissed = {},
         )
     }

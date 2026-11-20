@@ -9,6 +9,10 @@ fun EntryProviderScope<Route>.scanRouteEntry(
     backStack: NavBackStack<Route>,
 ) {
     entry<Route.Scan> {
-        ScanRoute()
+        ScanRoute(
+            navigateToScanDetail = { codeId ->
+                backStack.add(Route.ScanDetail(codeId = codeId))
+            },
+        )
     }
 }

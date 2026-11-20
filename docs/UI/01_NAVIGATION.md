@@ -16,8 +16,8 @@ intermédiaire.
 - Le back stack se crée avec `rememberSerializable` et un `NavBackStackSerializer` construit sur le
   sérialiseur de `Route` : c'est ce qui le rend sauvegardable sur iOS aussi, où aucune réflexion
   n'est disponible. Jamais `remember { mutableStateListOf(...) }`, qui perd la navigation.
-- Une route ne transporte que des identifiants ou des valeurs simples (l'id d'un scan, un type de
-  QR à créer), jamais un objet chargé : l'écran ouvert recharge ce dont il a besoin.
+- Une route ne transporte que des identifiants ou des valeurs simples (l'id d'un code scanné, un
+  type de QR à créer), jamais un objet chargé : l'écran ouvert recharge ce dont il a besoin.
 - Chaque entrée de navigation a son propre `ViewModelStore` (`rememberViewModelStoreNavEntryDecorator`)
   et son propre état sauvegardé (`rememberSaveableStateHolderNavEntryDecorator`) : un ViewModel vit
   aussi longtemps que son entrée dans le back stack.
@@ -36,7 +36,7 @@ sealed interface Route : NavKey {
     data object Scan : Route
 
     @Serializable
-    data class ScanDetail(val scanId: Long) : Route
+    data class ScanDetail(val codeId: Long) : Route
 
     @Serializable
     data object Settings : Route
@@ -84,7 +84,7 @@ fun EntryProviderScope<Route>.scanDetailRouteEntry(
 ) {
     entry<Route.ScanDetail> { route ->
         ScanDetailRoute(
-            scanId = route.scanId,
+            codeId = route.codeId,
             navigateBack = {
                 backStack.removeLastOrNull()
             },

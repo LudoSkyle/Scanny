@@ -1,16 +1,14 @@
 package fr.skyle.scanny.ui.screen.scan.ui.model
 
-enum class ScanResultType {
-    TEXT,
-    LINK,
-    EMAIL,
-    SMS,
-    WIFI,
-    CONTACT,
-}
+import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.ui.core.code.model.CodeAction
+import fr.skyle.scanny.ui.core.code.model.CodeType
 
 data class ScanResultItem(
     val codeId: Long,
-    val type: ScanResultType,
+    val type: CodeType,
+    val format: BarcodeFormat?,
+    val summary: String,
     val rawValue: String,
+    val action: CodeAction?,
 )
