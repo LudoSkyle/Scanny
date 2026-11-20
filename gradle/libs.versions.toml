@@ -27,6 +27,10 @@ androidxCore = "1.19.1"
 # Koin
 koin = "4.2.2"
 
+# Camera and detection (Android)
+camerax = "1.7.0"
+mlkitBarcodeScanning = "17.3.0" # The bundled model: it works offline from the first launch
+
 # Room
 room = "2.8.5"
 sqlite = "2.6.2" # The version Room 2.8.5 requires
@@ -67,19 +71,30 @@ composeMultiplatform-ui-tooling = { module = "org.jetbrains.compose.ui:ui-toolin
 navigation3Multiplatform-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3Multiplatform" }
 
 # Lifecycle
+lifecycleMultiplatform-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleMultiplatform" }
 lifecycleMultiplatform-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleMultiplatform" }
 
 # Kotlinx
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutines" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerialization" }
 
 # AndroidX
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-core = { module = "androidx.core:core", version.ref = "androidxCore" }
+androidx-lifecycle-livedata-core = { module = "androidx.lifecycle:lifecycle-livedata-core", version.ref = "lifecycleMultiplatform" }
 
 # Koin
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+
+# Camera and detection (Android)
+camerax-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camerax" }
+camerax-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camerax" }
+camerax-compose = { module = "androidx.camera:camera-compose", version.ref = "camerax" }
+camerax-mlkit-vision = { module = "androidx.camera:camera-mlkit-vision", version.ref = "camerax" }
+mlkit-barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkitBarcodeScanning" }
 
 # Room
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
