@@ -12,6 +12,7 @@ internal object BarcodeContentEncoder {
     // Characters kept as is in a mailto link, the others are percent-encoded
     private const val URI_UNRESERVED = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
     private const val MAILTO_ADDRESS_ALLOWED = "$URI_UNRESERVED@+"
+    private const val PHONE_NUMBER_ALLOWED = "$URI_UNRESERVED+"
 
     fun encode(content: BarcodeContent): String =
         when (content) {
@@ -21,6 +22,27 @@ internal object BarcodeContentEncoder {
             is BarcodeContent.Sms -> encodeSms(sms = content)
             is BarcodeContent.Wifi -> encodeWifi(wifi = content)
             is BarcodeContent.Contact -> encodeContact(contact = content)
+        }
+
+    /** The sms: link of RFC 5724, which opens the messages app on this message, written. */
+    fun smsLink(sms: BarcodeContent.Sms): String =
+        buildString {
+            append(PayloadSyntax.SMS)
+            append(
+                percentEncode(
+                    value = sms.phoneNumber.orEmpty(),
+                    allowed = PHONE_NUMBER_ALLOWED,
+                ),
+            )
+            if (sms.message != null) {
+                append("?body=")
+                append(
+                    percentEncode(
+                        value = sms.message,
+                        allowed = URI_UNRESERVED,
+                    ),
+                )
+            }
         }
 
     private fun encodeEmail(email: BarcodeContent.Email): String {
