@@ -43,7 +43,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 ## Nouveautés
 
 - [x] Zoom (pincement) et mise au point (appui) *(à vérifier sur appareil)*
-- [ ] Historique des scans : liste, détail, suppression
+- [x] Historique des scans : liste, détail, suppression
 - [ ] Scan multiple : un mode qu'on active, on passe autant de codes qu'on veut devant la caméra, on
       termine, et la liste dédoublonnée des codes trouvés s'affiche et s'enregistre comme un groupe
 - [ ] Création de QR codes : texte, URL, email, SMS, WiFi
@@ -120,11 +120,19 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
    - [x] Tests d'interface iOS (`iosAppUITests`) : sur le simulateur, une caméra simulée lit le code
          donné au lancement ; la feuille, le détail, la copie, le partage, Safari, Messages, Contacts,
          la suppression et les textes français y sont vérifiés
-8. **Historique des scans** : une ligne par capture ; une capture d'un code ouvre son `ScanDetail`,
-   une capture de plusieurs codes ouvre l'écran du groupe, `Route.ScanGroup(scanId)`. La date du
-   scan s'affiche alors aussi dans le `ScanDetail`, avec le formatage des dates de l'historique.
+8. **Historique des scans**
+   - [x] `Route.ScanHistory`, ouvert depuis le scan (icône en haut à droite) : une ligne par capture,
+         par jour (aujourd'hui, hier, puis la date), de la plus récente à la plus ancienne ; une ligne
+         ouvre le `ScanDetail` de son code ; « Effacer l'historique » après confirmation ; un état vide
+   - [x] La date du scan dans le `ScanDetail` (« Aujourd'hui à 21:48 »)
+   - Vérifié sur l'émulateur Android et sur le simulateur iOS (tests d'interface, et jours plus
+     anciens en anglais et en français sur une base préremplie)
+   - L'écran du groupe passe au lot 9 : seul le scan multiple crée des captures de plusieurs codes,
+     et c'est là qu'il se vérifie de bout en bout. D'ici là, une telle ligne ouvrirait son premier
+     code.
 9. **Scan multiple** : le mode, la session de scan jusqu'à « Terminer », la feuille qui liste les
-   codes trouvés (un appui ouvre le `ScanDetail` du code), l'écran du groupe.
+   codes trouvés (un appui ouvre le `ScanDetail` du code), l'écran du groupe
+   (`Route.ScanGroup(scanId)`), ouvert depuis la feuille et depuis l'historique.
 10. **Réglages, Feedback, À propos**
 11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
     (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre

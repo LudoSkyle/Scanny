@@ -22,6 +22,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
 
 class ScanDetailViewModel(
     private val codeId: Long,
@@ -31,6 +34,8 @@ class ScanDetailViewModel(
     private val textSharer: TextSharer,
     private val contactAdder: ContactAdder,
     private val wifiNetworkSupport: WifiNetworkSupport,
+    private val clock: Clock,
+    private val timeZone: TimeZone,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ScanDetailUIState())
@@ -48,6 +53,8 @@ class ScanDetailViewModel(
                 scannedCode?.toScanDetailItem(
                     isRawContentShown = settings.isRawContentShown,
                     canJoinWifi = wifiNetworkSupport::canJoin,
+                    today = clock.now().toLocalDateTime(timeZone).date,
+                    timeZone = timeZone,
                 )
             }
                 .catch { exception ->

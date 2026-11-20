@@ -29,6 +29,7 @@ import fr.skyle.scanny.ui.screen.scan.ui.component.CameraMessage
 import fr.skyle.scanny.ui.screen.scan.ui.component.ScanCameraLayer
 import fr.skyle.scanny.ui.screen.scan.ui.component.ScanControls
 import fr.skyle.scanny.ui.screen.scan.ui.component.ScanResultSheet
+import fr.skyle.scanny.ui.screen.scan.ui.component.ScanTopActions
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultItem
 import org.jetbrains.compose.resources.stringResource
 
@@ -48,6 +49,7 @@ fun ScanScreen(
     onOpenSettingsClicked: () -> Unit,
     onScanImageClicked: () -> Unit,
     onTorchClicked: () -> Unit,
+    onHistoryClicked: () -> Unit,
     onResultActionClicked: (CodeAction) -> Unit,
     onCopyResultClicked: (text: String) -> Unit,
     onSeeResultDetailClicked: () -> Unit,
@@ -101,6 +103,15 @@ fun ScanScreen(
                 CameraPermissionStatus.UNKNOWN -> Unit
             }
 
+            ScanTopActions(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(contentPadding)
+                    .padding(all = 16.dp)
+                    .wrapContentSize(),
+                onHistoryClicked = onHistoryClicked,
+            )
+
             // Scanning an image needs no camera: it stays available whatever the permission
             ScanControls(
                 modifier = Modifier
@@ -151,6 +162,7 @@ private fun PreviewScanScreen() {
             onOpenSettingsClicked = {},
             onScanImageClicked = {},
             onTorchClicked = {},
+            onHistoryClicked = {},
             onResultActionClicked = {},
             onCopyResultClicked = {},
             onSeeResultDetailClicked = {},
@@ -178,6 +190,7 @@ private fun PreviewScanScreen_CameraBlocked() {
             onOpenSettingsClicked = {},
             onScanImageClicked = {},
             onTorchClicked = {},
+            onHistoryClicked = {},
             onResultActionClicked = {},
             onCopyResultClicked = {},
             onSeeResultDetailClicked = {},
