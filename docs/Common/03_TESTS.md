@@ -177,8 +177,8 @@ Kotlin/Native impose quelques règles au code de `commonTest` :
 La cible `iosAppUITests` du projet Xcode (XCUITest, en Swift) lance l'app sur le simulateur et
 vérifie ce qui suit un scan : la feuille, le détail, la copie, le partage, l'ouverture d'un lien dans
 Safari, d'un SMS dans Messages, l'ajout d'un contact dans Contacts, la suppression, l'historique et
-son effacement, le scan multiple et l'écran du groupe, les réglages, le feedback, À propos, les textes
-français.
+son effacement, le scan multiple et l'écran du groupe, les réglages (dont la copie du code après un
+scan et l'effacement de l'historique), le feedback, les textes français.
 
 - Le simulateur n'a pas de caméra : un build Debug y lit le code de la variable d'environnement
   `SCANNY_SIMULATED_CODE` comme si la caméra le voyait (voir
@@ -202,7 +202,14 @@ français.
   `sqlite3` sur `Library/Application Support/scanny.db`), l'app arrêtée.
 - Un test garde ses captures d'écran (`XCTAttachment`, `lifetime = .keepAlways`) : elles se relisent
   après coup, extraites du `.xcresult`.
-- Le presse-papiers du simulateur se lit depuis le Mac : `xcrun simctl pbpaste booted`.
+- Le presse-papiers du simulateur se lit depuis le Mac : `xcrun simctl pbpaste booted`. Depuis le
+  test, lire `UIPasteboard` ferait apparaître l'alerte de collage d'iOS : pour vérifier une copie, le
+  test colle dans un champ de l'app par son menu d'édition (appui long, « Paste »), un collage que
+  l'utilisateur demande.
+- Un écran plus long que l'écran : une rangée hors de l'écran n'existe pas pour XCUITest, et une
+  rangée coupée par le bord a un cadre rogné, qui tient dans la fenêtre. Le test fait défiler, lentement,
+  jusqu'à ce que la rangée soit dégagée des bords, puis attend qu'elle ne bouge plus : un appui sur
+  une liste encore en mouvement, ou sur un écran qui arrive, ne fait que l'arrêter.
 - Ce que le simulateur ne sait pas faire n'est pas testé : il n'a pas l'app Mail, et n'affiche pas le
   destinataire d'un SMS (« No Name, Searching », quel que soit le lien).
 

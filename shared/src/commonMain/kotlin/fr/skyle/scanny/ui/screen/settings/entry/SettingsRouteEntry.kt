@@ -10,9 +10,6 @@ fun EntryProviderScope<Route>.settingsRouteEntry(
 ) {
     entry<Route.Settings> {
         SettingsRoute(
-            navigateToAbout = {
-                backStack.add(Route.About)
-            },
             navigateToFeedback = {
                 backStack.add(Route.Feedback)
             },
