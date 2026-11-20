@@ -53,6 +53,8 @@ class SettingsViewModelTest {
                 build = "21",
                 settings = ScanSettings(
                     isVibrationAfterScanEnabled = true,
+                    isBeepAfterScanEnabled = false,
+                    isCopyAfterScanEnabled = false,
                     isOpenLinkAfterScanEnabled = false,
                     isRawContentShown = true,
                 ),

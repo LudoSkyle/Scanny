@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 internal class FakeWatchScanSettingsUseCase(
     isVibrationAfterScanEnabled: Boolean = true,
+    isBeepAfterScanEnabled: Boolean = false,
+    isCopyAfterScanEnabled: Boolean = false,
     isOpenLinkAfterScanEnabled: Boolean = false,
     isRawContentShown: Boolean = false,
 ) : WatchScanSettingsUseCase {
@@ -14,6 +16,8 @@ internal class FakeWatchScanSettingsUseCase(
     val settings = MutableStateFlow(
         ScanSettings(
             isVibrationAfterScanEnabled = isVibrationAfterScanEnabled,
+            isBeepAfterScanEnabled = isBeepAfterScanEnabled,
+            isCopyAfterScanEnabled = isCopyAfterScanEnabled,
             isOpenLinkAfterScanEnabled = isOpenLinkAfterScanEnabled,
             isRawContentShown = isRawContentShown,
         ),

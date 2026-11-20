@@ -16,21 +16,19 @@ import kotlin.test.assertEquals
 class SettingsRepositoryImplTest {
 
     @Test
-    fun `the settings have the default values of the v1`() = runTest {
+    fun `the settings have the default values of the v1 and the new ones are off`() = runTest {
         // Given
         val settingsRepository = SettingsRepositoryImpl(dataStore = inMemoryDataStore())
 
         // When
-        val settings = listOf(
-            settingsRepository.watchIsVibrationAfterScanEnabled().first(),
-            settingsRepository.watchIsOpenLinkAfterScanEnabled().first(),
-            settingsRepository.watchIsRawContentShown().first(),
-        )
+        val settings = settingsRepository.currentSettings()
 
         // Then
         assertEquals(
             expected = listOf(
                 true,
+                false,
+                false,
                 false,
                 false,
             ),
@@ -47,6 +45,8 @@ class SettingsRepositoryImplTest {
         settingsRepository.setVibrationAfterScanEnabled(isEnabled = false)
         settingsRepository.setOpenLinkAfterScanEnabled(isEnabled = true)
         settingsRepository.setRawContentShown(isShown = true)
+        settingsRepository.setBeepAfterScanEnabled(isEnabled = true)
+        settingsRepository.setCopyAfterScanEnabled(isEnabled = true)
 
         // Then
         assertEquals(
@@ -54,12 +54,10 @@ class SettingsRepositoryImplTest {
                 false,
                 true,
                 true,
+                true,
+                true,
             ),
-            actual = listOf(
-                settingsRepository.watchIsVibrationAfterScanEnabled().first(),
-                settingsRepository.watchIsOpenLinkAfterScanEnabled().first(),
-                settingsRepository.watchIsRawContentShown().first(),
-            ),
+            actual = settingsRepository.currentSettings(),
         )
     }
 
@@ -73,6 +71,8 @@ class SettingsRepositoryImplTest {
         settingsRepository.setVibrationAfterScanEnabled(isEnabled = false)
         settingsRepository.setOpenLinkAfterScanEnabled(isEnabled = true)
         settingsRepository.setRawContentShown(isShown = true)
+        settingsRepository.setBeepAfterScanEnabled(isEnabled = true)
+        settingsRepository.setCopyAfterScanEnabled(isEnabled = false)
 
         // Then
         assertEquals(
@@ -80,10 +80,22 @@ class SettingsRepositoryImplTest {
                 "KEY_IS_VIBRATION_AFTER_SCAN_ENABLED" to false,
                 "KEY_OPEN_LINK_AFTER_SCAN" to true,
                 "KEY_IS_RAW_CONTENT_SHOWN" to true,
+                "KEY_IS_BEEP_AFTER_SCAN_ENABLED" to true,
+                "KEY_IS_COPY_AFTER_SCAN_ENABLED" to false,
             ),
             actual = dataStore.data.first().asMap().mapKeys { (key, _) -> key.name },
         )
     }
+
+    // In the order of the v1 settings, then the new ones
+    private suspend fun SettingsRepositoryImpl.currentSettings(): List<Boolean> =
+        listOf(
+            watchIsVibrationAfterScanEnabled().first(),
+            watchIsOpenLinkAfterScanEnabled().first(),
+            watchIsRawContentShown().first(),
+            watchIsBeepAfterScanEnabled().first(),
+            watchIsCopyAfterScanEnabled().first(),
+        )
 
     // A file system in memory, new for each test: a DataStore refuses two instances on the same file
     private fun TestScope.inMemoryDataStore(): DataStore<Preferences> =

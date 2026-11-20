@@ -26,6 +26,32 @@ internal class SettingsRepositoryImpl(
         )
     }
 
+    override fun watchIsBeepAfterScanEnabled(): Flow<Boolean> =
+        watch(
+            key = KEY_BEEP_AFTER_SCAN,
+            defaultValue = false,
+        )
+
+    override suspend fun setBeepAfterScanEnabled(isEnabled: Boolean) {
+        set(
+            key = KEY_BEEP_AFTER_SCAN,
+            value = isEnabled,
+        )
+    }
+
+    override fun watchIsCopyAfterScanEnabled(): Flow<Boolean> =
+        watch(
+            key = KEY_COPY_AFTER_SCAN,
+            defaultValue = false,
+        )
+
+    override suspend fun setCopyAfterScanEnabled(isEnabled: Boolean) {
+        set(
+            key = KEY_COPY_AFTER_SCAN,
+            value = isEnabled,
+        )
+    }
+
     override fun watchIsOpenLinkAfterScanEnabled(): Flow<Boolean> =
         watch(
             key = KEY_OPEN_LINK_AFTER_SCAN,
@@ -76,5 +102,9 @@ internal class SettingsRepositoryImpl(
         val KEY_VIBRATION_AFTER_SCAN = booleanPreferencesKey(name = "KEY_IS_VIBRATION_AFTER_SCAN_ENABLED")
         val KEY_OPEN_LINK_AFTER_SCAN = booleanPreferencesKey(name = "KEY_OPEN_LINK_AFTER_SCAN")
         val KEY_RAW_CONTENT_SHOWN = booleanPreferencesKey(name = "KEY_IS_RAW_CONTENT_SHOWN")
+
+        // New with the v2
+        val KEY_BEEP_AFTER_SCAN = booleanPreferencesKey(name = "KEY_IS_BEEP_AFTER_SCAN_ENABLED")
+        val KEY_COPY_AFTER_SCAN = booleanPreferencesKey(name = "KEY_IS_COPY_AFTER_SCAN_ENABLED")
     }
 }

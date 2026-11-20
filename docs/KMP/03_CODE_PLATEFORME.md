@@ -191,6 +191,19 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   réglages `ACTION_WIFI_ADD_NETWORKS` : les réglages ne s'affichent qu'à une app qui attend leur
   résultat, d'où `rememberLauncherForActivityResult` et non un `startActivity` depuis le ViewModel.
 
+### Signaler un scan
+
+- La vibration passe par `LocalHapticFeedback` (`Confirm`), dans la `Route`, sur l'event `Vibrate`
+  du ViewModel.
+- Le bip passe par `ScanBeeper`, une interface appelée par le ViewModel. Android joue
+  `ToneGenerator.TONE_PROP_BEEP` sur le flux des notifications, dont le volume et le mode silencieux
+  s'appliquent ; un `ToneGenerator` garde une piste audio tant qu'il vit, il est libéré après le bip.
+  iOS joue le son système 1057, muet quand le téléphone est en silencieux. Un test ne l'entend pas :
+  le bip s'écoute sur un appareil.
+- La copie du code après un scan est un event du ViewModel, `CopyToClipboard`, que la `Route` copie
+  comme une partie du détail, sans message : la feuille du résultat s'ouvre au même moment et le
+  cacherait.
+
 ### Couleur des icônes des barres système
 
 Elle suit le style de `SCScreenStructure` : clair sur le style `BLACK`, sombre sinon. Android règle
@@ -212,7 +225,8 @@ livrée ; le tableau est mis à jour dans le même commit.
 | Détection dans une image | ✅ (émulateur : code lu, enregistré ; image sans code signalée) — Photo Picker + ML Kit (`InputImage`) | Livré, à vérifier sur un iPhone — `PHPickerViewController` + Vision (`VNDetectBarcodesRequest`) | `expect` composable |
 | Ouvrir un lien, un mail, un SMS | ✅ (émulateur : lien ouvert dans Chrome, SMS prérempli dans Messages) — `LocalUriHandler` | ✅ lien et SMS (simulateur : Safari, message prérempli dans Messages) ; mail à vérifier sur un iPhone (pas de Mail sur le simulateur) — `LocalUriHandler`, `sms:` avec `&body=` | Compose |
 | Vibration | `LocalHapticFeedback` (`Confirm`) | `LocalHapticFeedback` (`Confirm`) | Compose |
-| Copier | ✅ (émulateur : confirmation du système, Android 13 et plus) — `LocalClipboard`, `ClipData` | ✅ (simulateur : texte dans le presse-papiers, message de l'app) — `LocalClipboard`, `ClipEntry.withPlainText` | Compose + `expect` pour créer le `ClipEntry` |
+| Bip après un scan | Livré, à écouter sur un appareil (l'émulateur tourne sans son) — `ToneGenerator` (`TONE_PROP_BEEP`, flux des notifications) | Livré, à écouter sur un iPhone — `AudioServicesPlaySystemSound` (son système 1057) | interface (`ScanBeeper`) |
+| Copier | ✅ (émulateur : confirmation du système, Android 13 et plus) — `LocalClipboard`, `ClipData` | ✅ (simulateur : texte dans le presse-papiers, message de l'app ; copie après un scan collée dans un champ de l'app) — `LocalClipboard`, `ClipEntry.withPlainText` | Compose + `expect` pour créer le `ClipEntry` |
 | Partager un texte | ✅ (émulateur : feuille de partage) — `ACTION_SEND` | ✅ (simulateur : feuille de partage) — `UIActivityViewController` | interface |
 | Partager, enregistrer un QR code | `FileProvider` + `ACTION_SEND`, `MediaStore` | `UIActivityViewController`, Photos | interface |
 | Ajouter un contact | ✅ (émulateur : Contacts prérempli, tous les champs) — `ACTION_INSERT_OR_EDIT` | ✅ (simulateur : contact enregistré, tous les champs) — `CNContactViewController` | interface |

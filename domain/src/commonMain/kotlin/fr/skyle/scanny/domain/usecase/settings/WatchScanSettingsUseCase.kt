@@ -17,11 +17,15 @@ internal class WatchScanSettingsUseCaseImpl(
     override fun invoke(): Flow<ScanSettings> =
         combine(
             settingsRepository.watchIsVibrationAfterScanEnabled(),
+            settingsRepository.watchIsBeepAfterScanEnabled(),
+            settingsRepository.watchIsCopyAfterScanEnabled(),
             settingsRepository.watchIsOpenLinkAfterScanEnabled(),
             settingsRepository.watchIsRawContentShown(),
-        ) { isVibrationAfterScanEnabled, isOpenLinkAfterScanEnabled, isRawContentShown ->
+        ) { isVibrationAfterScanEnabled, isBeepAfterScanEnabled, isCopyAfterScanEnabled, isOpenLinkAfterScanEnabled, isRawContentShown ->
             ScanSettings(
                 isVibrationAfterScanEnabled = isVibrationAfterScanEnabled,
+                isBeepAfterScanEnabled = isBeepAfterScanEnabled,
+                isCopyAfterScanEnabled = isCopyAfterScanEnabled,
                 isOpenLinkAfterScanEnabled = isOpenLinkAfterScanEnabled,
                 isRawContentShown = isRawContentShown,
             )

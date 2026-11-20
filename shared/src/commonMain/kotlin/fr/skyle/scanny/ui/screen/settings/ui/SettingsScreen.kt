@@ -177,6 +177,8 @@ private fun PreviewSettingsScreen() {
         SettingsScreen(
             settings = ScanSettings(
                 isVibrationAfterScanEnabled = true,
+                isBeepAfterScanEnabled = false,
+                isCopyAfterScanEnabled = false,
                 isOpenLinkAfterScanEnabled = false,
                 isRawContentShown = false,
             ),
