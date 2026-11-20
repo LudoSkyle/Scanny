@@ -132,6 +132,12 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   synchrone : la caméra lit le même code plusieurs fois de suite, et chaque lecture serait sinon
   enregistrée. En scan multiple, elle ne s'arrête pas : le ViewModel ignore un code déjà compté, et
   la pause ne vient qu'avec l'enregistrement, à « Terminer ».
+- En scan multiple, un code ne compte qu'une fois lu de façon stable : 3 lectures en moins d'une
+  seconde. Un code tenu devant la caméra est lu bien plus souvent ; une lecture parasite (un code-barres
+  décodé à tort dans le motif d'un QR code, un reflet) l'est une fois, avec une valeur qui change
+  d'une image à l'autre. Un code trouvé dans une image de la galerie, lu une seule fois et à dessein,
+  compte tout de suite. La caméra simulée du simulateur iOS lit donc chacun de ses codes plusieurs
+  fois.
 - Elle reste en pause quand la feuille du résultat ouvre le détail du code : la caméra lit encore
   pendant la transition vers l'écran suivant. Elle reprend au retour sur le scan, que la `Route`
   signale en se composant de nouveau (`onScreenShown`).
