@@ -2,6 +2,7 @@ package fr.skyle.scanny.domain.usecase.settings
 
 import fr.skyle.scanny.domain.fake.FakeSettingsRepository
 import fr.skyle.scanny.domain.model.ScanSettings
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -10,6 +11,8 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+// The test dispatchers of kotlinx-coroutines-test are still experimental
+@OptIn(ExperimentalCoroutinesApi::class)
 class WatchScanSettingsUseCaseTest {
 
     private val settingsRepository = FakeSettingsRepository(
