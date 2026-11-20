@@ -18,7 +18,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
       vérifier sur iPhone)*
 - [x] Écran de permission refusée, avec un accès aux réglages de l'app
 - [x] Vibration après un scan (réglage) *(testée, non observée)*
-- [x] Ouverture automatique des liens après un scan (réglage ; l'écran des réglages arrive au lot 9)
+- [x] Ouverture automatique des liens après un scan (réglage ; l'écran des réglages arrive au lot 10)
       *(testée, non observée)*
 - [x] Détection en pause tant qu'un résultat est affiché *(testée)*
 
@@ -43,6 +43,8 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 
 - [x] Zoom (pincement) et mise au point (appui) *(à vérifier sur appareil)*
 - [ ] Historique des scans : liste, détail, suppression
+- [ ] Scan multiple : un mode qu'on active, on passe autant de codes qu'on veut devant la caméra, on
+      termine, et la liste dédoublonnée des codes trouvés s'affiche et s'enregistre comme un groupe
 - [ ] Création de QR codes : texte, URL, email, SMS, WiFi
 - [ ] Partager et enregistrer un QR code créé
 - [ ] Historique des créations
@@ -99,16 +101,23 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
      description. **Reste à vérifier sur un appareil** : détection en direct, torche, zoom, mise au
      point sur Android et iPhone, et le scan d'une image sur iPhone (le simulateur n'a pas de caméra
      et Vision n'y détecte rien).
-7. **Détail d'un scan et actions natives** : interfaces de plateforme de la matrice de
-   [KMP/03_CODE_PLATEFORME.md](./KMP/03_CODE_PLATEFORME.md). La feuille de résultat du lot 6 devient
-   le détail complet : une route `Route.ScanDetail(scanId)` présentée en bottom sheet, pour que
-   l'historique (lot 8) ouvre le même détail. Deux remarques d'ergonomie relevées au lot 6 : le
-   message « aucun code trouvé » masque le bouton galerie le temps de son affichage, et le Photo
-   Picker range les images de la plus récente à la plus ancienne.
-8. **Historique des scans**
-9. **Réglages, Feedback, À propos**
-10. **Création de QR codes et historique des créations**
-11. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI
+7. **Détail d'un scan et actions natives**, en deux pull requests :
+   - [ ] 7a : la base et le domaine passent au modèle « capture » (voir les décisions prises), sans
+         changement visible
+   - [ ] 7b : la feuille rapide après un scan (type, résumé, action principale, copier, « Voir le
+         détail »), l'écran `ScanDetail` (contenu formaté et brut, toutes les actions, partage,
+         suppression) et les actions natives de la matrice de
+         [KMP/03_CODE_PLATEFORME.md](./KMP/03_CODE_PLATEFORME.md)
+   - Deux remarques d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton
+     galerie le temps de son affichage, et le Photo Picker range les images de la plus récente à la
+     plus ancienne.
+8. **Historique des scans** : une ligne par capture ; une capture d'un code ouvre son `ScanDetail`,
+   une capture de plusieurs codes ouvre l'écran du groupe, `Route.ScanGroup(scanId)`.
+9. **Scan multiple** : le mode, la session de scan jusqu'à « Terminer », la feuille qui liste les
+   codes trouvés (un appui ouvre le `ScanDetail` du code), l'écran du groupe.
+10. **Réglages, Feedback, À propos**
+11. **Création de QR codes et historique des créations**
+12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI
 
 ## Décisions prises
 
@@ -134,6 +143,17 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
   et le projet n'utilise aucune API Expressive. On passera à une stable dès qu'il en sortira une
   alignée sur la version de Compose.
 
+- **Un scan est une capture de 1 à N codes** : un scan normal est une capture d'un code, un scan
+  multiple une capture de tous les codes trouvés pendant la session. L'historique liste les captures,
+  et retrouve ainsi un groupe complet.
+- **Après un scan, une feuille rapide** reste par-dessus la caméra : un code y montre son type, un
+  résumé et son action principale ; plusieurs codes (scan multiple) y sont listés. « Voir le détail »
+  et un appui sur un code ouvrent l'écran `Route.ScanDetail(codeId)`, celui d'**un** code, partagé avec
+  l'historique.
+
 ## Décisions ouvertes
+
+- **« Modifier » un scan** : le nommer ou l'annoter, le marquer en favori, ou partir de son contenu
+  pour créer un nouveau QR code (lot 11) ; et s'il s'agit du code, du groupe ou des deux.
 
 - **CI** : le build iOS demande un exécuteur macOS sur CircleCI.
