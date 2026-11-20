@@ -140,7 +140,7 @@ internal expect val platformDataModule: Module
   évolution du schéma monte la version et fournit sa migration (`AutoMigration` quand c'est
   possible). Les schémas sont exportés et versionnés (`data/schemas/`).
 - Exception tant que la v2 n'est pas publiée : aucun utilisateur n'a encore la base, la version 1 du
-  schéma peut donc évoluer sans migration (la table des créations du lot 10 s'y ajoute). La règle
+  schéma peut donc évoluer sans migration (la table des créations du lot 11 s'y ajoute). La règle
   s'applique dès la première publication.
 - Une requête de lecture multiple a un `ORDER BY` explicite : sans lui, l'ordre est un détail de
   SQLite dont l'UI finit par dépendre.
