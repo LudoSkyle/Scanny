@@ -128,6 +128,9 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   le transmettent tel que lu.
 - La détection est mise en pause par le ViewModel **avant** tout traitement, de façon synchrone : la
   caméra lit le même code plusieurs fois de suite, et chaque lecture serait sinon enregistrée.
+- Elle reste en pause quand la feuille du résultat ouvre le détail du code : la caméra lit encore
+  pendant la transition vers l'écran suivant. Elle reprend au retour sur le scan, que la `Route`
+  signale en se composant de nouveau (`onScreenShown`).
 - Le geste de zoom (pincement, plafonné à ×8) et le geste de mise au point (appui) sont détectés en
   commun, dans `ScanCameraLayer` ; seule leur application à la caméra est native.
 - La permission a quatre statuts : `UNKNOWN` (pas encore demandée, ou réponse attendue), `GRANTED`,
@@ -142,6 +145,20 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
 - **Sur le simulateur iOS, rien de tout cela ne se vérifie** : il n'a pas de caméra, et Vision n'y
   détecte aucun code dans une image (limite connue du simulateur, quelle que soit la révision de la
   requête). La détection iOS se vérifie sur un iPhone.
+
+### Actions sur un code
+
+- Ouvrir un lien, écrire un e-mail ou un SMS passe par `LocalUriHandler`, depuis la `Route`. Le lien
+  vient du domaine (`mailto:`, `sms:` de la RFC 5724) ; `platformSmsLink` l'adapte à la plateforme :
+  Android l'ouvre tel quel, Messages sur iOS veut `&body=` au lieu de `?body=`. Quand aucune app ne
+  l'ouvre, l'échec est journalisé, et l'écran du détail le dit.
+- Copier passe par `LocalClipboard` et `textClipEntry(text)`, un `expect` : l'API commune de Compose
+  ne sait pas construire l'entrée d'un texte. Depuis Android 13, le système montre lui-même ce qui a
+  été copié : l'app ne le redit pas (`isCopyConfirmedBySystem`). Sous la feuille du résultat, où un
+  message de l'écran serait caché, c'est le bouton qui affiche « Copié ».
+- Partager passe par `TextSharer`, une interface, et partage la valeur brute du code : c'est ce
+  qu'une autre app, ou un autre scanner, sait relire. Le module Koin de plateforme
+  (`platformSharedModule`) fournit son implémentation.
 
 ### Couleur des icônes des barres système
 
@@ -162,10 +179,10 @@ livrée ; le tableau est mis à jour dans le même commit.
 | Torche | Livré, à vérifier sur un appareil (l'émulateur n'a pas de flash) — `CameraControl.enableTorch` | Livré, à vérifier sur un iPhone — `AVCaptureDevice.torchMode` | `expect` composable |
 | Permission caméra | ✅ (refus, refus définitif, accord) — `RequestPermission` | ✅ demande et description affichées (simulateur) — `AVCaptureDevice.requestAccess` | `expect` composable |
 | Détection dans une image | ✅ (émulateur : code lu, enregistré ; image sans code signalée) — Photo Picker + ML Kit (`InputImage`) | Livré, à vérifier sur un iPhone — `PHPickerViewController` + Vision (`VNDetectBarcodesRequest`) | `expect` composable |
-| Ouvrir un lien, un mail, un SMS | `LocalUriHandler` | `LocalUriHandler` | Compose |
+| Ouvrir un lien, un mail, un SMS | ✅ (émulateur : lien ouvert dans Chrome, SMS prérempli dans Messages) — `LocalUriHandler` | Livré, à vérifier sur un iPhone — `LocalUriHandler`, `sms:` avec `&body=` | Compose |
 | Vibration | `LocalHapticFeedback` (`Confirm`) | `LocalHapticFeedback` (`Confirm`) | Compose |
-| Copier | `LocalClipboard` | `LocalClipboard` | Compose (+ `expect` pour créer le `ClipEntry` si besoin) |
-| Partager un texte | `ACTION_SEND` | `UIActivityViewController` | interface |
+| Copier | ✅ (émulateur : confirmation du système, Android 13 et plus) — `LocalClipboard`, `ClipData` | Livré, à vérifier sur un iPhone — `LocalClipboard`, `ClipEntry.withPlainText` | Compose + `expect` pour créer le `ClipEntry` |
+| Partager un texte | ✅ (émulateur : feuille de partage) — `ACTION_SEND` | Livré, à vérifier sur un iPhone — `UIActivityViewController` | interface |
 | Partager, enregistrer un QR code | `FileProvider` + `ACTION_SEND`, `MediaStore` | `UIActivityViewController`, Photos | interface |
 | Ajouter un contact | `ACTION_INSERT_OR_EDIT` | `CNContactViewController` | interface |
 | Rejoindre un réseau WiFi | `Settings.ACTION_WIFI_ADD_NETWORKS` | Reporté (`NEHotspotConfigurationManager` exige l'entitlement *Hotspot Configuration*, donc un compte payant) : action non proposée | interface |

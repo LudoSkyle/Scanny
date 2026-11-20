@@ -3,7 +3,9 @@ package fr.skyle.scanny.ui.screen.scan.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.Lifecycle
@@ -14,21 +16,26 @@ import co.touchlab.kermit.Logger
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.platform.camera.CameraPermissionStatus
 import fr.skyle.scanny.platform.camera.rememberCameraPermissionState
+import fr.skyle.scanny.platform.clipboard.textClipEntry
 import fr.skyle.scanny.platform.gallery.rememberImageBarcodeScanner
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.no_code_in_image
 import fr.skyle.scanny.resources.scan_not_saved
+import fr.skyle.scanny.ui.core.code.action.open
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ScanRoute(
+    navigateToScanDetail: (codeId: Long) -> Unit,
     viewModel: ScanViewModel = koinViewModel(),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val hapticFeedback = LocalHapticFeedback.current
     val uriHandler = LocalUriHandler.current
+    val clipboard = LocalClipboard.current
+    val coroutineScope = rememberCoroutineScope()
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -40,6 +47,11 @@ fun ScanRoute(
         if (cameraPermissionState.status == CameraPermissionStatus.UNKNOWN) {
             cameraPermissionState.request()
         }
+    }
+
+    // Composed again when back from another screen
+    LaunchedEffect(Unit) {
+        viewModel.onScreenShown()
     }
 
     LaunchedEffect(Unit) {
@@ -67,6 +79,10 @@ fun ScanRoute(
                     ScanViewModel.ScanEvent.ScanNotSaved -> launch {
                         snackbarState.show(message = getString(Res.string.scan_not_saved))
                     }
+
+                    is ScanViewModel.ScanEvent.OpenScanDetail -> {
+                        navigateToScanDetail(event.codeId)
+                    }
                 }
             }
         }
@@ -87,6 +103,14 @@ fun ScanRoute(
         onOpenSettingsClicked = cameraPermissionState::openAppSettings,
         onScanImageClicked = scanImage,
         onTorchClicked = viewModel::onTorchClicked,
+        // Under the sheet, a message would not be seen: the failure is only logged
+        onResultActionClicked = { action -> uriHandler.open(action = action) },
+        onCopyResultClicked = { text ->
+            coroutineScope.launch {
+                clipboard.setClipEntry(textClipEntry(text = text))
+            }
+        },
+        onSeeResultDetailClicked = viewModel::onSeeDetailClicked,
         onResultDismissed = viewModel::onResultDismissed,
     )
 }

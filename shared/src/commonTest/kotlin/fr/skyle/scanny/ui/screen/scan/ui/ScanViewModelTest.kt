@@ -7,8 +7,9 @@ import fr.skyle.scanny.fake.FakeRecordScanUseCase
 import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
 import fr.skyle.scanny.platform.camera.CameraCapabilities
 import fr.skyle.scanny.platform.gallery.ImageScanResult
+import fr.skyle.scanny.ui.core.code.model.CodeAction
+import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultItem
-import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultType
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -64,8 +65,11 @@ class ScanViewModelTest {
                 isDetectionPaused = true,
                 result = ScanResultItem(
                     codeId = 1,
-                    type = ScanResultType.TEXT,
+                    type = CodeType.TEXT,
+                    format = BarcodeFormat.QR_CODE,
+                    summary = "Hello",
                     rawValue = "Hello",
+                    action = null,
                 ),
             ),
             actual = viewModel.uiState.value,
@@ -184,8 +188,11 @@ class ScanViewModelTest {
         assertEquals(
             expected = ScanResultItem(
                 codeId = 1,
-                type = ScanResultType.LINK,
+                type = CodeType.LINK,
+                format = BarcodeFormat.QR_CODE,
+                summary = "https://scanny.app",
                 rawValue = "https://scanny.app",
+                action = CodeAction.OpenLink(link = "https://scanny.app"),
             ),
             actual = viewModel.uiState.value.result,
         )
@@ -241,7 +248,7 @@ class ScanViewModelTest {
             actual = recordScanUseCase.recordedScans,
         )
         assertEquals(
-            expected = ScanResultType.TEXT,
+            expected = CodeType.TEXT,
             actual = viewModel.uiState.value.result?.type,
         )
     }
@@ -260,6 +267,52 @@ class ScanViewModelTest {
             expected = listOf(ScanViewModel.ScanEvent.NoCodeInImage),
             actual = events,
         )
+    }
+
+    @Test
+    fun `seeing the detail of the result opens it and keeps the detection paused`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isVibrationAfterScanEnabled = false))
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onSeeDetailClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(ScanViewModel.ScanEvent.OpenScanDetail(codeId = 1)),
+            actual = events,
+        )
+        assertNull(viewModel.uiState.value.result)
+        assertTrue(viewModel.uiState.value.isDetectionPaused)
+    }
+
+    @Test
+    fun `back from the detail the detection resumes`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel()
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+        viewModel.onSeeDetailClicked()
+
+        // When
+        viewModel.onScreenShown()
+
+        // Then
+        assertFalse(viewModel.uiState.value.isDetectionPaused)
+    }
+
+    @Test
+    fun `the screen shown again while a result is shown keeps the detection paused`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel()
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+
+        // When
+        viewModel.onScreenShown()
+
+        // Then
+        assertTrue(viewModel.uiState.value.isDetectionPaused)
     }
 
     @Test

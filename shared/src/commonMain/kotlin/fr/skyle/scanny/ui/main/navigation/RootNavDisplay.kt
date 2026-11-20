@@ -10,6 +10,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.runtime.serialization.NavBackStackSerializer
 import androidx.navigation3.ui.NavDisplay
 import fr.skyle.scanny.ui.screen.scan.entry.scanRouteEntry
+import fr.skyle.scanny.ui.screen.scandetail.entry.scanDetailRouteEntry
 
 @Composable
 fun RootNavDisplay(
@@ -31,6 +32,8 @@ fun RootNavDisplay(
         ),
         entryProvider = entryProvider {
             scanRouteEntry(backStack = backStack)
+
+            scanDetailRouteEntry(backStack = backStack)
         },
     )
 }

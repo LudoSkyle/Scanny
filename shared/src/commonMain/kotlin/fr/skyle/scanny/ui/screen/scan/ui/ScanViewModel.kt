@@ -34,6 +34,8 @@ class ScanViewModel(
     private val _event = Channel<ScanEvent>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
 
+    private var isAwayOnDetail = false
+
     fun onBarcodeDetected(barcode: DetectedBarcode) {
         // Paused before anything else: the camera reads the same code several times in a row
         if (_uiState.value.isDetectionPaused) {
@@ -92,6 +94,26 @@ class ScanViewModel(
         }
     }
 
+    fun onSeeDetailClicked() {
+        val codeId = _uiState.value.result?.codeId ?: return
+
+        // Still paused: the camera keeps reading during the transition to the detail
+        isAwayOnDetail = true
+        _uiState.update { uiState ->
+            uiState.copy(result = null)
+        }
+        viewModelScope.launch {
+            _event.send(ScanEvent.OpenScanDetail(codeId = codeId))
+        }
+    }
+
+    fun onScreenShown() {
+        if (isAwayOnDetail) {
+            isAwayOnDetail = false
+            resumeDetection()
+        }
+    }
+
     fun onTorchClicked() {
         _uiState.update { uiState ->
             uiState.copy(isTorchEnabled = !uiState.isTorchEnabled)
@@ -129,6 +151,7 @@ class ScanViewModel(
         data class OpenUrl(val url: String) : ScanEvent
         data object NoCodeInImage : ScanEvent
         data object ScanNotSaved : ScanEvent
+        data class OpenScanDetail(val codeId: Long) : ScanEvent
     }
 
     internal companion object {

@@ -24,11 +24,12 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 
 ### Détail d'un scan
 
-- [ ] Type (icône et libellé) et format du code
-- [ ] Contenu formaté et contenu brut (le brut selon le réglage), chacun copiable et partageable
+- [x] Type (icône et libellé) et format du code
+- [x] Contenu formaté et contenu brut (le brut selon le réglage), chaque partie copiable, le code
+      partageable (sa valeur brute)
 - [ ] Action selon le type : URL → ouvrir ; email → écrire le mail ; SMS → écrire le SMS ;
       WiFi → rejoindre le réseau (Android seulement pour l'instant) ; contact → l'ajouter aux
-      contacts
+      contacts *(URL, email et SMS faits ; WiFi et contact au 7c)*
 
 ### Réglages, Feedback, À propos
 
@@ -105,20 +106,23 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
      description. **Reste à vérifier sur un appareil** : détection en direct, torche, zoom, mise au
      point sur Android et iPhone, et le scan d'une image sur iPhone (le simulateur n'a pas de caméra
      et Vision n'y détecte rien).
-7. **Détail d'un scan et actions natives**, en deux pull requests :
+7. **Détail d'un scan et actions natives**, en trois pull requests :
    - [x] 7a : la base et le domaine passent au modèle « capture » (voir les décisions prises), sans
          changement visible. Vérifié sur l'émulateur Android : le scan d'une image enregistre une
          capture et son code
-   - [ ] 7b : la feuille rapide après un scan (type, résumé, action principale, copier, « Voir le
-         détail »), l'écran `ScanDetail` (contenu formaté et brut, toutes les actions, partage,
-         suppression) et les actions natives de la matrice de
-         [KMP/03_CODE_PLATEFORME.md](./KMP/03_CODE_PLATEFORME.md). Son action « Modifier » arrive
-         avec l'éditeur, au lot 11
+   - [x] 7b : la feuille rapide après un scan (type, résumé, action principale, copier, « Voir le
+         détail »), l'écran `ScanDetail` (contenu par parties et brut, copie, partage, suppression)
+         et les actions qui passent par Compose : ouvrir un lien, écrire un e-mail ou un SMS.
+         Vérifié sur l'émulateur Android. Son action « Modifier » arrive avec l'éditeur, au lot 11
+   - [ ] 7c : les actions natives qui ouvrent un écran du système : ajouter un contact (Android et
+         iOS), rejoindre un réseau WiFi (Android ; `ACTION_WIFI_ADD_NETWORKS` demande Android 11,
+         le WEP n'y est pas pris en charge)
    - Deux remarques d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton
      galerie le temps de son affichage, et le Photo Picker range les images de la plus récente à la
      plus ancienne.
 8. **Historique des scans** : une ligne par capture ; une capture d'un code ouvre son `ScanDetail`,
-   une capture de plusieurs codes ouvre l'écran du groupe, `Route.ScanGroup(scanId)`.
+   une capture de plusieurs codes ouvre l'écran du groupe, `Route.ScanGroup(scanId)`. La date du
+   scan s'affiche alors aussi dans le `ScanDetail`, avec le formatage des dates de l'historique.
 9. **Scan multiple** : le mode, la session de scan jusqu'à « Terminer », la feuille qui liste les
    codes trouvés (un appui ouvre le `ScanDetail` du code), l'écran du groupe.
 10. **Réglages, Feedback, À propos**

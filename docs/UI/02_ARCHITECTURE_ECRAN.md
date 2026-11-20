@@ -47,9 +47,9 @@ Elle n'a pas de `Preview` : son ViewModel ne s'y construit pas.
 ```kotlin
 @Composable
 fun ScanDetailRoute(
-    scanId: Long,
+    codeId: Long,
     navigateBack: () -> Unit,
-    viewModel: ScanDetailViewModel = koinViewModel(parameters = { parametersOf(scanId) }),
+    viewModel: ScanDetailViewModel = koinViewModel(parameters = { parametersOf(codeId) }),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -61,7 +61,7 @@ fun ScanDetailRoute(
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.event.collect { event ->
                 when (event) {
-                    ScanDetailViewModel.ScanDetailEvent.ScanDeleted -> {
+                    ScanDetailViewModel.ScanDetailEvent.CodeDeleted -> {
                         navigateBack()
                     }
 
@@ -74,14 +74,14 @@ fun ScanDetailRoute(
     }
 
     ScanDetailScreen(
-        scan = uiState.scan,
+        code = uiState.code,
         isDeleting = uiState.isDeleting,
-        onDeleteClicked = viewModel::deleteScan,
+        onDeleteClicked = viewModel::onDeleteConfirmed,
         onBackClicked = navigateBack,
     )
 
     if (isDeleteErrorDialogVisible) {
-        // SCDialog explaining that the scan could not be deleted
+        // SCDialog explaining that the code could not be deleted
     }
 }
 ```
@@ -100,7 +100,7 @@ Un `...Screen` :
 ```kotlin
 @Composable
 fun ScanDetailScreen(
-    scan: ScanDetailItem?,
+    code: ScanDetailItem?,
     isDeleting: Boolean,
     onDeleteClicked: () -> Unit,
     onBackClicked: () -> Unit,
@@ -113,9 +113,9 @@ fun ScanDetailScreen(
 private fun PreviewScanDetailScreen() {
     SCTheme {
         ScanDetailScreen(
-            scan = ScanDetailItem(
-                title = "https://scanny.app",
-                format = "QR Code",
+            code = ScanDetailItem(
+                type = CodeType.LINK,
+                format = BarcodeFormat.QR_CODE,
             ),
             isDeleting = false,
             onDeleteClicked = {},
@@ -148,9 +148,9 @@ Un `...ViewModel` :
 
 ```kotlin
 class ScanDetailViewModel(
-    private val scanId: Long,
-    private val watchScanUseCase: WatchScanUseCase,
-    private val deleteScanUseCase: DeleteScanUseCase,
+    private val codeId: Long,
+    private val watchScannedCodeUseCase: WatchScannedCodeUseCase,
+    private val deleteScannedCodeUseCase: DeleteScannedCodeUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ScanDetailUIState())
@@ -161,28 +161,28 @@ class ScanDetailViewModel(
 
     init {
         viewModelScope.launch {
-            watchScanUseCase(scanId = scanId).collect { scan ->
+            watchScannedCodeUseCase(codeId = codeId).collect { scannedCode ->
                 _uiState.update { uiState ->
-                    uiState.copy(scan = scan?.toScanDetailItem())
+                    uiState.copy(code = scannedCode?.toScanDetailItem())
                 }
             }
         }
     }
 
-    fun deleteScan() {
+    fun onDeleteConfirmed() {
         viewModelScope.launch {
             _uiState.update { uiState ->
                 uiState.copy(isDeleting = true)
             }
 
             try {
-                deleteScanUseCase(scanId = scanId)
+                deleteScannedCodeUseCase(codeId = codeId)
 
-                _event.send(ScanDetailEvent.ScanDeleted)
+                _event.send(ScanDetailEvent.CodeDeleted)
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: Exception) {
-                Logger.e(throwable = exception) { "Failed to delete scan $scanId" }
+                Logger.e(throwable = exception) { "Failed to delete the scanned code $codeId" }
 
                 _event.send(ScanDetailEvent.DeleteFailed)
             } finally {
@@ -194,12 +194,12 @@ class ScanDetailViewModel(
     }
 
     data class ScanDetailUIState(
-        val scan: ScanDetailItem? = null,
+        val code: ScanDetailItem? = null,
         val isDeleting: Boolean = false,
     )
 
     sealed interface ScanDetailEvent {
-        data object ScanDeleted : ScanDetailEvent
+        data object CodeDeleted : ScanDetailEvent
         data object DeleteFailed : ScanDetailEvent
     }
 }
