@@ -54,7 +54,8 @@ types (téléphone, position, événement) s'ajoutent avec l'écran qui les affi
 fait pas partie : il est porté par le `ScannedCode`.
 
 `Contact` porte un nom affiché (`formattedName`) **et** un prénom et un nom séparés : l'ajout d'un
-contact sur Android prend un nom affiché, iOS (`CNMutableContact`) veut le prénom et le nom. S'y
+contact sur Android prend un nom affiché, iOS (`CNMutableContact`) veut le prénom et le nom.
+`displayName` donne le nom à montrer : le nom affiché, ou à défaut le prénom et le nom. S'y
 ajoutent l'organisation, la fonction, et des listes de téléphones, d'emails, d'adresses (une adresse
 est une ligne, ses composants séparés par des virgules) et de sites.
 

@@ -42,7 +42,7 @@ internal fun ScannedCode.toCodeSummary(): String =
         is BarcodeContent.Sms -> content.phoneNumber ?: content.message
         is BarcodeContent.Wifi -> content.ssid
         is BarcodeContent.Contact ->
-            content.name() ?: content.organization ?: content.phones.firstOrNull() ?: content.emails.firstOrNull()
+            content.displayName ?: content.organization ?: content.phones.firstOrNull() ?: content.emails.firstOrNull()
     } ?: rawValue
 
 internal fun BarcodeContent.toCodeFields(): List<CodeField> =
@@ -107,7 +107,7 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
         is BarcodeContent.Contact -> listOfNotNull(
             codeField(
                 label = CodeFieldLabel.NAME,
-                value = name(),
+                value = displayName,
             ),
             codeField(
                 label = CodeFieldLabel.ORGANIZATION,
@@ -131,11 +131,6 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
             values = urls,
         )
     }
-
-private fun BarcodeContent.Contact.name(): String? =
-    formattedName ?: listOfNotNull(firstName, lastName)
-        .joinToString(separator = " ")
-        .ifEmpty { null }
 
 private fun codeField(
     label: CodeFieldLabel,
