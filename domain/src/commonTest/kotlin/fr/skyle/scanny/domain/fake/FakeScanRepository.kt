@@ -64,6 +64,10 @@ internal class FakeScanRepository(
         }
     }
 
+    override suspend fun deleteAllScans() {
+        scans.value = emptyList()
+    }
+
     override suspend fun deleteCode(id: Long) {
         scans.update { storedScans ->
             storedScans

@@ -1,6 +1,8 @@
 package fr.skyle.scanny.domain.di
 
 import fr.skyle.scanny.data.di.dataModule
+import fr.skyle.scanny.domain.usecase.scan.DeleteAllScansUseCase
+import fr.skyle.scanny.domain.usecase.scan.DeleteAllScansUseCaseImpl
 import fr.skyle.scanny.domain.usecase.scan.DeleteScanUseCase
 import fr.skyle.scanny.domain.usecase.scan.DeleteScanUseCaseImpl
 import fr.skyle.scanny.domain.usecase.scan.DeleteScannedCodeUseCase
@@ -32,6 +34,7 @@ val domainModule = module {
     factoryOf(::WatchScanUseCaseImpl) bind WatchScanUseCase::class
     factoryOf(::WatchScannedCodeUseCaseImpl) bind WatchScannedCodeUseCase::class
     factoryOf(::DeleteScanUseCaseImpl) bind DeleteScanUseCase::class
+    factoryOf(::DeleteAllScansUseCaseImpl) bind DeleteAllScansUseCase::class
     factoryOf(::DeleteScannedCodeUseCaseImpl) bind DeleteScannedCodeUseCase::class
     factoryOf(::WatchScanSettingsUseCaseImpl) bind WatchScanSettingsUseCase::class
     factoryOf(::SetScanSettingUseCaseImpl) bind SetScanSettingUseCase::class

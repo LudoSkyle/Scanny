@@ -69,6 +69,10 @@ internal class ScanRepositoryImpl(
         scanDao.deleteById(id = id)
     }
 
+    override suspend fun deleteAllScans() {
+        scanDao.deleteAll()
+    }
+
     override suspend fun deleteCode(id: Long) {
         scanDao.deleteCodeAndEmptyScan(id = id)
     }

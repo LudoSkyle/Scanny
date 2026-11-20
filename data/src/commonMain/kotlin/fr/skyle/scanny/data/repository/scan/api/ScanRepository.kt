@@ -22,6 +22,8 @@ interface ScanRepository {
 
     suspend fun deleteScan(id: Long)
 
+    suspend fun deleteAllScans()
+
     /** Deletes a code, and its capture when it was the last code of it. */
     suspend fun deleteCode(id: Long)
 }

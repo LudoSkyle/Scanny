@@ -151,6 +151,26 @@ internal class ScanDaoTest : DatabaseTest() {
     }
 
     @Test
+    fun `deleting everything deletes every capture and every code`() = runTest {
+        // Given
+        insertScan(scannedAt = 1_000)
+        insertScan(scannedAt = 2_000)
+
+        // When
+        scanDao.deleteAll()
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = scanDao.watchAll().first(),
+        )
+        assertEquals(
+            expected = 0,
+            actual = countCodes(),
+        )
+    }
+
+    @Test
     fun `deleting the last code of a capture deletes the capture and keeps the others`() = runTest {
         // Given
         val keptId = insertScan(scannedAt = 1_000)

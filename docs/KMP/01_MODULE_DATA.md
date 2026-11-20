@@ -171,7 +171,8 @@ trouvés pendant un scan multiple. Deux tables :
   capture n'existe jamais sans ses codes.
 - **Une capture a toujours au moins un code** : `saveScan` refuse une liste vide, et la suppression
   du dernier code d'une capture supprime la capture dans la même transaction
-  (`deleteCodeAndEmptyScan`). Supprimer une capture supprime ses codes, par la cascade.
+  (`deleteCodeAndEmptyScan`). Supprimer une capture supprime ses codes, par la cascade ; effacer
+  l'historique (`deleteAll`) supprime toutes les captures, et leurs codes de la même façon.
 - Les captures se lisent de la plus récente à la plus ancienne ; l'`id` départage deux captures de la
   même milliseconde. Les codes d'une capture se rendent dans l'ordre de `position`.
 - Un code se lit seul (`watchCode`) avec la date de sa capture : l'écran d'un code ne charge pas

@@ -136,6 +136,22 @@ internal class ScanRepositoryImplTest : DatabaseTest() {
     }
 
     @Test
+    fun `deleting all the captures leaves none`() = runTest {
+        // Given
+        saveScan(scannedAtMillis = 1_000)
+        saveScan(scannedAtMillis = 2_000)
+
+        // When
+        scanRepository.deleteAllScans()
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = scanRepository.watchScans().first(),
+        )
+    }
+
+    @Test
     fun `deleting the last code of a capture deletes the capture and keeps the others`() = runTest {
         // Given
         val keptId = saveScan(scannedAtMillis = 1_000)
