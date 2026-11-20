@@ -30,6 +30,8 @@ class SetScanSettingUseCaseTest {
                 false,
                 false,
                 false,
+                false,
+                false,
             ),
             actual = currentSettings(),
         )
@@ -48,6 +50,8 @@ class SetScanSettingUseCaseTest {
             expected = listOf(
                 true,
                 true,
+                false,
+                false,
                 false,
             ),
             actual = currentSettings(),
@@ -68,15 +72,62 @@ class SetScanSettingUseCaseTest {
                 true,
                 false,
                 true,
+                false,
+                false,
             ),
             actual = currentSettings(),
         )
     }
 
+    @Test
+    fun `the beep after a scan changes alone`() = runTest {
+        // When
+        setScanSettingUseCase(
+            setting = ScanSetting.BEEP_AFTER_SCAN,
+            isEnabled = true,
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                true,
+                false,
+                false,
+                true,
+                false,
+            ),
+            actual = currentSettings(),
+        )
+    }
+
+    @Test
+    fun `the copy after a scan changes alone`() = runTest {
+        // When
+        setScanSettingUseCase(
+            setting = ScanSetting.COPY_AFTER_SCAN,
+            isEnabled = true,
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                true,
+                false,
+                false,
+                false,
+                true,
+            ),
+            actual = currentSettings(),
+        )
+    }
+
+    // In the order of the v1 settings, then the new ones
     private fun currentSettings(): List<Boolean> =
         listOf(
             settingsRepository.isVibrationAfterScanEnabled.value,
             settingsRepository.isOpenLinkAfterScanEnabled.value,
             settingsRepository.isRawContentShown.value,
+            settingsRepository.isBeepAfterScanEnabled.value,
+            settingsRepository.isCopyAfterScanEnabled.value,
         )
 }

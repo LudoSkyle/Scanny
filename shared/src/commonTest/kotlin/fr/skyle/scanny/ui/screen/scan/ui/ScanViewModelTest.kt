@@ -6,6 +6,7 @@ import fr.skyle.scanny.domain.model.DetectedBarcode
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.fake.FakeContactAdder
 import fr.skyle.scanny.fake.FakeRecordScanUseCase
+import fr.skyle.scanny.fake.FakeScanBeeper
 import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
 import fr.skyle.scanny.fake.FakeWifiNetworkSupport
 import fr.skyle.scanny.fake.TestClock
@@ -145,6 +146,86 @@ class ScanViewModelTest {
     fun `a scan does not vibrate when the vibration is disabled`() = runTest(testDispatcher) {
         // Given
         val viewModel = scanViewModel(watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isVibrationAfterScanEnabled = false))
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = events,
+        )
+    }
+
+    @Test
+    fun `a scan beeps when the beep is enabled`() = runTest(testDispatcher) {
+        // Given
+        val scanBeeper = FakeScanBeeper()
+        val viewModel = scanViewModel(
+            watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isBeepAfterScanEnabled = true),
+            scanBeeper = scanBeeper,
+        )
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+
+        // Then
+        assertEquals(
+            expected = 1,
+            actual = scanBeeper.beepCount,
+        )
+    }
+
+    @Test
+    fun `a scan does not beep when the beep is disabled`() = runTest(testDispatcher) {
+        // Given
+        val scanBeeper = FakeScanBeeper()
+        val viewModel = scanViewModel(
+            watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isBeepAfterScanEnabled = false),
+            scanBeeper = scanBeeper,
+        )
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+
+        // Then
+        assertEquals(
+            expected = 0,
+            actual = scanBeeper.beepCount,
+        )
+    }
+
+    @Test
+    fun `a scan copies the code when the copy is enabled`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(
+            watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(
+                isVibrationAfterScanEnabled = false,
+                isCopyAfterScanEnabled = true,
+            ),
+        )
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+
+        // Then
+        assertEquals(
+            expected = listOf(ScanViewModel.ScanEvent.CopyToClipboard(text = "Hello")),
+            actual = events,
+        )
+    }
+
+    @Test
+    fun `a scan does not copy the code when the copy is disabled`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(
+            watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(
+                isVibrationAfterScanEnabled = false,
+                isCopyAfterScanEnabled = false,
+            ),
+        )
         val events = collectEvents(viewModel = viewModel)
 
         // When
@@ -406,6 +487,28 @@ class ScanViewModelTest {
                 ScanViewModel.ScanEvent.Vibrate,
             ),
             actual = events,
+        )
+    }
+
+    @Test
+    fun `each new code of a multiple scan beeps`() = runTest(testDispatcher) {
+        // Given
+        val scanBeeper = FakeScanBeeper()
+        val viewModel = scanViewModel(
+            watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isBeepAfterScanEnabled = true),
+            scanBeeper = scanBeeper,
+        )
+        viewModel.onMultipleScanClicked()
+
+        // When
+        viewModel.readSteadily(barcode = qrCode(rawValue = "First"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "First"))
+        viewModel.readSteadily(barcode = qrCode(rawValue = "Second"))
+
+        // Then
+        assertEquals(
+            expected = 2,
+            actual = scanBeeper.beepCount,
         )
     }
 
@@ -709,12 +812,14 @@ class ScanViewModelTest {
         watchScanSettingsUseCase: FakeWatchScanSettingsUseCase = FakeWatchScanSettingsUseCase(),
         contactAdder: FakeContactAdder = FakeContactAdder(),
         wifiNetworkSupport: FakeWifiNetworkSupport = FakeWifiNetworkSupport(),
+        scanBeeper: FakeScanBeeper = FakeScanBeeper(),
     ): ScanViewModel =
         ScanViewModel(
             recordScanUseCase = recordScanUseCase,
             watchScanSettingsUseCase = watchScanSettingsUseCase,
             contactAdder = contactAdder,
             wifiNetworkSupport = wifiNetworkSupport,
+            scanBeeper = scanBeeper,
             clock = testClock,
         )
 

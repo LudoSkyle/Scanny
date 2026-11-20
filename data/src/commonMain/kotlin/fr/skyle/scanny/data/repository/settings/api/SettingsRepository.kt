@@ -8,6 +8,14 @@ interface SettingsRepository {
 
     suspend fun setVibrationAfterScanEnabled(isEnabled: Boolean)
 
+    fun watchIsBeepAfterScanEnabled(): Flow<Boolean>
+
+    suspend fun setBeepAfterScanEnabled(isEnabled: Boolean)
+
+    fun watchIsCopyAfterScanEnabled(): Flow<Boolean>
+
+    suspend fun setCopyAfterScanEnabled(isEnabled: Boolean)
+
     fun watchIsOpenLinkAfterScanEnabled(): Flow<Boolean>
 
     suspend fun setOpenLinkAfterScanEnabled(isEnabled: Boolean)

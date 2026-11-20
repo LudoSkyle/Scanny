@@ -5,11 +5,13 @@ import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.DetectedBarcode
+import fr.skyle.scanny.domain.model.ScanSettings
 import fr.skyle.scanny.domain.usecase.scan.RecordScanUseCase
 import fr.skyle.scanny.domain.usecase.settings.WatchScanSettingsUseCase
 import fr.skyle.scanny.platform.camera.CameraCapabilities
 import fr.skyle.scanny.platform.contact.ContactAdder
 import fr.skyle.scanny.platform.gallery.ImageScanResult
+import fr.skyle.scanny.platform.sound.ScanBeeper
 import fr.skyle.scanny.platform.wifi.WifiNetworkSupport
 import fr.skyle.scanny.ui.screen.scan.ui.mapper.toScanResult
 import fr.skyle.scanny.ui.screen.scan.ui.mapper.toScanResultItem
@@ -34,6 +36,7 @@ class ScanViewModel(
     private val watchScanSettingsUseCase: WatchScanSettingsUseCase,
     private val contactAdder: ContactAdder,
     private val wifiNetworkSupport: WifiNetworkSupport,
+    private val scanBeeper: ScanBeeper,
     private val clock: Clock,
 ) : ViewModel() {
 
@@ -71,12 +74,14 @@ class ScanViewModel(
         viewModelScope.launch {
             try {
                 val settings = watchScanSettingsUseCase().first()
-                if (settings.isVibrationAfterScanEnabled) {
-                    _event.send(ScanEvent.Vibrate)
-                }
+                signalScan(settings = settings)
 
                 // A simple scan is a capture of the one code read
                 val scannedCode = recordScanUseCase(barcodes = listOf(barcode)).codes.single()
+
+                if (settings.isCopyAfterScanEnabled) {
+                    _event.send(ScanEvent.CopyToClipboard(text = scannedCode.rawValue))
+                }
 
                 val content = scannedCode.content
                 if (content is BarcodeContent.Url && settings.isOpenLinkAfterScanEnabled) {
@@ -140,9 +145,17 @@ class ScanViewModel(
             uiState.copy(multipleScan = session.copy(codeCount = multipleScanBarcodes.size))
         }
         viewModelScope.launch {
-            if (watchScanSettingsUseCase().first().isVibrationAfterScanEnabled) {
-                _event.send(ScanEvent.Vibrate)
-            }
+            signalScan(settings = watchScanSettingsUseCase().first())
+        }
+    }
+
+    // The vibration and the beep that tell a code is read, each as its setting asks
+    private suspend fun signalScan(settings: ScanSettings) {
+        if (settings.isVibrationAfterScanEnabled) {
+            _event.send(ScanEvent.Vibrate)
+        }
+        if (settings.isBeepAfterScanEnabled) {
+            scanBeeper.beep()
         }
     }
 
@@ -321,6 +334,7 @@ class ScanViewModel(
 
     sealed interface ScanEvent {
         data object Vibrate : ScanEvent
+        data class CopyToClipboard(val text: String) : ScanEvent
         data class OpenUrl(val url: String) : ScanEvent
         data object NoCodeInImage : ScanEvent
         data object ScanNotSaved : ScanEvent

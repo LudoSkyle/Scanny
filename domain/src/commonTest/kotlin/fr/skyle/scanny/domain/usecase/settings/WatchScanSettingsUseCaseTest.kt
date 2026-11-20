@@ -17,6 +17,8 @@ class WatchScanSettingsUseCaseTest {
 
     private val settingsRepository = FakeSettingsRepository(
         isVibrationAfterScanEnabled = true,
+        isBeepAfterScanEnabled = true,
+        isCopyAfterScanEnabled = false,
         isOpenLinkAfterScanEnabled = false,
         isRawContentShown = true,
     )
@@ -32,6 +34,8 @@ class WatchScanSettingsUseCaseTest {
         assertEquals(
             expected = ScanSettings(
                 isVibrationAfterScanEnabled = true,
+                isBeepAfterScanEnabled = true,
+                isCopyAfterScanEnabled = false,
                 isOpenLinkAfterScanEnabled = false,
                 isRawContentShown = true,
             ),
@@ -55,11 +59,15 @@ class WatchScanSettingsUseCaseTest {
             expected = listOf(
                 ScanSettings(
                     isVibrationAfterScanEnabled = true,
+                    isBeepAfterScanEnabled = true,
+                    isCopyAfterScanEnabled = false,
                     isOpenLinkAfterScanEnabled = false,
                     isRawContentShown = true,
                 ),
                 ScanSettings(
                     isVibrationAfterScanEnabled = true,
+                    isBeepAfterScanEnabled = true,
+                    isCopyAfterScanEnabled = false,
                     isOpenLinkAfterScanEnabled = true,
                     isRawContentShown = true,
                 ),

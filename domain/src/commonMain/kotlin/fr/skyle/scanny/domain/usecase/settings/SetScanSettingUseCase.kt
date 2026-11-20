@@ -21,6 +21,8 @@ internal class SetScanSettingUseCaseImpl(
     ) {
         when (setting) {
             ScanSetting.VIBRATION_AFTER_SCAN -> settingsRepository.setVibrationAfterScanEnabled(isEnabled = isEnabled)
+            ScanSetting.BEEP_AFTER_SCAN -> settingsRepository.setBeepAfterScanEnabled(isEnabled = isEnabled)
+            ScanSetting.COPY_AFTER_SCAN -> settingsRepository.setCopyAfterScanEnabled(isEnabled = isEnabled)
             ScanSetting.OPEN_LINK_AFTER_SCAN -> settingsRepository.setOpenLinkAfterScanEnabled(isEnabled = isEnabled)
             ScanSetting.RAW_CONTENT_SHOWN -> settingsRepository.setRawContentShown(isShown = isEnabled)
         }

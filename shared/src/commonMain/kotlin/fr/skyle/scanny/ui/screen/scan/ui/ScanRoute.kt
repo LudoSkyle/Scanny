@@ -74,6 +74,10 @@ fun ScanRoute(
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
                     }
 
+                    is ScanViewModel.ScanEvent.CopyToClipboard -> launch {
+                        clipboard.setClipEntry(textClipEntry(text = event.text))
+                    }
+
                     is ScanViewModel.ScanEvent.OpenUrl -> {
                         try {
                             uriHandler.openUri(event.url)
