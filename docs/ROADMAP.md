@@ -50,11 +50,11 @@ La migration se fait directement sur `develop`. Un élément se coche dans le co
 Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
 
 1. **Fondation**
-   - [ ] Modules `androidApp` (renommage de `app`), `shared`, `designSystem`, `domain`, `data`
-   - [ ] Koin à la place de Hilt, Kermit pour les logs (Crashlytics derrière sur Android)
-   - [ ] Compose Resources (polices Lato), `ScannyApp` commune affichée par `MainActivity`
-   - [ ] Navigation 3 multiplateforme (`Route`, `RootNavDisplay`)
-   - [ ] `compose-stability.conf` à la racine, branché sur les modules Compose
+   - [x] Modules `androidApp` (renommage de `app`), `shared`, `designSystem`, `domain`, `data`
+   - [x] Koin à la place de Hilt, Kermit pour les logs (Crashlytics derrière sur Android)
+   - [x] Compose Resources (polices Lato), `ScannyApp` commune affichée par `MainActivity`
+   - [x] Navigation 3 multiplateforme (`Route`, `RootNavDisplay`)
+   - [x] `compose-stability.conf` à la racine, branché sur les modules Compose
    - Les textes de la v1 (anglais et français) ne sont pas repris en bloc : chacun revient avec son
      écran, sa clé renommée selon la convention. Ils se retrouvent dans `app/src/main/res/` au
      commit `c38ffc5`.

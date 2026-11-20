@@ -30,7 +30,7 @@ jobs:
           command: git submodule sync --recursive && git submodule update --recursive --init
 
       - restore_cache:
-          key: jars-{{ checksum "build.gradle.kts" }}-{{ checksum "app/build.gradle.kts" }}
+          key: jars-{{ checksum "build.gradle.kts" }}-{{ checksum "androidApp/build.gradle.kts" }}
 
       - run:
           name: Download Dependencies
@@ -39,7 +39,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle
-          key: jars-{{ checksum "build.gradle.kts" }}-{{ checksum "app/build.gradle.kts" }}
+          key: jars-{{ checksum "build.gradle.kts" }}-{{ checksum "androidApp/build.gradle.kts" }}
 
       - unless:
           # Triggered by default. Not triggered if publish_to_firebase is true
@@ -50,15 +50,15 @@ jobs:
                 command: ./gradlew lintDebug testDebug
 
             - store_artifacts:
-                path: app/build/reports
+                path: androidApp/build/reports
                 destination: reports
 
             - store_test_results:
-                path: app/build/test-results
+                path: androidApp/build/test-results
 
             - run:
                 name: Build release APK
-                command: ./gradlew :app:assembleRelease
+                command: ./gradlew :androidApp:assembleRelease
 
       - when:
           # Triggered when you pass the parameter publish_to_firebase to true via API
@@ -66,22 +66,22 @@ jobs:
           steps:
             - run:
                 name: Store Google Services Account
-                command: echo $GOOGLE_SERVICES_ACCOUNT | base64 -d > app/google-services-account.json
+                command: echo $GOOGLE_SERVICES_ACCOUNT | base64 -d > androidApp/google-services-account.json
 
             - run:
                 name: Build release AAB
-                command: ./gradlew :app:bundleRelease
+                command: ./gradlew :androidApp:bundleRelease
 
             - store_artifacts:
-                path: app/build/outputs/bundle/
+                path: androidApp/build/outputs/bundle/
                 destination: aab
 
             - run:
                 name: Build release APK
-                command: ./gradlew :app:assembleRelease
+                command: ./gradlew :androidApp:assembleRelease
 
             - store_artifacts:
-                path: app/build/outputs/apk/
+                path: androidApp/build/outputs/apk/
                 destination: apk
 
             - run:
@@ -98,4 +98,4 @@ jobs:
 
             - run:
                 name: Commit and push version changes
-                command: git config user.email $CI_EMAIL && git config user.name $CI_NAME && git add app/version.properties && git commit -m "Auto-increment build number" && git pull && git push
+                command: git config user.email $CI_EMAIL && git config user.name $CI_NAME && git add androidApp/version.properties && git commit -m "Auto-increment build number" && git pull && git push
