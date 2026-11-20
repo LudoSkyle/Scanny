@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import fr.skyle.scanny.platform.camera.DetectedBarcode
+import fr.skyle.scanny.domain.model.DetectedBarcode
 import fr.skyle.scanny.platform.camera.symbologyToBarcodeFormat
 import fr.skyle.scanny.platform.ui.topViewController
 import kotlinx.cinterop.ExperimentalForeignApi

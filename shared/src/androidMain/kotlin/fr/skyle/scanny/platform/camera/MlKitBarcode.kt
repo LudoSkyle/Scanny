@@ -3,6 +3,7 @@ package fr.skyle.scanny.platform.camera
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.common.Barcode
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.DetectedBarcode
 
 internal val mlKitScannerOptions: BarcodeScannerOptions =
     BarcodeScannerOptions.Builder()

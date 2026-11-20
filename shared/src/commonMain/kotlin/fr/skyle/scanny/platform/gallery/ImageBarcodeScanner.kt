@@ -1,7 +1,7 @@
 package fr.skyle.scanny.platform.gallery
 
 import androidx.compose.runtime.Composable
-import fr.skyle.scanny.platform.camera.DetectedBarcode
+import fr.skyle.scanny.domain.model.DetectedBarcode
 
 sealed interface ImageScanResult {
 

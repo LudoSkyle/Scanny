@@ -14,9 +14,9 @@ import fr.skyle.scanny.designsystem.core.screenstructure.SCScreenStructureDefaul
 import fr.skyle.scanny.designsystem.core.snackbar.SCSnackbarState
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.DetectedBarcode
 import fr.skyle.scanny.platform.camera.CameraCapabilities
 import fr.skyle.scanny.platform.camera.CameraPermissionStatus
-import fr.skyle.scanny.platform.camera.DetectedBarcode
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.allow_camera
 import fr.skyle.scanny.resources.camera_blocked

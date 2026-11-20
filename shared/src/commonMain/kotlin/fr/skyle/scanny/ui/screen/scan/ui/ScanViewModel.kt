@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.DetectedBarcode
+import fr.skyle.scanny.domain.model.normalized
 import fr.skyle.scanny.domain.usecase.scan.RecordScanUseCase
 import fr.skyle.scanny.domain.usecase.settings.WatchScanSettingsUseCase
 import fr.skyle.scanny.platform.camera.CameraCapabilities
-import fr.skyle.scanny.platform.camera.DetectedBarcode
-import fr.skyle.scanny.platform.camera.normalized
 import fr.skyle.scanny.platform.gallery.ImageScanResult
 import fr.skyle.scanny.ui.screen.scan.ui.mapper.toScanResultItem
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultItem

@@ -31,8 +31,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.DetectedBarcode
 import fr.skyle.scanny.platform.camera.CameraCapabilities
-import fr.skyle.scanny.platform.camera.DetectedBarcode
 import fr.skyle.scanny.platform.camera.FocusRequest
 import fr.skyle.scanny.platform.camera.ScanCamera
 import fr.skyle.scanny.resources.Res
