@@ -46,10 +46,14 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [ ] Scan multiple : un mode qu'on active, on passe autant de codes qu'on veut devant la caméra, on
       termine, et la liste dédoublonnée des codes trouvés s'affiche et s'enregistre comme un groupe
 - [ ] Création de QR codes : texte, URL, email, SMS, WiFi
+- [ ] Personnalisation d'un QR code : couleurs, logo au centre, formes
+- [ ] Modifier un code scanné : reprendre son contenu, le modifier, le personnaliser et générer le
+      nouveau QR code
 - [ ] Partager et enregistrer un QR code créé
 - [ ] Historique des créations
-- Pistes, non engagées : contact parmi les types créés, personnalisation d'un QR code (couleurs,
-  formes), affichage des types téléphone, position et événement, avis et mise à jour depuis l'app.
+- [ ] Favori et annotation d'une capture, scan simple ou groupe entier *(pas urgent)*
+- Pistes, non engagées : contact parmi les types créés, affichage des types téléphone, position et
+  événement, avis et mise à jour depuis l'app.
 
 ## Lots techniques
 
@@ -108,7 +112,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
    - [ ] 7b : la feuille rapide après un scan (type, résumé, action principale, copier, « Voir le
          détail »), l'écran `ScanDetail` (contenu formaté et brut, toutes les actions, partage,
          suppression) et les actions natives de la matrice de
-         [KMP/03_CODE_PLATEFORME.md](./KMP/03_CODE_PLATEFORME.md)
+         [KMP/03_CODE_PLATEFORME.md](./KMP/03_CODE_PLATEFORME.md). Son action « Modifier » arrive
+         avec l'éditeur, au lot 11
    - Deux remarques d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton
      galerie le temps de son affichage, et le Photo Picker range les images de la plus récente à la
      plus ancienne.
@@ -117,8 +122,12 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
 9. **Scan multiple** : le mode, la session de scan jusqu'à « Terminer », la feuille qui liste les
    codes trouvés (un appui ouvre le `ScanDetail` du code), l'écran du groupe.
 10. **Réglages, Feedback, À propos**
-11. **Création de QR codes et historique des créations**
+11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
+    (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre
+    l'éditeur prérempli avec son contenu.
 12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI
+13. **Favoris et annotations** *(pas urgent)* : sur une capture, depuis l'historique et l'écran du
+    groupe.
 
 ## Décisions prises
 
@@ -151,10 +160,13 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
   résumé et son action principale ; plusieurs codes (scan multiple) y sont listés. « Voir le détail »
   et un appui sur un code ouvrent l'écran `Route.ScanDetail(codeId)`, celui d'**un** code, partagé avec
   l'historique.
+- **« Modifier » un code scanné**, c'est reprendre son contenu dans l'éditeur de création, le
+  modifier, le personnaliser (couleurs, logo au centre…) et générer le nouveau QR code. Un code
+  s'édite seul, jamais un groupe. Le scan, lui, reste tel qu'il a été lu : le QR code généré est une
+  création, rangée dans l'historique des créations.
+- **Favori et annotation** portent sur une capture : un scan simple, ou un groupe entier. Pas urgent
+  (lot 13) ; qu'un code d'un groupe puisse avoir les siens se décidera avec le lot.
 
 ## Décisions ouvertes
-
-- **« Modifier » un scan** : le nommer ou l'annoter, le marquer en favori, ou partir de son contenu
-  pour créer un nouveau QR code (lot 11) ; et s'il s'agit du code, du groupe ou des deux.
 
 - **CI** : le build iOS demande un exécuteur macOS sur CircleCI.
