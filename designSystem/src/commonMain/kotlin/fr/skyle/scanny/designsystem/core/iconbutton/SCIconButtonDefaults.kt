@@ -11,7 +11,9 @@ object SCIconButtonDefaults {
     enum class Style {
         DARK,
         LIGHT,
-        OVERLAY;
+        OVERLAY,
+        // An overlay button switched on, such as a mode in use
+        PRIMARY;
 
         val containerColor: Color
             @Composable
@@ -19,13 +21,14 @@ object SCIconButtonDefaults {
                 DARK, LIGHT -> SCTheme.colors.transparent
                 // Readable over any picture, such as the preview of the camera
                 OVERLAY -> SCTheme.colors.backgroundBlack.copy(alpha = 0.45f)
+                PRIMARY -> SCTheme.colors.primary
             }
 
         val contentColor: Color
             @Composable
             get() = when (this) {
                 DARK -> SCTheme.colors.textDark
-                LIGHT, OVERLAY -> SCTheme.colors.textLight
+                LIGHT, OVERLAY, PRIMARY -> SCTheme.colors.textLight
             }
     }
 

@@ -69,6 +69,7 @@ private fun PreviewSCIconButton(
                         SCIconButtonDefaults.Style.DARK -> SCTheme.colors.background
                         SCIconButtonDefaults.Style.LIGHT -> SCTheme.colors.backgroundBlack
                         SCIconButtonDefaults.Style.OVERLAY -> SCTheme.colors.primary
+                        SCIconButtonDefaults.Style.PRIMARY -> SCTheme.colors.backgroundBlack
                     },
                 ),
         ) {
