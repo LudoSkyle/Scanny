@@ -70,6 +70,9 @@ kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 
+# Tests
+test-kotlin = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+
 # Gradle plugins, put on the build classpath by buildSrc
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

@@ -16,18 +16,18 @@ dépend de `data` en `implementation`, et seul son package `di/` importe Koin (v
 domain/src/commonMain/kotlin/fr/skyle/scanny/domain/
 ├── di/
 │   └── DomainModule.kt
-├── encoder/
-│   └── BarcodeContentEncoder.kt
 ├── exception/
 ├── mapper/                        (modèle de data -> modèle métier)
 ├── model/
 │   ├── BarcodeContent.kt
 │   ├── BarcodeFormat.kt
-│   ├── Scan.kt
+│   ├── Scan.kt                    (lot 5)
 │   └── WifiEncryption.kt
-├── parser/
-│   └── BarcodeContentParser.kt
-└── usecase/
+├── payload/                       (le texte d'un code, dans les deux sens)
+│   ├── BarcodeContentEncoder.kt
+│   ├── BarcodeContentParser.kt
+│   └── PayloadSyntax.kt           (préfixes et caractères échappés, communs aux deux)
+└── usecase/                       (lot 5)
     └── scan/
         ├── DeleteScanUseCase.kt
         ├── RecordScanUseCase.kt
@@ -39,9 +39,14 @@ domain/src/commonMain/kotlin/fr/skyle/scanny/domain/
 
 `BarcodeContent` est une `sealed interface` dont chaque type porte les champs utiles à l'affichage
 et aux actions : `Text`, `Url`, `Email` (destinataire, sujet, corps), `Sms` (numéro, message),
-`Wifi` (SSID, chiffrement, mot de passe, réseau masqué), `Contact` (noms, organisation, fonction,
-téléphones, emails, adresses, sites). D'autres types (téléphone, position, événement) s'ajoutent
-avec l'écran qui les affiche. Le texte brut n'en fait pas partie : il est porté par le `Scan`.
+`Wifi` (SSID, chiffrement `NONE`/`WEP`/`WPA`/`WPA3`, mot de passe, réseau masqué), `Contact`. D'autres
+types (téléphone, position, événement) s'ajoutent avec l'écran qui les affiche. Le texte brut n'en
+fait pas partie : il est porté par le `Scan`.
+
+`Contact` porte un nom affiché (`formattedName`) **et** un prénom et un nom séparés : l'ajout d'un
+contact sur Android prend un nom affiché, iOS (`CNMutableContact`) veut le prénom et le nom. S'y
+ajoutent l'organisation, la fonction, et des listes de téléphones, d'emails, d'adresses (une adresse
+est une ligne, ses composants séparés par des virgules) et de sites.
 
 Le parseur est **le cœur de la parité entre les plateformes**. ML Kit sait typer un code sur
 Android, mais AVFoundation et Vision ne rendent qu'un texte brut sur iOS. Scanny n'utilise donc
@@ -49,19 +54,37 @@ jamais les types structurés de ML Kit : les deux plateformes passent le texte b
 parseur, et obtiennent le même résultat.
 
 - Formats reconnus : `WIFI:`, `MATMSG:`, `mailto:`, `SMSTO:` / `sms:`, `MECARD:`, `BEGIN:VCARD`,
-  et les URL (`http://`, `https://`). Les préfixes sont insensibles à la casse.
-- Les caractères échappés sont décodés (`\;`, `\,`, `\:`, `\\` dans un `WIFI:` ou un `MECARD:`), les
-  lignes repliées d'une vCard sont dépliées, l'encodage URL d'un `mailto:` est décodé.
-- **Le parseur ne lève jamais d'exception** : un contenu qu'il ne reconnaît pas, ou mal formé,
-  devient un `BarcodeContent.Text`.
-- L'encodeur est l'inverse exact du parseur pour les types qu'on sait créer : il échappe ce que le
-  parseur décode, et un aller-retour encodage → parsing redonne le même contenu.
+  et les URL (`http://`, `https://`). Les préfixes et les clés sont insensibles à la casse, les
+  valeurs non.
+- Les caractères échappés sont décodés (`\;`, `\,`, `\:`, `\\`, `\"` dans un `WIFI:` ou un
+  `MECARD:`, et une valeur entre guillemets non échappés perd ses guillemets), les lignes repliées
+  d'une vCard sont dépliées (CRLF ou LF), ses groupes (`item1.`) et paramètres (`;TYPE=…`) ignorés,
+  et l'encodage `%` d'un `mailto:` ou d'un `sms:` est décodé en UTF-8. Un `+` reste un `+`.
+- Un `WIFI:` sans type est un réseau ouvert, sauf s'il donne un mot de passe (alors WPA) ; `SAE` est
+  du WPA3.
+- Un contenu structuré sans aucun champ utile (un `WIFI:` sans SSID, une vCard vide) est un texte.
+  Un lien sans schéma (`www.…`) reste un texte.
+- **Le parseur ne lève jamais d'exception** : un contenu qu'il ne reconnaît pas, ou mal formé (un `%`
+  isolé, un champ tronqué), devient un `BarcodeContent.Text`. Le code est écrit pour ne pas pouvoir
+  échouer, sans `catch` général : ce sont les tests d'entrées malformées qui le garantissent.
+- L'encodeur est l'inverse exact du parseur : il échappe ce que le parseur décode, et un
+  aller-retour encodage → parsing redonne le même contenu. Les formats qu'il écrit sont ceux que lisent
+  les appareils photo d'Android et d'iOS :
+
+| Contenu | Texte écrit |
+|---|---|
+| Texte, URL | tel quel |
+| Email | `mailto:adresse?subject=…&body=…`, encodé en `%` (`MATMSG:` n'est que lu) |
+| SMS | `SMSTO:numéro:message` (`sms:` n'est que lu) |
+| WiFi | `WIFI:T:…;S:…;P:…;H:true;;`, `T:nopass` et pas de `P:` pour un réseau ouvert, `SAE` pour le WPA3, `H:true` seulement pour un réseau masqué |
+| Contact | vCard 3.0 ; seules les propriétés texte (`N`, `FN`, `ORG`, `TITLE`, `ADR`) sont échappées |
 - Le parseur et l'encodeur sont `internal` : `shared` les utilise à travers les UseCases.
 - Chaque format a ses tests, dans `commonTest` (voir [Common/03_TESTS.md](../Common/03_TESTS.md)).
 
 `BarcodeFormat` liste les formats reconnus par les deux moteurs de détection (QR Code, Data Matrix,
-Aztec, PDF417, EAN-13, EAN-8, UPC-A, UPC-E, Code 39, Code 93, Code 128, ITF). La conversion depuis
-le format de chaque moteur se fait dans le code de plateforme de `shared`.
+Aztec, PDF417, EAN-13, EAN-8, UPC-A, UPC-E, Code 39, Code 93, Code 128, ITF, Codabar). La conversion
+depuis le format de chaque moteur se fait dans le code de plateforme de `shared`. AVFoundation n'a
+pas de type UPC-A : il rend un UPC-A comme un EAN-13 commençant par `0`.
 
 ### UseCases
 
