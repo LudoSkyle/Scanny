@@ -189,7 +189,8 @@ français.
   contient en un seul libellé (une ligne de l'historique se cherche par « contient »), et un titre
   marqué `heading()` (celui d'un `SCCardStructure`) n'est pas un `staticText` mais un
   `otherElement`. Une ligne `toggleable` est un `switch` dont l'état se lit par `isSelected`, sans
-  valeur.
+  valeur. Un `SCDropdownField` est un `textView` nommé par son libellé ; son texte d'attente n'est pas
+  exposé.
 - Un appui pendant une transition entre deux écrans se perd : avant d'appuyer sur l'écran d'arrivée,
   le test attend que l'écran quitté ait disparu (`waitForNonExistence` sur un de ses textes).
 - Les réglages restent d'un lancement à l'autre : un test qui en change un le remet comme il l'a

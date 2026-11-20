@@ -12,6 +12,7 @@
     <string name="camera_needed">Scanny needs the camera to scan codes.</string>
     <string name="camera_unavailable">No camera is available on this device. You can still scan a code in an image.</string>
     <string name="cancel">Cancel</string>
+    <string name="choose_subject">Choose a subject</string>
     <string name="clear">Clear</string>
     <string name="clear_history">Clear the history</string>
     <string name="clear_history_question">Clear the history?</string>
@@ -49,7 +50,6 @@
     <string name="feedback_about_other">Something else</string>
     <string name="feedback_about_scan">The scan</string>
     <string name="feedback_about_type_detection">The detection of the type of a code</string>
-    <string name="feedback_subject_question">What is your feedback about?</string>
     <string name="finish">Finish</string>
     <string name="general">General</string>
     <string name="github" translatable="false">GitHub</string>
