@@ -3,7 +3,7 @@
 Le module `domain` porte ce que Scanny sait faire indépendamment de l'écran et de la plateforme :
 
 - les modèles métier : le contenu typé d'un code (`BarcodeContent`), son format (`BarcodeFormat`),
-  un scan, une création ;
+  un code détecté, un scan (une capture de codes), une création ;
 - le **parseur** (texte brut d'un code → `BarcodeContent`) et l'**encodeur** (`BarcodeContent` →
   texte à mettre dans un QR code) ;
 - les UseCases, seul point d'entrée de `shared` vers les données.
@@ -21,7 +21,9 @@ domain/src/commonMain/kotlin/fr/skyle/scanny/domain/
 ├── model/
 │   ├── BarcodeContent.kt
 │   ├── BarcodeFormat.kt
-│   ├── Scan.kt                    (un scan, son contenu interprété par le parseur)
+│   ├── DetectedBarcode.kt         (un code tel que la détection le rend, et sa normalisation)
+│   ├── Scan.kt                    (une capture : sa date et ses codes)
+│   ├── ScannedCode.kt             (un code d'une capture, son contenu interprété par le parseur)
 │   ├── ScanSetting.kt             (un réglage du scan)
 │   ├── ScanSettings.kt            (les réglages du scan, ensemble)
 │   └── WifiEncryption.kt
@@ -31,8 +33,10 @@ domain/src/commonMain/kotlin/fr/skyle/scanny/domain/
 │   └── PayloadSyntax.kt           (préfixes et caractères échappés, communs aux deux)
 └── usecase/
     ├── scan/
+    │   ├── DeleteScannedCodeUseCase.kt
     │   ├── DeleteScanUseCase.kt
     │   ├── RecordScanUseCase.kt
+    │   ├── WatchScannedCodeUseCase.kt
     │   ├── WatchScanUseCase.kt
     │   └── WatchScansUseCase.kt
     └── settings/
@@ -46,7 +50,7 @@ domain/src/commonMain/kotlin/fr/skyle/scanny/domain/
 et aux actions : `Text`, `Url`, `Email` (destinataire, sujet, corps), `Sms` (numéro, message),
 `Wifi` (SSID, chiffrement `NONE`/`WEP`/`WPA`/`WPA3`, mot de passe, réseau masqué), `Contact`. D'autres
 types (téléphone, position, événement) s'ajoutent avec l'écran qui les affiche. Le texte brut n'en
-fait pas partie : il est porté par le `Scan`.
+fait pas partie : il est porté par le `ScannedCode`.
 
 `Contact` porte un nom affiché (`formattedName`) **et** un prénom et un nom séparés : l'ajout d'un
 contact sur Android prend un nom affiché, iOS (`CNMutableContact`) veut le prénom et le nom. S'y
@@ -89,16 +93,33 @@ parseur, et obtiennent le même résultat.
 `BarcodeFormat` liste les formats reconnus par les deux moteurs de détection (QR Code, Data Matrix,
 Aztec, PDF417, EAN-13, EAN-8, UPC-A, UPC-E, Code 39, Code 93, Code 128, ITF, Codabar). La conversion
 depuis le format de chaque moteur se fait dans le code de plateforme de `shared`. AVFoundation n'a
-pas de type UPC-A : il rend un UPC-A comme un EAN-13 commençant par `0`.
+pas de type UPC-A : il rend un UPC-A comme un EAN-13 commençant par `0`. `DetectedBarcode.normalized()`
+le ramène à un UPC-A, pour que le même code soit enregistré pareil sur les deux plateformes.
+
+### Captures
+
+Un `Scan` est une capture : sa date et la liste de ses `ScannedCode`, dans l'ordre de lecture. Un
+scan simple est une capture d'un code, un scan multiple celle de tous les codes trouvés pendant la
+session.
+
+- `RecordScanUseCase` reçoit les `DetectedBarcode` d'une capture, au moins un. Il les normalise, puis
+  ne garde qu'une fois un code lu plusieurs fois (même texte et même format, après normalisation), à
+  sa première lecture, sans changer l'ordre des autres. Le même texte dans deux formats reste deux
+  codes.
+- Une liste vide est une erreur de l'appelant, pas un cas métier : `require`, qui lève une
+  `IllegalArgumentException`.
+- Il rend la capture relue depuis la base, avec les identifiants qu'elle a donnés aux codes : c'est
+  par l'identifiant d'un code que s'ouvre son écran de détail.
+- Supprimer le dernier code d'une capture supprime la capture (règle portée par `data`).
 
 ### UseCases
 
 - Un UseCase est **une interface et son implémentation, dans le même fichier**, nommé d'après
   l'interface (`RecordScanUseCase.kt`). L'implémentation est `internal`.
 - Il expose une seule méthode, `operator fun invoke(...)`, pour s'appeler comme une fonction :
-  `recordScanUseCase(rawValue = rawValue, format = format)`. Elle est `suspend`, sauf quand elle rend
+  `recordScanUseCase(barcodes = listOf(barcode))`. Elle est `suspend`, sauf quand elle rend
   un `Flow` (`WatchScansUseCase`) : un `Flow` est déjà froid, il n'a rien à suspendre.
-- Un `Scan` est interprété à la lecture (`BarcodeContentParser` dans le mapper) : seul le texte brut
+- Un code est interprété à la lecture (`BarcodeContentParser` dans le mapper) : seul le texte brut
   est stocké, et une amélioration du parseur profite à tout l'historique. La conversion d'une liste
   se fait hors du thread principal (`flowOn(Dispatchers.Default)`).
 - Il reçoit et rend des modèles métier, jamais des modèles de `data` : il fait la conversion.
@@ -116,10 +137,11 @@ pas de type UPC-A : il rend un UPC-A comme un EAN-13 commençant par `0`.
 ```kotlin
 interface RecordScanUseCase {
 
-    suspend operator fun invoke(
-        rawValue: String,
-        format: BarcodeFormat,
-    ): Scan
+    /**
+     * Records the [barcodes] read in one capture, at least one, and returns the capture. The same code
+     * read several times is recorded once, at its first reading.
+     */
+    suspend operator fun invoke(barcodes: List<DetectedBarcode>): Scan
 }
 
 internal class RecordScanUseCaseImpl(
@@ -127,25 +149,30 @@ internal class RecordScanUseCaseImpl(
     private val clock: Clock,
 ) : RecordScanUseCase {
 
-    override suspend fun invoke(
-        rawValue: String,
-        format: BarcodeFormat,
-    ): Scan {
-        val scannedAt = clock.now()
+    override suspend fun invoke(barcodes: List<DetectedBarcode>): Scan {
+        require(barcodes.isNotEmpty()) { "A scan holds at least one code" }
 
-        val id = scanRepository.saveScan(
-            rawValue = rawValue,
-            format = format.name,
-            scannedAt = scannedAt,
+        val codes = barcodes
+            .map { barcode ->
+                barcode.normalized()
+            }
+            .distinct()
+            .map { barcode ->
+                CodeToSave(
+                    rawValue = barcode.rawValue,
+                    format = barcode.format.name,
+                )
+            }
+
+        val scanId = scanRepository.saveScan(
+            codes = codes,
+            scannedAt = clock.now(),
         )
 
-        return Scan(
-            id = id,
-            rawValue = rawValue,
-            content = BarcodeContentParser.parse(rawValue = rawValue),
-            format = format,
-            scannedAt = scannedAt,
-        )
+        // Read back, for the ids of the codes the database just gave
+        return checkNotNull(scanRepository.watchScan(id = scanId).first()) {
+            "The scan $scanId was not found once recorded"
+        }.toScan()
     }
 }
 ```

@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
+/** A capture: the codes read in one go, one for a simple scan, all those of a multiple scan. */
 @Entity(
     tableName = "scan",
     indices = [
@@ -15,12 +16,6 @@ internal data class ScanEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val id: Long = 0,
-    // The text of the code, as read by the detection engine
-    @ColumnInfo(name = "raw_value")
-    val rawValue: String,
-    // The name of a BarcodeFormat of domain
-    @ColumnInfo(name = "format")
-    val format: String,
     // Epoch milliseconds
     @ColumnInfo(name = "scanned_at")
     val scannedAt: Long,

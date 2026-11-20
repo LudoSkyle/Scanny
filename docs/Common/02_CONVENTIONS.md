@@ -69,15 +69,15 @@ Conventions transverses à tous les modules. Pour l'UI, voir en complément
   commence à la ligne suivante. Ne s'applique qu'aux fonctions, pas aux propriétés.
     - Exemple à éviter :
       ```kotlin
-      internal fun ScanEntity.toStoredScan(): StoredScan = StoredScan(
+      internal fun ScannedCodeEntity.toStoredCode(): StoredCode = StoredCode(
           id = id,
           rawValue = rawValue,
       )
       ```
     - Exemple attendu :
       ```kotlin
-      internal fun ScanEntity.toStoredScan(): StoredScan =
-          StoredScan(
+      internal fun ScannedCodeEntity.toStoredCode(): StoredCode =
+          StoredCode(
               id = id,
               rawValue = rawValue,
           )

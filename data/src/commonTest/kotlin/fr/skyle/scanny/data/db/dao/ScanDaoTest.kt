@@ -1,7 +1,10 @@
 package fr.skyle.scanny.data.db.dao
 
+import androidx.room.useReaderConnection
 import fr.skyle.scanny.data.db.DatabaseTest
 import fr.skyle.scanny.data.db.entity.ScanEntity
+import fr.skyle.scanny.data.db.entity.ScannedCodeEntity
+import fr.skyle.scanny.data.db.relation.ScannedCodeWithScanTime
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -11,37 +14,46 @@ import kotlin.test.assertNull
 internal class ScanDaoTest : DatabaseTest() {
 
     @Test
-    fun `a recorded scan keeps all its fields`() = runTest {
-        // Given
-        val id = scanDao.insert(
-            entity = scanEntity(
-                rawValue = "WIFI:S:Home;;",
-                format = "QR_CODE",
-                scannedAt = 1_700_000_000_123,
+    fun `a capture is recorded with its codes`() = runTest {
+        // When
+        val scanId = scanDao.insertWithCodes(
+            scan = ScanEntity(scannedAt = 1_700_000_000_123),
+            codes = listOf(
+                codeEntity(
+                    position = 0,
+                    rawValue = "first",
+                ),
+                codeEntity(
+                    position = 1,
+                    rawValue = "second",
+                ),
             ),
         )
 
-        // When
-        val scan = scanDao.watchById(id = id).first()
-
         // Then
+        val scan = scanDao.watchById(id = scanId).first()
         assertEquals(
             expected = ScanEntity(
-                id = id,
-                rawValue = "WIFI:S:Home;;",
-                format = "QR_CODE",
+                id = scanId,
                 scannedAt = 1_700_000_000_123,
             ),
-            actual = scan,
+            actual = scan?.scan,
+        )
+        assertEquals(
+            expected = setOf(
+                scanId to "first",
+                scanId to "second",
+            ),
+            actual = scan?.codes?.map { code -> code.scanId to code.rawValue }?.toSet(),
         )
     }
 
     @Test
-    fun `the scans are watched from the newest to the oldest`() = runTest {
+    fun `the captures are watched from the newest to the oldest`() = runTest {
         // Given
-        val oldestId = scanDao.insert(entity = scanEntity(scannedAt = 1_000))
-        val newestId = scanDao.insert(entity = scanEntity(scannedAt = 3_000))
-        val middleId = scanDao.insert(entity = scanEntity(scannedAt = 2_000))
+        val oldestId = insertScan(scannedAt = 1_000)
+        val newestId = insertScan(scannedAt = 3_000)
+        val middleId = insertScan(scannedAt = 2_000)
 
         // When
         val scans = scanDao.watchAll().first()
@@ -53,15 +65,15 @@ internal class ScanDaoTest : DatabaseTest() {
                 middleId,
                 oldestId,
             ),
-            actual = scans.map { it.id },
+            actual = scans.map { it.scan.id },
         )
     }
 
     @Test
-    fun `two scans of the same millisecond come from the last recorded to the first`() = runTest {
+    fun `two captures of the same millisecond come from the last recorded to the first`() = runTest {
         // Given
-        val firstId = scanDao.insert(entity = scanEntity(scannedAt = 1_000))
-        val secondId = scanDao.insert(entity = scanEntity(scannedAt = 1_000))
+        val firstId = insertScan(scannedAt = 1_000)
+        val secondId = insertScan(scannedAt = 1_000)
 
         // When
         val scans = scanDao.watchAll().first()
@@ -72,27 +84,55 @@ internal class ScanDaoTest : DatabaseTest() {
                 secondId,
                 firstId,
             ),
-            actual = scans.map { it.id },
+            actual = scans.map { it.scan.id },
         )
     }
 
     @Test
-    fun `watching a scan that does not exist gives null`() = runTest {
+    fun `a code is watched with the time of its capture`() = runTest {
         // Given
-        scanDao.insert(entity = scanEntity())
+        val scanId = insertScan(scannedAt = 1_700_000_000_123)
+        val codeId = scanDao.watchById(id = scanId).first()!!.codes.single().id
 
         // When
-        val scan = scanDao.watchById(id = 404).first()
+        val code = scanDao.watchCodeById(id = codeId).first()
 
         // Then
-        assertNull(scan)
+        assertEquals(
+            expected = ScannedCodeWithScanTime(
+                code = ScannedCodeEntity(
+                    id = codeId,
+                    scanId = scanId,
+                    position = 0,
+                    rawValue = "https://scanny.app",
+                    format = "QR_CODE",
+                ),
+                scannedAt = 1_700_000_000_123,
+            ),
+            actual = code,
+        )
     }
 
     @Test
-    fun `deleting a scan keeps the others`() = runTest {
+    fun `watching a capture or a code that does not exist gives null`() = runTest {
         // Given
-        val keptId = scanDao.insert(entity = scanEntity(scannedAt = 1_000))
-        val deletedId = scanDao.insert(entity = scanEntity(scannedAt = 2_000))
+        insertScan()
+
+        // When
+        val scan = scanDao.watchById(id = 404).first()
+        val code = scanDao.watchCodeById(id = 404).first()
+
+        // Then
+        assertNull(scan)
+        assertNull(code)
+    }
+
+    @Test
+    fun `deleting a capture deletes its codes and keeps the other captures`() = runTest {
+        // Given
+        val keptId = insertScan(scannedAt = 1_000)
+        val deletedId = insertScan(scannedAt = 2_000)
+        val deletedCodeId = scanDao.watchById(id = deletedId).first()!!.codes.single().id
 
         // When
         scanDao.deleteById(id = deletedId)
@@ -100,18 +140,84 @@ internal class ScanDaoTest : DatabaseTest() {
         // Then
         assertEquals(
             expected = listOf(keptId),
-            actual = scanDao.watchAll().first().map { it.id },
+            actual = scanDao.watchAll().first().map { it.scan.id },
+        )
+        assertNull(scanDao.watchCodeById(id = deletedCodeId).first())
+        // Counted in the table itself: the code of a capture is read through a join with it
+        assertEquals(
+            expected = 1,
+            actual = countCodes(),
         )
     }
 
-    private fun scanEntity(
+    @Test
+    fun `deleting the last code of a capture deletes the capture and keeps the others`() = runTest {
+        // Given
+        val keptId = insertScan(scannedAt = 1_000)
+        val emptiedId = insertScan(scannedAt = 2_000)
+        val codeId = scanDao.watchById(id = emptiedId).first()!!.codes.single().id
+
+        // When
+        scanDao.deleteCodeAndEmptyScan(id = codeId)
+
+        // Then
+        assertEquals(
+            expected = listOf(keptId),
+            actual = scanDao.watchAll().first().map { it.scan.id },
+        )
+    }
+
+    @Test
+    fun `deleting a code of a capture that has others keeps the capture`() = runTest {
+        // Given
+        val scanId = scanDao.insertWithCodes(
+            scan = ScanEntity(scannedAt = 1_000),
+            codes = listOf(
+                codeEntity(
+                    position = 0,
+                    rawValue = "deleted",
+                ),
+                codeEntity(
+                    position = 1,
+                    rawValue = "kept",
+                ),
+            ),
+        )
+        val deletedCodeId = scanDao.watchById(id = scanId).first()!!.codes.single { it.rawValue == "deleted" }.id
+
+        // When
+        scanDao.deleteCodeAndEmptyScan(id = deletedCodeId)
+
+        // Then
+        assertEquals(
+            expected = listOf("kept"),
+            actual = scanDao.watchById(id = scanId).first()?.codes?.map { it.rawValue },
+        )
+    }
+
+    private suspend fun countCodes(): Long =
+        database.useReaderConnection { connection ->
+            connection.usePrepared("SELECT COUNT(*) FROM scanned_code") { statement ->
+                statement.step()
+                statement.getLong(0)
+            }
+        }
+
+    private suspend fun insertScan(scannedAt: Long = 0): Long =
+        scanDao.insertWithCodes(
+            scan = ScanEntity(scannedAt = scannedAt),
+            codes = listOf(codeEntity()),
+        )
+
+    private fun codeEntity(
+        position: Int = 0,
         rawValue: String = "https://scanny.app",
         format: String = "QR_CODE",
-        scannedAt: Long = 0,
-    ): ScanEntity =
-        ScanEntity(
+    ): ScannedCodeEntity =
+        ScannedCodeEntity(
+            scanId = 0,
+            position = position,
             rawValue = rawValue,
             format = format,
-            scannedAt = scannedAt,
         )
 }

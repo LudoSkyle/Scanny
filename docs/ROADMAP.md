@@ -102,8 +102,9 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
      point sur Android et iPhone, et le scan d'une image sur iPhone (le simulateur n'a pas de caméra
      et Vision n'y détecte rien).
 7. **Détail d'un scan et actions natives**, en deux pull requests :
-   - [ ] 7a : la base et le domaine passent au modèle « capture » (voir les décisions prises), sans
-         changement visible
+   - [x] 7a : la base et le domaine passent au modèle « capture » (voir les décisions prises), sans
+         changement visible. Vérifié sur l'émulateur Android : le scan d'une image enregistre une
+         capture et son code
    - [ ] 7b : la feuille rapide après un scan (type, résumé, action principale, copier, « Voir le
          détail »), l'écran `ScanDetail` (contenu formaté et brut, toutes les actions, partage,
          suppression) et les actions natives de la matrice de

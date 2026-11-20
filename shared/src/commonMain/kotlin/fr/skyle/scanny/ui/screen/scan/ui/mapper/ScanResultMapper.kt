@@ -1,12 +1,13 @@
 package fr.skyle.scanny.ui.screen.scan.ui.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
-import fr.skyle.scanny.domain.model.Scan
+import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultItem
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultType
 
-internal fun Scan.toScanResultItem(): ScanResultItem =
+internal fun ScannedCode.toScanResultItem(): ScanResultItem =
     ScanResultItem(
+        codeId = id,
         type = when (content) {
             is BarcodeContent.Text -> ScanResultType.TEXT
             is BarcodeContent.Url -> ScanResultType.LINK

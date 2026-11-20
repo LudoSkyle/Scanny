@@ -1,5 +1,7 @@
 package fr.skyle.scanny.domain.fake
 
+import fr.skyle.scanny.data.model.CodeToSave
+import fr.skyle.scanny.data.model.StoredCode
 import fr.skyle.scanny.data.model.StoredScan
 import fr.skyle.scanny.data.repository.scan.api.ScanRepository
 import kotlinx.coroutines.flow.Flow
@@ -18,20 +20,27 @@ internal class FakeScanRepository(
         get() = scans.value
 
     override suspend fun saveScan(
-        rawValue: String,
-        format: String,
+        codes: List<CodeToSave>,
         scannedAt: Instant,
     ): Long {
-        val id = (scans.value.maxOfOrNull { it.id } ?: 0) + 1
+        val scanId = (scans.value.maxOfOrNull { it.id } ?: 0) + 1
+        val firstCodeId = (scans.value.flatMap { it.codes }.maxOfOrNull { it.id } ?: 0) + 1
         scans.update { storedScans ->
             storedScans + StoredScan(
-                id = id,
-                rawValue = rawValue,
-                format = format,
+                id = scanId,
                 scannedAt = scannedAt,
+                codes = codes.mapIndexed { index, code ->
+                    StoredCode(
+                        id = firstCodeId + index,
+                        scanId = scanId,
+                        rawValue = code.rawValue,
+                        format = code.format,
+                        scannedAt = scannedAt,
+                    )
+                },
             )
         }
-        return id
+        return scanId
     }
 
     override fun watchScans(): Flow<List<StoredScan>> =
@@ -42,9 +51,26 @@ internal class FakeScanRepository(
             storedScans.firstOrNull { it.id == id }
         }
 
+    override fun watchCode(id: Long): Flow<StoredCode?> =
+        scans.map { storedScans ->
+            storedScans
+                .flatMap { it.codes }
+                .firstOrNull { it.id == id }
+        }
+
     override suspend fun deleteScan(id: Long) {
         scans.update { storedScans ->
             storedScans.filterNot { it.id == id }
+        }
+    }
+
+    override suspend fun deleteCode(id: Long) {
+        scans.update { storedScans ->
+            storedScans
+                .map { storedScan ->
+                    storedScan.copy(codes = storedScan.codes.filterNot { it.id == id })
+                }
+                .filter { it.codes.isNotEmpty() }
         }
     }
 }

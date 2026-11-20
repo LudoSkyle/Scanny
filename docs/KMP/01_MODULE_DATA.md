@@ -16,7 +16,8 @@ data/src/
 │   ├── db/
 │   │   ├── ScannyDatabase.kt      (base, constructeur généré, configuration commune)
 │   │   ├── dao/
-│   │   └── entity/
+│   │   ├── entity/
+│   │   └── relation/              (une entité et celles qui lui sont liées, lues ensemble)
 │   ├── preferences/               (création du DataStore, nom du fichier)
 │   ├── mapper/                    (entité -> modèle exposé)
 │   ├── model/                     (modèles exposés par les Repositories)
@@ -53,9 +54,9 @@ data/src/
 ```kotlin
 interface ScanRepository {
 
+    /** Records a capture of [codes], at least one, in their order, and returns its id. */
     suspend fun saveScan(
-        rawValue: String,
-        format: String,
+        codes: List<CodeToSave>,
         scannedAt: Instant,
     ): Long
 
@@ -63,11 +64,16 @@ interface ScanRepository {
 
     fun watchScan(id: Long): Flow<StoredScan?>
 
+    fun watchCode(id: Long): Flow<StoredCode?>
+
     suspend fun deleteScan(id: Long)
+
+    /** Deletes a code, and its capture when it was the last code of it. */
+    suspend fun deleteCode(id: Long)
 }
 ```
 
-`repository/scan/ScanRepositoryImpl.kt`
+`repository/scan/ScanRepositoryImpl.kt` (extrait)
 
 ```kotlin
 internal class ScanRepositoryImpl(
@@ -75,37 +81,35 @@ internal class ScanRepositoryImpl(
 ) : ScanRepository {
 
     override suspend fun saveScan(
-        rawValue: String,
-        format: String,
+        codes: List<CodeToSave>,
         scannedAt: Instant,
-    ): Long =
-        scanDao.insert(
-            entity = ScanEntity(
-                rawValue = rawValue,
-                format = format,
-                scannedAt = scannedAt.toEpochMilliseconds(),
-            ),
-        )
+    ): Long {
+        require(codes.isNotEmpty()) { "A scan holds at least one code" }
 
-    override fun watchScans(): Flow<List<StoredScan>> =
-        scanDao.watchAll()
-            .map { entities ->
-                entities.map { entity ->
-                    entity.toStoredScan()
-                }
-            }
-            .flowOn(Dispatchers.Default)
+        return scanDao.insertWithCodes(
+            scan = ScanEntity(scannedAt = scannedAt.toEpochMilliseconds()),
+            codes = codes.mapIndexed { index, code ->
+                ScannedCodeEntity(
+                    // Set by the DAO, once the scan is inserted
+                    scanId = 0,
+                    position = index,
+                    rawValue = code.rawValue,
+                    format = code.format,
+                )
+            },
+        )
+    }
 
     override fun watchScan(id: Long): Flow<StoredScan?> =
         scanDao.watchById(id = id)
-            .map { entity ->
-                entity?.toStoredScan()
+            .map { scan ->
+                scan?.toStoredScan()
             }
             .distinctUntilChanged()
             .flowOn(Dispatchers.Default)
 
-    override suspend fun deleteScan(id: Long) {
-        scanDao.deleteById(id = id)
+    override suspend fun deleteCode(id: Long) {
+        scanDao.deleteCodeAndEmptyScan(id = id)
     }
 }
 ```
@@ -148,6 +152,30 @@ internal expect val platformDataModule: Module
 - `@Insert(onConflict = REPLACE)` supprime puis réinsère la ligne : `@Upsert` dès qu'une ligne est
   réenregistrée (favori, renommage).
 - Une requête qui retourne une relation (`@Relation`) porte `@Transaction`.
+- Plusieurs requêtes qui doivent réussir ou échouer ensemble vont dans une méthode du DAO annotée
+  `@Transaction`. Une telle méthode a un corps : le DAO est alors une `abstract class` (méthodes
+  `abstract` pour les requêtes, `open` pour les transactions), Room ne sachant pas exécuter le corps
+  d'une méthode d'interface dans une transaction.
+
+### Historique des scans
+
+Un scan est une **capture** de un à plusieurs codes : un code pour un scan simple, tous les codes
+trouvés pendant un scan multiple. Deux tables :
+
+| Table | Colonnes | Rôle |
+|---|---|---|
+| `scan` | `id`, `scanned_at` (indexée) | la capture, et sa date |
+| `scanned_code` | `id`, `scan_id` (indexée, clé étrangère vers `scan`, `ON DELETE CASCADE`), `position`, `raw_value`, `format` | un code de la capture, à sa place dans l'ordre de lecture |
+
+- Une capture et ses codes s'enregistrent dans une même transaction (`insertWithCodes`) : une
+  capture n'existe jamais sans ses codes.
+- **Une capture a toujours au moins un code** : `saveScan` refuse une liste vide, et la suppression
+  du dernier code d'une capture supprime la capture dans la même transaction
+  (`deleteCodeAndEmptyScan`). Supprimer une capture supprime ses codes, par la cascade.
+- Les captures se lisent de la plus récente à la plus ancienne ; l'`id` départage deux captures de la
+  même milliseconde. Les codes d'une capture se rendent dans l'ordre de `position`.
+- Un code se lit seul (`watchCode`) avec la date de sa capture : l'écran d'un code ne charge pas
+  tout le groupe.
 
 ### Réglages (DataStore)
 

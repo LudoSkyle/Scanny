@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.DetectedBarcode
-import fr.skyle.scanny.domain.model.normalized
 import fr.skyle.scanny.domain.usecase.scan.RecordScanUseCase
 import fr.skyle.scanny.domain.usecase.settings.WatchScanSettingsUseCase
 import fr.skyle.scanny.platform.camera.CameraCapabilities
@@ -44,7 +43,6 @@ class ScanViewModel(
             uiState.copy(isDetectionPaused = true)
         }
 
-        val normalizedBarcode = barcode.normalized()
         viewModelScope.launch {
             try {
                 val settings = watchScanSettingsUseCase().first()
@@ -52,12 +50,10 @@ class ScanViewModel(
                     _event.send(ScanEvent.Vibrate)
                 }
 
-                val scan = recordScanUseCase(
-                    rawValue = normalizedBarcode.rawValue,
-                    format = normalizedBarcode.format,
-                )
+                // A simple scan is a capture of the one code read
+                val scannedCode = recordScanUseCase(barcodes = listOf(barcode)).codes.single()
 
-                val content = scan.content
+                val content = scannedCode.content
                 if (content is BarcodeContent.Url && settings.isOpenLinkAfterScanEnabled) {
                     _event.send(ScanEvent.OpenUrl(url = content.url))
                     // The browser takes a moment to open: meanwhile the camera would read the code again
@@ -65,13 +61,13 @@ class ScanViewModel(
                     resumeDetection()
                 } else {
                     _uiState.update { uiState ->
-                        uiState.copy(result = scan.toScanResultItem())
+                        uiState.copy(result = scannedCode.toScanResultItem())
                     }
                 }
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: Exception) {
-                Logger.e(throwable = exception) { "Failed to record the scan of a ${normalizedBarcode.format}" }
+                Logger.e(throwable = exception) { "Failed to record the scan of a ${barcode.format}" }
                 _event.send(ScanEvent.ScanNotSaved)
                 resumeDetection()
             }

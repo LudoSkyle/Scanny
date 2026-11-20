@@ -7,6 +7,7 @@ import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import fr.skyle.scanny.data.db.dao.ScanDao
 import fr.skyle.scanny.data.db.entity.ScanEntity
+import fr.skyle.scanny.data.db.entity.ScannedCodeEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
@@ -14,6 +15,7 @@ import kotlinx.coroutines.IO
 @Database(
     entities = [
         ScanEntity::class,
+        ScannedCodeEntity::class,
     ],
     version = 1,
 )

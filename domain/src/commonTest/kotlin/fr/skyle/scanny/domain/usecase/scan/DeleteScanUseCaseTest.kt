@@ -1,5 +1,6 @@
 package fr.skyle.scanny.domain.usecase.scan
 
+import fr.skyle.scanny.data.model.StoredCode
 import fr.skyle.scanny.data.model.StoredScan
 import fr.skyle.scanny.domain.fake.FakeScanRepository
 import kotlinx.coroutines.test.runTest
@@ -33,8 +34,19 @@ class DeleteScanUseCaseTest {
     private fun storedScan(id: Long): StoredScan =
         StoredScan(
             id = id,
-            rawValue = "https://scanny.app",
-            format = "QR_CODE",
-            scannedAt = Instant.fromEpochMilliseconds(0),
+            scannedAt = SCANNED_AT,
+            codes = listOf(
+                StoredCode(
+                    id = id,
+                    scanId = id,
+                    rawValue = "https://scanny.app",
+                    format = "QR_CODE",
+                    scannedAt = SCANNED_AT,
+                ),
+            ),
         )
+
+    private companion object {
+        val SCANNED_AT = Instant.fromEpochMilliseconds(0)
+    }
 }
