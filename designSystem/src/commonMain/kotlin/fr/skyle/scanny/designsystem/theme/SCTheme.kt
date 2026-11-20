@@ -1,7 +1,10 @@
 package fr.skyle.scanny.designsystem.theme
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
@@ -24,9 +27,15 @@ fun SCTheme(
     CompositionLocalProvider(
         LocalColors provides colors,
         LocalTypography provides typography,
+        LocalShapes provides scannyShapes,
         LocalTextSelectionColors provides selectionColors,
-        content = content,
-    )
+        LocalIndication provides ripple(),
+    ) {
+        ProvideTextStyle(
+            value = typography.body1,
+            content = content,
+        )
+    }
 }
 
 object SCTheme {
@@ -39,4 +48,9 @@ object SCTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalTypography.current
+
+    val shapes: SCShapes
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalShapes.current
 }

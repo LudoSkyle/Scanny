@@ -1,16 +1,17 @@
 ## Design system
 
 Le thème et les composants génériques vivent dans le module `designSystem`, à part des écrans. Le
-module ne dépend que de Compose : un composant ne connaît ni un écran, ni un modèle métier. Un écran
-choisit un composant et l'une de ses variantes ; il ne décide ni d'une couleur, ni d'une forme, ni
-d'une taille de texte.
+module ne dépend que de Compose et de Material 3 : un composant ne connaît ni un écran, ni un modèle
+métier. Un écran choisit un composant et l'une de ses variantes ; il ne décide ni d'une couleur, ni
+d'une forme, ni d'une taille de texte.
 
 On y trouve :
 
 - le thème : `SCColors`, `SCTypography`, `SCShapes`, `SCTheme` ;
-- les composants génériques (`SCButton`, `SCIconButton`, `SCDialog`, `SCTextField`, `SCSwitch`,
-  `SCScreenStructure`…) ;
-- les polices (Lato) et les icônes des composants, dans Compose Resources.
+- les composants génériques : aujourd'hui `SCScreenStructure`, `SCTopAppBar` et `SCIconButton`.
+  Les autres (bouton, dialog, champ de texte, interrupteur…) arrivent avec le premier écran qui en a
+  besoin ;
+- les polices (Lato), les icônes et les textes des composants, dans Compose Resources.
 
 On n'y trouve pas :
 
@@ -27,17 +28,16 @@ designSystem/src/commonMain/
 │   │   ├── SCTheme.kt         (composable SCTheme et objet SCTheme)
 │   │   └── SCTypography.kt    (SCTypography, LocalTypography, famille Lato)
 │   └── core/
-│       ├── button/
-│       │   ├── SCButton.kt
-│       │   └── SCButtonDefaults.kt
-│       ├── dialog/
 │       ├── iconbutton/
-│       ├── screenstructure/
-│       ├── switch/
-│       └── textfield/
+│       │   ├── SCIconButton.kt
+│       │   └── SCIconButtonDefaults.kt
+│       ├── screenstructure/   (SCScreenStructure : fond, insets, barres du haut et du bas)
+│       └── topappbar/         (SCTopAppBar : retour, titre, actions)
 └── composeResources/
     ├── drawable/              (icônes des composants)
-    └── font/                  (lato_*.ttf)
+    ├── font/                  (lato_*.ttf)
+    ├── values/                (textes des composants, en anglais)
+    └── values-fr/
 ```
 
 ### Thème
@@ -56,8 +56,13 @@ fun SCTheme(
         LocalColors provides scannyColors,
         LocalTypography provides scannyTypography(),
         LocalShapes provides scannyShapes,
-        content = content,
-    )
+        LocalIndication provides ripple(),
+    ) {
+        ProvideTextStyle(
+            value = SCTheme.typography.body1,
+            content = content,
+        )
+    }
 }
 
 object SCTheme {
@@ -83,10 +88,26 @@ object SCTheme {
   `Color.Unspecified`.
 - La typographie lit les polices de Compose Resources (`Font(Res.font.lato_regular, ...)`), ce qui
   ne se fait que dans un composable : `scannyTypography()` est donc `@Composable`.
+- `SCShapes` ne porte que les formes utilisées : `medium` (coins arrondis de 10 dp, ceux des
+  boutons et des cellules de la v1). Une forme s'ajoute avec le composant qui en a besoin.
+- `SCTheme` fournit aussi le style de texte par défaut (`body1`) et le ripple de Material comme
+  retour au toucher de tout élément cliquable.
 - Tant que l'app n'a qu'un thème, on n'en prévoit qu'un. Le second viendra avec son besoin.
-- Les écrans ne lisent jamais `MaterialTheme` : un composant Material 3 (switch, slider, chip) est
-  enveloppé dans le design system, qui lui passe les couleurs de `SCTheme`. Sans cela, il prendrait
-  les couleurs par défaut de Material.
+
+### Material 3
+
+- La version est l'alpha alignée sur notre Compose Multiplatform (voir le catalogue et la
+  [feuille de route](../ROADMAP.md)) : la dernière stable est compilée contre un Compose plus ancien.
+- **Seul `designSystem` dépend de Material 3.** `shared` ne l'a pas sur son classpath : un écran
+  n'appelle jamais `Text`, `Button` ou `Switch` de Material, il passe par un composant `SC…`. Quand un
+  écran a besoin d'un élément qui n'existe pas encore (un texte, un bouton), on crée le composant dans
+  le design system, on n'ouvre pas la dépendance.
+- **Aucune API Expressive** : `ExperimentalMaterial3ExpressiveApi` n'est jamais activée, ni dans un
+  fichier, ni dans un plugin de convention. Les autres API expérimentales de Material 3 (`TopAppBar`)
+  sont permises, avec un `@OptIn(ExperimentalMaterial3Api::class)` local au composant.
+- On ne déclare pas de `MaterialTheme` : un composant Material est enveloppé dans le design system,
+  qui lui passe les couleurs de `SCTheme`. Sans cela, il prendrait les couleurs par défaut de
+  Material.
 
 ### Composants
 
@@ -145,6 +166,11 @@ object SCTheme {
   avec `painterResource(Res.drawable.x)`.
 - Un bouton qui n'affiche qu'une icône prend un `contentDescription` **obligatoire** et non nullable.
 - Les previews d'un composant parcourent **toutes** ses combinaisons `Style` × `Size`, avec un
-  `PreviewParameterProvider`. Elles n'utilisent que des ressources du module.
+  `PreviewParameterProvider`. Elles n'utilisent que des ressources du module, et l'annotation
+  `@Preview` directement (les annotations FR/EN sont propres à `shared`). Un style clair sur fond
+  sombre se prévisualise avec `showBackground = true` et `backgroundColor = 0xFF000000`.
+- Les icônes viennent des Material Symbols Rounded : le tracé SVG de Google, dans un vectoriel XML
+  avec un commentaire qui nomme l'icône, un groupe `translateY="960"` et `fillColor="#000000"` (la
+  couleur vient de l'`Icon`). Pas d'attribut propre à Android (`?attr/…`, `@android:color/…`).
 - La classe `Res` générée est `internal` au module : une ressource du design system qu'un écran
   affiche aussi passe par un accesseur public dédié.

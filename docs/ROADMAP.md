@@ -67,13 +67,20 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
          `GoogleService-Info.plist` d'une app iOS `fr.skyle.scanny` déclarée dans la console
          Firebase, à déposer dans `private/firebase/`.*
    - [x] `iosApp/CLAUDE.md` pour les règles propres au projet Xcode
-3. **Design system** : `SCTheme` (couleurs, Lato, formes), structure d'écran, puis les composants au
-   fil des écrans
+3. **Design system**
+   - [x] Material 3, dans `designSystem` seulement
+   - [x] `SCTheme` : couleurs, Lato, formes, style de texte par défaut, ripple
+   - [x] Structure d'écran (`SCScreenStructure`), barre du haut (`SCTopAppBar`), bouton icône
+         (`SCIconButton`)
+   - Les autres composants (bouton, dialog, champ de texte, interrupteur…) arrivent avec le premier
+     écran qui en a besoin.
 4. **Domain** : `BarcodeContent`, `BarcodeFormat`, parseur et encodeur, avec leurs tests
 5. **Data** : base Room, DataStore (avec reprise des réglages de la v1), Repositories
 6. **Scan** : `ScanCamera` Android puis iOS, permission, torche, galerie, zoom et mise au point.
    Un premier essai CameraX (sur l'ancienne base Hilt) est gardé comme exemple dans le stash
    « WIP scan screen (CameraX + Hilt)… » (`git stash list`) : il se consulte, il ne s'applique pas.
+   Les icônes de la barre d'état doivent passer en clair sur l'écran noir : elles sont aujourd'hui
+   sombres sur fond noir sur Android (la v1 le gérait), à vérifier aussi sur iOS en mode clair.
 7. **Détail d'un scan et actions natives** : interfaces de plateforme de la matrice de
    [KMP/03_CODE_PLATEFORME.md](./KMP/03_CODE_PLATEFORME.md)
 8. **Historique des scans**
@@ -100,9 +107,11 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
   Aztec, PDF417 et les codes-barres 1D (`qrose-matrix`, `qrose-oned`). Ne jamais utiliser la 1.3.0,
   qui produisait des QR codes inversés : 1.3.1 au minimum.
 
+- **Material 3** : 1.12.0-alpha03, l'alpha compilée sur Compose Multiplatform 1.12 comme le reste de
+  l'app (la dernière stable, 1.9.0, est compilée contre Compose 1.9). Seul `designSystem` en dépend,
+  et le projet n'utilise aucune API Expressive. On passera à une stable dès qu'il en sortira une
+  alignée sur la version de Compose.
+
 ## Décisions ouvertes
 
-- **Material 3 (lot 3)** : la dernière version stable pour Compose Multiplatform (1.9.0) est en
-  retard sur Compose Multiplatform 1.12 ; les versions alignées sont des alphas (1.12.0-alpha03).
-  À trancher quand le design system enveloppera son premier composant Material.
 - **CI** : le build iOS demande un exécuteur macOS sur CircleCI.
