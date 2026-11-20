@@ -30,7 +30,7 @@ final class ScanFlowUITests: XCTestCase {
         XCTAssertTrue(app.buttons["See the detail"].waitForExistence(timeout: 10))
         app.buttons["See the detail"].tap()
 
-        XCTAssertTrue(app.staticTexts["Content"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.otherElements["Content"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["https://scanny.app/detail"].exists)
         keepScreenshot(named: "detail", of: app)
 
@@ -186,7 +186,7 @@ final class ScanFlowUITests: XCTestCase {
         keepScreenshot(named: "french-sheet", of: app)
 
         app.buttons["Voir le détail"].tap()
-        XCTAssertTrue(app.staticTexts["Contenu"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.otherElements["Contenu"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["Partager"].exists)
         keepScreenshot(named: "french-detail", of: app)
 

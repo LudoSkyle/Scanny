@@ -25,7 +25,7 @@ final class ScanHistoryUITests: XCTestCase {
 
         row.tap()
 
-        XCTAssertTrue(app.staticTexts["Content"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.otherElements["Content"].waitForExistence(timeout: 5))
         XCTAssertTrue(element(labelled: "Today at ", in: app).exists)
         keepScreenshot(named: "history-detail", of: app)
 

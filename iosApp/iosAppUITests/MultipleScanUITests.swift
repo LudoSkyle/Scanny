@@ -41,7 +41,7 @@ final class MultipleScanUITests: XCTestCase {
         keepScreenshot(named: "group", of: app)
 
         element(labelled: "A text of the group", in: app).tap()
-        XCTAssertTrue(app.staticTexts["Content"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.otherElements["Content"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["A text of the group"].exists)
 
         app.buttons["Back"].tap()
@@ -73,7 +73,7 @@ final class MultipleScanUITests: XCTestCase {
 
         element(labelled: "Second of two", in: app).tap()
 
-        XCTAssertTrue(app.staticTexts["Content"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.otherElements["Content"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["Second of two"].exists)
     }
 
