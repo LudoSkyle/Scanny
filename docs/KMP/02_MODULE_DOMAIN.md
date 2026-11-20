@@ -34,6 +34,7 @@ domain/src/commonMain/kotlin/fr/skyle/scanny/domain/
 │   └── PayloadSyntax.kt           (préfixes et caractères échappés, communs aux deux)
 └── usecase/
     ├── scan/
+    │   ├── DeleteAllScansUseCase.kt   (effacer l'historique)
     │   ├── DeleteScannedCodeUseCase.kt
     │   ├── DeleteScanUseCase.kt
     │   ├── RecordScanUseCase.kt

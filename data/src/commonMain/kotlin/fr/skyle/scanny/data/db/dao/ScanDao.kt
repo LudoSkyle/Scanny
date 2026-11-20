@@ -53,6 +53,10 @@ internal abstract class ScanDao {
     @Query("DELETE FROM scan WHERE id = :id")
     abstract suspend fun deleteById(id: Long)
 
+    // The codes go with their captures, through the cascade of their foreign key
+    @Query("DELETE FROM scan")
+    abstract suspend fun deleteAll()
+
     @Query("DELETE FROM scanned_code WHERE id = :id")
     abstract suspend fun deleteCode(id: Long)
 
