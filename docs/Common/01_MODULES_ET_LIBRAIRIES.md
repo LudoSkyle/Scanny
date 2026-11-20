@@ -7,7 +7,7 @@
 | `androidApp` | App Android | `ScannyApplication` (démarrage de Koin, logs, Crashlytics), `MainActivity` qui affiche `ScannyApp()`, manifest, icône, signature, `google-services.json` |
 | `iosApp` | Projet Xcode | L'app SwiftUI qui démarre Koin et affiche le `ComposeUIViewController` de `shared`, `Info.plist`, assets, signature |
 | `shared` | KMP + Compose Multiplatform | `ScannyApp`, navigation, écrans (`ui/screen/<feature>`), ViewModels, composants « produit » (`ui/core`), code natif des écrans (`platform/`), module Koin racine. Produit le framework iOS `Shared` |
-| `designSystem` | KMP + Compose Multiplatform | `SCTheme` (couleurs, typographie, formes), composants génériques (`SCButton`, `SCDialog`…), polices |
+| `designSystem` | KMP + Compose Multiplatform | `SCTheme` (couleurs, typographie, formes), composants génériques (`SCScreenStructure`, `SCTopAppBar`, `SCIconButton`…) qui enveloppent Material 3, polices |
 | `domain` | KMP | Modèles métier (`BarcodeContent`, `BarcodeFormat`…), parseur et encodeur du contenu des codes, UseCases |
 | `data` | KMP | Base Room (entités, DAO), préférences DataStore, Repositories (interfaces et implémentations), modèles exposés |
 
@@ -30,8 +30,8 @@ androidApp ──► shared ◄── iosApp (framework Shared)
 - Toutes les dépendances entre modules sont en `implementation`. `shared` ne voit donc pas `data` :
   il passe par les UseCases de `domain` (voir
   [ADR-0001](../adr/0001-le-domaine-depend-de-la-donnee.md)).
-- `designSystem` ne dépend que de Compose : le compilateur garantit qu'un composant générique ne
-  connaît ni un écran, ni un modèle métier.
+- `designSystem` ne dépend que de Compose et de Material 3 : le compilateur garantit qu'un composant
+  générique ne connaît ni un écran, ni un modèle métier.
 - `domain` et `data` n'ont aucune dépendance UI.
 - Les hôtes ne dépendent que de `shared`. Ils ne contiennent aucun écran.
 
@@ -68,7 +68,8 @@ Communes (`commonMain`) :
 
 | Besoin | Bibliothèque |
 |---|---|
-| UI | Compose Multiplatform (`ui`, `foundation`, `material3`, `components-resources`, `ui-tooling-preview`) |
+| UI | Compose Multiplatform (`ui`, `foundation`, `components-resources`, `ui-tooling-preview`) |
+| Composants Material | Material 3, en alpha alignée sur Compose Multiplatform, **dans `designSystem` seulement**, sans API Expressive |
 | Textes, polices, icônes | Compose Resources |
 | Navigation | Navigation 3 (artefacts multiplateformes) |
 | ViewModel, cycle de vie | Lifecycle multiplateforme (`lifecycle-viewmodel`, `-viewmodel-compose`, `-runtime-compose`, `-viewmodel-navigation3`) |

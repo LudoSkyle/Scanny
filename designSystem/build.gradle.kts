@@ -12,7 +12,9 @@ kotlin {
             // Compose
             implementation(libs.composeMultiplatform.ui)
             implementation(libs.composeMultiplatform.foundation)
+            implementation(libs.composeMultiplatform.material3)
             implementation(libs.composeMultiplatform.resources)
+            implementation(libs.composeMultiplatform.ui.tooling.preview)
         }
     }
 }

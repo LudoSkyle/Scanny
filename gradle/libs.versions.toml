@@ -11,6 +11,7 @@ kotlinxSerialization = "1.13.0"
 
 # Compose Multiplatform
 composeMultiplatform = "1.12.2"
+composeMultiplatformMaterial3 = "1.12.0-alpha03" # Built on Compose Multiplatform 1.12, where the latest stable (1.9.0) is built on Compose 1.9. No Expressive API in this project
 
 # Navigation 3
 navigation3Multiplatform = "1.2.0"
@@ -41,6 +42,7 @@ easylauncherPlugin = "6.4.1"
 # Compose Multiplatform
 composeMultiplatform-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
 composeMultiplatform-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
+composeMultiplatform-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMultiplatformMaterial3" }
 composeMultiplatform-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 composeMultiplatform-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 composeMultiplatform-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
