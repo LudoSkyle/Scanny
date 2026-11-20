@@ -3,6 +3,12 @@
 La navigation utilise Navigation 3, dans ses artefacts multiplateformes : elle est commune à Android
 et iOS, dans `shared/src/commonMain`.
 
+**Règle produit, non négociable : pas de barre de navigation en bas.** L'app s'ouvre directement sur
+le scan (`Route.Scan`, premier et seul élément du back stack au lancement). Tous les autres écrans
+(historiques, création, réglages) s'ouvrent depuis le scan, par une action de sa barre du haut ou de
+son interface, et y reviennent par le retour. Ni onglets, ni `NavigationBar`, ni écran d'accueil
+intermédiaire.
+
 - Les routes sont centralisées dans `ui/main/navigation/Route.kt`.
 - L'hôte de navigation est `ui/main/navigation/RootNavDisplay.kt`, affiché par `ScannyApp`.
 - Une route implémente `NavKey` et est annotée `@Serializable` : le back stack est sauvegardé et

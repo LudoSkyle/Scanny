@@ -5,6 +5,9 @@ module ne dépend que de Compose et de Material 3 : un composant ne connaît ni 
 métier. Un écran choisit un composant et l'une de ses variantes ; il ne décide ni d'une couleur, ni
 d'une forme, ni d'une taille de texte.
 
+Le design n'a pas à reproduire celui de la v1 : les composants peuvent le moderniser. Seuls la
+palette, la police Lato et l'identité de l'app (icône, ton des textes) servent de point de départ.
+
 On y trouve :
 
 - le thème : `SCColors`, `SCTypography`, `SCShapes`, `SCTheme` ;
@@ -31,7 +34,7 @@ designSystem/src/commonMain/
 │       ├── iconbutton/
 │       │   ├── SCIconButton.kt
 │       │   └── SCIconButtonDefaults.kt
-│       ├── screenstructure/   (SCScreenStructure : fond, insets, barres du haut et du bas)
+│       ├── screenstructure/   (SCScreenStructure : fond, insets, barre du haut)
 │       └── topappbar/         (SCTopAppBar : retour, titre, actions)
 └── composeResources/
     ├── drawable/              (icônes des composants)

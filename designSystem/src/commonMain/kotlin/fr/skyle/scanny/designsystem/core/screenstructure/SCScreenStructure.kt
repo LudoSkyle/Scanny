@@ -22,13 +22,11 @@ fun SCScreenStructure(
     style: SCScreenStructureDefaults.Style,
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
-    bottomBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
         topBar = topBar,
-        bottomBar = bottomBar,
         containerColor = style.containerColor,
         contentColor = style.contentColor,
         contentWindowInsets = WindowInsets.safeDrawing,

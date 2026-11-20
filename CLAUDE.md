@@ -29,7 +29,7 @@ tâche en cours, chacun est autonome.
 | Caméra, détection, actions système, tout ce qui diffère par plateforme | [docs/KMP/03_CODE_PLATEFORME.md](./docs/KMP/03_CODE_PLATEFORME.md) |
 | Toucher au projet Xcode, à l'`Info.plist`, à la signature iOS | [iosApp/CLAUDE.md](./iosApp/CLAUDE.md) |
 
-Trois règles à ne jamais perdre de vue :
+Quatre règles à ne jamais perdre de vue :
 
 - **Toute l'UI est en Compose Multiplatform**, dans `commonMain`. Le natif n'existe que derrière une
   frontière commune (caméra, détection, permissions, actions système). Voir
@@ -37,6 +37,8 @@ Trois règles à ne jamais perdre de vue :
 - **Le domaine dépend de la donnée, jamais l'inverse** : `shared` → `domain` → `data`, et `shared`
   ne voit pas `data`. Voir [ADR-0001](./docs/adr/0001-le-domaine-depend-de-la-donnee.md).
 - **`internal` par défaut** : seul ce qui traverse une frontière de module est public.
+- **Pas de barre de navigation en bas** : l'app s'ouvre directement sur le scan, et tous les autres
+  écrans s'ouvrent depuis lui. Voir [docs/UI/01_NAVIGATION.md](./docs/UI/01_NAVIGATION.md).
 
 ## État du projet
 
