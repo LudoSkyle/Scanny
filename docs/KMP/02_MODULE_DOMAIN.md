@@ -17,22 +17,27 @@ domain/src/commonMain/kotlin/fr/skyle/scanny/domain/
 ├── di/
 │   └── DomainModule.kt
 ├── exception/
-├── mapper/                        (modèle de data -> modèle métier)
+├── mapper/                        (modèle de data -> modèle métier : ScanMapper)
 ├── model/
 │   ├── BarcodeContent.kt
 │   ├── BarcodeFormat.kt
-│   ├── Scan.kt                    (lot 5)
+│   ├── Scan.kt                    (un scan, son contenu interprété par le parseur)
+│   ├── ScanSetting.kt             (un réglage du scan)
+│   ├── ScanSettings.kt            (les réglages du scan, ensemble)
 │   └── WifiEncryption.kt
 ├── payload/                       (le texte d'un code, dans les deux sens)
 │   ├── BarcodeContentEncoder.kt
 │   ├── BarcodeContentParser.kt
 │   └── PayloadSyntax.kt           (préfixes et caractères échappés, communs aux deux)
-└── usecase/                       (lot 5)
-    └── scan/
-        ├── DeleteScanUseCase.kt
-        ├── RecordScanUseCase.kt
-        ├── WatchScanUseCase.kt
-        └── WatchScansUseCase.kt
+└── usecase/
+    ├── scan/
+    │   ├── DeleteScanUseCase.kt
+    │   ├── RecordScanUseCase.kt
+    │   ├── WatchScanUseCase.kt
+    │   └── WatchScansUseCase.kt
+    └── settings/
+        ├── SetScanSettingUseCase.kt
+        └── WatchScanSettingsUseCase.kt
 ```
 
 ### Contenu d'un code
@@ -91,7 +96,11 @@ pas de type UPC-A : il rend un UPC-A comme un EAN-13 commençant par `0`.
 - Un UseCase est **une interface et son implémentation, dans le même fichier**, nommé d'après
   l'interface (`RecordScanUseCase.kt`). L'implémentation est `internal`.
 - Il expose une seule méthode, `operator fun invoke(...)`, pour s'appeler comme une fonction :
-  `recordScanUseCase(rawValue = rawValue, format = format)`.
+  `recordScanUseCase(rawValue = rawValue, format = format)`. Elle est `suspend`, sauf quand elle rend
+  un `Flow` (`WatchScansUseCase`) : un `Flow` est déjà froid, il n'a rien à suspendre.
+- Un `Scan` est interprété à la lecture (`BarcodeContentParser` dans le mapper) : seul le texte brut
+  est stocké, et une amélioration du parseur profite à tout l'historique. La conversion d'une liste
+  se fait hors du thread principal (`flowOn(Dispatchers.Default)`).
 - Il reçoit et rend des modèles métier, jamais des modèles de `data` : il fait la conversion.
 - Comme `shared` ne voit pas `data`, toute lecture passe par un UseCase, même quand il ne fait que
   lire et convertir. C'est le prix de la frontière, accepté par l'ADR-0001.

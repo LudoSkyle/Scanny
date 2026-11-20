@@ -75,7 +75,7 @@ Communes (`commonMain`) :
 | ViewModel, cycle de vie | Lifecycle multiplateforme (`lifecycle-viewmodel`, `-viewmodel-compose`, `-runtime-compose`, `-viewmodel-navigation3`) |
 | Injection de dépendances | Koin (`koin-core`, `koin-compose-viewmodel`) |
 | Base de données | Room KMP, avec `sqlite-bundled` et KSP |
-| Préférences | DataStore Preferences (multiplateforme) |
+| Préférences | DataStore Preferences (multiplateforme), sur okio |
 | Sérialisation | kotlinx-serialization (routes de navigation) |
 | Dates et heure | kotlinx-datetime, `kotlin.time.Clock` |
 | Fichiers | kotlinx-io |

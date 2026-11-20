@@ -14,22 +14,25 @@ data/src/
 │   ├── di/
 │   │   └── DataModule.kt          (dataModule, expect platformDataModule)
 │   ├── db/
-│   │   ├── ScannyDatabase.kt
-│   │   ├── converter/
+│   │   ├── ScannyDatabase.kt      (base, constructeur généré, configuration commune)
 │   │   ├── dao/
 │   │   └── entity/
-│   ├── preferences/               (création du DataStore, clés)
+│   ├── preferences/               (création du DataStore, nom du fichier)
 │   ├── mapper/                    (entité -> modèle exposé)
 │   ├── model/                     (modèles exposés par les Repositories)
 │   └── repository/
-│       └── scan/
-│           ├── api/
-│           │   └── ScanRepository.kt
-│           └── ScanRepositoryImpl.kt
-├── androidMain/kotlin/fr/skyle/scanny/data/di/
-│   └── DataModule.android.kt      (base et DataStore construits avec le Context)
-└── iosMain/kotlin/fr/skyle/scanny/data/di/
-    └── DataModule.ios.kt          (base et DataStore dans les dossiers de l'app)
+│       ├── scan/
+│       │   ├── api/
+│       │   │   └── ScanRepository.kt
+│       │   └── ScanRepositoryImpl.kt
+│       └── settings/              (SettingsRepository, sur le DataStore)
+├── androidMain/kotlin/fr/skyle/scanny/data/
+│   ├── db/ScannyDatabase.android.kt   (construction avec le Context)
+│   └── di/DataModule.android.kt       (base et DataStore de la plateforme)
+└── iosMain/kotlin/fr/skyle/scanny/data/
+    ├── db/ScannyDatabase.ios.kt
+    ├── di/DataModule.ios.kt
+    └── file/ApplicationSupport.kt     (chemin d'un fichier dans Application Support)
 ```
 
 ### Repositories
@@ -126,12 +129,19 @@ internal expect val platformDataModule: Module
 
 - Une seule base, `ScannyDatabase`, `internal`. Elle porte `@ConstructedBy` : Room génère son
   constructeur pour chaque plateforme, sans réflexion.
-- Elle est construite par le module Koin de plateforme (chemin du fichier propre à chaque
-  plateforme), avec `BundledSQLiteDriver` et `setQueryCoroutineContext(Dispatchers.IO)`.
+- Elle est construite par le module Koin de plateforme, avec `BundledSQLiteDriver` (le SQLite
+  embarqué, le même partout) et `setQueryCoroutineContext(Dispatchers.IO)`. Le constructeur généré
+  est une classe `expect` : le module compile avec `-Xexpect-actual-classes`.
+- Son fichier est sauvegardé par le système, puisque l'historique est une donnée que l'utilisateur
+  veut retrouver sur un nouveau téléphone : dans le dossier `databases` de l'app sur Android
+  (`getDatabasePath`), dans Application Support sur iOS.
 - Les DAO ne déclarent que des fonctions `suspend` ou des `Flow` : aucun appel bloquant.
 - **Les historiques sont des données de l'utilisateur : jamais de migration destructive.** Toute
   évolution du schéma monte la version et fournit sa migration (`AutoMigration` quand c'est
   possible). Les schémas sont exportés et versionnés (`data/schemas/`).
+- Exception tant que la v2 n'est pas publiée : aucun utilisateur n'a encore la base, la version 1 du
+  schéma peut donc évoluer sans migration (la table des créations du lot 10 s'y ajoute). La règle
+  s'applique dès la première publication.
 - Une requête de lecture multiple a un `ORDER BY` explicite : sans lui, l'ordre est un détail de
   SQLite dont l'UI finit par dépendre.
 - Un index est attendu sur toute colonne utilisée en filtre ou en tri (date de scan, type).
@@ -142,7 +152,11 @@ internal expect val platformDataModule: Module
 ### Réglages (DataStore)
 
 - Un seul DataStore de préférences pour toute l'app, créé une fois (`single` Koin) avec
-  `PreferenceDataStoreFactory.createWithPath`. Le chemin du fichier vient du module de plateforme.
+  `PreferenceDataStoreFactory.createWithPath`. Le chemin du fichier vient du module de plateforme
+  (Application Support sur iOS).
+- Un fichier de réglages corrompu repart des valeurs par défaut (`ReplaceFileCorruptionHandler`) :
+  c'est un incident de l'appareil, pas un bug, et chaque lecture échouerait sinon. C'est la seule
+  observation de `data` qui traite une erreur.
 - Sur Android, le fichier et les clés de la v1 sont conservés pour que les réglages survivent à la
   mise à jour : fichier `sc_datastore.preferences_pb` dans le dossier `datastore` des fichiers de
   l'app, clés `KEY_IS_VIBRATION_AFTER_SCAN_ENABLED` (défaut `true`), `KEY_OPEN_LINK_AFTER_SCAN`

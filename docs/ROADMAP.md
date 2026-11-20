@@ -79,8 +79,12 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
    - [x] `BarcodeContent`, `BarcodeFormat` (Codabar compris), `WifiEncryption`
    - [x] Parseur et encodeur, avec leurs tests, sur la JVM et le simulateur iOS
    - Le modèle `Scan` et les UseCases arrivent avec la donnée, au lot 5.
-5. **Data** : base Room, DataStore (avec reprise des réglages de la v1), Repositories, et les
-   UseCases de `domain` qui les exposent
+5. **Data**
+   - [x] Base Room (historique des scans), schéma exporté
+   - [x] DataStore des réglages, avec le fichier et les clés de la v1
+   - [x] `ScanRepository`, `SettingsRepository`
+   - [x] Modèle `Scan`, réglages, et les UseCases qui les exposent, avec leurs tests
+   - Le câblage Koin n'est vérifié à l'exécution qu'au lot 6, quand le premier ViewModel s'en sert.
 6. **Scan** : `ScanCamera` Android puis iOS, permission, torche, galerie, zoom et mise au point.
    Un premier essai CameraX (sur l'ancienne base Hilt) est gardé comme exemple dans le stash
    « WIP scan screen (CameraX + Hilt)… » (`git stash list`) : il se consulte, il ne s'applique pas.
