@@ -142,16 +142,21 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
 - iOS : `NSCameraUsageDescription` est dans l'`Info.plist`, traduite dans `en.lproj` et `fr.lproj`.
 - Le scan d'une image ne demande aucune permission : il reste proposé quand la caméra est refusée ou
   absente.
-- **Sur le simulateur iOS, rien de tout cela ne se vérifie** : il n'a pas de caméra, et Vision n'y
+- **Sur le simulateur iOS, la détection ne se vérifie pas** : il n'a pas de caméra, et Vision n'y
   détecte aucun code dans une image (limite connue du simulateur, quelle que soit la révision de la
-  requête). La détection iOS se vérifie sur un iPhone.
+  requête). La détection iOS se vérifie sur un iPhone. Pour tester ce qui suit un scan, un build
+  Debug sur simulateur remplace la caméra par `SimulatedScanCamera`, qui lit le code donné dans
+  l'environnement de l'app (`SimulatedScan`, voir [iosApp/CLAUDE.md](../../iosApp/CLAUDE.md)).
 
 ### Actions sur un code
 
 - Ouvrir un lien, écrire un e-mail ou un SMS passe par `LocalUriHandler`, depuis la `Route`. Le lien
   vient du domaine (`mailto:`, `sms:` de la RFC 5724) ; `platformSmsLink` l'adapte à la plateforme :
-  Android l'ouvre tel quel, Messages sur iOS veut `&body=` au lieu de `?body=`. Quand aucune app ne
-  l'ouvre, l'échec est journalisé, et l'écran du détail le dit.
+  Android l'ouvre tel quel, iOS reçoit `&body=` au lieu de `?body=`. Messages d'iOS 26 lit les deux
+  (constaté sur le simulateur) ; `&body=` est gardé, la forme que lisaient les versions plus
+  anciennes. Quand aucune app ne l'ouvre, Android lève une exception : l'échec est journalisé, et
+  l'écran du détail le dit. Le `LocalUriHandler` d'iOS, lui, ne signale aucun échec : sans app pour
+  le lien (Mail absent), rien ne se passe.
 - Copier passe par `LocalClipboard` et `textClipEntry(text)`, un `expect` : l'API commune de Compose
   ne sait pas construire l'entrée d'un texte. Depuis Android 13, le système montre lui-même ce qui a
   été copié : l'app ne le redit pas (`isCopyConfirmedBySystem`). Sous la feuille du résultat, où un
@@ -165,9 +170,9 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   (`Insert.DATA`), sans la limite de trois des extras `PHONE` ou `EMAIL`. iOS présente
   `CNContactViewController.viewControllerForNewContact` dans un `UINavigationController`, pour ses
   boutons Annuler et OK ; son délégué ferme l'écran, et l'adder le garde, car le contrôleur ne le
-  retient pas. Cet écran ne devrait demander aucune autorisation d'accès aux contacts, puisque c'est
-  lui qui enregistre : à confirmer sur un iPhone. S'il en demandait une, il faudrait déclarer
-  `NSContactsUsageDescription` dans l'`Info.plist`, sans quoi l'app s'arrêterait.
+  retient pas. Cet écran ne demande aucune autorisation d'accès aux contacts, c'est lui qui
+  enregistre (constaté sur le simulateur : contact enregistré avec tous ses champs, sans
+  `NSContactsUsageDescription`).
 - Rejoindre un WiFi est en deux morceaux. `WifiNetworkSupport` (interface, ViewModel) dit si
   l'appareil peut rejoindre le réseau ; l'action n'est proposée que dans ce cas. Android : à partir
   d'Android 11, ni WEP ni mot de passe que le système refuserait (8 à 63 caractères ASCII
@@ -195,12 +200,12 @@ livrée ; le tableau est mis à jour dans le même commit.
 | Torche | Livré, à vérifier sur un appareil (l'émulateur n'a pas de flash) — `CameraControl.enableTorch` | Livré, à vérifier sur un iPhone — `AVCaptureDevice.torchMode` | `expect` composable |
 | Permission caméra | ✅ (refus, refus définitif, accord) — `RequestPermission` | ✅ demande et description affichées (simulateur) — `AVCaptureDevice.requestAccess` | `expect` composable |
 | Détection dans une image | ✅ (émulateur : code lu, enregistré ; image sans code signalée) — Photo Picker + ML Kit (`InputImage`) | Livré, à vérifier sur un iPhone — `PHPickerViewController` + Vision (`VNDetectBarcodesRequest`) | `expect` composable |
-| Ouvrir un lien, un mail, un SMS | ✅ (émulateur : lien ouvert dans Chrome, SMS prérempli dans Messages) — `LocalUriHandler` | Livré, à vérifier sur un iPhone — `LocalUriHandler`, `sms:` avec `&body=` | Compose |
+| Ouvrir un lien, un mail, un SMS | ✅ (émulateur : lien ouvert dans Chrome, SMS prérempli dans Messages) — `LocalUriHandler` | ✅ lien et SMS (simulateur : Safari, message prérempli dans Messages) ; mail à vérifier sur un iPhone (pas de Mail sur le simulateur) — `LocalUriHandler`, `sms:` avec `&body=` | Compose |
 | Vibration | `LocalHapticFeedback` (`Confirm`) | `LocalHapticFeedback` (`Confirm`) | Compose |
-| Copier | ✅ (émulateur : confirmation du système, Android 13 et plus) — `LocalClipboard`, `ClipData` | Livré, à vérifier sur un iPhone — `LocalClipboard`, `ClipEntry.withPlainText` | Compose + `expect` pour créer le `ClipEntry` |
-| Partager un texte | ✅ (émulateur : feuille de partage) — `ACTION_SEND` | Livré, à vérifier sur un iPhone — `UIActivityViewController` | interface |
+| Copier | ✅ (émulateur : confirmation du système, Android 13 et plus) — `LocalClipboard`, `ClipData` | ✅ (simulateur : texte dans le presse-papiers, message de l'app) — `LocalClipboard`, `ClipEntry.withPlainText` | Compose + `expect` pour créer le `ClipEntry` |
+| Partager un texte | ✅ (émulateur : feuille de partage) — `ACTION_SEND` | ✅ (simulateur : feuille de partage) — `UIActivityViewController` | interface |
 | Partager, enregistrer un QR code | `FileProvider` + `ACTION_SEND`, `MediaStore` | `UIActivityViewController`, Photos | interface |
-| Ajouter un contact | ✅ (émulateur : Contacts prérempli, tous les champs) — `ACTION_INSERT_OR_EDIT` | Livré, à vérifier sur un iPhone — `CNContactViewController` | interface |
+| Ajouter un contact | ✅ (émulateur : Contacts prérempli, tous les champs) — `ACTION_INSERT_OR_EDIT` | ✅ (simulateur : contact enregistré, tous les champs) — `CNContactViewController` | interface |
 | Rejoindre un réseau WiFi | ✅ (émulateur : réseau WPA2 enregistré par l'écran des réglages ; non proposé pour un mot de passe invalide) — `Settings.ACTION_WIFI_ADD_NETWORKS`, Android 11 et plus | Reporté (`NEHotspotConfigurationManager` exige l'entitlement *Hotspot Configuration*, donc un compte payant) : action non proposée | `expect` composable + interface |
 | Ouvrir les réglages de l'app | ✅ `ACTION_APPLICATION_DETAILS_SETTINGS` | `UIApplicationOpenSettingsURLString` | dans l'état de permission caméra |
 | Noter l'app | Lien Play Store | Lien App Store | interface |

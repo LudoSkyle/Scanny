@@ -116,8 +116,10 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
          Vérifié sur l'émulateur Android. Son action « Modifier » arrive avec l'éditeur, au lot 11
    - [x] 7c : les actions natives qui ouvrent un écran du système : ajouter un contact (Android et
          iOS), rejoindre un réseau WiFi (Android ; `ACTION_WIFI_ADD_NETWORKS` demande Android 11,
-         le WEP n'y est pas pris en charge). Vérifié sur l'émulateur Android ; iOS à vérifier sur un
-         iPhone
+         le WEP n'y est pas pris en charge). Vérifié sur l'émulateur Android
+   - [x] Tests d'interface iOS (`iosAppUITests`) : sur le simulateur, une caméra simulée lit le code
+         donné au lancement ; la feuille, le détail, la copie, le partage, Safari, Messages, Contacts,
+         la suppression et les textes français y sont vérifiés
 8. **Historique des scans** : une ligne par capture ; une capture d'un code ouvre son `ScanDetail`,
    une capture de plusieurs codes ouvre l'écran du groupe, `Route.ScanGroup(scanId)`. La date du
    scan s'affiche alors aussi dans le `ScanDetail`, avec le formatage des dates de l'historique.

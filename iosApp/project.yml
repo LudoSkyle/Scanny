@@ -11,7 +11,9 @@ targets:
   iosApp:
     type: application
     platform: iOS
-    scheme: {}
+    scheme:
+      testTargets:
+        - iosAppUITests
     configFiles:
       Debug: Configuration/Scanny.xcconfig
       Release: Configuration/Scanny.xcconfig
@@ -42,3 +44,18 @@ targets:
         script: |
           cd "$SRCROOT/.."
           ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+  iosAppUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - iosAppUITests
+    dependencies:
+      - target: iosApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: fr.skyle.scanny.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+        # XCTest is not yet annotated for the strict concurrency of Swift 6
+        SWIFT_VERSION: "5.0"
