@@ -5,7 +5,8 @@ s'appliquent : tout changement qui introduit ou déplace de la logique est livr�
 le même commit. Ce document dit comment les écrire dans Scanny.
 
 Tout est testé en **test unitaire**, sans device ni émulateur : `./gradlew :<module>:allTests`
-exécute la suite sur la JVM et sur le simulateur iOS.
+exécute la suite sur la JVM et sur le simulateur iOS. S'y ajoutent les **tests d'interface iOS**, qui
+pilotent l'app sur le simulateur (voir plus bas).
 
 | Source set | Code testé | Exécuté sur |
 |---|---|---|
@@ -171,11 +172,31 @@ Kotlin/Native impose quelques règles au code de `commonTest` :
 - Un test qui croit vérifier un comportement le prouve en échouant quand on casse ce comportement :
   avant de livrer, on retire le code protégé, on voit le test échouer, on le remet.
 
+### Tests d'interface iOS
+
+La cible `iosAppUITests` du projet Xcode (XCUITest, en Swift) lance l'app sur le simulateur et
+vérifie ce qui suit un scan : la feuille, le détail, la copie, le partage, l'ouverture d'un lien dans
+Safari, d'un SMS dans Messages, l'ajout d'un contact dans Contacts, la suppression, les textes
+français.
+
+- Le simulateur n'a pas de caméra : un build Debug y lit le code de la variable d'environnement
+  `SCANNY_SIMULATED_CODE` comme si la caméra le voyait (voir
+  [iosApp/CLAUDE.md](../../iosApp/CLAUDE.md)). Chaque test lance l'app avec son propre code.
+- La langue se fixe au lancement (`-AppleLanguages (en)`) : un test ne dépend pas de la langue du Mac.
+- Les éléments se cherchent par leur libellé d'accessibilité, que Compose Multiplatform expose :
+  texte d'un bouton, `contentDescription` d'une icône.
+- Un test garde ses captures d'écran (`XCTAttachment`, `lifetime = .keepAlways`) : elles se relisent
+  après coup, extraites du `.xcresult`.
+- Le presse-papiers du simulateur se lit depuis le Mac : `xcrun simctl pbpaste booted`.
+- Ce que le simulateur ne sait pas faire n'est pas testé : il n'a pas l'app Mail, et n'affiche pas le
+  destinataire d'un SMS (« No Name, Searching », quel que soit le lien).
+
 ### Ce que les tests ne couvrent pas
 
 La détection des codes par la caméra et dans une image ne se teste pas sur le simulateur iOS : il n'a
 pas de caméra, et Vision n'y trouve aucun code (limite du simulateur, constatée quelle que soit la
-révision de la requête). Elle se vérifie à la main, sur un appareil.
+révision de la requête). Elle se vérifie à la main, sur un appareil. Tout ce qui suit la détection,
+en revanche, est couvert par les tests d'interface.
 
 ### Accès aux `internal` depuis les tests
 

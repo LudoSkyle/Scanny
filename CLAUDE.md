@@ -50,6 +50,8 @@ de la [feuille de route](./docs/ROADMAP.md).
 
 ```bash
 ./gradlew :domain:allTests :data:allTests :shared:allTests   # tests (JVM et simulateur iOS)
+xcodebuild test -project iosApp/iosApp.xcodeproj -scheme iosApp \
+  -destination 'platform=iOS Simulator,name=iPhone 17'       # tests d'interface iOS (simulateur)
 ./gradlew :androidApp:assembleDebug                          # app Android
 ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64        # framework iOS
 ```
