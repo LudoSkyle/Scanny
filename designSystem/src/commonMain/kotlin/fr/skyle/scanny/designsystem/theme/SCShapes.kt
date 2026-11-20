@@ -10,14 +10,20 @@ import androidx.compose.ui.unit.dp
 @Immutable
 data class SCShapes(
     val medium: Shape,
+    val sheet: Shape,
 )
 
 internal val scannyShapes = SCShapes(
     medium = RoundedCornerShape(size = 10.dp),
+    sheet = RoundedCornerShape(
+        topStart = 24.dp,
+        topEnd = 24.dp,
+    ),
 )
 
 internal val LocalShapes = staticCompositionLocalOf {
     SCShapes(
         medium = RectangleShape,
+        sheet = RectangleShape,
     )
 }

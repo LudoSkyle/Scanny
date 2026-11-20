@@ -16,6 +16,11 @@ kotlin {
             implementation(libs.composeMultiplatform.resources)
             implementation(libs.composeMultiplatform.ui.tooling.preview)
         }
+
+        androidMain.dependencies {
+            // AndroidX
+            implementation(libs.androidx.core)
+        }
     }
 }
 

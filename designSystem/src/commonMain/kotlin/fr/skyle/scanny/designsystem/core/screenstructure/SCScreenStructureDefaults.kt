@@ -23,5 +23,11 @@ object SCScreenStructureDefaults {
                 BACKGROUND -> SCTheme.colors.textDark
                 BLACK -> SCTheme.colors.textLight
             }
+
+        internal val areSystemBarIconsLight: Boolean
+            get() = when (this) {
+                BACKGROUND -> false
+                BLACK -> true
+            }
     }
 }
