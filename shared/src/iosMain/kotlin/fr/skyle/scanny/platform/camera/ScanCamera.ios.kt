@@ -69,7 +69,8 @@ actual fun ScanCamera(
         SimulatedScanCamera(
             modifier = modifier,
             isDetectionEnabled = isDetectionEnabled,
-            takeBarcode = SimulatedScan::take,
+            firstReadingDelay = SimulatedScan.firstReadingDelay,
+            takeBarcodes = SimulatedScan::take,
             onBarcodeDetected = onBarcodeDetected,
             onCapabilitiesChanged = onCapabilitiesChanged,
         )
