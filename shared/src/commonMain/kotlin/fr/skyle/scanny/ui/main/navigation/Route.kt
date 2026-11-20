@@ -13,5 +13,8 @@ sealed interface Route : NavKey {
     data class ScanDetail(val codeId: Long) : Route
 
     @Serializable
+    data class ScanGroup(val scanId: Long) : Route
+
+    @Serializable
     data object ScanHistory : Route
 }

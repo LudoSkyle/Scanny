@@ -14,6 +14,11 @@
     <string name="code_count">%1$d codes</string>
     <string name="code_not_deleted">Le code n'a pas pu être supprimé</string>
     <string name="code_removed_from_history">Il sera retiré de l'historique.</string>
+    <plurals name="codes_found">
+        <item quantity="one">%1$d code trouvé</item>
+        <item quantity="other">%1$d codes trouvés</item>
+    </plurals>
+    <string name="codes_not_saved">Ils ne seront pas enregistrés.</string>
     <string name="contact">Contact</string>
     <string name="content">Contenu</string>
     <string name="copied">Copié</string>
@@ -22,7 +27,14 @@
     <string name="day_date">%1$d %2$s %3$d</string>
     <string name="delete">Supprimer</string>
     <string name="delete_code_question">Supprimer ce code ?</string>
+    <string name="delete_group_question">Supprimer ce groupe ?</string>
+    <string name="discard">Abandonner</string>
+    <string name="discard_codes_question">Abandonner les codes trouvés ?</string>
     <string name="email">E-mail</string>
+    <string name="finish">Terminer</string>
+    <string name="group">Groupe</string>
+    <string name="group_codes_removed_from_history">Ses codes seront retirés de l'historique.</string>
+    <string name="group_not_deleted">Le groupe n'a pas pu être supprimé</string>
     <string name="history">Historique</string>
     <string name="history_not_cleared">L'historique n'a pas pu être effacé</string>
     <string name="job_title">Fonction</string>
@@ -43,6 +55,7 @@
         <item>novembre</item>
         <item>décembre</item>
     </string-array>
+    <string name="multiple_scan">Scan multiple</string>
     <string name="name">Nom</string>
     <string name="network">Réseau</string>
     <string name="no_app_to_open">Aucune app de cet appareil ne peut l'ouvrir</string>
@@ -51,6 +64,7 @@
     <string name="open_link">Ouvrir le lien</string>
     <string name="open_settings">Ouvrir les réglages</string>
     <string name="organization">Organisation</string>
+    <string name="pass_codes_in_front_of_camera">Passez les codes devant la caméra</string>
     <string name="password">Mot de passe</string>
     <string name="phone">Téléphone</string>
     <string name="phone_number">Numéro de téléphone</string>
@@ -62,6 +76,7 @@
     <string name="scanned_codes_appear_here">Les codes que vous scannez apparaissent ici.</string>
     <string name="security">Sécurité</string>
     <string name="see_detail">Voir le détail</string>
+    <string name="see_group">Voir le groupe</string>
     <string name="share">Partager</string>
     <string name="subject">Objet</string>
     <string name="text">Texte</string>

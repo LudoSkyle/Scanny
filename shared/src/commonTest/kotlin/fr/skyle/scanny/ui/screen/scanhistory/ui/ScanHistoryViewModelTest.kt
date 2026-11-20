@@ -197,6 +197,41 @@ class ScanHistoryViewModelTest {
     }
 
     @Test
+    fun `a capture of one code opens its detail and a capture of several its group`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanHistoryViewModel()
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onScanClicked(
+            item = item(
+                scanId = 1,
+                summary = "Alone",
+                time = "10:00",
+            ),
+        )
+        viewModel.onScanClicked(
+            item = item(
+                scanId = 2,
+                summary = "First of three",
+                time = "11:00",
+            ).copy(
+                firstCodeId = 7,
+                codeCount = 3,
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                ScanHistoryViewModel.ScanHistoryEvent.OpenScanDetail(codeId = 1),
+                ScanHistoryViewModel.ScanHistoryEvent.OpenScanGroup(scanId = 2),
+            ),
+            actual = events,
+        )
+    }
+
+    @Test
     fun `clearing the history deletes every capture`() = runTest(testDispatcher) {
         // Given
         val deleteAllScansUseCase = FakeDeleteAllScansUseCase()

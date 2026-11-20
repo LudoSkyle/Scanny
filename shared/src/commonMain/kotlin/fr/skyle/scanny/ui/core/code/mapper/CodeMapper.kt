@@ -9,6 +9,7 @@ import fr.skyle.scanny.platform.link.platformSmsLink
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
 import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
+import fr.skyle.scanny.ui.core.code.model.CodeRowItem
 import fr.skyle.scanny.ui.core.code.model.CodeType
 
 internal fun BarcodeContent.toCodeType(): CodeType =
@@ -31,6 +32,13 @@ internal fun BarcodeContent.toCodeAction(canJoinWifi: (BarcodeContent.Wifi) -> B
         // Nothing to open for a text
         is BarcodeContent.Text -> null
     }
+
+internal fun ScannedCode.toCodeRowItem(): CodeRowItem =
+    CodeRowItem(
+        codeId = id,
+        type = content.toCodeType(),
+        summary = toCodeSummary(),
+    )
 
 /** What a code holds, in one line: the recipient of an e-mail, the name of a network… */
 internal fun ScannedCode.toCodeSummary(): String =

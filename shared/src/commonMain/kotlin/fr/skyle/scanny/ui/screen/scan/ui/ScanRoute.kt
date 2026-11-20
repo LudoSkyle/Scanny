@@ -3,7 +3,10 @@ package fr.skyle.scanny.ui.screen.scan.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -24,6 +27,7 @@ import fr.skyle.scanny.resources.no_code_in_image
 import fr.skyle.scanny.resources.scan_not_saved
 import fr.skyle.scanny.ui.core.code.action.open
 import fr.skyle.scanny.ui.core.code.model.CodeAction
+import fr.skyle.scanny.ui.screen.scan.ui.component.DiscardCodesDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
@@ -31,6 +35,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ScanRoute(
     navigateToScanDetail: (codeId: Long) -> Unit,
+    navigateToScanGroup: (scanId: Long) -> Unit,
     navigateToScanHistory: () -> Unit,
     viewModel: ScanViewModel = koinViewModel(),
 ) {
@@ -46,6 +51,8 @@ fun ScanRoute(
     val scanImage = rememberImageBarcodeScanner(onResult = viewModel::onImageScanned)
     val joinWifiNetwork = rememberWifiNetworkJoiner()
     val snackbarState = rememberSCSnackbarState()
+
+    var isDiscardDialogVisible by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(cameraPermissionState) {
         if (cameraPermissionState.status == CameraPermissionStatus.UNKNOWN) {
@@ -87,6 +94,14 @@ fun ScanRoute(
                     is ScanViewModel.ScanEvent.OpenScanDetail -> {
                         navigateToScanDetail(event.codeId)
                     }
+
+                    is ScanViewModel.ScanEvent.OpenScanGroup -> {
+                        navigateToScanGroup(event.scanId)
+                    }
+
+                    ScanViewModel.ScanEvent.ConfirmCodesDiscard -> {
+                        isDiscardDialogVisible = true
+                    }
                 }
             }
         }
@@ -98,6 +113,7 @@ fun ScanRoute(
         isDetectionPaused = uiState.isDetectionPaused,
         isTorchEnabled = uiState.isTorchEnabled,
         cameraCapabilities = uiState.cameraCapabilities,
+        multipleScan = uiState.multipleScan,
         result = uiState.result,
         snackbarState = snackbarState,
         onBarcodeDetected = viewModel::onBarcodeDetected,
@@ -107,6 +123,8 @@ fun ScanRoute(
         onOpenSettingsClicked = cameraPermissionState::openAppSettings,
         onScanImageClicked = scanImage,
         onTorchClicked = viewModel::onTorchClicked,
+        onMultipleScanClicked = viewModel::onMultipleScanClicked,
+        onMultipleScanFinished = viewModel::onMultipleScanFinished,
         onHistoryClicked = navigateToScanHistory,
         onResultActionClicked = { action ->
             when (action) {
@@ -122,6 +140,20 @@ fun ScanRoute(
             }
         },
         onSeeResultDetailClicked = viewModel::onSeeDetailClicked,
+        onResultCodeClicked = viewModel::onResultCodeClicked,
+        onSeeResultGroupClicked = viewModel::onSeeGroupClicked,
         onResultDismissed = viewModel::onResultDismissed,
     )
+
+    if (isDiscardDialogVisible) {
+        DiscardCodesDialog(
+            onConfirmClicked = {
+                isDiscardDialogVisible = false
+                viewModel.onMultipleScanDiscarded()
+            },
+            onDismissRequest = {
+                isDiscardDialogVisible = false
+            },
+        )
+    }
 }

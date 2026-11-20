@@ -44,7 +44,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 
 - [x] Zoom (pincement) et mise au point (appui) *(à vérifier sur appareil)*
 - [x] Historique des scans : liste, détail, suppression
-- [ ] Scan multiple : un mode qu'on active, on passe autant de codes qu'on veut devant la caméra, on
+- [x] Scan multiple : un mode qu'on active, on passe autant de codes qu'on veut devant la caméra, on
       termine, et la liste dédoublonnée des codes trouvés s'affiche et s'enregistre comme un groupe
 - [ ] Création de QR codes : texte, URL, email, SMS, WiFi
 - [ ] Personnalisation d'un QR code : couleurs, logo au centre, formes
@@ -130,9 +130,18 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
    - L'écran du groupe passe au lot 9 : seul le scan multiple crée des captures de plusieurs codes,
      et c'est là qu'il se vérifie de bout en bout. D'ici là, une telle ligne ouvrirait son premier
      code.
-9. **Scan multiple** : le mode, la session de scan jusqu'à « Terminer », la feuille qui liste les
-   codes trouvés (un appui ouvre le `ScanDetail` du code), l'écran du groupe
-   (`Route.ScanGroup(scanId)`), ouvert depuis la feuille et depuis l'historique.
+9. **Scan multiple**
+   - [x] Le mode, activé par un bouton des contrôles du scan : la détection ne s'arrête plus, chaque
+         nouveau code est compté une fois (et fait vibrer selon le réglage), « Terminer » enregistre
+         une seule capture ; l'arrêter avec des codes trouvés demande confirmation
+   - [x] La feuille qui liste les codes trouvés (un appui ouvre le `ScanDetail` du code) ; un seul
+         code trouvé s'affiche comme un scan simple
+   - [x] L'écran du groupe, `Route.ScanGroup(scanId)` : ses codes, sa date, le partage (une valeur
+         brute par ligne), la suppression ; ouvert depuis la feuille et depuis l'historique, où un
+         groupe a sa propre icône
+   - [x] La caméra remonte tous les codes d'une image, Android et iOS
+   - Vérifié sur l'émulateur Android (codes ajoutés depuis des images) et sur le simulateur iOS
+     (tests d'interface, caméra simulée qui lit plusieurs codes)
 10. **Réglages, Feedback, À propos**
 11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
     (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre

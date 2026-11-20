@@ -6,6 +6,7 @@ import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.usecase.scan.DeleteAllScansUseCase
 import fr.skyle.scanny.domain.usecase.scan.WatchScansUseCase
 import fr.skyle.scanny.ui.screen.scanhistory.ui.mapper.toScanHistorySections
+import fr.skyle.scanny.ui.screen.scanhistory.ui.model.ScanHistoryItem
 import fr.skyle.scanny.ui.screen.scanhistory.ui.model.ScanHistorySection
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
@@ -54,6 +55,17 @@ class ScanHistoryViewModel(
         }
     }
 
+    fun onScanClicked(item: ScanHistoryItem) {
+        val event = if (item.codeCount > 1) {
+            ScanHistoryEvent.OpenScanGroup(scanId = item.scanId)
+        } else {
+            ScanHistoryEvent.OpenScanDetail(codeId = item.firstCodeId)
+        }
+        viewModelScope.launch {
+            _event.send(event)
+        }
+    }
+
     fun onClearConfirmed() {
         viewModelScope.launch {
             try {
@@ -75,5 +87,7 @@ class ScanHistoryViewModel(
 
     sealed interface ScanHistoryEvent {
         data object ClearFailed : ScanHistoryEvent
+        data class OpenScanDetail(val codeId: Long) : ScanHistoryEvent
+        data class OpenScanGroup(val scanId: Long) : ScanHistoryEvent
     }
 }

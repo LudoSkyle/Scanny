@@ -19,6 +19,11 @@
     <string name="code_count">%1$d codes</string>
     <string name="code_not_deleted">The code could not be deleted</string>
     <string name="code_removed_from_history">It will be removed from the history.</string>
+    <plurals name="codes_found">
+        <item quantity="one">%1$d code found</item>
+        <item quantity="other">%1$d codes found</item>
+    </plurals>
+    <string name="codes_not_saved">They will not be saved.</string>
     <string name="contact">Contact</string>
     <string name="content">Content</string>
     <string name="copied">Copied</string>
@@ -28,10 +33,17 @@
     <string name="day_date">%2$s %1$d, %3$d</string>
     <string name="delete">Delete</string>
     <string name="delete_code_question">Delete this code?</string>
+    <string name="delete_group_question">Delete this group?</string>
+    <string name="description_and_time" translatable="false">%1$s · %2$s</string>
+    <string name="discard">Discard</string>
+    <string name="discard_codes_question">Discard the codes found?</string>
     <string name="ean_13" translatable="false">EAN-13</string>
     <string name="ean_8" translatable="false">EAN-8</string>
-    <string name="description_and_time" translatable="false">%1$s · %2$s</string>
     <string name="email">E-mail</string>
+    <string name="finish">Finish</string>
+    <string name="group">Group</string>
+    <string name="group_codes_removed_from_history">Its codes will be removed from the history.</string>
+    <string name="group_not_deleted">The group could not be deleted</string>
     <string name="history">History</string>
     <string name="history_not_cleared">The history could not be cleared</string>
     <string name="itf" translatable="false">ITF</string>
@@ -53,6 +65,7 @@
         <item>November</item>
         <item>December</item>
     </string-array>
+    <string name="multiple_scan">Multiple scan</string>
     <string name="name">Name</string>
     <string name="network">Network</string>
     <string name="no_app_to_open">No app on this device can open it</string>
@@ -61,6 +74,7 @@
     <string name="open_link">Open the link</string>
     <string name="open_settings">Open the settings</string>
     <string name="organization">Organization</string>
+    <string name="pass_codes_in_front_of_camera">Pass the codes in front of the camera</string>
     <string name="password">Password</string>
     <string name="pdf417" translatable="false">PDF417</string>
     <string name="phone">Phone</string>
@@ -74,6 +88,7 @@
     <string name="scanned_codes_appear_here">The codes you scan appear here.</string>
     <string name="security">Security</string>
     <string name="see_detail">See the detail</string>
+    <string name="see_group">See the group</string>
     <string name="share">Share</string>
     <string name="sms" translatable="false">SMS</string>
     <string name="subject">Subject</string>

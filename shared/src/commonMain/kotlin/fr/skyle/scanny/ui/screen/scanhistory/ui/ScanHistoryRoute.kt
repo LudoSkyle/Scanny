@@ -21,6 +21,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ScanHistoryRoute(
     navigateToScanDetail: (codeId: Long) -> Unit,
+    navigateToScanGroup: (scanId: Long) -> Unit,
     navigateBack: () -> Unit,
     viewModel: ScanHistoryViewModel = koinViewModel(),
 ) {
@@ -39,6 +40,14 @@ fun ScanHistoryRoute(
                     ScanHistoryViewModel.ScanHistoryEvent.ClearFailed -> launch {
                         snackbarState.show(message = getString(Res.string.history_not_cleared))
                     }
+
+                    is ScanHistoryViewModel.ScanHistoryEvent.OpenScanDetail -> {
+                        navigateToScanDetail(event.codeId)
+                    }
+
+                    is ScanHistoryViewModel.ScanHistoryEvent.OpenScanGroup -> {
+                        navigateToScanGroup(event.scanId)
+                    }
                 }
             }
         }
@@ -51,8 +60,7 @@ fun ScanHistoryRoute(
         onClearClicked = {
             isClearDialogVisible = true
         },
-        // Only the multiple scan makes captures of several codes, and brings the screen of a group
-        onScanClicked = { item -> navigateToScanDetail(item.firstCodeId) },
+        onScanClicked = viewModel::onScanClicked,
     )
 
     if (isClearDialogVisible) {

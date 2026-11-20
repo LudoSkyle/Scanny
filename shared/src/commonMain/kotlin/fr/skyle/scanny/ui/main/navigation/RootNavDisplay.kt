@@ -11,6 +11,7 @@ import androidx.navigation3.runtime.serialization.NavBackStackSerializer
 import androidx.navigation3.ui.NavDisplay
 import fr.skyle.scanny.ui.screen.scan.entry.scanRouteEntry
 import fr.skyle.scanny.ui.screen.scandetail.entry.scanDetailRouteEntry
+import fr.skyle.scanny.ui.screen.scangroup.entry.scanGroupRouteEntry
 import fr.skyle.scanny.ui.screen.scanhistory.entry.scanHistoryRouteEntry
 
 @Composable
@@ -35,6 +36,8 @@ fun RootNavDisplay(
             scanRouteEntry(backStack = backStack)
 
             scanDetailRouteEntry(backStack = backStack)
+
+            scanGroupRouteEntry(backStack = backStack)
 
             scanHistoryRouteEntry(backStack = backStack)
         },

@@ -1,8 +1,11 @@
 package fr.skyle.scanny.ui.screen.scan.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
@@ -23,6 +26,8 @@ import fr.skyle.scanny.resources.camera_blocked
 import fr.skyle.scanny.resources.camera_needed
 import fr.skyle.scanny.resources.camera_unavailable
 import fr.skyle.scanny.resources.open_settings
+import fr.skyle.scanny.resources.pass_codes_in_front_of_camera
+import fr.skyle.scanny.resources.place_code_in_frame
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
 import fr.skyle.scanny.ui.screen.scan.ui.component.CameraMessage
@@ -30,7 +35,10 @@ import fr.skyle.scanny.ui.screen.scan.ui.component.ScanCameraLayer
 import fr.skyle.scanny.ui.screen.scan.ui.component.ScanControls
 import fr.skyle.scanny.ui.screen.scan.ui.component.ScanResultSheet
 import fr.skyle.scanny.ui.screen.scan.ui.component.ScanTopActions
-import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultItem
+import fr.skyle.scanny.ui.screen.scan.ui.component.MultipleScanBar
+import fr.skyle.scanny.ui.screen.scan.ui.component.ScanGroupResultSheet
+import fr.skyle.scanny.ui.screen.scan.ui.model.MultipleScanSession
+import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResult
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -40,7 +48,8 @@ fun ScanScreen(
     isDetectionPaused: Boolean,
     isTorchEnabled: Boolean,
     cameraCapabilities: CameraCapabilities?,
-    result: ScanResultItem?,
+    multipleScan: MultipleScanSession?,
+    result: ScanResult?,
     snackbarState: SCSnackbarState,
     onBarcodeDetected: (DetectedBarcode) -> Unit,
     onCameraCapabilitiesChanged: (CameraCapabilities) -> Unit,
@@ -49,10 +58,14 @@ fun ScanScreen(
     onOpenSettingsClicked: () -> Unit,
     onScanImageClicked: () -> Unit,
     onTorchClicked: () -> Unit,
+    onMultipleScanClicked: () -> Unit,
+    onMultipleScanFinished: () -> Unit,
     onHistoryClicked: () -> Unit,
     onResultActionClicked: (CodeAction) -> Unit,
     onCopyResultClicked: (text: String) -> Unit,
     onSeeResultDetailClicked: () -> Unit,
+    onResultCodeClicked: (codeId: Long) -> Unit,
+    onSeeResultGroupClicked: () -> Unit,
     onResultDismissed: () -> Unit,
 ) {
     SCScreenStructure(
@@ -76,6 +89,9 @@ fun ScanScreen(
                     // Drawn under the system bars, as the rest of the screen is drawn over it
                     ScanCameraLayer(
                         modifier = Modifier.fillMaxSize(),
+                        hint = stringResource(
+                            if (multipleScan != null) Res.string.pass_codes_in_front_of_camera else Res.string.place_code_in_frame,
+                        ),
                         isDetectionEnabled = !isDetectionPaused,
                         isTorchEnabled = isTorchEnabled,
                         capabilities = cameraCapabilities,
@@ -113,29 +129,59 @@ fun ScanScreen(
             )
 
             // Scanning an image needs no camera: it stays available whatever the permission
-            ScanControls(
+            Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(contentPadding)
                     .padding(bottom = 32.dp)
-                    .wrapContentSize(),
-                hasTorch = permissionStatus == CameraPermissionStatus.GRANTED && cameraCapabilities?.hasTorch == true,
-                isTorchEnabled = isTorchEnabled,
-                onScanImageClicked = onScanImageClicked,
-                onTorchClicked = onTorchClicked,
-            )
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                if (multipleScan != null) {
+                    MultipleScanBar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
+                        codeCount = multipleScan.codeCount,
+                        isRecording = multipleScan.isRecording,
+                        onFinishClicked = onMultipleScanFinished,
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                ScanControls(
+                    modifier = Modifier.wrapContentSize(),
+                    hasTorch = permissionStatus == CameraPermissionStatus.GRANTED && cameraCapabilities?.hasTorch == true,
+                    isTorchEnabled = isTorchEnabled,
+                    isMultipleScanActive = multipleScan != null,
+                    onScanImageClicked = onScanImageClicked,
+                    onMultipleScanClicked = onMultipleScanClicked,
+                    onTorchClicked = onTorchClicked,
+                )
+            }
         }
     }
 
-    if (result != null) {
-        ScanResultSheet(
+    when (result) {
+        is ScanResult.Code -> ScanResultSheet(
             modifier = Modifier.fillMaxWidth(),
-            result = result,
+            result = result.item,
             onActionClicked = onResultActionClicked,
-            onCopyClicked = { onCopyResultClicked(result.rawValue) },
+            onCopyClicked = { onCopyResultClicked(result.item.rawValue) },
             onSeeDetailClicked = onSeeResultDetailClicked,
             onDismissRequest = onResultDismissed,
         )
+
+        is ScanResult.Group -> ScanGroupResultSheet(
+            modifier = Modifier.fillMaxWidth(),
+            codes = result.codes,
+            onCodeClicked = onResultCodeClicked,
+            onSeeGroupClicked = onSeeResultGroupClicked,
+            onDismissRequest = onResultDismissed,
+        )
+
+        null -> Unit
     }
 }
 
@@ -153,6 +199,7 @@ private fun PreviewScanScreen() {
                 minZoomRatio = 1f,
                 maxZoomRatio = 8f,
             ),
+            multipleScan = null,
             result = null,
             snackbarState = rememberSCSnackbarState(),
             onBarcodeDetected = {},
@@ -162,10 +209,51 @@ private fun PreviewScanScreen() {
             onOpenSettingsClicked = {},
             onScanImageClicked = {},
             onTorchClicked = {},
+            onMultipleScanClicked = {},
+            onMultipleScanFinished = {},
             onHistoryClicked = {},
             onResultActionClicked = {},
             onCopyResultClicked = {},
             onSeeResultDetailClicked = {},
+            onResultCodeClicked = {},
+            onSeeResultGroupClicked = {},
+            onResultDismissed = {},
+        )
+    }
+}
+
+@AppScreenPreview
+@Composable
+private fun PreviewScanScreen_MultipleScan() {
+    SCTheme {
+        ScanScreen(
+            permissionStatus = CameraPermissionStatus.GRANTED,
+            isCameraUnavailable = false,
+            isDetectionPaused = false,
+            isTorchEnabled = false,
+            cameraCapabilities = CameraCapabilities(
+                hasTorch = true,
+                minZoomRatio = 1f,
+                maxZoomRatio = 8f,
+            ),
+            multipleScan = MultipleScanSession(codeCount = 3),
+            result = null,
+            snackbarState = rememberSCSnackbarState(),
+            onBarcodeDetected = {},
+            onCameraCapabilitiesChanged = {},
+            onCameraUnavailable = {},
+            onAllowCameraClicked = {},
+            onOpenSettingsClicked = {},
+            onScanImageClicked = {},
+            onTorchClicked = {},
+            onMultipleScanClicked = {},
+            onMultipleScanFinished = {},
+            onHistoryClicked = {},
+            onResultActionClicked = {},
+            onCopyResultClicked = {},
+            onSeeResultDetailClicked = {},
+            onResultCodeClicked = {},
+            onSeeResultGroupClicked = {},
             onResultDismissed = {},
         )
     }
@@ -181,6 +269,7 @@ private fun PreviewScanScreen_CameraBlocked() {
             isDetectionPaused = false,
             isTorchEnabled = false,
             cameraCapabilities = null,
+            multipleScan = null,
             result = null,
             snackbarState = rememberSCSnackbarState(),
             onBarcodeDetected = {},
@@ -190,10 +279,14 @@ private fun PreviewScanScreen_CameraBlocked() {
             onOpenSettingsClicked = {},
             onScanImageClicked = {},
             onTorchClicked = {},
+            onMultipleScanClicked = {},
+            onMultipleScanFinished = {},
             onHistoryClicked = {},
             onResultActionClicked = {},
             onCopyResultClicked = {},
             onSeeResultDetailClicked = {},
+            onResultCodeClicked = {},
+            onSeeResultGroupClicked = {},
             onResultDismissed = {},
         )
     }

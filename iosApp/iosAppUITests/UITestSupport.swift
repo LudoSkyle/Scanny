@@ -22,6 +22,27 @@ extension XCTestCase {
         return app
     }
 
+    /**
+     * Launches the app, whose debug build reads [codes], one after the other, [delayInMilliseconds]
+     * after its start: the time for the test to start a multiple scan.
+     */
+    func launchScanning(
+        codes: [String],
+        delayInMilliseconds: Int = 5_000,
+        language: String = "en",
+    ) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchEnvironment["SCANNY_SIMULATED_CODES"] = codes.joined(separator: "\u{1E}")
+        app.launchEnvironment["SCANNY_SIMULATED_DELAY_MS"] = String(delayInMilliseconds)
+        app.launchArguments += [
+            "-AppleLanguages", "(\(language))",
+            "-AppleLocale", language == "fr" ? "fr_FR" : "en_US",
+        ]
+        app.launch()
+        allowTheCameraIfAsked()
+        return app
+    }
+
     func element(
         labelled label: String,
         in app: XCUIApplication,

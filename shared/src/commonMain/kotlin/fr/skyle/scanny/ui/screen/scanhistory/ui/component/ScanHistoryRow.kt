@@ -21,6 +21,8 @@ import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.code_count
 import fr.skyle.scanny.resources.description_and_time
+import fr.skyle.scanny.resources.group
+import fr.skyle.scanny.resources.ic_stacks
 import fr.skyle.scanny.ui.core.code.mapper.toIcon
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeType
@@ -36,7 +38,9 @@ fun ScanHistoryRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val description = if (item.codeCount > 1) {
+    // A group is drawn as such, not as its first code
+    val isGroup = item.codeCount > 1
+    val description = if (isGroup) {
         stringResource(Res.string.code_count, item.codeCount)
     } else {
         stringResource(item.type.toText())
@@ -53,8 +57,8 @@ fun ScanHistoryRow(
     ) {
         SCIconBadge(
             modifier = Modifier.wrapContentSize(),
-            icon = painterResource(item.type.toIcon()),
-            contentDescription = stringResource(item.type.toText()),
+            icon = painterResource(if (isGroup) Res.drawable.ic_stacks else item.type.toIcon()),
+            contentDescription = stringResource(if (isGroup) Res.string.group else item.type.toText()),
             style = SCIconBadgeDefaults.Style.PRIMARY,
             size = SCIconBadgeDefaults.Size.LARGE,
         )
