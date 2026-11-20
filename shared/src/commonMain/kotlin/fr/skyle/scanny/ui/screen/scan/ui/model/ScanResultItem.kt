@@ -10,6 +10,7 @@ enum class ScanResultType {
 }
 
 data class ScanResultItem(
+    val codeId: Long,
     val type: ScanResultType,
     val rawValue: String,
 )

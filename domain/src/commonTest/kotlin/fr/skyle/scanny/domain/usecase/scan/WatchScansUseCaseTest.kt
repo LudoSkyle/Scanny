@@ -1,10 +1,12 @@
 package fr.skyle.scanny.domain.usecase.scan
 
+import fr.skyle.scanny.data.model.StoredCode
 import fr.skyle.scanny.data.model.StoredScan
 import fr.skyle.scanny.domain.fake.FakeScanRepository
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.Scan
+import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -15,17 +17,34 @@ import kotlin.time.Instant
 class WatchScansUseCaseTest {
 
     @Test
-    fun `the stored scans are watched in their order with their parsed content`() = runTest {
+    fun `the stored scans are watched in their order with the parsed content of their codes`() = runTest {
         // Given
         val scanRepository = FakeScanRepository(
             storedScans = listOf(
                 storedScan(
                     id = 2,
-                    rawValue = "WIFI:T:WPA;S:Home;P:secret;;",
+                    codes = listOf(
+                        storedCode(
+                            id = 2,
+                            scanId = 2,
+                            rawValue = "WIFI:T:WPA;S:Home;P:secret;;",
+                        ),
+                        storedCode(
+                            id = 3,
+                            scanId = 2,
+                            rawValue = "Hello",
+                        ),
+                    ),
                 ),
                 storedScan(
                     id = 1,
-                    rawValue = "Hello",
+                    codes = listOf(
+                        storedCode(
+                            id = 1,
+                            scanId = 1,
+                            rawValue = "https://scanny.app",
+                        ),
+                    ),
                 ),
             ),
         )
@@ -37,14 +56,19 @@ class WatchScansUseCaseTest {
         // Then
         assertEquals(
             expected = listOf(
-                BarcodeContent.Wifi(
-                    ssid = "Home",
-                    encryption = WifiEncryption.WPA,
-                    password = "secret",
+                listOf(
+                    BarcodeContent.Wifi(
+                        ssid = "Home",
+                        encryption = WifiEncryption.WPA,
+                        password = "secret",
+                    ),
+                    BarcodeContent.Text(text = "Hello"),
                 ),
-                BarcodeContent.Text(text = "Hello"),
+                listOf(BarcodeContent.Url(url = "https://scanny.app")),
             ),
-            actual = scans.map { it.content },
+            actual = scans.map { scan ->
+                scan.codes.map { it.content }
+            },
         )
     }
 
@@ -55,8 +79,14 @@ class WatchScansUseCaseTest {
             storedScans = listOf(
                 storedScan(
                     id = 1,
-                    rawValue = "Hello",
-                    format = "FUTURE_FORMAT",
+                    codes = listOf(
+                        storedCode(
+                            id = 1,
+                            scanId = 1,
+                            rawValue = "Hello",
+                            format = "FUTURE_FORMAT",
+                        ),
+                    ),
                 ),
             ),
         )
@@ -70,10 +100,17 @@ class WatchScansUseCaseTest {
             expected = listOf(
                 Scan(
                     id = 1,
-                    rawValue = "Hello",
-                    content = BarcodeContent.Text(text = "Hello"),
-                    format = null,
                     scannedAt = SCANNED_AT,
+                    codes = listOf(
+                        ScannedCode(
+                            id = 1,
+                            scanId = 1,
+                            rawValue = "Hello",
+                            content = BarcodeContent.Text(text = "Hello"),
+                            format = null,
+                            scannedAt = SCANNED_AT,
+                        ),
+                    ),
                 ),
             ),
             actual = scans,
@@ -82,11 +119,23 @@ class WatchScansUseCaseTest {
 
     private fun storedScan(
         id: Long,
-        rawValue: String,
-        format: String = BarcodeFormat.QR_CODE.name,
+        codes: List<StoredCode>,
     ): StoredScan =
         StoredScan(
             id = id,
+            scannedAt = SCANNED_AT,
+            codes = codes,
+        )
+
+    private fun storedCode(
+        id: Long,
+        scanId: Long,
+        rawValue: String,
+        format: String = BarcodeFormat.QR_CODE.name,
+    ): StoredCode =
+        StoredCode(
+            id = id,
+            scanId = scanId,
             rawValue = rawValue,
             format = format,
             scannedAt = SCANNED_AT,

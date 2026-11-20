@@ -79,29 +79,42 @@ class RecordScanUseCaseTest {
     )
 
     @Test
-    fun `a scan is saved with its raw value its format and the current time`() = runTest {
-        // Given
-        val rawValue = "https://scanny.app"
-
+    fun `a code read several times is recorded once at its first reading`() = runTest {
         // When
         recordScanUseCase(
-            rawValue = rawValue,
-            format = BarcodeFormat.QR_CODE,
+            barcodes = listOf(
+                barcode(rawValue = "First"),
+                barcode(rawValue = "Second"),
+                barcode(rawValue = "First"),
+            ),
         )
 
         // Then
         assertEquals(
             expected = listOf(
-                StoredScan(
-                    id = 1,
-                    rawValue = rawValue,
-                    format = "QR_CODE",
-                    scannedAt = SCANNED_AT,
-                ),
+                "First" to "QR_CODE",
+                "Second" to "QR_CODE",
             ),
-            actual = scanRepository.storedScans,
+            actual = recordedCodes(),
         )
     }
+
+    private fun recordedCodes(): List<Pair<String, String>> =
+        scanRepository.storedScans
+            .single()
+            .codes
+            .map { code ->
+                code.rawValue to code.format
+            }
+
+    private fun barcode(
+        rawValue: String,
+        format: BarcodeFormat = BarcodeFormat.QR_CODE,
+    ): DetectedBarcode =
+        DetectedBarcode(
+            rawValue = rawValue,
+            format = format,
+        )
 
     private companion object {
         val SCANNED_AT = Instant.fromEpochMilliseconds(1_700_000_000_000)

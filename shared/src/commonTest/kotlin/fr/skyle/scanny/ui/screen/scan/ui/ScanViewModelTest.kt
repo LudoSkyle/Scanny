@@ -56,13 +56,14 @@ class ScanViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf("Hello" to BarcodeFormat.QR_CODE),
-            actual = recordScanUseCase.recordedBarcodes,
+            expected = listOf(listOf(qrCode(rawValue = "Hello"))),
+            actual = recordScanUseCase.recordedScans,
         )
         assertEquals(
             expected = ScanViewModel.ScanUIState(
                 isDetectionPaused = true,
                 result = ScanResultItem(
+                    codeId = 1,
                     type = ScanResultType.TEXT,
                     rawValue = "Hello",
                 ),
@@ -86,8 +87,8 @@ class ScanViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf("First" to BarcodeFormat.QR_CODE),
-            actual = recordScanUseCase.recordedBarcodes,
+            expected = listOf(listOf(qrCode(rawValue = "First"))),
+            actual = recordScanUseCase.recordedScans,
         )
     }
 
@@ -103,29 +104,8 @@ class ScanViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf("First" to BarcodeFormat.QR_CODE),
-            actual = recordScanUseCase.recordedBarcodes,
-        )
-    }
-
-    @Test
-    fun `a upc a read as an ean 13 is recorded as a upc a`() = runTest(testDispatcher) {
-        // Given
-        val recordScanUseCase = FakeRecordScanUseCase()
-        val viewModel = scanViewModel(recordScanUseCase = recordScanUseCase)
-
-        // When
-        viewModel.onBarcodeDetected(
-            barcode = DetectedBarcode(
-                rawValue = "0123456789012",
-                format = BarcodeFormat.EAN_13,
-            ),
-        )
-
-        // Then
-        assertEquals(
-            expected = listOf("123456789012" to BarcodeFormat.UPC_A),
-            actual = recordScanUseCase.recordedBarcodes,
+            expected = listOf(listOf(qrCode(rawValue = "First"))),
+            actual = recordScanUseCase.recordedScans,
         )
     }
 
@@ -203,6 +183,7 @@ class ScanViewModelTest {
         // Then
         assertEquals(
             expected = ScanResultItem(
+                codeId = 1,
                 type = ScanResultType.LINK,
                 rawValue = "https://scanny.app",
             ),
@@ -256,8 +237,8 @@ class ScanViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf("Hello" to BarcodeFormat.QR_CODE),
-            actual = recordScanUseCase.recordedBarcodes,
+            expected = listOf(listOf(qrCode(rawValue = "Hello"))),
+            actual = recordScanUseCase.recordedScans,
         )
         assertEquals(
             expected = ScanResultType.TEXT,

@@ -2,7 +2,11 @@ package fr.skyle.scanny.data.repository.scan
 
 import fr.skyle.scanny.data.db.dao.ScanDao
 import fr.skyle.scanny.data.db.entity.ScanEntity
+import fr.skyle.scanny.data.db.entity.ScannedCodeEntity
+import fr.skyle.scanny.data.mapper.toStoredCode
 import fr.skyle.scanny.data.mapper.toStoredScan
+import fr.skyle.scanny.data.model.CodeToSave
+import fr.skyle.scanny.data.model.StoredCode
 import fr.skyle.scanny.data.model.StoredScan
 import fr.skyle.scanny.data.repository.scan.api.ScanRepository
 import kotlinx.coroutines.Dispatchers
@@ -17,36 +21,55 @@ internal class ScanRepositoryImpl(
 ) : ScanRepository {
 
     override suspend fun saveScan(
-        rawValue: String,
-        format: String,
+        codes: List<CodeToSave>,
         scannedAt: Instant,
-    ): Long =
-        scanDao.insert(
-            entity = ScanEntity(
-                rawValue = rawValue,
-                format = format,
-                scannedAt = scannedAt.toEpochMilliseconds(),
-            ),
+    ): Long {
+        require(codes.isNotEmpty()) { "A scan holds at least one code" }
+
+        return scanDao.insertWithCodes(
+            scan = ScanEntity(scannedAt = scannedAt.toEpochMilliseconds()),
+            codes = codes.mapIndexed { index, code ->
+                ScannedCodeEntity(
+                    // Set by the DAO, once the scan is inserted
+                    scanId = 0,
+                    position = index,
+                    rawValue = code.rawValue,
+                    format = code.format,
+                )
+            },
         )
+    }
 
     override fun watchScans(): Flow<List<StoredScan>> =
         scanDao.watchAll()
-            .map { entities ->
-                entities.map { entity ->
-                    entity.toStoredScan()
+            .map { scans ->
+                scans.map { scan ->
+                    scan.toStoredScan()
                 }
             }
             .flowOn(Dispatchers.Default)
 
     override fun watchScan(id: Long): Flow<StoredScan?> =
         scanDao.watchById(id = id)
-            .map { entity ->
-                entity?.toStoredScan()
+            .map { scan ->
+                scan?.toStoredScan()
+            }
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.Default)
+
+    override fun watchCode(id: Long): Flow<StoredCode?> =
+        scanDao.watchCodeById(id = id)
+            .map { code ->
+                code?.toStoredCode()
             }
             .distinctUntilChanged()
             .flowOn(Dispatchers.Default)
 
     override suspend fun deleteScan(id: Long) {
         scanDao.deleteById(id = id)
+    }
+
+    override suspend fun deleteCode(id: Long) {
+        scanDao.deleteCodeAndEmptyScan(id = id)
     }
 }

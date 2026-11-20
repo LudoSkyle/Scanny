@@ -1,11 +1,14 @@
 package fr.skyle.scanny.data.repository.scan
 
 import fr.skyle.scanny.data.db.DatabaseTest
+import fr.skyle.scanny.data.model.CodeToSave
+import fr.skyle.scanny.data.model.StoredCode
 import fr.skyle.scanny.data.model.StoredScan
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.time.Instant
 
@@ -14,41 +17,72 @@ internal class ScanRepositoryImplTest : DatabaseTest() {
     private val scanRepository = ScanRepositoryImpl(scanDao = scanDao)
 
     @Test
-    fun `a saved scan is read back with its time to the millisecond`() = runTest {
+    fun `a saved capture is read back with its codes in their order and its time to the millisecond`() = runTest {
         // Given
         val scannedAt = Instant.fromEpochMilliseconds(1_700_000_000_123)
 
         // When
-        val id = scanRepository.saveScan(
-            rawValue = "https://scanny.app",
-            format = "QR_CODE",
+        val scanId = scanRepository.saveScan(
+            codes = listOf(
+                CodeToSave(
+                    rawValue = "first",
+                    format = "QR_CODE",
+                ),
+                CodeToSave(
+                    rawValue = "second",
+                    format = "EAN_13",
+                ),
+                CodeToSave(
+                    rawValue = "third",
+                    format = "CODE_128",
+                ),
+            ),
             scannedAt = scannedAt,
         )
 
         // Then
+        val scan = scanRepository.watchScan(id = scanId).first()
         assertEquals(
-            expected = StoredScan(
-                id = id,
-                rawValue = "https://scanny.app",
-                format = "QR_CODE",
-                scannedAt = scannedAt,
+            expected = listOf(
+                Triple("first", "QR_CODE", scannedAt),
+                Triple("second", "EAN_13", scannedAt),
+                Triple("third", "CODE_128", scannedAt),
             ),
-            actual = scanRepository.watchScan(id = id).first(),
+            actual = scan?.codes?.map { code -> Triple(code.rawValue, code.format, code.scannedAt) },
+        )
+        assertEquals(
+            expected = scannedAt,
+            actual = scan?.scannedAt,
         )
     }
 
     @Test
-    fun `the scans are watched from the newest to the oldest`() = runTest {
-        // Given
-        val oldestId = scanRepository.saveScan(
-            rawValue = "oldest",
-            format = "EAN_13",
-            scannedAt = Instant.fromEpochMilliseconds(1_000),
+    fun `a capture without code is refused`() = runTest {
+        // When
+        val failure = assertFailsWith<IllegalArgumentException> {
+            scanRepository.saveScan(
+                codes = emptyList(),
+                scannedAt = Instant.fromEpochMilliseconds(0),
+            )
+        }
+
+        // Then
+        assertEquals(
+            expected = "A scan holds at least one code",
+            actual = failure.message,
         )
-        val newestId = scanRepository.saveScan(
+    }
+
+    @Test
+    fun `the captures are watched from the newest to the oldest`() = runTest {
+        // Given
+        val oldestId = saveScan(
+            rawValue = "oldest",
+            scannedAtMillis = 1_000,
+        )
+        val newestId = saveScan(
             rawValue = "newest",
-            format = "QR_CODE",
-            scannedAt = Instant.fromEpochMilliseconds(2_000),
+            scannedAtMillis = 2_000,
         )
 
         // When
@@ -57,36 +91,78 @@ internal class ScanRepositoryImplTest : DatabaseTest() {
         // Then
         assertEquals(
             expected = listOf(
-                StoredScan(
-                    id = newestId,
-                    rawValue = "newest",
-                    format = "QR_CODE",
-                    scannedAt = Instant.fromEpochMilliseconds(2_000),
-                ),
-                StoredScan(
-                    id = oldestId,
-                    rawValue = "oldest",
-                    format = "EAN_13",
-                    scannedAt = Instant.fromEpochMilliseconds(1_000),
-                ),
+                newestId to "newest",
+                oldestId to "oldest",
             ),
-            actual = scans,
+            actual = scans.map { scan -> scan.id to scan.codes.single().rawValue },
         )
     }
 
     @Test
-    fun `a deleted scan is no longer watched`() = runTest {
+    fun `a code is watched with its capture and its time`() = runTest {
         // Given
-        val id = scanRepository.saveScan(
+        val scanId = saveScan(
             rawValue = "https://scanny.app",
-            format = "QR_CODE",
-            scannedAt = Instant.fromEpochMilliseconds(1_000),
+            scannedAtMillis = 1_000,
         )
+        val codeId = scanRepository.watchScan(id = scanId).first()!!.codes.single().id
 
         // When
-        scanRepository.deleteScan(id = id)
+        val code = scanRepository.watchCode(id = codeId).first()
 
         // Then
-        assertNull(scanRepository.watchScan(id = id).first())
+        assertEquals(
+            expected = StoredCode(
+                id = codeId,
+                scanId = scanId,
+                rawValue = "https://scanny.app",
+                format = "QR_CODE",
+                scannedAt = Instant.fromEpochMilliseconds(1_000),
+            ),
+            actual = code,
+        )
     }
+
+    @Test
+    fun `a deleted capture is no longer watched`() = runTest {
+        // Given
+        val scanId = saveScan()
+
+        // When
+        scanRepository.deleteScan(id = scanId)
+
+        // Then
+        assertNull(scanRepository.watchScan(id = scanId).first())
+    }
+
+    @Test
+    fun `deleting the last code of a capture deletes the capture and keeps the others`() = runTest {
+        // Given
+        val keptId = saveScan(scannedAtMillis = 1_000)
+        val emptiedId = saveScan(scannedAtMillis = 2_000)
+        val codeId = scanRepository.watchScan(id = emptiedId).first()!!.codes.single().id
+
+        // When
+        scanRepository.deleteCode(id = codeId)
+
+        // Then
+        assertEquals(
+            expected = listOf(keptId),
+            actual = scanRepository.watchScans().first().map(StoredScan::id),
+        )
+    }
+
+    private suspend fun saveScan(
+        rawValue: String = "https://scanny.app",
+        scannedAtMillis: Long = 0,
+    ): Long =
+        scanRepository.saveScan(
+            codes = listOf(
+                CodeToSave(
+                    rawValue = rawValue,
+                    format = "QR_CODE",
+                ),
+            ),
+            scannedAt = Instant.fromEpochMilliseconds(scannedAtMillis),
+        )
 }

@@ -74,6 +74,7 @@ private fun PreviewScanResultSheet() {
         ScanResultSheet(
             modifier = Modifier.fillMaxWidth(),
             result = ScanResultItem(
+                codeId = 1,
                 type = ScanResultType.LINK,
                 rawValue = "https://scanny.app",
             ),

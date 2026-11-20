@@ -121,10 +121,11 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   zoom, demande de mise au point (`FocusRequest`, un point en fraction de l'aperçu et un id qui
   distingue deux appuis au même endroit). Il remonte ce que seul l'appareil connaît
   (`CameraCapabilities` : torche, plage de zoom) et l'absence de caméra (le simulateur iOS).
-- Un code détecté remonte sous la forme commune `DetectedBarcode` (texte brut et `BarcodeFormat`),
-  jamais sous un type de ML Kit, d'AVFoundation ou de Vision. `normalized()` en fait le même code sur
-  les deux plateformes (un EAN-13 qui commence par `0` est un UPC-A) : le ViewModel l'applique à tout
-  code reçu.
+- Un code détecté remonte sous la forme commune `DetectedBarcode` (texte brut et `BarcodeFormat`, un
+  modèle de `domain`), jamais sous un type de ML Kit, d'AVFoundation ou de Vision. Sa normalisation,
+  qui en fait le même code sur les deux plateformes (un EAN-13 qui commence par `0` est un UPC-A), est
+  appliquée par `RecordScanUseCase` à tout code enregistré : le code de plateforme et le ViewModel
+  le transmettent tel que lu.
 - La détection est mise en pause par le ViewModel **avant** tout traitement, de façon synchrone : la
   caméra lit le même code plusieurs fois de suite, et chaque lecture serait sinon enregistrée.
 - Le geste de zoom (pincement, plafonné à ×8) et le geste de mise au point (appui) sont détectés en
