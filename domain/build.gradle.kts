@@ -5,6 +5,9 @@ plugins {
 kotlin {
     android {
         namespace = "fr.skyle.scanny.domain"
+
+        withHostTest {
+        }
     }
 
     sourceSets {
@@ -14,6 +17,10 @@ kotlin {
 
             // Koin
             implementation(libs.koin.core)
+        }
+
+        commonTest.dependencies {
+            implementation(libs.test.kotlin)
         }
     }
 }
