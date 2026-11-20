@@ -43,6 +43,18 @@ extension XCTestCase {
         return app
     }
 
+    /// Launches the app with no code to read: the simulator then has no camera.
+    func launchApp(language: String = "en") -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments += [
+            "-AppleLanguages", "(\(language))",
+            "-AppleLocale", language == "fr" ? "fr_FR" : "en_US",
+        ]
+        app.launch()
+        allowTheCameraIfAsked()
+        return app
+    }
+
     func element(
         labelled label: String,
         in app: XCUIApplication,

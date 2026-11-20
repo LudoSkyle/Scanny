@@ -1,8 +1,10 @@
 <resources>
+    <string name="about">À propos</string>
     <string name="add_contact">Ajouter le contact</string>
     <string name="address">Adresse</string>
     <string name="all_scans_deleted">Tous les scans seront supprimés.</string>
     <string name="allow_camera">Autoriser la caméra</string>
+    <string name="app_description">Scanny scanne les QR codes et les codes-barres, avec les dernières technologies et sans publicité, tout en restant légère et fiable.</string>
     <string name="at_time">%1$s à %2$s</string>
     <string name="camera_blocked">La caméra est bloquée pour Scanny. Autorisez-la dans les réglages de votre appareil pour scanner des codes.</string>
     <string name="camera_needed">Scanny a besoin de la caméra pour scanner des codes.</string>
@@ -24,6 +26,8 @@
     <string name="copied">Copié</string>
     <string name="copied_to_clipboard">Copié dans le presse-papiers</string>
     <string name="copy">Copier</string>
+    <string name="created_by">Créé par</string>
+    <string name="created_by_skyle">Skyle avec ❤️ chez Openium</string>
     <string name="day_date">%1$d %2$s %3$d</string>
     <string name="delete">Supprimer</string>
     <string name="delete_code_question">Supprimer ce code ?</string>
@@ -31,7 +35,13 @@
     <string name="discard">Abandonner</string>
     <string name="discard_codes_question">Abandonner les codes trouvés ?</string>
     <string name="email">E-mail</string>
+    <string name="feedback">Votre avis</string>
+    <string name="feedback_about_other">Autre chose</string>
+    <string name="feedback_about_scan">Le scan</string>
+    <string name="feedback_about_type_detection">La détection du type d'un code</string>
+    <string name="feedback_subject_question">Sur quoi porte votre avis ?</string>
     <string name="finish">Terminer</string>
+    <string name="general">Général</string>
     <string name="group">Groupe</string>
     <string name="group_codes_removed_from_history">Ses codes seront retirés de l'historique.</string>
     <string name="group_not_deleted">Le groupe n'a pas pu être supprimé</string>
@@ -40,6 +50,7 @@
     <string name="job_title">Fonction</string>
     <string name="join_network">Rejoindre le réseau</string>
     <string name="link">Lien</string>
+    <string name="mail_app_opens_with_message">Votre app de mail s'ouvre avec votre message, prêt à être envoyé.</string>
     <string name="message">Message</string>
     <string-array name="months">
         <item>janvier</item>
@@ -62,6 +73,7 @@
     <string name="no_code_in_image">Aucun code trouvé dans cette image</string>
     <string name="no_scan_yet">Aucun scan pour l'instant</string>
     <string name="open_link">Ouvrir le lien</string>
+    <string name="open_links_after_scan">Ouvrir les liens après un scan</string>
     <string name="open_settings">Ouvrir les réglages</string>
     <string name="organization">Organisation</string>
     <string name="pass_codes_in_front_of_camera">Passez les codes devant la caméra</string>
@@ -69,6 +81,8 @@
     <string name="phone">Téléphone</string>
     <string name="phone_number">Numéro de téléphone</string>
     <string name="place_code_in_frame">Placez un code dans le cadre</string>
+    <string name="privacy_policy">Politique de confidentialité</string>
+    <string name="rate_app">Noter l'app</string>
     <string name="raw_content">Contenu brut</string>
     <string name="recipient">Destinataire</string>
     <string name="scan_image">Scanner une image</string>
@@ -77,12 +91,19 @@
     <string name="security">Sécurité</string>
     <string name="see_detail">Voir le détail</string>
     <string name="see_group">Voir le groupe</string>
+    <string name="send_email">Envoyer l'e-mail</string>
+    <string name="setting_not_saved">Le réglage n'a pas pu être enregistré</string>
+    <string name="settings">Réglages</string>
     <string name="share">Partager</string>
+    <string name="show_raw_content">Afficher le contenu brut</string>
     <string name="subject">Objet</string>
     <string name="text">Texte</string>
+    <string name="thanks_for_using_app">Merci d'utiliser l'app !</string>
     <string name="today">Aujourd'hui</string>
     <string name="turn_off_torch">Éteindre la lampe</string>
     <string name="turn_on_torch">Allumer la lampe</string>
+    <string name="version_and_build">Version %1$s (build %2$s)</string>
+    <string name="vibrate_after_scan">Vibrer après un scan</string>
     <string name="website">Site web</string>
     <string name="write_email">Écrire un e-mail</string>
     <string name="write_sms">Écrire un SMS</string>

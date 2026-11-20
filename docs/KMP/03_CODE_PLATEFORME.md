@@ -212,5 +212,5 @@ livrée ; le tableau est mis à jour dans le même commit.
 | Ajouter un contact | ✅ (émulateur : Contacts prérempli, tous les champs) — `ACTION_INSERT_OR_EDIT` | ✅ (simulateur : contact enregistré, tous les champs) — `CNContactViewController` | interface |
 | Rejoindre un réseau WiFi | ✅ (émulateur : réseau WPA2 enregistré par l'écran des réglages ; non proposé pour un mot de passe invalide) — `Settings.ACTION_WIFI_ADD_NETWORKS`, Android 11 et plus | Reporté (`NEHotspotConfigurationManager` exige l'entitlement *Hotspot Configuration*, donc un compte payant) : action non proposée | `expect` composable + interface |
 | Ouvrir les réglages de l'app | ✅ `ACTION_APPLICATION_DETAILS_SETTINGS` | `UIApplicationOpenSettingsURLString` | dans l'état de permission caméra |
-| Noter l'app | Lien Play Store | Lien App Store | interface |
-| Version de l'app | `PackageManager` (`versionName`, `longVersionCode`) | `CFBundleShortVersionString`, `CFBundleVersion` | interface |
+| Noter l'app | ✅ (émulateur : Play Store) — `market://`, sinon le site du Play Store | Pas encore sur l'App Store : l'entrée n'est pas proposée | `expect val rateAppLinks` |
+| Version de l'app | ✅ — `PackageManager` (`versionName`, `longVersionCode`) | ✅ (simulateur) — `CFBundleShortVersionString`, `CFBundleVersion` | interface (`AppVersion`) |

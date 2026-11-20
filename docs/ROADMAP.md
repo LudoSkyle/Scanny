@@ -18,8 +18,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
       vérifier sur iPhone)*
 - [x] Écran de permission refusée, avec un accès aux réglages de l'app
 - [x] Vibration après un scan (réglage) *(testée, non observée)*
-- [x] Ouverture automatique des liens après un scan (réglage ; l'écran des réglages arrive au lot 10)
-      *(testée, non observée)*
+- [x] Ouverture automatique des liens après un scan (réglage) *(testée, non observée)*
 - [x] Détection en pause tant qu'un résultat est affiché *(testée)*
 
 ### Détail d'un scan
@@ -33,12 +32,12 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 
 ### Réglages, Feedback, À propos
 
-- [ ] Réglages : vibration après un scan, ouverture automatique des liens, affichage du contenu
+- [x] Réglages : vibration après un scan, ouverture automatique des liens, affichage du contenu
       brut
-- [ ] Liens : À propos, Feedback, noter l'app, politique de confidentialité, site d'Openium,
-      version et build
-- [ ] Feedback : choix d'un sujet (scan, détection du type, autre) et message, envoyés par mail
-- [ ] À propos : version, auteur, lien GitHub, description
+- [x] Liens : À propos, Feedback, noter l'app (Android ; iOS une fois l'app sur l'App Store),
+      politique de confidentialité, site d'Openium, version et build
+- [x] Feedback : choix d'un sujet (scan, détection du type, autre) et message, envoyés par mail
+- [x] À propos : version, auteur, lien GitHub, description
 
 ## Nouveautés
 
@@ -143,6 +142,18 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
    - Vérifié sur l'émulateur Android (codes ajoutés depuis des images) et sur le simulateur iOS
      (tests d'interface, caméra simulée qui lit plusieurs codes)
 10. **Réglages, Feedback, À propos**
+    - [x] `Route.Settings`, ouvert depuis le scan (roue dentée en haut à droite) : les trois réglages
+          du scan, À propos, Feedback, noter l'app, la politique de confidentialité, Openium, la
+          version et le build
+    - [x] `Route.Feedback` : un sujet, un message, envoyés par l'app de mail (`mailto:` vers
+          scanny.contact@gmail.com, le tag du sujet en objet)
+    - [x] `Route.About` : logo, version, description, auteur, lien GitHub
+    - La politique de confidentialité de la v1 (`skylekayma.github.io`) répond 404 depuis le
+      renommage du compte GitHub : l'app pointe vers `ludoskyle.github.io/scanny.github.io`. Le lien
+      GitHub pointe vers `LudoSkyle/Scanny`, où l'ancien redirige.
+    - Vérifié sur l'émulateur Android (Play Store, Gmail ouvert par le feedback) et sur le simulateur
+      iOS (tests d'interface : le réglage du contenu brut jusque dans un détail, À propos, feedback,
+      politique de confidentialité dans Safari, textes français)
 11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
     (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre
     l'éditeur prérempli avec son contenu.

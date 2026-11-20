@@ -177,7 +177,8 @@ Kotlin/Native impose quelques règles au code de `commonTest` :
 La cible `iosAppUITests` du projet Xcode (XCUITest, en Swift) lance l'app sur le simulateur et
 vérifie ce qui suit un scan : la feuille, le détail, la copie, le partage, l'ouverture d'un lien dans
 Safari, d'un SMS dans Messages, l'ajout d'un contact dans Contacts, la suppression, l'historique et
-son effacement, le scan multiple et l'écran du groupe, les textes français.
+son effacement, le scan multiple et l'écran du groupe, les réglages, le feedback, À propos, les textes
+français.
 
 - Le simulateur n'a pas de caméra : un build Debug y lit le code de la variable d'environnement
   `SCANNY_SIMULATED_CODE` comme si la caméra le voyait (voir
@@ -186,7 +187,13 @@ son effacement, le scan multiple et l'écran du groupe, les textes français.
 - Les éléments se cherchent par leur libellé d'accessibilité, que Compose Multiplatform expose :
   texte d'un bouton, `contentDescription` d'une icône. Un élément cliquable réunit les textes qu'il
   contient en un seul libellé (une ligne de l'historique se cherche par « contient »), et un titre
-  marqué `heading()` n'est pas un `staticText` mais un `otherElement`.
+  marqué `heading()` (celui d'un `SCCardStructure`) n'est pas un `staticText` mais un
+  `otherElement`. Une ligne `toggleable` est un `switch` dont l'état se lit par `isSelected`, sans
+  valeur.
+- Un appui pendant une transition entre deux écrans se perd : avant d'appuyer sur l'écran d'arrivée,
+  le test attend que l'écran quitté ait disparu (`waitForNonExistence` sur un de ses textes).
+- Les réglages restent d'un lancement à l'autre : un test qui en change un le remet comme il l'a
+  trouvé.
 - Les composants de Material ont leurs propres libellés, traduits par Compose Multiplatform : la
   feuille se ferme par « Close sheet », « Fermer la feuille » en français.
 - Un état qu'aucun test ne sait produire (des scans d'autres jours) se prépare en écrivant dans la
