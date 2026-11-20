@@ -79,29 +79,32 @@ class RecordScanUseCaseTest {
     )
 
     @Test
-    fun `a scanned url is saved and returned as an url content`() = runTest {
+    fun `a scan is saved with its raw value its format and the current time`() = runTest {
         // Given
         val rawValue = "https://scanny.app"
 
         // When
-        val scan = recordScanUseCase(
+        recordScanUseCase(
             rawValue = rawValue,
             format = BarcodeFormat.QR_CODE,
         )
 
         // Then
         assertEquals(
-            expected = listOf(rawValue),
-            actual = scanRepository.savedRawValues,
-        )
-        assertEquals(
-            expected = BarcodeContent.Url(url = rawValue),
-            actual = scan.content,
+            expected = listOf(
+                StoredScan(
+                    id = 1,
+                    rawValue = rawValue,
+                    format = "QR_CODE",
+                    scannedAt = SCANNED_AT,
+                ),
+            ),
+            actual = scanRepository.storedScans,
         )
     }
 
     private companion object {
-        val SCANNED_AT = Instant.fromEpochSeconds(1_700_000_000)
+        val SCANNED_AT = Instant.fromEpochMilliseconds(1_700_000_000_000)
     }
 }
 ```
@@ -123,10 +126,23 @@ Kotlin/Native impose quelques règles au code de `commonTest` :
 - Un texte traduit se lit depuis sa ressource (`getString(Res.string.x)`), jamais en dur : le
   simulateur iOS parle la langue du Mac, la JVM parle anglais.
 
-### Tester un `Flow` Room
+### Base de données, réglages et `Flow`
 
-Room émet la valeur courante dès la collecte : `dao.watchAll().first()` suffit dans la majorité des
-cas, sans dépendance de test supplémentaire.
+- **Room** : `DatabaseTest` (commun) construit une vraie base en mémoire à partir d'un `expect`,
+  implémenté avec Robolectric dans `androidHostTest` et sans rien de plus dans `iosTest`. Le SDK que
+  simule Robolectric est fixé dans `src/androidHostTest/resources/robolectric.properties` : le
+  `compileSdk` est plus récent que ceux qu'il sait simuler.
+- Le SQLite embarqué (`BundledSQLiteDriver`) charge ses bibliothèques natives : sur la JVM des tests
+  hôtes, `data/build.gradle.kts` extrait celles de `sqlite-bundled-jvm` et les place sur le
+  `java.library.path`. Sans cela, un test de base échoue sur un `UnsatisfiedLinkError`.
+- **DataStore** : un test construit son `DataStore<Preferences>` sur un système de fichiers en
+  mémoire (`FakeFileSystem` d'okio, `OkioStorage` et `PreferencesSerializer`), nouveau à chaque
+  test et lié au `backgroundScope` de `runTest`. Aucun fichier réel n'est écrit.
+- Room émet la valeur courante dès la collecte : `dao.watchAll().first()` suffit dans la majorité
+  des cas, sans dépendance de test supplémentaire.
+- Pour vérifier ce qu'un `Flow` réémet après un changement, le test le collecte dans une liste,
+  depuis le `backgroundScope` avec un `UnconfinedTestDispatcher(testScheduler)`, puis fait le
+  changement et compare la liste.
 
 ### Accès aux `internal` depuis les tests
 

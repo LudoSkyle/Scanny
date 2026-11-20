@@ -36,7 +36,7 @@ La configuration commune des modules KMP passe par deux plugins de convention de
 | `shared` | `scanny-compose-library`, `org.jetbrains.kotlin.plugin.serialization` |
 | `designSystem` | `scanny-compose-library` |
 | `domain` | `scanny-kmp-library` |
-| `data` | `scanny-kmp-library`, + `com.google.devtools.ksp` et `androidx.room` quand la base arrive |
+| `data` | `scanny-kmp-library`, `com.google.devtools.ksp`, `androidx.room` |
 
 Une configuration qui se répète dans plusieurs modules va dans un plugin de convention plutôt que
 d'être copiée. Les fonctions `catalogVersion` et `catalogLibrary` (`ScannyCatalog.kt`) y lisent le

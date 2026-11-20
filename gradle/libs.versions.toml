@@ -7,6 +7,7 @@ minSdk = "26"
 
 # Kotlin
 kotlin = "2.4.21"
+kotlinxCoroutines = "1.11.0"
 kotlinxSerialization = "1.13.0"
 
 # Compose Multiplatform
@@ -25,14 +26,28 @@ activityCompose = "1.13.0"
 # Koin
 koin = "4.2.2"
 
+# Room
+room = "2.8.5"
+sqlite = "2.6.2" # The version Room 2.8.5 requires
+
+# DataStore
+datastore = "1.3.0"
+okio = "3.18.2"
+
 # Logs
 kermit = "2.2.0"
 
 # Firebase
 firebaseBom = "34.14.1"
 
+# Tests
+junit = "4.13.2"
+robolectric = "4.18.1"
+androidxTestCore = "1.7.0"
+
 # Plugins
 agp = "9.5.1"
+ksp = "2.3.14"
 googleServices = "4.4.4"
 firebaseCrashlyticsPlugin = "3.0.7"
 firebaseAppdistributionPlugin = "5.2.1"
@@ -54,6 +69,7 @@ navigation3Multiplatform-ui = { module = "org.jetbrains.androidx.navigation3:nav
 lifecycleMultiplatform-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleMultiplatform" }
 
 # Kotlinx
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerialization" }
 
 # AndroidX
@@ -62,6 +78,16 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 # Koin
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+
+# Room
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+sqlite-bundled-jvm = { module = "androidx.sqlite:sqlite-bundled-jvm", version.ref = "sqlite" }
+
+# DataStore
+datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 
 # Logs
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
@@ -72,12 +98,19 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 
 # Tests
 test-kotlin = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+test-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+test-okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
+test-junit = { module = "junit:junit", version.ref = "junit" }
+test-robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+test-androidx-core = { module = "androidx.test:core-ktx", version.ref = "androidxTestCore" }
 
 # Gradle plugins, put on the build classpath by buildSrc
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-kotlinSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 plugin-composeCompiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+plugin-ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+plugin-room = { module = "androidx.room:room-gradle-plugin", version.ref = "room" }
 plugin-composeMultiplatform = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeMultiplatform" }
 plugin-googleServices = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 plugin-firebaseCrashlytics = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsPlugin" }

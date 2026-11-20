@@ -14,6 +14,12 @@ dependencies {
     implementation(libs.plugin.composeCompiler)
     implementation(libs.plugin.composeMultiplatform)
 
+    // KSP
+    implementation(libs.plugin.ksp)
+
+    // Room
+    implementation(libs.plugin.room)
+
     // Firebase
     implementation(libs.plugin.googleServices)
     implementation(libs.plugin.firebaseCrashlytics)
