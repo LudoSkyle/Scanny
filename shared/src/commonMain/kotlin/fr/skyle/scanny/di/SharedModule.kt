@@ -3,6 +3,7 @@ package fr.skyle.scanny.di
 import fr.skyle.scanny.domain.di.domainModule
 import fr.skyle.scanny.ui.screen.scan.ui.ScanViewModel
 import fr.skyle.scanny.ui.screen.scandetail.ui.ScanDetailViewModel
+import fr.skyle.scanny.ui.screen.scangroup.ui.ScanGroupViewModel
 import fr.skyle.scanny.ui.screen.scanhistory.ui.ScanHistoryViewModel
 import kotlinx.datetime.TimeZone
 import org.koin.core.module.Module
@@ -20,6 +21,7 @@ val sharedModule = module {
 
     viewModelOf(::ScanViewModel)
     viewModelOf(::ScanDetailViewModel)
+    viewModelOf(::ScanGroupViewModel)
     viewModelOf(::ScanHistoryViewModel)
 }
 

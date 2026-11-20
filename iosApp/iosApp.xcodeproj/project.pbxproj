@@ -13,6 +13,7 @@
 		4D0C5921699BC6E54DF36A80 /* ScanFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B180779BE417DB513FDBAE /* ScanFlowUITests.swift */; };
 		56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */; };
 		6B2031D9196667F65FD358E5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 37A6BA4C5AAF06904D9C889E /* InfoPlist.strings */; };
+		77070BD11FD3CBB458CE2CDB /* MultipleScanUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5ED9606FFD0D24F04AF179 /* MultipleScanUITests.swift */; };
 		FE7AC234EC3B815795A82EC6 /* UITestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2AF7D2D9475CB6237C289A /* UITestSupport.swift */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0D5ED9606FFD0D24F04AF179 /* MultipleScanUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleScanUITests.swift; sourceTree = "<group>"; };
 		323906AFB18147ABEDEBDB38 /* iosAppUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = iosAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3844CF78A622F67C8545925B /* Scanny.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Scanny.xcconfig; sourceTree = "<group>"; };
 		668CECA83ACC03A83C85A623 /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 		FC16215C5E8EEAF655CB992F /* iosAppUITests */ = {
 			isa = PBXGroup;
 			children = (
+				0D5ED9606FFD0D24F04AF179 /* MultipleScanUITests.swift */,
 				84B180779BE417DB513FDBAE /* ScanFlowUITests.swift */,
 				9AA7C512CC348A8D6D112C34 /* ScanHistoryUITests.swift */,
 				DA2AF7D2D9475CB6237C289A /* UITestSupport.swift */,
@@ -209,6 +212,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				77070BD11FD3CBB458CE2CDB /* MultipleScanUITests.swift in Sources */,
 				4D0C5921699BC6E54DF36A80 /* ScanFlowUITests.swift in Sources */,
 				2EC1EB7A046940760F4B33FC /* ScanHistoryUITests.swift in Sources */,
 				FE7AC234EC3B815795A82EC6 /* UITestSupport.swift in Sources */,

@@ -16,6 +16,8 @@ import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.ic_flashlight_off
 import fr.skyle.scanny.resources.ic_flashlight_on
 import fr.skyle.scanny.resources.ic_photo_library
+import fr.skyle.scanny.resources.ic_stacks
+import fr.skyle.scanny.resources.multiple_scan
 import fr.skyle.scanny.resources.scan_image
 import fr.skyle.scanny.resources.turn_off_torch
 import fr.skyle.scanny.resources.turn_on_torch
@@ -27,7 +29,9 @@ import org.jetbrains.compose.resources.stringResource
 fun ScanControls(
     hasTorch: Boolean,
     isTorchEnabled: Boolean,
+    isMultipleScanActive: Boolean,
     onScanImageClicked: () -> Unit,
+    onMultipleScanClicked: () -> Unit,
     onTorchClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -42,6 +46,15 @@ fun ScanControls(
             contentDescription = stringResource(Res.string.scan_image),
             onClick = onScanImageClicked,
             style = SCIconButtonDefaults.Style.OVERLAY,
+            size = SCIconButtonDefaults.Size.LARGE,
+        )
+
+        SCIconButton(
+            modifier = Modifier.wrapContentSize(),
+            icon = painterResource(Res.drawable.ic_stacks),
+            contentDescription = stringResource(Res.string.multiple_scan),
+            onClick = onMultipleScanClicked,
+            style = if (isMultipleScanActive) SCIconButtonDefaults.Style.PRIMARY else SCIconButtonDefaults.Style.OVERLAY,
             size = SCIconButtonDefaults.Size.LARGE,
         )
 
@@ -68,7 +81,9 @@ private fun PreviewScanControls() {
                 .padding(all = 16.dp),
             hasTorch = true,
             isTorchEnabled = false,
+            isMultipleScanActive = true,
             onScanImageClicked = {},
+            onMultipleScanClicked = {},
             onTorchClicked = {},
         )
     }

@@ -52,6 +52,7 @@ private const val FOCUS_INDICATOR_DURATION_MILLIS = 800L
  */
 @Composable
 fun ScanCameraLayer(
+    hint: String,
     isDetectionEnabled: Boolean,
     isTorchEnabled: Boolean,
     capabilities: CameraCapabilities?,
@@ -158,7 +159,7 @@ fun ScanCameraLayer(
                 .offset(y = frameSize / 2 + 32.dp)
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp),
-            text = stringResource(Res.string.place_code_in_frame),
+            text = hint,
             style = SCTheme.typography.body1,
             color = SCTheme.colors.textLight,
             textAlign = TextAlign.Center,
@@ -172,6 +173,7 @@ private fun PreviewScanCameraLayer() {
     SCTheme {
         ScanCameraLayer(
             modifier = Modifier.fillMaxSize(),
+            hint = stringResource(Res.string.place_code_in_frame),
             isDetectionEnabled = true,
             isTorchEnabled = false,
             capabilities = null,

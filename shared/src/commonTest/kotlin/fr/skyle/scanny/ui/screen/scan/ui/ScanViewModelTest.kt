@@ -11,7 +11,10 @@ import fr.skyle.scanny.fake.FakeWifiNetworkSupport
 import fr.skyle.scanny.platform.camera.CameraCapabilities
 import fr.skyle.scanny.platform.gallery.ImageScanResult
 import fr.skyle.scanny.ui.core.code.model.CodeAction
+import fr.skyle.scanny.ui.core.code.model.CodeRowItem
 import fr.skyle.scanny.ui.core.code.model.CodeType
+import fr.skyle.scanny.ui.screen.scan.ui.model.MultipleScanSession
+import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResult
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultItem
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -66,13 +69,15 @@ class ScanViewModelTest {
         assertEquals(
             expected = ScanViewModel.ScanUIState(
                 isDetectionPaused = true,
-                result = ScanResultItem(
-                    codeId = 1,
-                    type = CodeType.TEXT,
-                    format = BarcodeFormat.QR_CODE,
-                    summary = "Hello",
-                    rawValue = "Hello",
-                    action = null,
+                result = ScanResult.Code(
+                    item = ScanResultItem(
+                        codeId = 1,
+                        type = CodeType.TEXT,
+                        format = BarcodeFormat.QR_CODE,
+                        summary = "Hello",
+                        rawValue = "Hello",
+                        action = null,
+                    ),
                 ),
             ),
             actual = viewModel.uiState.value,
@@ -189,13 +194,15 @@ class ScanViewModelTest {
 
         // Then
         assertEquals(
-            expected = ScanResultItem(
-                codeId = 1,
-                type = CodeType.LINK,
-                format = BarcodeFormat.QR_CODE,
-                summary = "https://scanny.app",
-                rawValue = "https://scanny.app",
-                action = CodeAction.OpenLink(link = "https://scanny.app"),
+            expected = ScanResult.Code(
+                item = ScanResultItem(
+                    codeId = 1,
+                    type = CodeType.LINK,
+                    format = BarcodeFormat.QR_CODE,
+                    summary = "https://scanny.app",
+                    rawValue = "https://scanny.app",
+                    action = CodeAction.OpenLink(link = "https://scanny.app"),
+                ),
             ),
             actual = viewModel.uiState.value.result,
         )
@@ -220,7 +227,7 @@ class ScanViewModelTest {
         // Then
         assertEquals(
             expected = CodeAction.JoinWifi(wifi = wifi),
-            actual = viewModel.uiState.value.result?.action,
+            actual = (viewModel.uiState.value.result as? ScanResult.Code)?.item?.action,
         )
     }
 
@@ -292,7 +299,7 @@ class ScanViewModelTest {
         )
         assertEquals(
             expected = CodeType.TEXT,
-            actual = viewModel.uiState.value.result?.type,
+            actual = (viewModel.uiState.value.result as? ScanResult.Code)?.item?.type,
         )
     }
 
@@ -356,6 +363,252 @@ class ScanViewModelTest {
 
         // Then
         assertTrue(viewModel.uiState.value.isDetectionPaused)
+    }
+
+    @Test
+    fun `a multiple scan counts each code once and keeps scanning`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel()
+        viewModel.onMultipleScanClicked()
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Second"))
+
+        // Then
+        assertEquals(
+            expected = ScanViewModel.ScanUIState(multipleScan = MultipleScanSession(codeCount = 2)),
+            actual = viewModel.uiState.value,
+        )
+    }
+
+    @Test
+    fun `each new code of a multiple scan vibrates`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isVibrationAfterScanEnabled = true))
+        viewModel.onMultipleScanClicked()
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Second"))
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                ScanViewModel.ScanEvent.Vibrate,
+                ScanViewModel.ScanEvent.Vibrate,
+            ),
+            actual = events,
+        )
+    }
+
+    @Test
+    fun `finishing a multiple scan records its codes as one capture and shows them`() = runTest(testDispatcher) {
+        // Given
+        val recordScanUseCase = FakeRecordScanUseCase()
+        val viewModel = scanViewModel(recordScanUseCase = recordScanUseCase)
+        viewModel.onMultipleScanClicked()
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Second"))
+
+        // When
+        viewModel.onMultipleScanFinished()
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                listOf(
+                    qrCode(rawValue = "First"),
+                    qrCode(rawValue = "Second"),
+                ),
+            ),
+            actual = recordScanUseCase.recordedScans,
+        )
+        assertEquals(
+            expected = ScanViewModel.ScanUIState(
+                isDetectionPaused = true,
+                result = ScanResult.Group(
+                    scanId = 1,
+                    codes = listOf(
+                        CodeRowItem(
+                            codeId = 1,
+                            type = CodeType.TEXT,
+                            summary = "First",
+                        ),
+                        CodeRowItem(
+                            codeId = 2,
+                            type = CodeType.TEXT,
+                            summary = "Second",
+                        ),
+                    ),
+                ),
+            ),
+            actual = viewModel.uiState.value,
+        )
+    }
+
+    @Test
+    fun `a multiple scan that found a single code shows it as a simple scan`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel()
+        viewModel.onMultipleScanClicked()
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Alone"))
+
+        // When
+        viewModel.onMultipleScanFinished()
+
+        // Then
+        assertEquals(
+            expected = "Alone",
+            actual = (viewModel.uiState.value.result as? ScanResult.Code)?.item?.summary,
+        )
+    }
+
+    @Test
+    fun `a multiple scan without code cannot be finished`() = runTest(testDispatcher) {
+        // Given
+        val recordScanUseCase = FakeRecordScanUseCase()
+        val viewModel = scanViewModel(recordScanUseCase = recordScanUseCase)
+        viewModel.onMultipleScanClicked()
+
+        // When
+        viewModel.onMultipleScanFinished()
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = recordScanUseCase.recordedScans,
+        )
+        assertEquals(
+            expected = MultipleScanSession(codeCount = 0),
+            actual = viewModel.uiState.value.multipleScan,
+        )
+    }
+
+    @Test
+    fun `stopping a multiple scan with codes asks to discard them first`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isVibrationAfterScanEnabled = false))
+        viewModel.onMultipleScanClicked()
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onMultipleScanClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(ScanViewModel.ScanEvent.ConfirmCodesDiscard),
+            actual = events,
+        )
+        assertEquals(
+            expected = MultipleScanSession(codeCount = 1),
+            actual = viewModel.uiState.value.multipleScan,
+        )
+    }
+
+    @Test
+    fun `discarding a multiple scan forgets its codes`() = runTest(testDispatcher) {
+        // Given
+        val recordScanUseCase = FakeRecordScanUseCase()
+        val viewModel = scanViewModel(recordScanUseCase = recordScanUseCase)
+        viewModel.onMultipleScanClicked()
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Forgotten"))
+
+        // When
+        viewModel.onMultipleScanDiscarded()
+        viewModel.onMultipleScanClicked()
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Kept"))
+        viewModel.onMultipleScanFinished()
+
+        // Then
+        assertEquals(
+            expected = listOf(listOf(qrCode(rawValue = "Kept"))),
+            actual = recordScanUseCase.recordedScans,
+        )
+    }
+
+    @Test
+    fun `stopping an empty multiple scan ends it at once`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel()
+        viewModel.onMultipleScanClicked()
+
+        // When
+        viewModel.onMultipleScanClicked()
+
+        // Then
+        assertNull(viewModel.uiState.value.multipleScan)
+    }
+
+    @Test
+    fun `a multiple scan that cannot be saved keeps its codes to try again`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(
+            recordScanUseCase = FakeRecordScanUseCase(error = IllegalStateException("Disk full")),
+            watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isVibrationAfterScanEnabled = false),
+        )
+        viewModel.onMultipleScanClicked()
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onMultipleScanFinished()
+
+        // Then
+        assertEquals(
+            expected = listOf(ScanViewModel.ScanEvent.ScanNotSaved),
+            actual = events,
+        )
+        assertEquals(
+            expected = ScanViewModel.ScanUIState(multipleScan = MultipleScanSession(codeCount = 1)),
+            actual = viewModel.uiState.value,
+        )
+    }
+
+    @Test
+    fun `seeing the group of a multiple scan opens it`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isVibrationAfterScanEnabled = false))
+        viewModel.onMultipleScanClicked()
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Second"))
+        viewModel.onMultipleScanFinished()
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onSeeGroupClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(ScanViewModel.ScanEvent.OpenScanGroup(scanId = 1)),
+            actual = events,
+        )
+        assertNull(viewModel.uiState.value.result)
+        assertTrue(viewModel.uiState.value.isDetectionPaused)
+    }
+
+    @Test
+    fun `a code of the group of a multiple scan opens its detail`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isVibrationAfterScanEnabled = false))
+        viewModel.onMultipleScanClicked()
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "First"))
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Second"))
+        viewModel.onMultipleScanFinished()
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onResultCodeClicked(codeId = 2)
+
+        // Then
+        assertEquals(
+            expected = listOf(ScanViewModel.ScanEvent.OpenScanDetail(codeId = 2)),
+            actual = events,
+        )
     }
 
     @Test

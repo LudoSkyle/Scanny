@@ -121,13 +121,17 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   zoom, demande de mise au point (`FocusRequest`, un point en fraction de l'aperçu et un id qui
   distingue deux appuis au même endroit). Il remonte ce que seul l'appareil connaît
   (`CameraCapabilities` : torche, plage de zoom) et l'absence de caméra (le simulateur iOS).
-- Un code détecté remonte sous la forme commune `DetectedBarcode` (texte brut et `BarcodeFormat`, un
-  modèle de `domain`), jamais sous un type de ML Kit, d'AVFoundation ou de Vision. Sa normalisation,
+- Chaque code vu dans une image remonte, l'un après l'autre, sous la forme commune `DetectedBarcode`
+  (texte brut et `BarcodeFormat`, un modèle de `domain`), jamais sous un type de ML Kit,
+  d'AVFoundation ou de Vision. Un scan simple garde le premier et se met en pause ; un scan multiple
+  les garde tous, chacun une fois. Sa normalisation,
   qui en fait le même code sur les deux plateformes (un EAN-13 qui commence par `0` est un UPC-A), est
   appliquée par `RecordScanUseCase` à tout code enregistré : le code de plateforme et le ViewModel
   le transmettent tel que lu.
-- La détection est mise en pause par le ViewModel **avant** tout traitement, de façon synchrone : la
-  caméra lit le même code plusieurs fois de suite, et chaque lecture serait sinon enregistrée.
+- En scan simple, la détection est mise en pause par le ViewModel **avant** tout traitement, de façon
+  synchrone : la caméra lit le même code plusieurs fois de suite, et chaque lecture serait sinon
+  enregistrée. En scan multiple, elle ne s'arrête pas : le ViewModel ignore un code déjà compté, et
+  la pause ne vient qu'avec l'enregistrement, à « Terminer ».
 - Elle reste en pause quand la feuille du résultat ouvre le détail du code : la caméra lit encore
   pendant la transition vers l'écran suivant. Elle reprend au retour sur le scan, que la `Route`
   signale en se composant de nouveau (`onScreenShown`).
@@ -145,8 +149,8 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
 - **Sur le simulateur iOS, la détection ne se vérifie pas** : il n'a pas de caméra, et Vision n'y
   détecte aucun code dans une image (limite connue du simulateur, quelle que soit la révision de la
   requête). La détection iOS se vérifie sur un iPhone. Pour tester ce qui suit un scan, un build
-  Debug sur simulateur remplace la caméra par `SimulatedScanCamera`, qui lit le code donné dans
-  l'environnement de l'app (`SimulatedScan`, voir [iosApp/CLAUDE.md](../../iosApp/CLAUDE.md)).
+  Debug sur simulateur remplace la caméra par `SimulatedScanCamera`, qui lit le ou les codes donnés
+  dans l'environnement de l'app (`SimulatedScan`, voir [iosApp/CLAUDE.md](../../iosApp/CLAUDE.md)).
 
 ### Actions sur un code
 
