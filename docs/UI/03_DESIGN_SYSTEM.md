@@ -12,9 +12,10 @@ On y trouve :
 
 - le thème : `SCColors`, `SCTypography`, `SCShapes`, `SCTheme` ;
 - les composants génériques : `SCScreenStructure` (fond, insets, barre du haut, messages, couleur
-  des icônes système), `SCTopAppBar`, `SCIconButton`, `SCIconBadge`, `SCButton`, `SCText`, `SCCard`,
-  `SCDialog`, `SCBottomSheet` et `SCSnackbarState`. Les autres (champ de texte, interrupteur…)
-  arrivent avec le premier écran qui en a besoin ;
+  des icônes système), `SCTopAppBar`, `SCIconButton`, `SCIconBadge`, `SCButton`, `SCText`, `SCCard`
+  et `SCCardStructure` (une carte et son titre), `SCDialog`, `SCBottomSheet`, `SCSnackbarState`,
+  `SCSwitch`, `SCRadioButton` et `SCTextField`. Les autres arrivent avec le premier écran qui en a
+  besoin ;
 - les polices (Lato), les icônes et les textes des composants, dans Compose Resources.
 
 On n'y trouve pas :
@@ -36,15 +37,18 @@ designSystem/src/commonMain/
 │       ├── button/
 │       │   ├── SCButton.kt
 │       │   └── SCButtonDefaults.kt
-│       ├── card/              (SCCard : un bloc de contenu détaché du fond)
+│       ├── card/              (SCCard : un bloc de contenu détaché du fond ; SCCardStructure : son titre au-dessus)
 │       ├── dialog/            (SCDialog : une question avant une action, confirmer ou annuler)
 │       ├── iconbadge/         (SCIconBadge : une icône dans un rond, non cliquable)
 │       ├── iconbutton/
 │       │   ├── SCIconButton.kt
 │       │   └── SCIconButtonDefaults.kt
+│       ├── radiobutton/       (SCRadioButton : un choix parmi d'autres)
 │       ├── screenstructure/   (SCScreenStructure, et la couleur des icônes système par plateforme)
 │       ├── snackbar/          (SCSnackbarState : les messages courts d'un écran)
+│       ├── switch/            (SCSwitch : un réglage allumé ou éteint)
 │       ├── text/              (SCText : un texte dans un style du thème)
+│       ├── textfield/         (SCTextField : un texte que l'utilisateur écrit)
 │       └── topappbar/         (SCTopAppBar : retour, titre, actions)
 └── composeResources/
     ├── drawable/              (icônes des composants)
@@ -181,6 +185,9 @@ object SCTheme {
   conteneur, plutôt que réécrite par chaque écran.
 - Un composant qui affiche une icône la reçoit en **`Painter`** (`icon: Painter`), lu par l'appelant
   avec `painterResource(Res.drawable.x)`.
+- Un interrupteur ou un bouton radio se pose dans une ligne qui porte le geste et le libellé
+  (`toggleable`, `selectable`) : le composant reçoit alors `onCheckedChange` ou `onClick` à `null`, et
+  toute la ligne se lit comme un seul interrupteur ou un seul choix.
 - Un bouton qui n'affiche qu'une icône prend un `contentDescription` **obligatoire** et non nullable.
 - Les previews d'un composant parcourent **toutes** ses combinaisons `Style` × `Size`, avec un
   `PreviewParameterProvider`. Elles n'utilisent que des ressources du module, et l'annotation
