@@ -16,19 +16,21 @@ import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.DetectedBarcode
 import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
-private val SIMULATED_READING_DELAY = 1.seconds
+private val SIMULATED_READING_INTERVAL = 500.milliseconds
 
 /**
  * Debug tool, never in a release build: stands for the camera where there is none, as on the iOS
- * simulator, and reads the code [takeBarcode] gives, for the screens that follow a scan to be tested.
- * Its text is not translated: only developers see it.
+ * simulator, and reads the codes [takeBarcodes] gives, after [firstReadingDelay] then one by one, for
+ * the screens that follow a scan to be tested. Its text is not translated: only developers see it.
  */
 @Composable
 internal fun SimulatedScanCamera(
     isDetectionEnabled: Boolean,
-    takeBarcode: () -> DetectedBarcode?,
+    firstReadingDelay: Duration,
+    takeBarcodes: () -> List<DetectedBarcode>,
     onBarcodeDetected: (DetectedBarcode) -> Unit,
     onCapabilitiesChanged: (CameraCapabilities) -> Unit,
     modifier: Modifier = Modifier,
@@ -48,9 +50,10 @@ internal fun SimulatedScanCamera(
     LaunchedEffect(isDetectionEnabled) {
         if (isDetectionEnabled) {
             // A camera takes a moment before it reads a code
-            delay(SIMULATED_READING_DELAY)
-            takeBarcode()?.let { barcode ->
+            delay(firstReadingDelay)
+            takeBarcodes().forEach { barcode ->
                 currentOnBarcodeDetected(barcode)
+                delay(SIMULATED_READING_INTERVAL)
             }
         }
     }
