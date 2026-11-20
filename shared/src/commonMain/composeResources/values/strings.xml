@@ -1,16 +1,22 @@
 <resources>
     <string name="add_contact">Add the contact</string>
     <string name="address">Address</string>
+    <string name="all_scans_deleted">Every scan will be deleted.</string>
     <string name="allow_camera">Allow the camera</string>
+    <string name="at_time">%1$s at %2$s</string>
     <string name="aztec" translatable="false">Aztec</string>
     <string name="camera_blocked">The camera is blocked for Scanny. Allow it in the settings of your device to scan codes.</string>
     <string name="camera_needed">Scanny needs the camera to scan codes.</string>
     <string name="camera_unavailable">No camera is available on this device. You can still scan a code in an image.</string>
     <string name="cancel">Cancel</string>
+    <string name="clear">Clear</string>
+    <string name="clear_history">Clear the history</string>
+    <string name="clear_history_question">Clear the history?</string>
     <string name="codabar" translatable="false">Codabar</string>
     <string name="code_128" translatable="false">Code 128</string>
     <string name="code_39" translatable="false">Code 39</string>
     <string name="code_93" translatable="false">Code 93</string>
+    <string name="code_count">%1$d codes</string>
     <string name="code_not_deleted">The code could not be deleted</string>
     <string name="code_removed_from_history">It will be removed from the history.</string>
     <string name="contact">Contact</string>
@@ -19,20 +25,39 @@
     <string name="copied_to_clipboard">Copied to the clipboard</string>
     <string name="copy">Copy</string>
     <string name="data_matrix" translatable="false">Data Matrix</string>
+    <string name="day_date">%2$s %1$d, %3$d</string>
     <string name="delete">Delete</string>
     <string name="delete_code_question">Delete this code?</string>
     <string name="ean_13" translatable="false">EAN-13</string>
     <string name="ean_8" translatable="false">EAN-8</string>
+    <string name="description_and_time" translatable="false">%1$s · %2$s</string>
     <string name="email">E-mail</string>
+    <string name="history">History</string>
+    <string name="history_not_cleared">The history could not be cleared</string>
     <string name="itf" translatable="false">ITF</string>
     <string name="job_title">Job title</string>
     <string name="join_network">Join the network</string>
     <string name="link">Link</string>
     <string name="message">Message</string>
+    <string-array name="months">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
     <string name="name">Name</string>
     <string name="network">Network</string>
     <string name="no_app_to_open">No app on this device can open it</string>
     <string name="no_code_in_image">No code found in this image</string>
+    <string name="no_scan_yet">No scan yet</string>
     <string name="open_link">Open the link</string>
     <string name="open_settings">Open the settings</string>
     <string name="organization">Organization</string>
@@ -46,12 +71,14 @@
     <string name="recipient">Recipient</string>
     <string name="scan_image">Scan an image</string>
     <string name="scan_not_saved">The scan could not be saved</string>
+    <string name="scanned_codes_appear_here">The codes you scan appear here.</string>
     <string name="security">Security</string>
     <string name="see_detail">See the detail</string>
     <string name="share">Share</string>
     <string name="sms" translatable="false">SMS</string>
     <string name="subject">Subject</string>
     <string name="text">Text</string>
+    <string name="today">Today</string>
     <string name="turn_off_torch">Turn off the torch</string>
     <string name="turn_on_torch">Turn on the torch</string>
     <string name="upc_a" translatable="false">UPC-A</string>
@@ -60,4 +87,5 @@
     <string name="wifi" translatable="false">Wi-Fi</string>
     <string name="write_email">Write an e-mail</string>
     <string name="write_sms">Write an SMS</string>
+    <string name="yesterday">Yesterday</string>
 </resources>

@@ -8,6 +8,7 @@ minSdk = "26"
 # Kotlin
 kotlin = "2.4.21"
 kotlinxCoroutines = "1.11.0"
+kotlinxDatetime = "0.8.0"
 kotlinxSerialization = "1.13.0"
 
 # Compose Multiplatform
@@ -78,6 +79,7 @@ lifecycleMultiplatform-viewmodel-navigation3 = { module = "org.jetbrains.android
 # Kotlinx
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutines" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerialization" }
 
 # AndroidX

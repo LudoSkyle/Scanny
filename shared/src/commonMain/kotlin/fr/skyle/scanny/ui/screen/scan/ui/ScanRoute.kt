@@ -31,6 +31,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ScanRoute(
     navigateToScanDetail: (codeId: Long) -> Unit,
+    navigateToScanHistory: () -> Unit,
     viewModel: ScanViewModel = koinViewModel(),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -106,6 +107,7 @@ fun ScanRoute(
         onOpenSettingsClicked = cameraPermissionState::openAppSettings,
         onScanImageClicked = scanImage,
         onTorchClicked = viewModel::onTorchClicked,
+        onHistoryClicked = navigateToScanHistory,
         onResultActionClicked = { action ->
             when (action) {
                 // Under the sheet, a message would not be seen: the failure is only logged

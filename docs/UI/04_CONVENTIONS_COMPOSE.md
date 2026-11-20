@@ -47,6 +47,16 @@ Ces conventions s'appliquent à `shared` et `designSystem`, en complément de
   chose.
 - Voir [Common/02_CONVENTIONS.md](../Common/02_CONVENTIONS.md) pour les règles des `strings.xml`.
 
+### Dates
+
+- Une date s'affiche par son jour, `CalendarDay` (aujourd'hui, hier, ou sa date), et son heure sur
+  24 h, « 09:05 » dans toutes les langues. Les deux se préparent dans le ViewModel (mappers de
+  `ui/core/date/`), qui reçoit par constructeur le `Clock` et la `TimeZone` (Koin :
+  `TimeZone.currentSystemDefault()`) : ses tests passent un instant et un fuseau fixes.
+- kotlinx-datetime ne traduit pas les mois : le nom d'un jour s'écrit avec `calendarDayText(day)`,
+  qui prend les mois du `string-array` `months` et l'ordre du jour, du mois et de l'année de
+  `day_date` (« November 2, 2026 », « 2 novembre 2026 »).
+
 ### État et recomposition
 
 - Un état que l'utilisateur ouvre ou saisit se garde avec `rememberSaveable`, pas `remember` : une

@@ -18,11 +18,13 @@ import fr.skyle.scanny.designsystem.core.screenstructure.SCScreenStructure
 import fr.skyle.scanny.designsystem.core.screenstructure.SCScreenStructureDefaults
 import fr.skyle.scanny.designsystem.core.snackbar.SCSnackbarState
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
+import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBar
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBarDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.at_time
 import fr.skyle.scanny.resources.content
 import fr.skyle.scanny.resources.delete
 import fr.skyle.scanny.resources.ic_delete
@@ -36,6 +38,8 @@ import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
 import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
 import fr.skyle.scanny.ui.core.code.model.CodeType
+import fr.skyle.scanny.ui.core.date.component.calendarDayText
+import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
 import fr.skyle.scanny.ui.screen.scandetail.ui.component.ScanDetailFieldRow
 import fr.skyle.scanny.ui.screen.scandetail.ui.component.ScanDetailSection
@@ -107,6 +111,17 @@ fun ScanDetailScreen(
                     format = code.format,
                 )
 
+                Spacer(modifier = Modifier.height(12.dp))
+
+                SCText(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp),
+                    text = stringResource(Res.string.at_time, calendarDayText(day = code.scannedDay), code.scannedTime),
+                    style = SCTheme.typography.subtitle2,
+                    color = SCTheme.colors.text,
+                )
+
                 Spacer(modifier = Modifier.height(24.dp))
 
                 ScanDetailSection(
@@ -161,6 +176,8 @@ private fun PreviewScanDetailScreen() {
             code = ScanDetailItem(
                 type = CodeType.SMS,
                 format = BarcodeFormat.QR_CODE,
+                scannedDay = CalendarDay.Today,
+                scannedTime = "21:48",
                 fields = listOf(
                     CodeField(
                         label = CodeFieldLabel.PHONE_NUMBER,
@@ -194,6 +211,8 @@ private fun PreviewScanDetailScreen_Text() {
             code = ScanDetailItem(
                 type = CodeType.TEXT,
                 format = null,
+                scannedDay = CalendarDay.Yesterday,
+                scannedTime = "09:05",
                 fields = listOf(
                     CodeField(
                         label = null,

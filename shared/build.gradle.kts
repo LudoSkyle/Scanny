@@ -44,6 +44,7 @@ kotlin {
 
             // Kotlinx
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.serialization.core)
 
             // Koin

@@ -176,15 +176,22 @@ Kotlin/Native impose quelques règles au code de `commonTest` :
 
 La cible `iosAppUITests` du projet Xcode (XCUITest, en Swift) lance l'app sur le simulateur et
 vérifie ce qui suit un scan : la feuille, le détail, la copie, le partage, l'ouverture d'un lien dans
-Safari, d'un SMS dans Messages, l'ajout d'un contact dans Contacts, la suppression, les textes
-français.
+Safari, d'un SMS dans Messages, l'ajout d'un contact dans Contacts, la suppression, l'historique et
+son effacement, les textes français.
 
 - Le simulateur n'a pas de caméra : un build Debug y lit le code de la variable d'environnement
   `SCANNY_SIMULATED_CODE` comme si la caméra le voyait (voir
   [iosApp/CLAUDE.md](../../iosApp/CLAUDE.md)). Chaque test lance l'app avec son propre code.
 - La langue se fixe au lancement (`-AppleLanguages (en)`) : un test ne dépend pas de la langue du Mac.
 - Les éléments se cherchent par leur libellé d'accessibilité, que Compose Multiplatform expose :
-  texte d'un bouton, `contentDescription` d'une icône.
+  texte d'un bouton, `contentDescription` d'une icône. Un élément cliquable réunit les textes qu'il
+  contient en un seul libellé (une ligne de l'historique se cherche par « contient »), et un titre
+  marqué `heading()` n'est pas un `staticText` mais un `otherElement`.
+- Les composants de Material ont leurs propres libellés, traduits par Compose Multiplatform : la
+  feuille se ferme par « Close sheet », « Fermer la feuille » en français.
+- Un état qu'aucun test ne sait produire (des scans d'autres jours) se prépare en écrivant dans la
+  base de l'app sur le simulateur (`xcrun simctl get_app_container booted fr.skyle.scanny data`, puis
+  `sqlite3` sur `Library/Application Support/scanny.db`), l'app arrêtée.
 - Un test garde ses captures d'écran (`XCTAttachment`, `lifetime = .keepAlways`) : elles se relisent
   après coup, extraites du `.xcresult`.
 - Le presse-papiers du simulateur se lit depuis le Mac : `xcrun simctl pbpaste booted`.

@@ -10,10 +10,12 @@ import fr.skyle.scanny.fake.FakeTextSharer
 import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
 import fr.skyle.scanny.fake.FakeWatchScannedCodeUseCase
 import fr.skyle.scanny.fake.FakeWifiNetworkSupport
+import fr.skyle.scanny.fake.FixedClock
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
 import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
 import fr.skyle.scanny.ui.core.code.model.CodeType
+import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.screen.scandetail.ui.model.ScanDetailItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +27,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.TimeZone
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -67,6 +70,8 @@ class ScanDetailViewModelTest {
             expected = ScanDetailItem(
                 type = CodeType.WIFI,
                 format = BarcodeFormat.QR_CODE,
+                scannedDay = CalendarDay.Today,
+                scannedTime = "00:00",
                 fields = listOf(
                     CodeField(
                         label = CodeFieldLabel.NETWORK,
@@ -256,6 +261,9 @@ class ScanDetailViewModelTest {
             textSharer = textSharer,
             contactAdder = contactAdder,
             wifiNetworkSupport = wifiNetworkSupport,
+            // Scanned at the very moment of the test, in UTC
+            clock = FixedClock(instant = Instant.fromEpochMilliseconds(0)),
+            timeZone = TimeZone.UTC,
         )
 
     private fun TestScope.collectEvents(viewModel: ScanDetailViewModel): List<ScanDetailViewModel.ScanDetailEvent> {
