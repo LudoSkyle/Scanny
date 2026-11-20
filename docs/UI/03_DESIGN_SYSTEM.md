@@ -12,9 +12,9 @@ On y trouve :
 
 - le thème : `SCColors`, `SCTypography`, `SCShapes`, `SCTheme` ;
 - les composants génériques : `SCScreenStructure` (fond, insets, barre du haut, messages, couleur
-  des icônes système), `SCTopAppBar`, `SCIconButton`, `SCButton`, `SCText`, `SCBottomSheet` et
-  `SCSnackbarState`. Les autres (dialog, champ de texte, interrupteur…) arrivent avec le premier écran
-  qui en a besoin ;
+  des icônes système), `SCTopAppBar`, `SCIconButton`, `SCIconBadge`, `SCButton`, `SCText`, `SCCard`,
+  `SCDialog`, `SCBottomSheet` et `SCSnackbarState`. Les autres (champ de texte, interrupteur…)
+  arrivent avec le premier écran qui en a besoin ;
 - les polices (Lato), les icônes et les textes des composants, dans Compose Resources.
 
 On n'y trouve pas :
@@ -36,6 +36,9 @@ designSystem/src/commonMain/
 │       ├── button/
 │       │   ├── SCButton.kt
 │       │   └── SCButtonDefaults.kt
+│       ├── card/              (SCCard : un bloc de contenu détaché du fond)
+│       ├── dialog/            (SCDialog : une question avant une action, confirmer ou annuler)
+│       ├── iconbadge/         (SCIconBadge : une icône dans un rond, non cliquable)
 │       ├── iconbutton/
 │       │   ├── SCIconButton.kt
 │       │   └── SCIconButtonDefaults.kt
@@ -99,7 +102,8 @@ object SCTheme {
 - La typographie lit les polices de Compose Resources (`Font(Res.font.lato_regular, ...)`), ce qui
   ne se fait que dans un composable : `scannyTypography()` est donc `@Composable`.
 - `SCShapes` ne porte que les formes utilisées : `medium` (coins arrondis de 10 dp, ceux des
-  boutons et des cellules de la v1) et `sheet` (le haut arrondi d'une bottom sheet). Une forme
+  boutons, des cartes et des cellules de la v1), `dialog` (24 dp) et `sheet` (le haut arrondi d'une
+  bottom sheet). Une forme
   s'ajoute avec le composant qui en a besoin.
 - Un écran affiche un texte avec `SCText` et un message court par un `SCSnackbarState` donné à
   `SCScreenStructure` : il ne voit jamais `Text` ni `SnackbarHostState` de Material.

@@ -9,18 +9,21 @@ import fr.skyle.scanny.designsystem.theme.SCTheme
 object SCButtonDefaults {
 
     enum class Style {
-        PRIMARY;
+        PRIMARY,
+        SECONDARY;
 
         val containerColor: Color
             @Composable
             get() = when (this) {
                 PRIMARY -> SCTheme.colors.primary
+                SECONDARY -> SCTheme.colors.backgroundIcon
             }
 
         val contentColor: Color
             @Composable
             get() = when (this) {
                 PRIMARY -> SCTheme.colors.textLight
+                SECONDARY -> SCTheme.colors.textPrimary
             }
     }
 
