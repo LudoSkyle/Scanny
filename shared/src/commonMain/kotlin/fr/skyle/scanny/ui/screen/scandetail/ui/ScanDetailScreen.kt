@@ -12,6 +12,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import fr.skyle.scanny.designsystem.core.card.SCCardDefaults
+import fr.skyle.scanny.designsystem.core.card.SCCardStructure
 import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButton
 import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButtonDefaults
 import fr.skyle.scanny.designsystem.core.screenstructure.SCScreenStructure
@@ -42,7 +44,6 @@ import fr.skyle.scanny.ui.core.date.component.calendarDayText
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
 import fr.skyle.scanny.ui.screen.scandetail.ui.component.ScanDetailFieldRow
-import fr.skyle.scanny.ui.screen.scandetail.ui.component.ScanDetailSection
 import fr.skyle.scanny.ui.screen.scandetail.ui.model.ScanDetailItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -124,9 +125,10 @@ fun ScanDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                ScanDetailSection(
+                SCCardStructure(
                     modifier = Modifier.fillMaxWidth(),
                     title = stringResource(Res.string.content),
+                    style = SCCardDefaults.Style.LIGHT,
                 ) {
                     code.fields.forEach { field ->
                         ScanDetailFieldRow(
@@ -141,9 +143,10 @@ fun ScanDetailScreen(
                 if (code.isRawValueShown) {
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    ScanDetailSection(
+                    SCCardStructure(
                         modifier = Modifier.fillMaxWidth(),
                         title = stringResource(Res.string.raw_content),
+                        style = SCCardDefaults.Style.LIGHT,
                     ) {
                         ScanDetailFieldRow(
                             modifier = Modifier.fillMaxWidth(),
