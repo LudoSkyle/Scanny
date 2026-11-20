@@ -29,10 +29,11 @@ fun SCIconButton(
     isEnabled: Boolean = true,
 ) {
     IconButton(
-        modifier = modifier,
+        modifier = modifier.size(size.buttonSize),
         onClick = onClick,
         enabled = isEnabled,
         colors = IconButtonDefaults.iconButtonColors(
+            containerColor = style.containerColor,
             contentColor = style.contentColor,
             disabledContentColor = SCTheme.colors.textDisabled,
         ),
@@ -67,6 +68,7 @@ private fun PreviewSCIconButton(
                     color = when (variant.first) {
                         SCIconButtonDefaults.Style.DARK -> SCTheme.colors.background
                         SCIconButtonDefaults.Style.LIGHT -> SCTheme.colors.backgroundBlack
+                        SCIconButtonDefaults.Style.OVERLAY -> SCTheme.colors.primary
                     },
                 ),
         ) {
