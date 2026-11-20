@@ -65,6 +65,39 @@ actual fun ScanCamera(
     onCameraUnavailable: () -> Unit,
     modifier: Modifier,
 ) {
+    if (SimulatedScan.isEnabled) {
+        SimulatedScanCamera(
+            modifier = modifier,
+            isDetectionEnabled = isDetectionEnabled,
+            takeBarcode = SimulatedScan::take,
+            onBarcodeDetected = onBarcodeDetected,
+            onCapabilitiesChanged = onCapabilitiesChanged,
+        )
+    } else {
+        DeviceScanCamera(
+            modifier = modifier,
+            isDetectionEnabled = isDetectionEnabled,
+            isTorchEnabled = isTorchEnabled,
+            zoomRatio = zoomRatio,
+            focusRequest = focusRequest,
+            onBarcodeDetected = onBarcodeDetected,
+            onCapabilitiesChanged = onCapabilitiesChanged,
+            onCameraUnavailable = onCameraUnavailable,
+        )
+    }
+}
+
+@Composable
+private fun DeviceScanCamera(
+    isDetectionEnabled: Boolean,
+    isTorchEnabled: Boolean,
+    zoomRatio: Float,
+    focusRequest: FocusRequest?,
+    onBarcodeDetected: (DetectedBarcode) -> Unit,
+    onCapabilitiesChanged: (CameraCapabilities) -> Unit,
+    onCameraUnavailable: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val currentIsDetectionEnabled by rememberUpdatedState(isDetectionEnabled)
     val currentOnBarcodeDetected by rememberUpdatedState(onBarcodeDetected)
     val camera = remember { IosScanCamera() }
