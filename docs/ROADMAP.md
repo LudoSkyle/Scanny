@@ -27,9 +27,9 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [x] Type (icône et libellé) et format du code
 - [x] Contenu formaté et contenu brut (le brut selon le réglage), chaque partie copiable, le code
       partageable (sa valeur brute)
-- [ ] Action selon le type : URL → ouvrir ; email → écrire le mail ; SMS → écrire le SMS ;
-      WiFi → rejoindre le réseau (Android seulement pour l'instant) ; contact → l'ajouter aux
-      contacts *(URL, email et SMS faits ; WiFi et contact au 7c)*
+- [x] Action selon le type : URL → ouvrir ; email → écrire le mail ; SMS → écrire le SMS ;
+      WiFi → rejoindre le réseau (Android 11 et plus, pas en WEP ; iOS plus tard) ; contact →
+      l'ajouter aux contacts
 
 ### Réglages, Feedback, À propos
 
@@ -114,12 +114,10 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
          détail »), l'écran `ScanDetail` (contenu par parties et brut, copie, partage, suppression)
          et les actions qui passent par Compose : ouvrir un lien, écrire un e-mail ou un SMS.
          Vérifié sur l'émulateur Android. Son action « Modifier » arrive avec l'éditeur, au lot 11
-   - [ ] 7c : les actions natives qui ouvrent un écran du système : ajouter un contact (Android et
+   - [x] 7c : les actions natives qui ouvrent un écran du système : ajouter un contact (Android et
          iOS), rejoindre un réseau WiFi (Android ; `ACTION_WIFI_ADD_NETWORKS` demande Android 11,
-         le WEP n'y est pas pris en charge)
-   - Deux remarques d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton
-     galerie le temps de son affichage, et le Photo Picker range les images de la plus récente à la
-     plus ancienne.
+         le WEP n'y est pas pris en charge). Vérifié sur l'émulateur Android ; iOS à vérifier sur un
+         iPhone
 8. **Historique des scans** : une ligne par capture ; une capture d'un code ouvre son `ScanDetail`,
    une capture de plusieurs codes ouvre l'écran du groupe, `Route.ScanGroup(scanId)`. La date du
    scan s'affiche alors aussi dans le `ScanDetail`, avec le formatage des dates de l'historique.
@@ -129,7 +127,9 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
 11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
     (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre
     l'éditeur prérempli avec son contenu.
-12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI
+12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI. Deux remarques
+    d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton galerie le temps
+    de son affichage, et le Photo Picker range les images de la plus récente à la plus ancienne.
 13. **Favoris et annotations** *(pas urgent)* : sur une capture, depuis l'historique et l'écran du
     groupe.
 

@@ -3,8 +3,11 @@ package fr.skyle.scanny.ui.screen.scan.ui
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.DetectedBarcode
+import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.fake.FakeContactAdder
 import fr.skyle.scanny.fake.FakeRecordScanUseCase
 import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
+import fr.skyle.scanny.fake.FakeWifiNetworkSupport
 import fr.skyle.scanny.platform.camera.CameraCapabilities
 import fr.skyle.scanny.platform.gallery.ImageScanResult
 import fr.skyle.scanny.ui.core.code.model.CodeAction
@@ -199,6 +202,46 @@ class ScanViewModelTest {
     }
 
     @Test
+    fun `a network the device can join is shown with the action to join it`() = runTest(testDispatcher) {
+        // Given
+        val wifi = BarcodeContent.Wifi(
+            ssid = "Scanny",
+            encryption = WifiEncryption.WPA,
+            password = "secret12",
+        )
+        val viewModel = scanViewModel(
+            recordScanUseCase = FakeRecordScanUseCase(content = { wifi }),
+            wifiNetworkSupport = FakeWifiNetworkSupport(canJoin = true),
+        )
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "WIFI:T:WPA;S:Scanny;P:secret12;;"))
+
+        // Then
+        assertEquals(
+            expected = CodeAction.JoinWifi(wifi = wifi),
+            actual = viewModel.uiState.value.result?.action,
+        )
+    }
+
+    @Test
+    fun `adding the contact of the result opens the contacts`() = runTest(testDispatcher) {
+        // Given
+        val contactAdder = FakeContactAdder()
+        val viewModel = scanViewModel(contactAdder = contactAdder)
+        val contact = BarcodeContent.Contact(formattedName = "John Doe")
+
+        // When
+        viewModel.onAddContactClicked(contact = contact)
+
+        // Then
+        assertEquals(
+            expected = listOf(contact),
+            actual = contactAdder.addedContacts,
+        )
+    }
+
+    @Test
     fun `dismissing the result resumes the detection`() = runTest(testDispatcher) {
         // Given
         val viewModel = scanViewModel()
@@ -355,10 +398,14 @@ class ScanViewModelTest {
     private fun scanViewModel(
         recordScanUseCase: FakeRecordScanUseCase = FakeRecordScanUseCase(),
         watchScanSettingsUseCase: FakeWatchScanSettingsUseCase = FakeWatchScanSettingsUseCase(),
+        contactAdder: FakeContactAdder = FakeContactAdder(),
+        wifiNetworkSupport: FakeWifiNetworkSupport = FakeWifiNetworkSupport(),
     ): ScanViewModel =
         ScanViewModel(
             recordScanUseCase = recordScanUseCase,
             watchScanSettingsUseCase = watchScanSettingsUseCase,
+            contactAdder = contactAdder,
+            wifiNetworkSupport = wifiNetworkSupport,
         )
 
     private fun TestScope.collectEvents(viewModel: ScanViewModel): List<ScanViewModel.ScanEvent> {

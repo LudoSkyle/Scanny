@@ -3,10 +3,13 @@ package fr.skyle.scanny.ui.screen.scandetail.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.usecase.scan.DeleteScannedCodeUseCase
 import fr.skyle.scanny.domain.usecase.scan.WatchScannedCodeUseCase
 import fr.skyle.scanny.domain.usecase.settings.WatchScanSettingsUseCase
+import fr.skyle.scanny.platform.contact.ContactAdder
 import fr.skyle.scanny.platform.share.TextSharer
+import fr.skyle.scanny.platform.wifi.WifiNetworkSupport
 import fr.skyle.scanny.ui.screen.scandetail.ui.mapper.toScanDetailItem
 import fr.skyle.scanny.ui.screen.scandetail.ui.model.ScanDetailItem
 import kotlinx.coroutines.CancellationException
@@ -26,6 +29,8 @@ class ScanDetailViewModel(
     private val watchScanSettingsUseCase: WatchScanSettingsUseCase,
     private val deleteScannedCodeUseCase: DeleteScannedCodeUseCase,
     private val textSharer: TextSharer,
+    private val contactAdder: ContactAdder,
+    private val wifiNetworkSupport: WifiNetworkSupport,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ScanDetailUIState())
@@ -40,7 +45,10 @@ class ScanDetailViewModel(
                 watchScannedCodeUseCase(codeId = codeId),
                 watchScanSettingsUseCase(),
             ) { scannedCode, settings ->
-                scannedCode?.toScanDetailItem(isRawContentShown = settings.isRawContentShown)
+                scannedCode?.toScanDetailItem(
+                    isRawContentShown = settings.isRawContentShown,
+                    canJoinWifi = wifiNetworkSupport::canJoin,
+                )
             }
                 .catch { exception ->
                     Logger.e(throwable = exception) { "Failed to read the scanned code $codeId" }
@@ -57,6 +65,18 @@ class ScanDetailViewModel(
     fun onShareClicked() {
         val code = _uiState.value.code ?: return
         textSharer.shareText(text = code.rawValue)
+    }
+
+    fun onAddContactClicked(contact: BarcodeContent.Contact) {
+        try {
+            contactAdder.addContact(contact = contact)
+        } catch (exception: Exception) {
+            Logger.e(throwable = exception) { "Failed to open the addition of the scanned contact $codeId" }
+
+            viewModelScope.launch {
+                _event.send(ScanDetailEvent.ContactNotAdded)
+            }
+        }
     }
 
     fun onDeleteConfirmed() {
@@ -91,5 +111,6 @@ class ScanDetailViewModel(
     sealed interface ScanDetailEvent {
         data object CodeDeleted : ScanDetailEvent
         data object DeleteFailed : ScanDetailEvent
+        data object ContactNotAdded : ScanDetailEvent
     }
 }

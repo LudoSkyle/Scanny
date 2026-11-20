@@ -1,11 +1,22 @@
 package fr.skyle.scanny.ui.core.code.model
 
+import fr.skyle.scanny.domain.model.BarcodeContent
+
 /** What the main button of a code does. */
 sealed interface CodeAction {
 
-    data class OpenLink(val link: String) : CodeAction
+    /** An action that opens another app on a link. */
+    sealed interface Link : CodeAction {
+        val link: String
+    }
 
-    data class WriteEmail(val link: String) : CodeAction
+    data class OpenLink(override val link: String) : Link
 
-    data class WriteSms(val link: String) : CodeAction
+    data class WriteEmail(override val link: String) : Link
+
+    data class WriteSms(override val link: String) : Link
+
+    data class AddContact(val contact: BarcodeContent.Contact) : CodeAction
+
+    data class JoinWifi(val wifi: BarcodeContent.Wifi) : CodeAction
 }

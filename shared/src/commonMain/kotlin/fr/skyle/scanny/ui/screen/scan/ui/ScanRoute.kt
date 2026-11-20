@@ -18,10 +18,12 @@ import fr.skyle.scanny.platform.camera.CameraPermissionStatus
 import fr.skyle.scanny.platform.camera.rememberCameraPermissionState
 import fr.skyle.scanny.platform.clipboard.textClipEntry
 import fr.skyle.scanny.platform.gallery.rememberImageBarcodeScanner
+import fr.skyle.scanny.platform.wifi.rememberWifiNetworkJoiner
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.no_code_in_image
 import fr.skyle.scanny.resources.scan_not_saved
 import fr.skyle.scanny.ui.core.code.action.open
+import fr.skyle.scanny.ui.core.code.model.CodeAction
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
@@ -41,6 +43,7 @@ fun ScanRoute(
 
     val cameraPermissionState = rememberCameraPermissionState()
     val scanImage = rememberImageBarcodeScanner(onResult = viewModel::onImageScanned)
+    val joinWifiNetwork = rememberWifiNetworkJoiner()
     val snackbarState = rememberSCSnackbarState()
 
     LaunchedEffect(cameraPermissionState) {
@@ -103,8 +106,14 @@ fun ScanRoute(
         onOpenSettingsClicked = cameraPermissionState::openAppSettings,
         onScanImageClicked = scanImage,
         onTorchClicked = viewModel::onTorchClicked,
-        // Under the sheet, a message would not be seen: the failure is only logged
-        onResultActionClicked = { action -> uriHandler.open(action = action) },
+        onResultActionClicked = { action ->
+            when (action) {
+                // Under the sheet, a message would not be seen: the failure is only logged
+                is CodeAction.Link -> uriHandler.open(action = action)
+                is CodeAction.AddContact -> viewModel.onAddContactClicked(contact = action.contact)
+                is CodeAction.JoinWifi -> joinWifiNetwork(action.wifi)
+            }
+        },
         onCopyResultClicked = { text ->
             coroutineScope.launch {
                 clipboard.setClipEntry(textClipEntry(text = text))

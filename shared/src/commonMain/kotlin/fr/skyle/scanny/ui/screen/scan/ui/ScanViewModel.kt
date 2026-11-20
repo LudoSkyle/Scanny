@@ -8,7 +8,9 @@ import fr.skyle.scanny.domain.model.DetectedBarcode
 import fr.skyle.scanny.domain.usecase.scan.RecordScanUseCase
 import fr.skyle.scanny.domain.usecase.settings.WatchScanSettingsUseCase
 import fr.skyle.scanny.platform.camera.CameraCapabilities
+import fr.skyle.scanny.platform.contact.ContactAdder
 import fr.skyle.scanny.platform.gallery.ImageScanResult
+import fr.skyle.scanny.platform.wifi.WifiNetworkSupport
 import fr.skyle.scanny.ui.screen.scan.ui.mapper.toScanResultItem
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultItem
 import kotlinx.coroutines.CancellationException
@@ -26,6 +28,8 @@ import kotlin.time.Duration.Companion.seconds
 class ScanViewModel(
     private val recordScanUseCase: RecordScanUseCase,
     private val watchScanSettingsUseCase: WatchScanSettingsUseCase,
+    private val contactAdder: ContactAdder,
+    private val wifiNetworkSupport: WifiNetworkSupport,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ScanUIState())
@@ -63,7 +67,7 @@ class ScanViewModel(
                     resumeDetection()
                 } else {
                     _uiState.update { uiState ->
-                        uiState.copy(result = scannedCode.toScanResultItem())
+                        uiState.copy(result = scannedCode.toScanResultItem(canJoinWifi = wifiNetworkSupport::canJoin))
                     }
                 }
             } catch (exception: CancellationException) {
@@ -91,6 +95,15 @@ class ScanViewModel(
                 result = null,
                 isDetectionPaused = false,
             )
+        }
+    }
+
+    fun onAddContactClicked(contact: BarcodeContent.Contact) {
+        try {
+            contactAdder.addContact(contact = contact)
+        } catch (exception: Exception) {
+            // Under the sheet, a message would not be seen: the failure is only logged
+            Logger.e(throwable = exception) { "Failed to open the addition of a scanned contact" }
         }
     }
 

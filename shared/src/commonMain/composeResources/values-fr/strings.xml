@@ -1,4 +1,5 @@
 <resources>
+    <string name="add_contact">Ajouter le contact</string>
     <string name="address">Adresse</string>
     <string name="allow_camera">Autoriser la caméra</string>
     <string name="camera_blocked">La caméra est bloquée pour Scanny. Autorisez-la dans les réglages de votre appareil pour scanner des codes.</string>
@@ -16,6 +17,7 @@
     <string name="delete_code_question">Supprimer ce code ?</string>
     <string name="email">E-mail</string>
     <string name="job_title">Fonction</string>
+    <string name="join_network">Rejoindre le réseau</string>
     <string name="link">Lien</string>
     <string name="message">Message</string>
     <string name="name">Nom</string>

@@ -21,16 +21,15 @@ internal fun BarcodeContent.toCodeType(): CodeType =
         is BarcodeContent.Contact -> CodeType.CONTACT
     }
 
-internal fun BarcodeContent.toCodeAction(): CodeAction? =
+internal fun BarcodeContent.toCodeAction(canJoinWifi: (BarcodeContent.Wifi) -> Boolean): CodeAction? =
     when (this) {
         is BarcodeContent.Url -> CodeAction.OpenLink(link = url)
         is BarcodeContent.Email -> CodeAction.WriteEmail(link = toMailtoLink())
         is BarcodeContent.Sms -> CodeAction.WriteSms(link = platformSmsLink(smsLink = toSmsLink()))
-        // Nothing to open for a text; joining a network and adding a contact are native actions, not offered yet
-        is BarcodeContent.Text,
-        is BarcodeContent.Wifi,
-        is BarcodeContent.Contact,
-        -> null
+        is BarcodeContent.Contact -> CodeAction.AddContact(contact = this)
+        is BarcodeContent.Wifi -> CodeAction.JoinWifi(wifi = this).takeIf { canJoinWifi(this) }
+        // Nothing to open for a text
+        is BarcodeContent.Text -> null
     }
 
 /** What a code holds, in one line: the recipient of an e-mail, the name of a network… */

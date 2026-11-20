@@ -245,7 +245,7 @@ class CodeMapperTest {
 
         // When
         val actions = contents.map { content ->
-            content.toCodeAction()
+            content.toCodeAction(canJoinWifi = { false })
         }
 
         // Then
@@ -262,10 +262,49 @@ class CodeMapperTest {
     @Test
     fun `a text has no action`() {
         // When
-        val action = BarcodeContent.Text(text = "Hello").toCodeAction()
+        val action = BarcodeContent.Text(text = "Hello").toCodeAction(canJoinWifi = { true })
 
         // Then
         assertNull(action)
+    }
+
+    @Test
+    fun `a contact is added to the contacts`() {
+        // Given
+        val contact = BarcodeContent.Contact(formattedName = "John Doe")
+
+        // When
+        val action = contact.toCodeAction(canJoinWifi = { false })
+
+        // Then
+        assertEquals(
+            expected = CodeAction.AddContact(contact = contact),
+            actual = action,
+        )
+    }
+
+    @Test
+    fun `a network is joined only when the device can`() {
+        // Given
+        val wifi = BarcodeContent.Wifi(
+            ssid = "Scanny",
+            encryption = WifiEncryption.WPA,
+            password = "secret12",
+        )
+
+        // When
+        val actions = listOf(true, false).map { canJoin ->
+            wifi.toCodeAction(canJoinWifi = { canJoin })
+        }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                CodeAction.JoinWifi(wifi = wifi),
+                null,
+            ),
+            actual = actions,
+        )
     }
 
     private fun field(
