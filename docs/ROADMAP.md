@@ -4,7 +4,8 @@ Point de départ (2026-11-20) : `develop` ne contient qu'un squelette Android (H
 écran Scan en cours avec CameraX). La v1 publiée sur Android sert de référence fonctionnelle : son
 code est au commit `c38ffc5`.
 
-La migration se fait directement sur `develop`. Un élément se coche dans le commit qui le termine.
+Chaque lot est livré par une pull request vers `develop` (voir la section Git de `CLAUDE.md`). Un
+élément se coche dans le commit qui le termine.
 
 ## Parité avec la v1 (minimum)
 
