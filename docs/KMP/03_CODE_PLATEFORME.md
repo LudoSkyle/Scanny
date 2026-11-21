@@ -201,6 +201,18 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   bouton principal du résultat (`toCodeAction`), par le même chemin dans la `Route` : un lien, un
   e-mail, un SMS, un contact, un réseau Wi-Fi que l'appareil sait rejoindre. Un texte, ou un réseau
   qu'il ne sait pas rejoindre, s'affiche dans la feuille. La détection reprend 2 s plus tard.
+- L'image d'un code créé se dessine en commun (`CodeImageRenderer`, hors du fil principal) : un PNG
+  de 1024 pixels de côté pour un QR code, 1200 × 480 pour un code-barres, sombre sur blanc, avec la
+  marge dont un lecteur a besoin autour d'un code.
+- La partager passe par `ImageSharer`. Android écrit le PNG dans le cache (`shared_images/`), que le
+  `FileProvider` de l'app (`${applicationId}.files`, déclaré dans le manifeste de `shared`) prête à
+  l'app choisie dans la feuille de partage. iOS partage une `UIImage` plutôt qu'un fichier : la
+  feuille propose alors de la garder dans les photos.
+- L'enregistrer passe par `ImageSaver`. Android l'écrit par `MediaStore` dans `Pictures/Scanny`,
+  sans permission à partir d'Android 10 ; en dessous, l'action n'est pas proposée (`canSave`), la
+  feuille de partage gardant l'image ailleurs. iOS l'ajoute aux photos par `PHPhotoLibrary`, en accès
+  ajout seul : la clé `NSPhotoLibraryAddUsageDescription` de l'`Info.plist` dit pourquoi, en anglais
+  et en français.
 - Partager passe par `TextSharer`, une interface, et partage la valeur brute du code : c'est ce
   qu'une autre app, ou un autre scanner, sait relire. Le module Koin de plateforme
   (`platformSharedModule`) fournit son implémentation.
@@ -259,7 +271,7 @@ livrée ; le tableau est mis à jour dans le même commit.
 | Bip après un scan | Livré, à écouter sur un appareil (l'émulateur tourne sans son) — `ToneGenerator` (`TONE_PROP_BEEP`, flux des notifications) | Livré, à écouter sur un iPhone — `AudioServicesPlaySystemSound` (son système 1057) | interface (`ScanBeeper`) |
 | Copier | ✅ (émulateur : confirmation du système, Android 13 et plus) — `LocalClipboard`, `ClipData` | ✅ (simulateur : texte dans le presse-papiers, message de l'app ; copie après un scan collée dans un champ de l'app) — `LocalClipboard`, `ClipEntry.withPlainText` | Compose + `expect` pour créer le `ClipEntry` |
 | Partager un texte | ✅ (émulateur : feuille de partage) — `ACTION_SEND` | ✅ (simulateur : feuille de partage) — `UIActivityViewController` | interface |
-| Partager, enregistrer un QR code | `FileProvider` + `ACTION_SEND`, `MediaStore` | `UIActivityViewController`, Photos | interface |
+| Partager, enregistrer un QR code | ✅ (émulateur : feuille de partage, image dans `Pictures/Scanny`, relue) — `FileProvider` + `ACTION_SEND`, `MediaStore`, Android 10 et plus | ✅ (simulateur : feuille de partage, image ajoutée aux photos, relue) — `UIActivityViewController`, `PHPhotoLibrary` | interfaces (`ImageSharer`, `ImageSaver`) |
 | Ajouter un contact | ✅ (émulateur : Contacts prérempli, tous les champs) — `ACTION_INSERT_OR_EDIT` | ✅ (simulateur : contact enregistré, tous les champs) — `CNContactViewController` | interface |
 | Rejoindre un réseau WiFi | ✅ (émulateur : réseau WPA2 enregistré par l'écran des réglages ; non proposé pour un mot de passe invalide) — `Settings.ACTION_WIFI_ADD_NETWORKS`, Android 11 et plus | Reporté (`NEHotspotConfigurationManager` exige l'entitlement *Hotspot Configuration*, donc un compte payant) : action non proposée | `expect` composable + interface |
 | Ouvrir les réglages de l'app | ✅ `ACTION_APPLICATION_DETAILS_SETTINGS` | `UIApplicationOpenSettingsURLString` | dans l'état de permission caméra |

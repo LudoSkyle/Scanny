@@ -58,6 +58,9 @@
     <string name="hidden_network">Réseau masqué</string>
     <string name="history">Historique</string>
     <string name="history_not_cleared">L'historique n'a pas pu être effacé</string>
+    <string name="image_not_saved">L'image n'a pas pu être enregistrée</string>
+    <string name="image_not_shared">L'image n'a pas pu être partagée</string>
+    <string name="image_saved">L'image est enregistrée dans vos photos</string>
     <string name="job_title">Fonction</string>
     <string name="join_network">Rejoindre le réseau</string>
     <string name="keep_history">Conserver l'historique</string>
@@ -105,6 +108,7 @@
     <string name="retention_one_year">1 an</string>
     <string name="retention_three_months">90 jours</string>
     <string name="save_creations_in_history">Enregistrer les créations dans l'historique</string>
+    <string name="save_image">Enregistrer l'image</string>
     <string name="save_scans_in_history">Enregistrer les scans dans l'historique</string>
     <string name="scan_image">Scanner une image</string>
     <string name="scan_not_saved">Le scan n'a pas pu être enregistré</string>

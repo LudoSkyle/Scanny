@@ -33,6 +33,10 @@ import fr.skyle.scanny.resources.at_time
 import fr.skyle.scanny.resources.content
 import fr.skyle.scanny.resources.delete
 import fr.skyle.scanny.resources.ic_delete
+import fr.skyle.scanny.resources.ic_download
+import fr.skyle.scanny.resources.ic_share
+import fr.skyle.scanny.resources.save_image
+import fr.skyle.scanny.resources.share
 import fr.skyle.scanny.resources.the_code
 import fr.skyle.scanny.ui.core.code.component.CodeFieldRow
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
@@ -54,9 +58,12 @@ private const val CODE_WIDTH_FRACTION = 0.7f
 @Composable
 fun CreationDetailScreen(
     creation: CreationDetailItem?,
+    canSaveImage: Boolean,
     isDeleting: Boolean,
     snackbarState: SCSnackbarState,
     onBackClicked: () -> Unit,
+    onShareClicked: () -> Unit,
+    onSaveClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
     onCopyClicked: (text: String) -> Unit,
 ) {
@@ -70,6 +77,29 @@ fun CreationDetailScreen(
                 onBackClicked = onBackClicked,
                 actions = {
                     if (creation != null) {
+                        // Its image, when this version draws its format
+                        if (creation.format?.isDrawable == true) {
+                            SCIconButton(
+                                modifier = Modifier.wrapContentSize(),
+                                icon = painterResource(Res.drawable.ic_share),
+                                contentDescription = stringResource(Res.string.share),
+                                onClick = onShareClicked,
+                                style = SCIconButtonDefaults.Style.DARK,
+                                size = SCIconButtonDefaults.Size.MEDIUM,
+                            )
+
+                            if (canSaveImage) {
+                                SCIconButton(
+                                    modifier = Modifier.wrapContentSize(),
+                                    icon = painterResource(Res.drawable.ic_download),
+                                    contentDescription = stringResource(Res.string.save_image),
+                                    onClick = onSaveClicked,
+                                    style = SCIconButtonDefaults.Style.DARK,
+                                    size = SCIconButtonDefaults.Size.MEDIUM,
+                                )
+                            }
+                        }
+
                         SCIconButton(
                             modifier = Modifier.wrapContentSize(),
                             icon = painterResource(Res.drawable.ic_delete),
@@ -178,9 +208,12 @@ private fun PreviewCreationDetailScreen() {
                 ),
                 rawValue = "https://scanny.app",
             ),
+            canSaveImage = true,
             isDeleting = false,
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
+            onShareClicked = {},
+            onSaveClicked = {},
             onDeleteClicked = {},
             onCopyClicked = {},
         )

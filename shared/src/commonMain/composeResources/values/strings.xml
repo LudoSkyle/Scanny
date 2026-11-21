@@ -68,6 +68,9 @@
     <string name="hidden_network">Hidden network</string>
     <string name="history">History</string>
     <string name="history_not_cleared">The history could not be cleared</string>
+    <string name="image_not_saved">The image could not be saved</string>
+    <string name="image_not_shared">The image could not be shared</string>
+    <string name="image_saved">The image is saved in your photos</string>
     <string name="itf" translatable="false">ITF</string>
     <string name="job_title">Job title</string>
     <string name="join_network">Join the network</string>
@@ -119,6 +122,7 @@
     <string name="retention_one_year">1 year</string>
     <string name="retention_three_months">90 days</string>
     <string name="save_creations_in_history">Save the creations in the history</string>
+    <string name="save_image">Save the image</string>
     <string name="save_scans_in_history">Save the scans in the history</string>
     <string name="scan_image">Scan an image</string>
     <string name="scan_not_saved">The scan could not be saved</string>

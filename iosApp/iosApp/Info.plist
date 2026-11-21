@@ -32,6 +32,8 @@
 	<!-- Shown by iOS when the app asks for the camera, translated in en.lproj and fr.lproj -->
 	<key>NSCameraUsageDescription</key>
 	<string>Scanny uses the camera to scan codes.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Scanny keeps in your photos the images of the codes you save.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

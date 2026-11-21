@@ -124,13 +124,18 @@ extension XCTestCase {
         app.textViews[label].exists ? app.textViews[label] : app.textFields[label]
     }
 
-    // Asked at the first launch only: the simulator remembers the answer
-    private func allowTheCameraIfAsked() {
+    /// Allows what the system asks for the app, the camera or the photos: asked once only, the simulator
+    /// remembering the answer.
+    func allowTheSystemAlertIfAsked(timeout: TimeInterval = 2) {
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
         let alert = springboard.alerts.firstMatch
-        if alert.waitForExistence(timeout: 2) {
+        if alert.waitForExistence(timeout: timeout) {
             // The button that allows is the last one of the alert
             alert.buttons.element(boundBy: alert.buttons.count - 1).tap()
         }
+    }
+
+    private func allowTheCameraIfAsked() {
+        allowTheSystemAlertIfAsked()
     }
 }

@@ -207,6 +207,9 @@ et la durée de conservation), le feedback, les textes français.
   de l'app ; l'app lancée, la base est à la nouvelle version et la capture toujours là.
 - Une ligne cliquable est un bouton dont le texte est aussi vu à part : pour compter des lignes, on
   compte les boutons (`app.buttons`).
+- Une demande du système (la caméra, l'ajout aux photos) s'accepte par `allowTheSystemAlertIfAsked` :
+  demandée une fois, le simulateur garde la réponse. Une image ajoutée aux photos se relit sur le Mac,
+  dans le dossier `data/Media/DCIM` du simulateur.
 - Les aides des tests sont communes (`UITestSupport`) : lancer l'app, trouver un élément par son
   libellé ou un champ de texte (`textInput`, vu comme une vue de texte quand il peut tenir plusieurs
   lignes), faire défiler jusqu'à un élément et attendre qu'il ne bouge plus avant de le toucher

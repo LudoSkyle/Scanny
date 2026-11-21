@@ -54,7 +54,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [ ] Personnalisation d'un QR code : couleurs, logo au centre, formes
 - [ ] Modifier un code scanné : reprendre son contenu, le modifier, le personnaliser et générer le
       nouveau QR code
-- [ ] Partager et enregistrer un QR code créé
+- [x] Partager et enregistrer un QR code créé *(enregistrer : Android 10 et plus)*
 - [ ] Historique des créations
 - [ ] Favori et annotation d'une capture, scan simple ou groupe entier *(pas urgent)*
 - Pistes, non engagées : contact parmi les types créés, affichage des types téléphone, position et
@@ -204,7 +204,7 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] L'éditeur : le « + » du scan, le type, les champs de chacun, l'aperçu en direct, la
           validation, l'enregistrement, et l'écran d'une création (son code, son contenu, sa
           suppression)
-    - [ ] Partager et enregistrer l'image d'un code créé
+    - [x] Partager et enregistrer l'image d'un code créé
     - [ ] La personnalisation : couleurs, formes, logo
     - [ ] L'historique des créations
     - [ ] « Modifier » depuis le `ScanDetail`
