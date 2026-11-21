@@ -33,6 +33,7 @@ internal class CreationRepositoryImpl(
                 lightColor = style.lightColor,
                 dotShape = style.dotShape,
                 cornerShape = style.cornerShape,
+                logo = style.logo,
                 isInHistory = isInHistory,
             ),
         )

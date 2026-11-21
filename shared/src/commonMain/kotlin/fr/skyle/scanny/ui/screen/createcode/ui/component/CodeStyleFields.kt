@@ -29,11 +29,12 @@ import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeBackgroundColor
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeDotColor
 import org.jetbrains.compose.resources.stringResource
 
-/** The colors and the shapes of a QR code, chosen among those any scanner reads. */
+/** The colors and the shapes of a QR code, chosen among those any scanner reads, and its logo. */
 @Composable
 fun CodeStyleFields(
     style: CodeStyle,
     onStyleChanged: (CodeStyle) -> Unit,
+    onAddLogoClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -96,6 +97,15 @@ fun CodeStyleFields(
             onOptionSelected = { shape -> onStyleChanged(style.copy(cornerShape = shape)) },
             style = SCTextFieldDefaults.Style.LIGHT,
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        LogoRow(
+            modifier = Modifier.fillMaxWidth(),
+            logo = style.logo,
+            onAddLogoClicked = onAddLogoClicked,
+            onRemoveLogoClicked = { onStyleChanged(style.copy(logo = null)) },
+        )
     }
 }
 
@@ -112,6 +122,7 @@ private fun PreviewCodeStyleFields() {
                 dotShape = CodeShape.ROUNDED,
             ),
             onStyleChanged = {},
+            onAddLogoClicked = {},
         )
     }
 }

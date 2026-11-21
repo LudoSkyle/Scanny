@@ -7,6 +7,7 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.payload.toRawValue
 import fr.skyle.scanny.domain.usecase.creation.RecordCreationUseCase
+import fr.skyle.scanny.platform.gallery.LogoPickResult
 import fr.skyle.scanny.ui.core.code.mapper.canHold
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.format
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toBarcodeContent
@@ -44,6 +45,16 @@ class CreateCodeViewModel(
     fun onStyleChanged(style: CodeStyle) {
         _uiState.update { uiState ->
             uiState.copy(style = style)
+        }
+    }
+
+    fun onLogoPicked(result: LogoPickResult) {
+        when (result) {
+            is LogoPickResult.Picked -> _uiState.update { uiState ->
+                uiState.copy(style = uiState.style.copy(logo = result.png))
+            }
+
+            LogoPickResult.Unreadable -> _event.trySend(CreateCodeEvent.LogoNotRead)
         }
     }
 
@@ -108,5 +119,6 @@ class CreateCodeViewModel(
     sealed interface CreateCodeEvent {
         data class OpenCreationDetail(val creationId: Long) : CreateCodeEvent
         data object CreationNotSaved : CreateCodeEvent
+        data object LogoNotRead : CreateCodeEvent
     }
 }

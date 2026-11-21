@@ -63,7 +63,8 @@ lisible et ne casse pas au premier refactor.
 ### Nommage et structure
 
 - Nom de test en backticks, descriptif et en anglais :
-  ``fun `a wifi payload with an escaped semicolon keeps it in the password`()``.
+  ``fun `a wifi payload with an escaped semicolon keeps it in the password`()``. Sans virgule :
+  Kotlin/Native la refuse dans un nom, et un test commun tourne aussi sur le simulateur iOS.
 - Corps en trois temps, séparés par une ligne vide et marqués `// Given`, `// When`, `// Then`.
 - Les constructeurs d'objets de test passent par un helper privé avec des valeurs par défaut, pour
   que chaque test ne mette en avant que ce qui lui importe.
@@ -221,6 +222,11 @@ et la durée de conservation), le feedback, les textes français.
 - Un code que l'app dessine se vérifie en décodant sa capture sur le Mac, avec Vision
   (`VNDetectBarcodesRequest`, depuis un court script Swift) : un second lecteur que l'app n'a pas
   écrit.
+- Le sélecteur de photos du système est visible de XCUITest : une photo y est une image
+  d'identifiant `PXGGridLayout-Info`, de libellé « Photo, » suivi de sa date. Un test choisit une des
+  photos livrées avec chaque simulateur, par son année (2018), que la langue ne change pas, et la
+  touche à sa place (`coordinate`) : le sélecteur tourne dans un autre processus, où XCUITest ne sait
+  pas toujours dire qu'une photo peut être touchée.
 - La couleur d'un point de l'écran se lit dans la capture (`screenColor`, à une tolérance près) :
   c'est ce qui vérifie qu'une création garde les couleurs choisies. Le cadre d'une image de Compose
   est celui de l'image elle-même, sans la marge que lui donne son `padding`.
@@ -249,8 +255,15 @@ La lisibilité des codes que l'app dessine se teste donc sur la JVM : `CodeImage
 dessine l'image d'un QR code pour de vrai, par le rendu natif de Robolectric, et la relit avec ZXing,
 un lecteur que l'app n'a pas écrit et plus strict que ceux des téléphones. Il couvre chaque forme
 dans les couleurs de la palette qui ressortent le moins, et chaque paire de couleurs avec les formes
-qui couvrent le moins le code. Le contraste de chaque paire de la palette est aussi vérifié (au moins
-4,5:1, celui que les règles d'accessibilité demandent d'un texte).
+qui couvrent le moins le code, et chaque forme avec un logo. Le contraste de chaque paire de la
+palette est aussi vérifié (au moins 4,5:1, celui que les règles d'accessibilité demandent d'un
+texte). ZXing relit encore un code à la correction la plus faible sous un logo de cette taille : la
+correction choisie pour un logo se vérifie donc directement, sur les options données à qrose
+(`CodeStyleMapperTest`).
+
+La réduction d'une image en logo se teste sur chaque plateforme : Robolectric en rendu natif sur la
+JVM, y compris le chemin d'avant Android 9 (`@Config(sdk = [27])`), et le simulateur iOS, qui sait
+dessiner une image.
 
 ### Accès aux `internal` depuis les tests
 

@@ -8,8 +8,10 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
+import fr.skyle.scanny.platform.gallery.rememberLogoPicker
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.creation_not_saved
+import fr.skyle.scanny.resources.logo_not_read
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
@@ -26,6 +28,8 @@ fun CreateCodeRoute(
 
     val snackbarState = rememberSCSnackbarState()
 
+    val pickLogo = rememberLogoPicker(onResult = viewModel::onLogoPicked)
+
     LaunchedEffect(Unit) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.event.collect { event ->
@@ -36,6 +40,10 @@ fun CreateCodeRoute(
 
                     CreateCodeViewModel.CreateCodeEvent.CreationNotSaved -> launch {
                         snackbarState.show(message = getString(Res.string.creation_not_saved))
+                    }
+
+                    CreateCodeViewModel.CreateCodeEvent.LogoNotRead -> launch {
+                        snackbarState.show(message = getString(Res.string.logo_not_read))
                     }
                 }
             }
@@ -51,6 +59,7 @@ fun CreateCodeRoute(
         onBackClicked = navigateBack,
         onFormChanged = viewModel::onFormChanged,
         onStyleChanged = viewModel::onStyleChanged,
+        onAddLogoClicked = pickLogo,
         onCreateClicked = viewModel::onCreateClicked,
     )
 }

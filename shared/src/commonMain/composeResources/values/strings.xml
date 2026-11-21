@@ -1,5 +1,6 @@
 <resources>
     <string name="add_contact">Add the contact</string>
+    <string name="add_logo">Add a logo</string>
     <string name="address">Address</string>
     <string name="all_scans_deleted">Every scan will be deleted.</string>
     <string name="allow_camera">Allow the camera</string>
@@ -16,6 +17,7 @@
     <string name="camera_needed">Scanny needs the camera to scan codes.</string>
     <string name="camera_unavailable">No camera is available on this device. You can still scan a code in an image.</string>
     <string name="cancel">Cancel</string>
+    <string name="change_logo">Change the logo</string>
     <string name="choose_subject">Choose a subject</string>
     <string name="clear">Clear</string>
     <string name="clear_history">Clear the history</string>
@@ -93,6 +95,8 @@
     <string name="join_network">Join the network</string>
     <string name="keep_history">Keep the history</string>
     <string name="link">Link</string>
+    <string name="logo">Logo</string>
+    <string name="logo_not_read">The image could not be read</string>
     <string name="made_by_skyle">Made by Skyle with ❤️ at Openium</string>
     <string name="mail_app_opens_with_message">Your mail app opens with your message, ready to be sent.</string>
     <string name="message">Message</string>
@@ -133,6 +137,7 @@
     <string name="rate_app">Rate the app</string>
     <string name="raw_content">Raw content</string>
     <string name="recipient">Recipient</string>
+    <string name="remove_logo">Remove the logo</string>
     <string name="retention_forever">Forever</string>
     <string name="retention_one_month">30 days</string>
     <string name="retention_one_week">7 days</string>
@@ -164,6 +169,7 @@
     <string name="support">Support</string>
     <string name="text">Text</string>
     <string name="the_code">The code</string>
+    <string name="the_logo">The logo</string>
     <string name="today">Today</string>
     <string name="turn_off_torch">Turn off the torch</string>
     <string name="turn_on_torch">Turn on the torch</string>

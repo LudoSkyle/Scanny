@@ -52,6 +52,7 @@ fun CreateCodeScreen(
     onBackClicked: () -> Unit,
     onFormChanged: (CreationForm) -> Unit,
     onStyleChanged: (CodeStyle) -> Unit,
+    onAddLogoClicked: () -> Unit,
     onCreateClicked: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -120,6 +121,7 @@ fun CreateCodeScreen(
                     modifier = Modifier.fillMaxWidth(),
                     style = style,
                     onStyleChanged = onStyleChanged,
+                    onAddLogoClicked = onAddLogoClicked,
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -156,6 +158,7 @@ private fun PreviewCreateCodeScreen() {
             onBackClicked = {},
             onFormChanged = {},
             onStyleChanged = {},
+            onAddLogoClicked = {},
             onCreateClicked = {},
         )
     }

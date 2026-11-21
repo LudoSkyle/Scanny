@@ -28,6 +28,7 @@ class WatchCreationsUseCaseTest {
                     lightColor = 0xFFFFF8E1,
                     dotShape = "CIRCLE",
                     cornerShape = "ROUNDED",
+                    logo = byteArrayOf(1, 2, 3),
                 ),
                 createdAt = CREATED_AT,
             ),
@@ -35,7 +36,7 @@ class WatchCreationsUseCaseTest {
     )
 
     @Test
-    fun `the creations are watched with their content read from their text and their style`() = runTest {
+    fun `the creations are watched with their content read from their text their style and their logo`() = runTest {
         // When
         val creations = WatchCreationsUseCaseImpl(creationRepository = creationRepository)().first()
 
@@ -52,6 +53,7 @@ class WatchCreationsUseCaseTest {
                         lightColor = 0xFFFFF8E1,
                         dotShape = CodeShape.CIRCLE,
                         cornerShape = CodeShape.ROUNDED,
+                        logo = byteArrayOf(1, 2, 3),
                     ),
                     createdAt = CREATED_AT,
                 ),
@@ -74,6 +76,7 @@ class WatchCreationsUseCaseTest {
                         lightColor = 0xFFFFFFFF,
                         dotShape = "STAR",
                         cornerShape = "HEART",
+                        logo = null,
                     ),
                     createdAt = CREATED_AT,
                 ),
