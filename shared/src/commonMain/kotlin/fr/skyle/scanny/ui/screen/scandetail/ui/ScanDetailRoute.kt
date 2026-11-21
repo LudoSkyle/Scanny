@@ -22,9 +22,9 @@ import fr.skyle.scanny.resources.code_not_deleted
 import fr.skyle.scanny.resources.copied_to_clipboard
 import fr.skyle.scanny.resources.no_app_to_open
 import fr.skyle.scanny.ui.core.code.action.open
+import fr.skyle.scanny.ui.core.code.component.DeleteCodeDialog
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.screen.scandetail.ui.component.CodeImageDialog
-import fr.skyle.scanny.ui.screen.scandetail.ui.component.DeleteCodeDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel

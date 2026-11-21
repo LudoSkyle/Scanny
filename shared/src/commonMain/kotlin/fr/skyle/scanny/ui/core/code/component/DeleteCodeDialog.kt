@@ -1,4 +1,4 @@
-package fr.skyle.scanny.ui.screen.scandetail.ui.component
+package fr.skyle.scanny.ui.core.code.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
