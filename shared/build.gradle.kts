@@ -53,6 +53,10 @@ kotlin {
 
             // Logs
             implementation(libs.kermit)
+
+            // QR codes and barcodes drawn from their text
+            implementation(libs.qrose)
+            implementation(libs.qrose.oned)
         }
 
         commonTest.dependencies {

@@ -23,6 +23,7 @@ import fr.skyle.scanny.resources.copied_to_clipboard
 import fr.skyle.scanny.resources.no_app_to_open
 import fr.skyle.scanny.ui.core.code.action.open
 import fr.skyle.scanny.ui.core.code.model.CodeAction
+import fr.skyle.scanny.ui.screen.scandetail.ui.component.CodeImageDialog
 import fr.skyle.scanny.ui.screen.scandetail.ui.component.DeleteCodeDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -46,6 +47,7 @@ fun ScanDetailRoute(
     val snackbarState = rememberSCSnackbarState()
 
     var isDeleteDialogVisible by rememberSaveable { mutableStateOf(false) }
+    var isCodeImageDialogVisible by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -71,6 +73,9 @@ fun ScanDetailRoute(
         code = uiState.code,
         isDeleting = uiState.isDeleting,
         snackbarState = snackbarState,
+        onShowCodeClicked = {
+            isCodeImageDialogVisible = true
+        },
         onBackClicked = navigateBack,
         onShareClicked = viewModel::onShareClicked,
         onDeleteClicked = {
@@ -97,6 +102,18 @@ fun ScanDetailRoute(
             }
         },
     )
+
+    val code = uiState.code
+    val format = code?.format
+    if (isCodeImageDialogVisible && code != null && format != null) {
+        CodeImageDialog(
+            rawValue = code.rawValue,
+            format = format,
+            onDismissRequest = {
+                isCodeImageDialogVisible = false
+            },
+        )
+    }
 
     if (isDeleteDialogVisible) {
         DeleteCodeDialog(

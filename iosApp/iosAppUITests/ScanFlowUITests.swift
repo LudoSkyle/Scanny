@@ -158,6 +158,49 @@ final class ScanFlowUITests: XCTestCase {
         keepScreenshot(named: "upc-a-sheet", of: app)
     }
 
+    func testTheDetailShowsTheQrCodeDrawnAgain() throws {
+        let app = launchScanning(code: "https://ludoskyle.github.io/scanny.github.io/")
+        XCTAssertTrue(app.buttons["See the detail"].waitForExistence(timeout: 10))
+        app.buttons["See the detail"].tap()
+
+        let showCodeButton = app.buttons["Show the code"]
+        XCTAssertTrue(showCodeButton.waitForExistence(timeout: 5))
+        showCodeButton.tap()
+        XCTAssertTrue(app.images["The code"].waitForExistence(timeout: 5))
+        keepScreenshot(named: "qr-code-drawn-again", of: app)
+
+        app.buttons["OK"].tap()
+        XCTAssertTrue(app.images["The code"].waitForNonExistence(timeout: 5))
+    }
+
+    func testTheDetailShowsABarcodeDrawnAgain() throws {
+        let app = launchScanning(
+            code: "4006381333931",
+            format: "EAN_13",
+        )
+        XCTAssertTrue(app.buttons["See the detail"].waitForExistence(timeout: 10))
+        app.buttons["See the detail"].tap()
+
+        let showCodeButton = app.buttons["Show the code"]
+        XCTAssertTrue(showCodeButton.waitForExistence(timeout: 5))
+        showCodeButton.tap()
+        XCTAssertTrue(app.images["The code"].waitForExistence(timeout: 5))
+        keepScreenshot(named: "barcode-drawn-again", of: app)
+        app.buttons["OK"].tap()
+    }
+
+    func testACodeThatCannotBeDrawnAgainHasNoButtonToShowIt() throws {
+        let app = launchScanning(
+            code: "In a matrix",
+            format: "DATA_MATRIX",
+        )
+        XCTAssertTrue(app.buttons["See the detail"].waitForExistence(timeout: 10))
+        app.buttons["See the detail"].tap()
+
+        XCTAssertTrue(app.buttons["Share"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Show the code"].exists)
+    }
+
     func testADeletedCodeGoesBackToTheScan() throws {
         let app = launchScanning(code: "A code to delete")
 
