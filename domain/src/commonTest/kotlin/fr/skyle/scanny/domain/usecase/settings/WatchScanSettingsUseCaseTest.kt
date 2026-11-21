@@ -20,8 +20,7 @@ class WatchScanSettingsUseCaseTest {
         isBeepAfterScanEnabled = true,
         isCopyAfterScanEnabled = false,
         isOpenContentAfterScanEnabled = false,
-        isRawContentShown = true,
-        isFrontCameraUsed = false,
+        isFrontCameraUsed = true,
     )
 
     private val watchScanSettingsUseCase = WatchScanSettingsUseCaseImpl(settingsRepository = settingsRepository)
@@ -38,8 +37,7 @@ class WatchScanSettingsUseCaseTest {
                 isBeepAfterScanEnabled = true,
                 isCopyAfterScanEnabled = false,
                 isOpenContentAfterScanEnabled = false,
-                isRawContentShown = true,
-                isFrontCameraUsed = false,
+                isFrontCameraUsed = true,
             ),
             actual = settings,
         )
@@ -64,16 +62,14 @@ class WatchScanSettingsUseCaseTest {
                     isBeepAfterScanEnabled = true,
                     isCopyAfterScanEnabled = false,
                     isOpenContentAfterScanEnabled = false,
-                    isRawContentShown = true,
-                    isFrontCameraUsed = false,
+                    isFrontCameraUsed = true,
                 ),
                 ScanSettings(
                     isVibrationAfterScanEnabled = true,
                     isBeepAfterScanEnabled = true,
                     isCopyAfterScanEnabled = false,
                     isOpenContentAfterScanEnabled = true,
-                    isRawContentShown = true,
-                    isFrontCameraUsed = false,
+                    isFrontCameraUsed = true,
                 ),
             ),
             actual = emittedSettings,

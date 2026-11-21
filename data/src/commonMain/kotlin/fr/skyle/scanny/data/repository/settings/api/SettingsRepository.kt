@@ -20,10 +20,6 @@ interface SettingsRepository {
 
     suspend fun setOpenContentAfterScanEnabled(isEnabled: Boolean)
 
-    fun watchIsRawContentShown(): Flow<Boolean>
-
-    suspend fun setRawContentShown(isShown: Boolean)
-
     fun watchIsFrontCameraUsed(): Flow<Boolean>
 
     suspend fun setFrontCameraUsed(isUsed: Boolean)

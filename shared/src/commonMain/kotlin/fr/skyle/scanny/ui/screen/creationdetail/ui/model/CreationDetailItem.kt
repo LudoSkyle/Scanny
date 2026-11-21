@@ -13,5 +13,6 @@ data class CreationDetailItem(
     val createdTime: String,
     val fields: List<CodeField>,
     val rawValue: String,
+    val isRawValueShown: Boolean,
     val style: CodeStyle,
 )

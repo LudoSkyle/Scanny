@@ -59,6 +59,10 @@ private fun BarcodeContent.toSummary(rawValue: String): String =
         is BarcodeContent.Contact -> displayName ?: organization ?: phones.firstOrNull() ?: emails.firstOrNull()
     } ?: rawValue
 
+/** Whether the raw text of a code says more than its content: a text or a link is its own raw text. */
+internal fun BarcodeContent.hasDistinctRawValue(): Boolean =
+    this !is BarcodeContent.Text && this !is BarcodeContent.Url
+
 internal fun BarcodeContent.toCodeFields(): List<CodeField> =
     when (this) {
         is BarcodeContent.Text -> listOf(

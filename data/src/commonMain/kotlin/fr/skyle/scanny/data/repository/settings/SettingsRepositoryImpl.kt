@@ -66,19 +66,6 @@ internal class SettingsRepositoryImpl(
         )
     }
 
-    override fun watchIsRawContentShown(): Flow<Boolean> =
-        watch(
-            key = KEY_RAW_CONTENT_SHOWN,
-            defaultValue = false,
-        )
-
-    override suspend fun setRawContentShown(isShown: Boolean) {
-        set(
-            key = KEY_RAW_CONTENT_SHOWN,
-            value = isShown,
-        )
-    }
-
     override fun watchIsFrontCameraUsed(): Flow<Boolean> =
         watch(
             key = KEY_FRONT_CAMERA,
@@ -168,7 +155,6 @@ internal class SettingsRepositoryImpl(
         val KEY_VIBRATION_AFTER_SCAN = booleanPreferencesKey(name = "KEY_IS_VIBRATION_AFTER_SCAN_ENABLED")
         // The name of v1, where the setting opened the links only
         val KEY_OPEN_LINK_AFTER_SCAN = booleanPreferencesKey(name = "KEY_OPEN_LINK_AFTER_SCAN")
-        val KEY_RAW_CONTENT_SHOWN = booleanPreferencesKey(name = "KEY_IS_RAW_CONTENT_SHOWN")
 
         // New with the v2
         val KEY_BEEP_AFTER_SCAN = booleanPreferencesKey(name = "KEY_IS_BEEP_AFTER_SCAN_ENABLED")

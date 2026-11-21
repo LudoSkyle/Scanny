@@ -7,7 +7,6 @@
     <string name="allow_camera">Allow the camera</string>
     <string name="app_description">Scanny scans QR codes and barcodes, with the latest technologies and without advertising, while staying light and reliable.</string>
     <string name="app_name" translatable="false">Scanny</string>
-    <string name="app_settings">App settings</string>
     <string name="at_time">%1$s at %2$s</string>
     <string name="aztec" translatable="false">Aztec</string>
     <string name="background_color">Color of the background</string>
@@ -167,7 +166,6 @@
     <string name="share">Share</string>
     <string name="share_image">Share the image</string>
     <string name="show_code">Show the code</string>
-    <string name="show_raw_content">Show the raw content</string>
     <string name="skip_consecutive_duplicates">Skip a code scanned again right away</string>
     <string name="sms" translatable="false">SMS</string>
     <string name="star_project">Star the project on GitHub</string>

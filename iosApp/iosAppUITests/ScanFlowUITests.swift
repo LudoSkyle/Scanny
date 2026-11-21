@@ -146,6 +146,14 @@ final class ScanFlowUITests: XCTestCase {
         openTheDetail(in: app)
         XCTAssertTrue(app.staticTexts["Password"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["secret123"].exists)
+
+        // The raw content is folded under its title, unfolded by a touch
+        let rawContent = "WIFI:T:WPA;S:ScannyNet;P:secret123;;"
+        let rawContentTitle = element(labelled: "Raw content", in: app)
+        XCTAssertTrue(rawContentTitle.exists)
+        XCTAssertFalse(app.staticTexts[rawContent].exists)
+        rawContentTitle.tap()
+        XCTAssertTrue(app.staticTexts[rawContent].waitForExistence(timeout: 5))
         keepScreenshot(named: "wifi-detail", of: app)
     }
 

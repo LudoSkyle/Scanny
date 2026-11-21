@@ -1,3 +1,5 @@
 <resources>
     <string name="back">Retour</string>
+    <string name="collapsed">Replié</string>
+    <string name="expanded">Déplié</string>
 </resources>

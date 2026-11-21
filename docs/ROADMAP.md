@@ -223,7 +223,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
           passe d'un réseau…), un long texte coupé à quatre lignes
     - [x] Le code dans une feuille, depuis les deux détails, avec le partage et l'enregistrement de
           son image (un code scanné aussi)
-    - [ ] Le contenu brut replié dans les deux détails, sans réglage
+    - [x] Le contenu brut replié dans les deux détails, sans réglage (pas pour un texte ou un lien,
+          qui sont leur propre contenu brut)
     - [ ] L'historique : le type en pastille, les groupes mis en avant, le glissement entre les vues
     - [ ] Une couleur libre, avec un avertissement de lisibilité
     - [ ] L'export en SVG *(décidé, non engagé)*

@@ -11,7 +11,6 @@ class SetScanSettingUseCaseTest {
     private val settingsRepository = FakeSettingsRepository(
         isVibrationAfterScanEnabled = true,
         isOpenContentAfterScanEnabled = false,
-        isRawContentShown = false,
         isFrontCameraUsed = false,
     )
 
@@ -28,7 +27,6 @@ class SetScanSettingUseCaseTest {
         // Then
         assertEquals(
             expected = listOf(
-                false,
                 false,
                 false,
                 false,
@@ -55,29 +53,6 @@ class SetScanSettingUseCaseTest {
                 false,
                 false,
                 false,
-                false,
-            ),
-            actual = currentSettings(),
-        )
-    }
-
-    @Test
-    fun `the display of the raw content changes alone`() = runTest {
-        // When
-        setScanSettingUseCase(
-            setting = ScanSetting.RAW_CONTENT_SHOWN,
-            isEnabled = true,
-        )
-
-        // Then
-        assertEquals(
-            expected = listOf(
-                true,
-                false,
-                true,
-                false,
-                false,
-                false,
             ),
             actual = currentSettings(),
         )
@@ -95,7 +70,6 @@ class SetScanSettingUseCaseTest {
         assertEquals(
             expected = listOf(
                 true,
-                false,
                 false,
                 true,
                 false,
@@ -117,7 +91,6 @@ class SetScanSettingUseCaseTest {
         assertEquals(
             expected = listOf(
                 true,
-                false,
                 false,
                 false,
                 true,
@@ -142,7 +115,6 @@ class SetScanSettingUseCaseTest {
                 false,
                 false,
                 false,
-                false,
                 true,
             ),
             actual = currentSettings(),
@@ -154,7 +126,6 @@ class SetScanSettingUseCaseTest {
         listOf(
             settingsRepository.isVibrationAfterScanEnabled.value,
             settingsRepository.isOpenContentAfterScanEnabled.value,
-            settingsRepository.isRawContentShown.value,
             settingsRepository.isBeepAfterScanEnabled.value,
             settingsRepository.isCopyAfterScanEnabled.value,
             settingsRepository.isFrontCameraUsed.value,

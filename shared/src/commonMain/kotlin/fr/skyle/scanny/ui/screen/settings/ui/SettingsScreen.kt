@@ -28,7 +28,6 @@ import fr.skyle.scanny.domain.model.HistorySettings
 import fr.skyle.scanny.domain.model.ScanSetting
 import fr.skyle.scanny.domain.model.ScanSettings
 import fr.skyle.scanny.resources.Res
-import fr.skyle.scanny.resources.app_settings
 import fr.skyle.scanny.resources.beep_after_scan
 import fr.skyle.scanny.resources.copy_after_scan
 import fr.skyle.scanny.resources.give_feedback
@@ -39,7 +38,6 @@ import fr.skyle.scanny.resources.ic_chat
 import fr.skyle.scanny.resources.ic_chevron_right
 import fr.skyle.scanny.resources.ic_content_copy
 import fr.skyle.scanny.resources.ic_control_point_duplicate
-import fr.skyle.scanny.resources.ic_data_object
 import fr.skyle.scanny.resources.ic_domain
 import fr.skyle.scanny.resources.ic_history
 import fr.skyle.scanny.resources.ic_open_in_new
@@ -59,7 +57,6 @@ import fr.skyle.scanny.resources.save_creations_in_history
 import fr.skyle.scanny.resources.save_scans_in_history
 import fr.skyle.scanny.resources.scan_preferences
 import fr.skyle.scanny.resources.settings
-import fr.skyle.scanny.resources.show_raw_content
 import fr.skyle.scanny.resources.skip_consecutive_duplicates
 import fr.skyle.scanny.resources.star_project
 import fr.skyle.scanny.resources.support
@@ -232,24 +229,6 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
-            if (settings != null) {
-                SCCardStructure(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = stringResource(Res.string.app_settings),
-                    style = SCCardDefaults.Style.LIGHT,
-                ) {
-                    SettingsSwitchRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        icon = painterResource(Res.drawable.ic_data_object),
-                        title = stringResource(Res.string.show_raw_content),
-                        isChecked = settings.isRawContentShown,
-                        onCheckedChange = { isEnabled -> onSettingChanged(ScanSetting.RAW_CONTENT_SHOWN, isEnabled) },
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
             SCCardStructure(
                 modifier = Modifier.fillMaxWidth(),
                 title = stringResource(Res.string.support),
@@ -329,7 +308,6 @@ private fun PreviewSettingsScreen() {
                 isBeepAfterScanEnabled = false,
                 isCopyAfterScanEnabled = false,
                 isOpenContentAfterScanEnabled = false,
-                isRawContentShown = false,
                 isFrontCameraUsed = false,
             ),
             historySettings = HistorySettings(

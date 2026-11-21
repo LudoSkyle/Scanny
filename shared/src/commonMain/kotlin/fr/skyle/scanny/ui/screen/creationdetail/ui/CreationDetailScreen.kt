@@ -35,6 +35,7 @@ import fr.skyle.scanny.resources.ic_qr_code
 import fr.skyle.scanny.resources.show_code
 import fr.skyle.scanny.ui.core.code.component.CodeFieldRow
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
+import fr.skyle.scanny.ui.core.code.component.RawContentCard
 import fr.skyle.scanny.ui.core.code.mapper.isDrawable
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeField
@@ -140,6 +141,16 @@ fun CreationDetailScreen(
                         )
                     }
                 }
+
+                if (creation.isRawValueShown) {
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    RawContentCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        rawValue = creation.rawValue,
+                        onCopyClicked = { onCopyClicked(creation.rawValue) },
+                    )
+                }
             }
         }
     }
@@ -162,6 +173,7 @@ private fun PreviewCreationDetailScreen() {
                     ),
                 ),
                 rawValue = "https://scanny.app",
+                isRawValueShown = false,
                 style = CodeStyle(),
             ),
             isDeleting = false,

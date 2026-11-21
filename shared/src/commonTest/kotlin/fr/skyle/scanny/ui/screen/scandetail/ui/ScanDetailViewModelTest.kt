@@ -11,7 +11,6 @@ import fr.skyle.scanny.fake.FakeDeleteScannedCodeUseCase
 import fr.skyle.scanny.fake.FakeImageSaver
 import fr.skyle.scanny.fake.FakeImageSharer
 import fr.skyle.scanny.fake.FakeTextSharer
-import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
 import fr.skyle.scanny.fake.FakeWatchScannedCodeUseCase
 import fr.skyle.scanny.fake.FakeWifiNetworkSupport
 import fr.skyle.scanny.fake.FixedClock
@@ -25,7 +24,6 @@ import fr.skyle.scanny.ui.screen.scandetail.ui.model.ScanDetailItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -92,7 +90,7 @@ class ScanDetailViewModelTest {
                     ),
                 ),
                 rawValue = WIFI_RAW_VALUE,
-                isRawValueShown = false,
+                isRawValueShown = true,
                 action = null,
             ),
             actual = viewModel.uiState.value.code,
@@ -145,25 +143,7 @@ class ScanDetailViewModelTest {
     }
 
     @Test
-    fun `the raw content follows its setting`() = runTest(testDispatcher) {
-        // Given
-        val watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isRawContentShown = false)
-        val viewModel = scanDetailViewModel(watchScanSettingsUseCase = watchScanSettingsUseCase)
-
-        // When
-        watchScanSettingsUseCase.settings.update { settings ->
-            settings.copy(isRawContentShown = true)
-        }
-
-        // Then
-        assertEquals(
-            expected = true,
-            actual = viewModel.uiState.value.code?.isRawValueShown,
-        )
-    }
-
-    @Test
-    fun `the raw content of a link is not shown twice`() = runTest(testDispatcher) {
+    fun `a network shows its raw content and a link does not show it twice`() = runTest(testDispatcher) {
         // Given
         val link = scannedCode(
             rawValue = "https://scanny.app",
@@ -171,15 +151,13 @@ class ScanDetailViewModelTest {
         )
 
         // When
-        val viewModel = scanDetailViewModel(
-            watchScannedCodeUseCase = FakeWatchScannedCodeUseCase(scannedCode = link),
-            watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isRawContentShown = true),
-        )
+        val networkViewModel = scanDetailViewModel()
+        val linkViewModel = scanDetailViewModel(watchScannedCodeUseCase = FakeWatchScannedCodeUseCase(scannedCode = link))
 
         // Then
         assertEquals(
-            expected = false,
-            actual = viewModel.uiState.value.code?.isRawValueShown,
+            expected = true to false,
+            actual = networkViewModel.uiState.value.code?.isRawValueShown to linkViewModel.uiState.value.code?.isRawValueShown,
         )
     }
 
@@ -331,7 +309,6 @@ class ScanDetailViewModelTest {
 
     private fun scanDetailViewModel(
         watchScannedCodeUseCase: FakeWatchScannedCodeUseCase = FakeWatchScannedCodeUseCase(scannedCode = wifiCode()),
-        watchScanSettingsUseCase: FakeWatchScanSettingsUseCase = FakeWatchScanSettingsUseCase(),
         deleteScannedCodeUseCase: FakeDeleteScannedCodeUseCase = FakeDeleteScannedCodeUseCase(),
         textSharer: FakeTextSharer = FakeTextSharer(),
         codeImageRenderer: FakeCodeImageRenderer = FakeCodeImageRenderer(),
@@ -343,7 +320,6 @@ class ScanDetailViewModelTest {
         ScanDetailViewModel(
             codeId = CODE_ID,
             watchScannedCodeUseCase = watchScannedCodeUseCase,
-            watchScanSettingsUseCase = watchScanSettingsUseCase,
             deleteScannedCodeUseCase = deleteScannedCodeUseCase,
             textSharer = textSharer,
             codeImageExporter = CodeImageExporter(

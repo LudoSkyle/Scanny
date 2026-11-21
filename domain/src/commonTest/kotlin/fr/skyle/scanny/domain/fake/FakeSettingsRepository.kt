@@ -9,7 +9,6 @@ internal class FakeSettingsRepository(
     isBeepAfterScanEnabled: Boolean = false,
     isCopyAfterScanEnabled: Boolean = false,
     isOpenContentAfterScanEnabled: Boolean = false,
-    isRawContentShown: Boolean = false,
     isFrontCameraUsed: Boolean = false,
     isScanHistoryEnabled: Boolean = true,
     isCreationHistoryEnabled: Boolean = true,
@@ -21,7 +20,6 @@ internal class FakeSettingsRepository(
     val isBeepAfterScanEnabled = MutableStateFlow(isBeepAfterScanEnabled)
     val isCopyAfterScanEnabled = MutableStateFlow(isCopyAfterScanEnabled)
     val isOpenContentAfterScanEnabled = MutableStateFlow(isOpenContentAfterScanEnabled)
-    val isRawContentShown = MutableStateFlow(isRawContentShown)
     val isFrontCameraUsed = MutableStateFlow(isFrontCameraUsed)
     val isScanHistoryEnabled = MutableStateFlow(isScanHistoryEnabled)
     val isCreationHistoryEnabled = MutableStateFlow(isCreationHistoryEnabled)
@@ -54,13 +52,6 @@ internal class FakeSettingsRepository(
 
     override suspend fun setOpenContentAfterScanEnabled(isEnabled: Boolean) {
         isOpenContentAfterScanEnabled.value = isEnabled
-    }
-
-    override fun watchIsRawContentShown(): Flow<Boolean> =
-        isRawContentShown
-
-    override suspend fun setRawContentShown(isShown: Boolean) {
-        isRawContentShown.value = isShown
     }
 
     override fun watchIsFrontCameraUsed(): Flow<Boolean> =

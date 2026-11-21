@@ -1,6 +1,7 @@
 package fr.skyle.scanny.ui.screen.creationdetail.ui.mapper
 
 import fr.skyle.scanny.domain.model.Creation
+import fr.skyle.scanny.ui.core.code.mapper.hasDistinctRawValue
 import fr.skyle.scanny.ui.core.code.mapper.toCodeFields
 import fr.skyle.scanny.ui.core.code.mapper.toCodeType
 import fr.skyle.scanny.ui.core.date.mapper.toCalendarDay
@@ -23,5 +24,6 @@ internal fun Creation.toCreationDetailItem(
         createdTime = createdAt.toTimeText(timeZone = timeZone),
         fields = content.toCodeFields(),
         rawValue = rawValue,
+        isRawValueShown = content.hasDistinctRawValue(),
         style = style,
     )

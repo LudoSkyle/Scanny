@@ -7,7 +7,6 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.usecase.scan.DeleteScannedCodeUseCase
 import fr.skyle.scanny.domain.usecase.scan.WatchScannedCodeUseCase
-import fr.skyle.scanny.domain.usecase.settings.WatchScanSettingsUseCase
 import fr.skyle.scanny.platform.contact.ContactAdder
 import fr.skyle.scanny.platform.share.TextSharer
 import fr.skyle.scanny.platform.wifi.WifiNetworkSupport
@@ -20,7 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -31,7 +30,6 @@ import kotlin.time.Clock
 class ScanDetailViewModel(
     private val codeId: Long,
     private val watchScannedCodeUseCase: WatchScannedCodeUseCase,
-    private val watchScanSettingsUseCase: WatchScanSettingsUseCase,
     private val deleteScannedCodeUseCase: DeleteScannedCodeUseCase,
     private val textSharer: TextSharer,
     private val codeImageExporter: CodeImageExporter,
@@ -49,17 +47,14 @@ class ScanDetailViewModel(
 
     init {
         viewModelScope.launch {
-            combine(
-                watchScannedCodeUseCase(codeId = codeId),
-                watchScanSettingsUseCase(),
-            ) { scannedCode, settings ->
-                scannedCode?.toScanDetailItem(
-                    isRawContentShown = settings.isRawContentShown,
-                    canJoinWifi = wifiNetworkSupport::canJoin,
-                    today = clock.now().toLocalDateTime(timeZone).date,
-                    timeZone = timeZone,
-                )
-            }
+            watchScannedCodeUseCase(codeId = codeId)
+                .map { scannedCode ->
+                    scannedCode?.toScanDetailItem(
+                        canJoinWifi = wifiNetworkSupport::canJoin,
+                        today = clock.now().toLocalDateTime(timeZone).date,
+                        timeZone = timeZone,
+                    )
+                }
                 .catch { exception ->
                     Logger.e(throwable = exception) { "Failed to read the scanned code $codeId" }
                 }

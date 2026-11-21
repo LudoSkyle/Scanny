@@ -34,12 +34,12 @@ import fr.skyle.scanny.resources.ic_delete
 import fr.skyle.scanny.resources.ic_edit
 import fr.skyle.scanny.resources.ic_qr_code
 import fr.skyle.scanny.resources.ic_share
-import fr.skyle.scanny.resources.raw_content
 import fr.skyle.scanny.resources.share
 import fr.skyle.scanny.resources.show_code
 import fr.skyle.scanny.ui.core.code.component.CodeActionButton
 import fr.skyle.scanny.ui.core.code.component.CodeFieldRow
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
+import fr.skyle.scanny.ui.core.code.component.RawContentCard
 import fr.skyle.scanny.ui.core.code.mapper.isDrawable
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeAction
@@ -168,23 +168,6 @@ fun ScanDetailScreen(
                     }
                 }
 
-                if (code.isRawValueShown) {
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    SCCardStructure(
-                        modifier = Modifier.fillMaxWidth(),
-                        title = stringResource(Res.string.raw_content),
-                        style = SCCardDefaults.Style.LIGHT,
-                    ) {
-                        CodeFieldRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            label = null,
-                            value = code.rawValue,
-                            onCopyClicked = { onCopyClicked(code.rawValue) },
-                        )
-                    }
-                }
-
                 code.action?.let { action ->
                     Spacer(modifier = Modifier.height(24.dp))
 
@@ -192,6 +175,17 @@ fun ScanDetailScreen(
                         modifier = Modifier.fillMaxWidth(),
                         action = action,
                         onClick = { onActionClicked(action) },
+                    )
+                }
+
+                // Last: few need it
+                if (code.isRawValueShown) {
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    RawContentCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        rawValue = code.rawValue,
+                        onCopyClicked = { onCopyClicked(code.rawValue) },
                     )
                 }
             }
