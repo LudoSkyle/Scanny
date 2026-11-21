@@ -96,3 +96,9 @@ fun EntryProviderScope<Route>.scanDetailRouteEntry(
 Les animations de transition sont déclarées une fois, sur `NavDisplay` (`transitionSpec`,
 `popTransitionSpec`, `predictivePopTransitionSpec`), pas écran par écran. Une entrée qui doit
 s'écarter du comportement par défaut le déclare dans ses `metadata`.
+
+Ces transitions sont celles d'iOS, sur les deux plateformes (`NavTransitions.kt`) : l'écran ouvert
+glisse depuis la fin par-dessus celui qu'il quitte, qui recule d'un quart en s'assombrissant ; le
+retour fait l'inverse, et le geste retour fait suivre le doigt à l'écran quitté. Les transitions par
+défaut de Navigation 3 sur Android, un fondu enchaîné, et au geste retour l'écran quitté qui
+rétrécit, sont écartées.

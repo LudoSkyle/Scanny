@@ -47,5 +47,8 @@ fun RootNavDisplay(
 
             feedbackRouteEntry(backStack = backStack)
         },
+        transitionSpec = forwardTransition(),
+        popTransitionSpec = backTransition(),
+        predictivePopTransitionSpec = backGestureTransition(),
     )
 }
