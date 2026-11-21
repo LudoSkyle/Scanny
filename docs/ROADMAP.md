@@ -50,7 +50,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [x] Scan multiple : un mode qu'on active, on passe autant de codes qu'on veut devant la caméra, on
       termine, et la liste dédoublonnée des codes trouvés s'affiche et s'enregistre comme un groupe
 - [x] Bip après un scan et copie du code après un scan (réglages) *(bip testé, non entendu)*
-- [ ] Création de QR codes : texte, URL, email, SMS, WiFi
+- [x] Création de QR codes : texte, URL, email, SMS, WiFi *(et contact, codes-barres)*
 - [ ] Personnalisation d'un QR code : couleurs, logo au centre, formes *(couleurs et formes faites,
       logo à venir)*
 - [ ] Modifier un code scanné : reprendre son contenu, le modifier, le personnaliser et générer le
