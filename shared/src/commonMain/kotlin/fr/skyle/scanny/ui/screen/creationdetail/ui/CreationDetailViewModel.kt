@@ -5,9 +5,7 @@ import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.usecase.creation.DeleteCreationUseCase
 import fr.skyle.scanny.domain.usecase.creation.WatchCreationUseCase
-import fr.skyle.scanny.platform.image.ImageSaver
-import fr.skyle.scanny.platform.share.ImageSharer
-import fr.skyle.scanny.ui.core.code.image.CodeImageRenderer
+import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
 import fr.skyle.scanny.ui.screen.creationdetail.ui.mapper.toCreationDetailItem
 import fr.skyle.scanny.ui.screen.creationdetail.ui.model.CreationDetailItem
 import kotlinx.coroutines.CancellationException
@@ -28,14 +26,12 @@ class CreationDetailViewModel(
     private val creationId: Long,
     private val watchCreationUseCase: WatchCreationUseCase,
     private val deleteCreationUseCase: DeleteCreationUseCase,
-    private val codeImageRenderer: CodeImageRenderer,
-    private val imageSharer: ImageSharer,
-    private val imageSaver: ImageSaver,
+    private val codeImageExporter: CodeImageExporter,
     private val clock: Clock,
     private val timeZone: TimeZone,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CreationDetailUIState(canSaveImage = imageSaver.canSave))
+    private val _uiState = MutableStateFlow(CreationDetailUIState(canSaveImage = codeImageExporter.canSave))
     val uiState: StateFlow<CreationDetailUIState> = _uiState.asStateFlow()
 
     private val _event = Channel<CreationDetailEvent>(Channel.BUFFERED)
@@ -61,12 +57,15 @@ class CreationDetailViewModel(
         }
     }
 
-    fun onShareClicked() {
+    fun onShareImageClicked() {
         val creation = _uiState.value.creation ?: return
+        val format = creation.format ?: return
         viewModelScope.launch {
             try {
-                imageSharer.shareImage(
-                    png = renderPng(creation = creation),
+                codeImageExporter.share(
+                    rawValue = creation.rawValue,
+                    format = format,
+                    style = creation.style,
                     fileName = imageFileName(),
                 )
             } catch (exception: CancellationException) {
@@ -79,12 +78,15 @@ class CreationDetailViewModel(
         }
     }
 
-    fun onSaveClicked() {
+    fun onSaveImageClicked() {
         val creation = _uiState.value.creation ?: return
+        val format = creation.format ?: return
         viewModelScope.launch {
             try {
-                imageSaver.saveImage(
-                    png = renderPng(creation = creation),
+                codeImageExporter.save(
+                    rawValue = creation.rawValue,
+                    format = format,
+                    style = creation.style,
                     fileName = imageFileName(),
                 )
 
@@ -98,13 +100,6 @@ class CreationDetailViewModel(
             }
         }
     }
-
-    private suspend fun renderPng(creation: CreationDetailItem): ByteArray =
-        codeImageRenderer.renderPng(
-            rawValue = creation.rawValue,
-            format = checkNotNull(creation.format) { "The creation $creationId has a format this version does not know" },
-            style = creation.style,
-        )
 
     private fun imageFileName(): String =
         "scanny-$creationId.png"

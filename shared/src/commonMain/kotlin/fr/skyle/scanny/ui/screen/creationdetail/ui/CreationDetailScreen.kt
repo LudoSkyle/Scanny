@@ -1,6 +1,5 @@
 package fr.skyle.scanny.ui.screen.creationdetail.ui
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,10 +10,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import fr.skyle.scanny.designsystem.core.card.SCCard
 import fr.skyle.scanny.designsystem.core.card.SCCardDefaults
 import fr.skyle.scanny.designsystem.core.card.SCCardStructure
 import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButton
@@ -34,14 +31,10 @@ import fr.skyle.scanny.resources.at_time
 import fr.skyle.scanny.resources.content
 import fr.skyle.scanny.resources.delete
 import fr.skyle.scanny.resources.ic_delete
-import fr.skyle.scanny.resources.ic_download
-import fr.skyle.scanny.resources.ic_share
-import fr.skyle.scanny.resources.save_image
-import fr.skyle.scanny.resources.share
-import fr.skyle.scanny.resources.the_code
+import fr.skyle.scanny.resources.ic_qr_code
+import fr.skyle.scanny.resources.show_code
 import fr.skyle.scanny.ui.core.code.component.CodeFieldRow
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
-import fr.skyle.scanny.ui.core.code.component.CodeImage
 import fr.skyle.scanny.ui.core.code.mapper.isDrawable
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeField
@@ -53,18 +46,14 @@ import fr.skyle.scanny.ui.screen.creationdetail.ui.model.CreationDetailItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-// Large enough to be scanned from the screen
-private const val CODE_WIDTH_FRACTION = 0.7f
 
 @Composable
 fun CreationDetailScreen(
     creation: CreationDetailItem?,
-    canSaveImage: Boolean,
     isDeleting: Boolean,
     snackbarState: SCSnackbarState,
     onBackClicked: () -> Unit,
-    onShareClicked: () -> Unit,
-    onSaveClicked: () -> Unit,
+    onShowCodeClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
     onCopyClicked: (text: String) -> Unit,
 ) {
@@ -78,27 +67,16 @@ fun CreationDetailScreen(
                 onBackClicked = onBackClicked,
                 actions = {
                     if (creation != null) {
-                        // Its image, when this version draws its format
+                        // As in the detail of a scan: the code in a sheet, with the actions on its image
                         if (creation.format?.isDrawable == true) {
                             SCIconButton(
                                 modifier = Modifier.wrapContentSize(),
-                                icon = painterResource(Res.drawable.ic_share),
-                                contentDescription = stringResource(Res.string.share),
-                                onClick = onShareClicked,
+                                icon = painterResource(Res.drawable.ic_qr_code),
+                                contentDescription = stringResource(Res.string.show_code),
+                                onClick = onShowCodeClicked,
                                 style = SCIconButtonDefaults.Style.DARK,
                                 size = SCIconButtonDefaults.Size.MEDIUM,
                             )
-
-                            if (canSaveImage) {
-                                SCIconButton(
-                                    modifier = Modifier.wrapContentSize(),
-                                    icon = painterResource(Res.drawable.ic_download),
-                                    contentDescription = stringResource(Res.string.save_image),
-                                    onClick = onSaveClicked,
-                                    style = SCIconButtonDefaults.Style.DARK,
-                                    size = SCIconButtonDefaults.Size.MEDIUM,
-                                )
-                            }
                         }
 
                         SCIconButton(
@@ -146,31 +124,6 @@ fun CreationDetailScreen(
                     color = SCTheme.colors.text,
                 )
 
-                val format = creation.format
-                if (format != null && format.isDrawable) {
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    SCCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        style = SCCardDefaults.Style.LIGHT,
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(all = 16.dp),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            CodeImage(
-                                modifier = Modifier.fillMaxWidth(fraction = CODE_WIDTH_FRACTION),
-                                rawValue = creation.rawValue,
-                                format = format,
-                                contentDescription = stringResource(Res.string.the_code),
-                                style = creation.style,
-                            )
-                        }
-                    }
-                }
-
                 Spacer(modifier = Modifier.height(24.dp))
 
                 SCCardStructure(
@@ -211,12 +164,10 @@ private fun PreviewCreationDetailScreen() {
                 rawValue = "https://scanny.app",
                 style = CodeStyle(),
             ),
-            canSaveImage = true,
             isDeleting = false,
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
-            onShareClicked = {},
-            onSaveClicked = {},
+            onShowCodeClicked = {},
             onDeleteClicked = {},
             onCopyClicked = {},
         )

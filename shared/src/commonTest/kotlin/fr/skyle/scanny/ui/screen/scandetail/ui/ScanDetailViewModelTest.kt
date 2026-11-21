@@ -2,15 +2,20 @@ package fr.skyle.scanny.ui.screen.scandetail.ui
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.fake.FakeCodeImageRenderer
 import fr.skyle.scanny.fake.FakeContactAdder
 import fr.skyle.scanny.fake.FakeDeleteScannedCodeUseCase
+import fr.skyle.scanny.fake.FakeImageSaver
+import fr.skyle.scanny.fake.FakeImageSharer
 import fr.skyle.scanny.fake.FakeTextSharer
 import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
 import fr.skyle.scanny.fake.FakeWatchScannedCodeUseCase
 import fr.skyle.scanny.fake.FakeWifiNetworkSupport
 import fr.skyle.scanny.fake.FixedClock
+import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
 import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
@@ -245,11 +250,93 @@ class ScanDetailViewModelTest {
         assertNotNull(viewModel.uiState.value.code)
     }
 
+    @Test
+    fun `sharing the image draws the code dark on white and shares it named after the code`() = runTest(testDispatcher) {
+        // Given
+        val codeImageRenderer = FakeCodeImageRenderer()
+        val imageSharer = FakeImageSharer()
+        val viewModel = scanDetailViewModel(
+            codeImageRenderer = codeImageRenderer,
+            imageSharer = imageSharer,
+        )
+
+        // When
+        viewModel.onShareImageClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                FakeCodeImageRenderer.RenderedCode(
+                    rawValue = WIFI_RAW_VALUE,
+                    format = BarcodeFormat.QR_CODE,
+                    style = CodeStyle(),
+                ),
+            ),
+            actual = codeImageRenderer.renderedCodes,
+        )
+        assertEquals(
+            expected = listOf(listOf<Byte>(1, 2, 3) to "scanny-scan-7.png"),
+            actual = imageSharer.sharedImages,
+        )
+    }
+
+    @Test
+    fun `saving the image keeps it in the photos and says it`() = runTest(testDispatcher) {
+        // Given
+        val imageSaver = FakeImageSaver()
+        val viewModel = scanDetailViewModel(imageSaver = imageSaver)
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onSaveImageClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(listOf<Byte>(1, 2, 3) to "scanny-scan-7.png") to listOf<ScanDetailViewModel.ScanDetailEvent>(ScanDetailViewModel.ScanDetailEvent.ImageSaved),
+            actual = imageSaver.savedImages to events,
+        )
+    }
+
+    @Test
+    fun `an image that cannot be shared or saved is reported`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanDetailViewModel(
+            imageSharer = FakeImageSharer(error = IllegalStateException("No app to share with")),
+            imageSaver = FakeImageSaver(error = IllegalStateException("No access to the photos")),
+        )
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onShareImageClicked()
+        viewModel.onSaveImageClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                ScanDetailViewModel.ScanDetailEvent.ImageNotShared,
+                ScanDetailViewModel.ScanDetailEvent.ImageNotSaved,
+            ),
+            actual = events,
+        )
+    }
+
+    @Test
+    fun `saving the image is not offered on a device that does not let the app keep one`() = runTest(testDispatcher) {
+        // When
+        val viewModel = scanDetailViewModel(imageSaver = FakeImageSaver(canSave = false))
+
+        // Then
+        assertFalse(viewModel.uiState.value.canSaveImage)
+    }
+
     private fun scanDetailViewModel(
         watchScannedCodeUseCase: FakeWatchScannedCodeUseCase = FakeWatchScannedCodeUseCase(scannedCode = wifiCode()),
         watchScanSettingsUseCase: FakeWatchScanSettingsUseCase = FakeWatchScanSettingsUseCase(),
         deleteScannedCodeUseCase: FakeDeleteScannedCodeUseCase = FakeDeleteScannedCodeUseCase(),
         textSharer: FakeTextSharer = FakeTextSharer(),
+        codeImageRenderer: FakeCodeImageRenderer = FakeCodeImageRenderer(),
+        imageSharer: FakeImageSharer = FakeImageSharer(),
+        imageSaver: FakeImageSaver = FakeImageSaver(),
         contactAdder: FakeContactAdder = FakeContactAdder(),
         wifiNetworkSupport: FakeWifiNetworkSupport = FakeWifiNetworkSupport(),
     ): ScanDetailViewModel =
@@ -259,6 +346,11 @@ class ScanDetailViewModelTest {
             watchScanSettingsUseCase = watchScanSettingsUseCase,
             deleteScannedCodeUseCase = deleteScannedCodeUseCase,
             textSharer = textSharer,
+            codeImageExporter = CodeImageExporter(
+                codeImageRenderer = codeImageRenderer,
+                imageSharer = imageSharer,
+                imageSaver = imageSaver,
+            ),
             contactAdder = contactAdder,
             wifiNetworkSupport = wifiNetworkSupport,
             // Scanned at the very moment of the test, in UTC

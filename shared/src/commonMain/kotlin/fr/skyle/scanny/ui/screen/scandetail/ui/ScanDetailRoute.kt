@@ -14,17 +14,20 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.platform.clipboard.isCopyConfirmedBySystem
 import fr.skyle.scanny.platform.clipboard.textClipEntry
 import fr.skyle.scanny.platform.wifi.rememberWifiNetworkJoiner
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.code_not_deleted
 import fr.skyle.scanny.resources.copied_to_clipboard
+import fr.skyle.scanny.resources.image_not_saved
+import fr.skyle.scanny.resources.image_not_shared
 import fr.skyle.scanny.resources.no_app_to_open
 import fr.skyle.scanny.ui.core.code.action.open
+import fr.skyle.scanny.ui.core.code.component.CodeImageSheet
 import fr.skyle.scanny.ui.core.code.component.DeleteCodeDialog
 import fr.skyle.scanny.ui.core.code.model.CodeAction
-import fr.skyle.scanny.ui.screen.scandetail.ui.component.CodeImageDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
@@ -48,7 +51,8 @@ fun ScanDetailRoute(
     val snackbarState = rememberSCSnackbarState()
 
     var isDeleteDialogVisible by rememberSaveable { mutableStateOf(false) }
-    var isCodeImageDialogVisible by rememberSaveable { mutableStateOf(false) }
+    var isCodeSheetVisible by rememberSaveable { mutableStateOf(false) }
+    var isImageSaved by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -65,6 +69,26 @@ fun ScanDetailRoute(
                     ScanDetailViewModel.ScanDetailEvent.ContactNotAdded -> launch {
                         snackbarState.show(message = getString(Res.string.no_app_to_open))
                     }
+
+                    // Told by the button of the sheet: a message of the screen would show under it
+                    ScanDetailViewModel.ScanDetailEvent.ImageSaved -> {
+                        isImageSaved = true
+                    }
+
+                    // The sheet closed for the message to be seen
+                    ScanDetailViewModel.ScanDetailEvent.ImageNotSaved -> {
+                        isCodeSheetVisible = false
+                        launch {
+                            snackbarState.show(message = getString(Res.string.image_not_saved))
+                        }
+                    }
+
+                    ScanDetailViewModel.ScanDetailEvent.ImageNotShared -> {
+                        isCodeSheetVisible = false
+                        launch {
+                            snackbarState.show(message = getString(Res.string.image_not_shared))
+                        }
+                    }
                 }
             }
         }
@@ -75,7 +99,8 @@ fun ScanDetailRoute(
         isDeleting = uiState.isDeleting,
         snackbarState = snackbarState,
         onShowCodeClicked = {
-            isCodeImageDialogVisible = true
+            isImageSaved = false
+            isCodeSheetVisible = true
         },
         onEditClicked = navigateToCreateCode,
         onBackClicked = navigateBack,
@@ -107,12 +132,18 @@ fun ScanDetailRoute(
 
     val code = uiState.code
     val format = code?.format
-    if (isCodeImageDialogVisible && code != null && format != null) {
-        CodeImageDialog(
+    if (isCodeSheetVisible && code != null && format != null) {
+        CodeImageSheet(
             rawValue = code.rawValue,
             format = format,
+            // A scanned code is drawn again dark on white, as any scanner reads it
+            style = CodeStyle(),
+            canSave = uiState.canSaveImage,
+            isSaved = isImageSaved,
+            onShareClicked = viewModel::onShareImageClicked,
+            onSaveClicked = viewModel::onSaveImageClicked,
             onDismissRequest = {
-                isCodeImageDialogVisible = false
+                isCodeSheetVisible = false
             },
         )
     }

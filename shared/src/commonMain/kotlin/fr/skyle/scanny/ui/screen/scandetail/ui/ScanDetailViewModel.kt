@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.usecase.scan.DeleteScannedCodeUseCase
 import fr.skyle.scanny.domain.usecase.scan.WatchScannedCodeUseCase
 import fr.skyle.scanny.domain.usecase.settings.WatchScanSettingsUseCase
 import fr.skyle.scanny.platform.contact.ContactAdder
 import fr.skyle.scanny.platform.share.TextSharer
 import fr.skyle.scanny.platform.wifi.WifiNetworkSupport
+import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
 import fr.skyle.scanny.ui.screen.scandetail.ui.mapper.toScanDetailItem
 import fr.skyle.scanny.ui.screen.scandetail.ui.model.ScanDetailItem
 import kotlinx.coroutines.CancellationException
@@ -32,13 +34,14 @@ class ScanDetailViewModel(
     private val watchScanSettingsUseCase: WatchScanSettingsUseCase,
     private val deleteScannedCodeUseCase: DeleteScannedCodeUseCase,
     private val textSharer: TextSharer,
+    private val codeImageExporter: CodeImageExporter,
     private val contactAdder: ContactAdder,
     private val wifiNetworkSupport: WifiNetworkSupport,
     private val clock: Clock,
     private val timeZone: TimeZone,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ScanDetailUIState())
+    private val _uiState = MutableStateFlow(ScanDetailUIState(canSaveImage = codeImageExporter.canSave))
     val uiState: StateFlow<ScanDetailUIState> = _uiState.asStateFlow()
 
     private val _event = Channel<ScanDetailEvent>(Channel.BUFFERED)
@@ -73,6 +76,54 @@ class ScanDetailViewModel(
         val code = _uiState.value.code ?: return
         textSharer.shareText(text = code.rawValue)
     }
+
+    // A scanned code is drawn again dark on white, as any scanner reads it
+    fun onShareImageClicked() {
+        val code = _uiState.value.code ?: return
+        val format = code.format ?: return
+        viewModelScope.launch {
+            try {
+                codeImageExporter.share(
+                    rawValue = code.rawValue,
+                    format = format,
+                    style = CodeStyle(),
+                    fileName = imageFileName(),
+                )
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                Logger.e(throwable = exception) { "Failed to share the image of the scanned code $codeId" }
+
+                _event.send(ScanDetailEvent.ImageNotShared)
+            }
+        }
+    }
+
+    fun onSaveImageClicked() {
+        val code = _uiState.value.code ?: return
+        val format = code.format ?: return
+        viewModelScope.launch {
+            try {
+                codeImageExporter.save(
+                    rawValue = code.rawValue,
+                    format = format,
+                    style = CodeStyle(),
+                    fileName = imageFileName(),
+                )
+
+                _event.send(ScanDetailEvent.ImageSaved)
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                Logger.e(throwable = exception) { "Failed to save the image of the scanned code $codeId" }
+
+                _event.send(ScanDetailEvent.ImageNotSaved)
+            }
+        }
+    }
+
+    private fun imageFileName(): String =
+        "scanny-scan-$codeId.png"
 
     fun onAddContactClicked(contact: BarcodeContent.Contact) {
         try {
@@ -111,6 +162,7 @@ class ScanDetailViewModel(
     }
 
     data class ScanDetailUIState(
+        val canSaveImage: Boolean,
         val code: ScanDetailItem? = null,
         val isDeleting: Boolean = false,
     )
@@ -119,5 +171,8 @@ class ScanDetailViewModel(
         data object CodeDeleted : ScanDetailEvent
         data object DeleteFailed : ScanDetailEvent
         data object ContactNotAdded : ScanDetailEvent
+        data object ImageSaved : ScanDetailEvent
+        data object ImageNotSaved : ScanDetailEvent
+        data object ImageNotShared : ScanDetailEvent
     }
 }

@@ -164,13 +164,13 @@ final class ScanFlowUITests: XCTestCase {
         let app = launchScanning(code: "https://ludoskyle.github.io/scanny.github.io/")
         openTheDetail(in: app)
 
-        let showCodeButton = app.buttons["Show the code"]
-        XCTAssertTrue(showCodeButton.waitForExistence(timeout: 5))
-        showCodeButton.tap()
-        XCTAssertTrue(app.images["The code"].waitForExistence(timeout: 5))
+        // In a sheet, with the actions on its image
+        showTheCode(in: app)
+        XCTAssertTrue(app.buttons["Share the image"].exists)
+        XCTAssertTrue(app.buttons["Save the image"].exists)
         keepScreenshot(named: "qr-code-drawn-again", of: app)
 
-        app.buttons["OK"].tap()
+        closeTheSheet(of: app)
         XCTAssertTrue(app.images["The code"].waitForNonExistence(timeout: 5))
     }
 
@@ -181,12 +181,9 @@ final class ScanFlowUITests: XCTestCase {
         )
         openTheDetail(in: app)
 
-        let showCodeButton = app.buttons["Show the code"]
-        XCTAssertTrue(showCodeButton.waitForExistence(timeout: 5))
-        showCodeButton.tap()
-        XCTAssertTrue(app.images["The code"].waitForExistence(timeout: 5))
+        showTheCode(in: app)
         keepScreenshot(named: "barcode-drawn-again", of: app)
-        app.buttons["OK"].tap()
+        closeTheSheet(of: app)
     }
 
     func testACodeThatCannotBeDrawnAgainHasNoButtonToShowIt() throws {

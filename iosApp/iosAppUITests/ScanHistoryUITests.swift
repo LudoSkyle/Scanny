@@ -49,7 +49,7 @@ final class ScanHistoryUITests: XCTestCase {
         let createButton = app.buttons["Create"]
         scroll(to: createButton, in: app)
         createButton.tap()
-        XCTAssertTrue(app.buttons["Save the image"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Show the code"].waitForExistence(timeout: 5))
         app.buttons["Back"].tap()
 
         // The history opens on the scans, its creations a tab away
@@ -64,7 +64,7 @@ final class ScanHistoryUITests: XCTestCase {
         keepScreenshot(named: "history-creations", of: app)
 
         row.tap()
-        XCTAssertTrue(app.buttons["Save the image"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Show the code"].waitForExistence(timeout: 5))
         XCTAssertTrue(element(labelled: text, in: app).exists)
 
         // Back on the creations, which are cleared on their own
@@ -97,7 +97,7 @@ final class ScanHistoryUITests: XCTestCase {
         let createButton = app.buttons["Create"]
         scroll(to: createButton, in: app)
         createButton.tap()
-        XCTAssertTrue(app.buttons["Save the image"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Show the code"].waitForExistence(timeout: 5))
         XCTAssertTrue(element(labelled: url, in: app).exists)
 
         // The creation takes the place of the editor: back returns to the scan it came from

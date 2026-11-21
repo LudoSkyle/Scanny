@@ -83,7 +83,7 @@
     <string name="history_not_cleared">L'historique n'a pas pu être effacé</string>
     <string name="image_not_saved">L'image n'a pas pu être enregistrée</string>
     <string name="image_not_shared">L'image n'a pas pu être partagée</string>
-    <string name="image_saved">L'image est enregistrée dans vos photos</string>
+    <string name="image_saved_short">Image enregistrée</string>
     <string name="job_title">Fonction</string>
     <string name="join_network">Rejoindre le réseau</string>
     <string name="keep_history">Conserver l'historique</string>
@@ -114,7 +114,6 @@
     <string name="no_code_in_image">Aucun code trouvé dans cette image</string>
     <string name="no_creation_yet">Aucune création pour l'instant</string>
     <string name="no_scan_yet">Aucun scan pour l'instant</string>
-    <string name="ok">OK</string>
     <string name="open_content_after_scan">Ouvrir le contenu après un scan</string>
     <string name="open_link">Ouvrir le lien</string>
     <string name="open_settings">Ouvrir les réglages</string>
@@ -152,6 +151,7 @@
     <string name="shape_rounded">Arrondi</string>
     <string name="shape_square">Carré</string>
     <string name="share">Partager</string>
+    <string name="share_image">Partager l'image</string>
     <string name="show_code">Afficher le code</string>
     <string name="show_raw_content">Afficher le contenu brut</string>
     <string name="skip_consecutive_duplicates">Ignorer un code scanné de nouveau aussitôt</string>

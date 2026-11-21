@@ -202,7 +202,13 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   bouton principal du résultat (`toCodeAction`), par le même chemin dans la `Route` : un lien, un
   e-mail, un SMS, un contact, un réseau Wi-Fi que l'appareil sait rejoindre. Un texte, ou un réseau
   qu'il ne sait pas rejoindre, s'affiche dans la feuille. La détection reprend 2 s plus tard.
-- L'image d'un code créé se dessine en commun (`CodeImageRenderer`, hors du fil principal) : un PNG
+- Le code se montre dans une feuille (`CodeImageSheet`), ouverte par « Afficher le code » du détail
+  d'un scan comme de celui d'une création, en grand pour qu'un autre téléphone le scanne, avec les
+  actions sur son image : la partager, l'enregistrer dans les photos (`CodeImageExporter`, qui la
+  dessine puis la confie à `ImageSharer` ou `ImageSaver`). Enregistrée, le bouton le dit jusqu'à la
+  fermeture de la feuille : un message de l'écran passerait sous elle ; un échec la ferme, pour que
+  le message se lise. Un code scanné y est redessiné sombre sur blanc, une création dans son style.
+- L'image d'un code se dessine en commun (`CodeImageRenderer`, hors du fil principal) : un PNG
   de 1024 pixels de côté pour un QR code, dans son style, 1200 × 480 pour un code-barres, sombre sur
   blanc, avec la marge dont un lecteur a besoin autour d'un code, de la couleur du fond.
 - Le logo d'un QR code est une image de la galerie, réduite dès qu'elle est choisie : redressée, en

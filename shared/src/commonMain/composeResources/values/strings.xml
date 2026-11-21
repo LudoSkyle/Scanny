@@ -93,7 +93,7 @@
     <string name="history_not_cleared">The history could not be cleared</string>
     <string name="image_not_saved">The image could not be saved</string>
     <string name="image_not_shared">The image could not be shared</string>
-    <string name="image_saved">The image is saved in your photos</string>
+    <string name="image_saved_short">Image saved</string>
     <string name="itf" translatable="false">ITF</string>
     <string name="job_title">Job title</string>
     <string name="join_network">Join the network</string>
@@ -125,7 +125,6 @@
     <string name="no_code_in_image">No code found in this image</string>
     <string name="no_creation_yet">No creation yet</string>
     <string name="no_scan_yet">No scan yet</string>
-    <string name="ok">OK</string>
     <string name="open_content_after_scan">Open the content after a scan</string>
     <string name="open_link">Open the link</string>
     <string name="open_settings">Open the settings</string>
@@ -166,6 +165,7 @@
     <string name="shape_rounded">Rounded</string>
     <string name="shape_square">Square</string>
     <string name="share">Share</string>
+    <string name="share_image">Share the image</string>
     <string name="show_code">Show the code</string>
     <string name="show_raw_content">Show the raw content</string>
     <string name="skip_consecutive_duplicates">Skip a code scanned again right away</string>

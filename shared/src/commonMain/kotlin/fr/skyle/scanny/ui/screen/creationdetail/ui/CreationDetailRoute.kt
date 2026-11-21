@@ -20,7 +20,7 @@ import fr.skyle.scanny.resources.code_not_deleted
 import fr.skyle.scanny.resources.copied_to_clipboard
 import fr.skyle.scanny.resources.image_not_saved
 import fr.skyle.scanny.resources.image_not_shared
-import fr.skyle.scanny.resources.image_saved
+import fr.skyle.scanny.ui.core.code.component.CodeImageSheet
 import fr.skyle.scanny.ui.core.code.component.DeleteCodeDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -42,6 +42,8 @@ fun CreationDetailRoute(
     val snackbarState = rememberSCSnackbarState()
 
     var isDeleteDialogVisible by rememberSaveable { mutableStateOf(false) }
+    var isCodeSheetVisible by rememberSaveable { mutableStateOf(false) }
+    var isImageSaved by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -55,16 +57,24 @@ fun CreationDetailRoute(
                         snackbarState.show(message = getString(Res.string.code_not_deleted))
                     }
 
-                    CreationDetailViewModel.CreationDetailEvent.ImageSaved -> launch {
-                        snackbarState.show(message = getString(Res.string.image_saved))
+                    // Told by the button of the sheet: a message of the screen would show under it
+                    CreationDetailViewModel.CreationDetailEvent.ImageSaved -> {
+                        isImageSaved = true
                     }
 
-                    CreationDetailViewModel.CreationDetailEvent.ImageNotSaved -> launch {
-                        snackbarState.show(message = getString(Res.string.image_not_saved))
+                    // The sheet closed for the message to be seen
+                    CreationDetailViewModel.CreationDetailEvent.ImageNotSaved -> {
+                        isCodeSheetVisible = false
+                        launch {
+                            snackbarState.show(message = getString(Res.string.image_not_saved))
+                        }
                     }
 
-                    CreationDetailViewModel.CreationDetailEvent.ImageNotShared -> launch {
-                        snackbarState.show(message = getString(Res.string.image_not_shared))
+                    CreationDetailViewModel.CreationDetailEvent.ImageNotShared -> {
+                        isCodeSheetVisible = false
+                        launch {
+                            snackbarState.show(message = getString(Res.string.image_not_shared))
+                        }
                     }
                 }
             }
@@ -73,12 +83,13 @@ fun CreationDetailRoute(
 
     CreationDetailScreen(
         creation = uiState.creation,
-        canSaveImage = uiState.canSaveImage,
         isDeleting = uiState.isDeleting,
         snackbarState = snackbarState,
         onBackClicked = navigateBack,
-        onShareClicked = viewModel::onShareClicked,
-        onSaveClicked = viewModel::onSaveClicked,
+        onShowCodeClicked = {
+            isImageSaved = false
+            isCodeSheetVisible = true
+        },
         onDeleteClicked = {
             isDeleteDialogVisible = true
         },
@@ -91,6 +102,23 @@ fun CreationDetailRoute(
             }
         },
     )
+
+    val creation = uiState.creation
+    val format = creation?.format
+    if (isCodeSheetVisible && creation != null && format != null) {
+        CodeImageSheet(
+            rawValue = creation.rawValue,
+            format = format,
+            style = creation.style,
+            canSave = uiState.canSaveImage,
+            isSaved = isImageSaved,
+            onShareClicked = viewModel::onShareImageClicked,
+            onSaveClicked = viewModel::onSaveImageClicked,
+            onDismissRequest = {
+                isCodeSheetVisible = false
+            },
+        )
+    }
 
     if (isDeleteDialogVisible) {
         DeleteCodeDialog(
