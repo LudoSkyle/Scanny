@@ -117,6 +117,16 @@ session.
   `IllegalArgumentException`.
 - Il rend la capture relue depuis la base, avec les identifiants qu'elle a donnés aux codes : c'est
   par l'identifiant d'un code que s'ouvre son écran de détail.
+- Quand l'utilisateur ne garde pas d'historique, la capture s'enregistre hors de lui : la feuille et
+  le détail l'ouvrent par son identifiant, puis la purge du démarrage suivant la supprime.
+- Quand il ignore les doublons consécutifs, les mêmes codes, dans n'importe quel ordre, que la
+  dernière capture de l'historique enregistrée il y a 5 minutes au plus
+  (`CONSECUTIVE_DUPLICATE_WINDOW`) ne font pas une nouvelle capture : celle-là est remise à l'heure,
+  et rendue.
+- `PurgeHistoryUseCase` supprime les captures hors de l'historique, et celles plus anciennes que la
+  durée de conservation choisie (`HistoryRetention` : 7 jours, 30 par défaut, 90, un an, ou
+  toujours). Il tourne au démarrage de l'app (`MainViewModel`), et quand la durée change
+  (`SetHistoryRetentionUseCase`), pour qu'une durée plus courte s'applique tout de suite.
 - Supprimer le dernier code d'une capture supprime la capture (règle portée par `data`).
 
 ### UseCases

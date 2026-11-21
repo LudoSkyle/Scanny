@@ -178,7 +178,8 @@ La cible `iosAppUITests` du projet Xcode (XCUITest, en Swift) lance l'app sur le
 vérifie ce qui suit un scan : la feuille, le détail, la copie, le partage, l'ouverture d'un lien dans
 Safari, d'un SMS dans Messages, l'ajout d'un contact dans Contacts, la suppression, l'historique et
 son effacement, le scan multiple et l'écran du groupe, les réglages (dont la copie du code après un
-scan et l'ouverture de son contenu), le feedback, les textes français.
+scan, l'ouverture de son contenu, un scan hors de l'historique, un doublon consécutif gardé une fois
+et la durée de conservation), le feedback, les textes français.
 
 - Le simulateur n'a pas de caméra : un build Debug y lit le code de la variable d'environnement
   `SCANNY_SIMULATED_CODE` comme si la caméra le voyait (voir
@@ -200,6 +201,12 @@ scan et l'ouverture de son contenu), le feedback, les textes français.
 - Un état qu'aucun test ne sait produire (des scans d'autres jours) se prépare en écrivant dans la
   base de l'app sur le simulateur (`xcrun simctl get_app_container booted fr.skyle.scanny data`, puis
   `sqlite3` sur `Library/Application Support/scanny.db`), l'app arrêtée.
+- Une migration de la base se vérifie de même : une base de la version précédente, écrite depuis son
+  schéma exporté (ses `createSql`, `setupQueries` et `identityHash`, puis `PRAGMA user_version`),
+  avec une capture récente (la purge du démarrage supprimerait une capture ancienne), remplace celle
+  de l'app ; l'app lancée, la base est à la nouvelle version et la capture toujours là.
+- Une ligne cliquable est un bouton dont le texte est aussi vu à part : pour compter des lignes, on
+  compte les boutons (`app.buttons`).
 - Un test garde ses captures d'écran (`XCTAttachment`, `lifetime = .keepAlways`) : elles se relisent
   après coup, extraites du `.xcresult`.
 - Le presse-papiers du simulateur se lit depuis le Mac : `xcrun simctl pbpaste booted`. Depuis le

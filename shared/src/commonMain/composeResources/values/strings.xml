@@ -60,6 +60,7 @@
     <string name="itf" translatable="false">ITF</string>
     <string name="job_title">Job title</string>
     <string name="join_network">Join the network</string>
+    <string name="keep_history">Keep the history</string>
     <string name="link">Link</string>
     <string name="made_by_skyle">Made by Skyle with ❤️ at Openium</string>
     <string name="mail_app_opens_with_message">Your mail app opens with your message, ready to be sent.</string>
@@ -100,6 +101,12 @@
     <string name="rate_app">Rate the app</string>
     <string name="raw_content">Raw content</string>
     <string name="recipient">Recipient</string>
+    <string name="retention_forever">Forever</string>
+    <string name="retention_one_month">30 days</string>
+    <string name="retention_one_week">7 days</string>
+    <string name="retention_one_year">1 year</string>
+    <string name="retention_three_months">90 days</string>
+    <string name="save_scans_in_history">Save the scans in the history</string>
     <string name="scan_image">Scan an image</string>
     <string name="scan_not_saved">The scan could not be saved</string>
     <string name="scan_preferences">Scan preferences</string>
@@ -112,6 +119,7 @@
     <string name="settings">Settings</string>
     <string name="share">Share</string>
     <string name="show_raw_content">Show the raw content</string>
+    <string name="skip_consecutive_duplicates">Skip a code scanned again right away</string>
     <string name="sms" translatable="false">SMS</string>
     <string name="star_project">Star the project on GitHub</string>
     <string name="subject">Subject</string>

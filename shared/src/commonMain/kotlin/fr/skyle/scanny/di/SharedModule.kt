@@ -1,6 +1,7 @@
 package fr.skyle.scanny.di
 
 import fr.skyle.scanny.domain.di.domainModule
+import fr.skyle.scanny.ui.main.MainViewModel
 import fr.skyle.scanny.ui.screen.scan.ui.ScanViewModel
 import fr.skyle.scanny.ui.screen.scandetail.ui.ScanDetailViewModel
 import fr.skyle.scanny.ui.screen.scangroup.ui.ScanGroupViewModel
@@ -20,6 +21,7 @@ val sharedModule = module {
     // Read at each screen: the user may change it while the app runs
     factory { TimeZone.currentSystemDefault() }
 
+    viewModelOf(::MainViewModel)
     viewModelOf(::ScanViewModel)
     viewModelOf(::ScanDetailViewModel)
     viewModelOf(::ScanGroupViewModel)

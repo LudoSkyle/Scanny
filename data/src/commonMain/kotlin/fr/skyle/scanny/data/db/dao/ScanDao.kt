@@ -36,8 +36,18 @@ internal abstract class ScanDao {
 
     // The id breaks the tie between two captures of the same millisecond: the last recorded comes first
     @Transaction
-    @Query("SELECT * FROM scan ORDER BY scanned_at DESC, id DESC")
-    abstract fun watchAll(): Flow<List<ScanWithCodes>>
+    @Query("SELECT * FROM scan WHERE is_in_history = 1 ORDER BY scanned_at DESC, id DESC")
+    abstract fun watchHistory(): Flow<List<ScanWithCodes>>
+
+    @Transaction
+    @Query("SELECT * FROM scan WHERE is_in_history = 1 ORDER BY scanned_at DESC, id DESC LIMIT 1")
+    abstract suspend fun findLatestInHistory(): ScanWithCodes?
+
+    @Query("UPDATE scan SET scanned_at = :scannedAt WHERE id = :id")
+    abstract suspend fun updateScannedAt(
+        id: Long,
+        scannedAt: Long,
+    )
 
     @Transaction
     @Query("SELECT * FROM scan WHERE id = :id")
@@ -62,6 +72,12 @@ internal abstract class ScanDao {
 
     @Query("DELETE FROM scan WHERE id NOT IN (SELECT scan_id FROM scanned_code)")
     abstract suspend fun deleteScansWithoutCode()
+
+    @Query("DELETE FROM scan WHERE is_in_history = 0")
+    abstract suspend fun deleteOutOfHistory()
+
+    @Query("DELETE FROM scan WHERE scanned_at < :before")
+    abstract suspend fun deleteScannedBefore(before: Long)
 
     // A capture never stays without code
     @Transaction

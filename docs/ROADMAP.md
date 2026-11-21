@@ -45,7 +45,8 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 
 - [x] Zoom (pincement) et mise au point (appui) *(zoom vérifié sur un Galaxy S21 FE ; mise au point
       à vérifier)*
-- [x] Historique des scans : liste, détail, suppression
+- [x] Historique des scans : liste, détail, suppression ; l'enregistrer ou non, ignorer les doublons
+      consécutifs, durée de conservation (30 jours par défaut, ou toujours)
 - [x] Scan multiple : un mode qu'on active, on passe autant de codes qu'on veut devant la caméra, on
       termine, et la liste dédoublonnée des codes trouvés s'affiche et s'enregistre comme un groupe
 - [x] Bip après un scan et copie du code après un scan (réglages) *(bip testé, non entendu)*
@@ -184,8 +185,9 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] Garde-fou : en scan simple, le même code est ignoré 1,5 s après la reprise de la détection
           (feuille fermée, retour du détail ou dans l'app) ; la caméra n'est pas écoutée quand une
           autre app ou un panneau du système est devant
-    - [ ] Historique : enregistrer ou non les scans, ignorer les doublons consécutifs, durée de
-          conservation (30 jours par défaut, ou toujours)
+    - [x] Historique : enregistrer ou non les scans, ignorer les doublons consécutifs (les mêmes
+          codes dans les 5 minutes), durée de conservation (30 jours par défaut, ou toujours),
+          purgée au démarrage ; la base passe en version 2 par une migration automatique
     - [ ] Caméra avant ou arrière, en réglage
 11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
     (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre

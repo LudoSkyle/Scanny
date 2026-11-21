@@ -56,7 +56,7 @@ internal class ScanDaoTest : DatabaseTest() {
         val middleId = insertScan(scannedAt = 2_000)
 
         // When
-        val scans = scanDao.watchAll().first()
+        val scans = scanDao.watchHistory().first()
 
         // Then
         assertEquals(
@@ -76,7 +76,7 @@ internal class ScanDaoTest : DatabaseTest() {
         val secondId = insertScan(scannedAt = 1_000)
 
         // When
-        val scans = scanDao.watchAll().first()
+        val scans = scanDao.watchHistory().first()
 
         // Then
         assertEquals(
@@ -140,7 +140,7 @@ internal class ScanDaoTest : DatabaseTest() {
         // Then
         assertEquals(
             expected = listOf(keptId),
-            actual = scanDao.watchAll().first().map { it.scan.id },
+            actual = scanDao.watchHistory().first().map { it.scan.id },
         )
         assertNull(scanDao.watchCodeById(id = deletedCodeId).first())
         // Counted in the table itself: the code of a capture is read through a join with it
@@ -162,7 +162,7 @@ internal class ScanDaoTest : DatabaseTest() {
         // Then
         assertEquals(
             expected = emptyList(),
-            actual = scanDao.watchAll().first(),
+            actual = scanDao.watchHistory().first(),
         )
         assertEquals(
             expected = 0,
@@ -183,7 +183,7 @@ internal class ScanDaoTest : DatabaseTest() {
         // Then
         assertEquals(
             expected = listOf(keptId),
-            actual = scanDao.watchAll().first().map { it.scan.id },
+            actual = scanDao.watchHistory().first().map { it.scan.id },
         )
     }
 
@@ -215,6 +215,98 @@ internal class ScanDaoTest : DatabaseTest() {
         )
     }
 
+    @Test
+    fun `a capture out of the history is watched by its id only`() = runTest {
+        // Given
+        val keptId = insertScan()
+        val outId = insertScan(isInHistory = false)
+
+        // Then
+        assertEquals(
+            expected = listOf(keptId),
+            actual = scanDao.watchHistory().first().map { it.scan.id },
+        )
+        assertEquals(
+            expected = outId,
+            actual = scanDao.watchById(id = outId).first()?.scan?.id,
+        )
+    }
+
+    @Test
+    fun `the latest capture of the history leaves out the captures out of it`() = runTest {
+        // Given
+        val latestId = insertScan(scannedAt = 2_000)
+        insertScan(scannedAt = 1_000)
+        insertScan(
+            scannedAt = 3_000,
+            isInHistory = false,
+        )
+
+        // When
+        val latest = scanDao.findLatestInHistory()
+
+        // Then
+        assertEquals(
+            expected = latestId,
+            actual = latest?.scan?.id,
+        )
+    }
+
+    @Test
+    fun `a capture given a new time moves in the history`() = runTest {
+        // Given
+        val movedId = insertScan(scannedAt = 1_000)
+        val otherId = insertScan(scannedAt = 2_000)
+
+        // When
+        scanDao.updateScannedAt(
+            id = movedId,
+            scannedAt = 3_000,
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(movedId, otherId),
+            actual = scanDao.watchHistory().first().map { it.scan.id },
+        )
+    }
+
+    @Test
+    fun `the captures out of the history are deleted with their codes`() = runTest {
+        // Given
+        val keptId = insertScan()
+        insertScan(isInHistory = false)
+
+        // When
+        scanDao.deleteOutOfHistory()
+
+        // Then
+        assertEquals(
+            expected = listOf(keptId),
+            actual = scanDao.watchHistory().first().map { it.scan.id },
+        )
+        assertEquals(
+            expected = 1,
+            actual = countCodes(),
+        )
+    }
+
+    @Test
+    fun `the captures scanned before a time are deleted and the later ones kept`() = runTest {
+        // Given
+        insertScan(scannedAt = 1_000)
+        val keptId = insertScan(scannedAt = 2_000)
+
+        // When
+        scanDao.deleteScannedBefore(before = 2_000)
+
+        // Then
+        assertEquals(
+            expected = listOf(keptId),
+            actual = scanDao.watchHistory().first().map { it.scan.id },
+        )
+    }
+
     private suspend fun countCodes(): Long =
         database.useReaderConnection { connection ->
             connection.usePrepared("SELECT COUNT(*) FROM scanned_code") { statement ->
@@ -223,9 +315,15 @@ internal class ScanDaoTest : DatabaseTest() {
             }
         }
 
-    private suspend fun insertScan(scannedAt: Long = 0): Long =
+    private suspend fun insertScan(
+        scannedAt: Long = 0,
+        isInHistory: Boolean = true,
+    ): Long =
         scanDao.insertWithCodes(
-            scan = ScanEntity(scannedAt = scannedAt),
+            scan = ScanEntity(
+                scannedAt = scannedAt,
+                isInHistory = isInHistory,
+            ),
             codes = listOf(codeEntity()),
         )
 

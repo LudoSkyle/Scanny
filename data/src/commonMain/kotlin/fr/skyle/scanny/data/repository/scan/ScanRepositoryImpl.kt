@@ -23,11 +23,15 @@ internal class ScanRepositoryImpl(
     override suspend fun saveScan(
         codes: List<CodeToSave>,
         scannedAt: Instant,
+        isInHistory: Boolean,
     ): Long {
         require(codes.isNotEmpty()) { "A scan holds at least one code" }
 
         return scanDao.insertWithCodes(
-            scan = ScanEntity(scannedAt = scannedAt.toEpochMilliseconds()),
+            scan = ScanEntity(
+                scannedAt = scannedAt.toEpochMilliseconds(),
+                isInHistory = isInHistory,
+            ),
             codes = codes.mapIndexed { index, code ->
                 ScannedCodeEntity(
                     // Set by the DAO, once the scan is inserted
@@ -41,13 +45,26 @@ internal class ScanRepositoryImpl(
     }
 
     override fun watchScans(): Flow<List<StoredScan>> =
-        scanDao.watchAll()
+        scanDao.watchHistory()
             .map { scans ->
                 scans.map { scan ->
                     scan.toStoredScan()
                 }
             }
             .flowOn(Dispatchers.Default)
+
+    override suspend fun findLatestScan(): StoredScan? =
+        scanDao.findLatestInHistory()?.toStoredScan()
+
+    override suspend fun updateScanTime(
+        id: Long,
+        scannedAt: Instant,
+    ) {
+        scanDao.updateScannedAt(
+            id = id,
+            scannedAt = scannedAt.toEpochMilliseconds(),
+        )
+    }
 
     override fun watchScan(id: Long): Flow<StoredScan?> =
         scanDao.watchById(id = id)
@@ -71,6 +88,13 @@ internal class ScanRepositoryImpl(
 
     override suspend fun deleteAllScans() {
         scanDao.deleteAll()
+    }
+
+    override suspend fun purgeScans(scannedBefore: Instant?) {
+        scanDao.deleteOutOfHistory()
+        scannedBefore?.let { before ->
+            scanDao.deleteScannedBefore(before = before.toEpochMilliseconds())
+        }
     }
 
     override suspend fun deleteCode(id: Long) {

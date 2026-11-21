@@ -57,12 +57,15 @@ fun SettingsRoute(
 
     SettingsScreen(
         settings = uiState.settings,
+        historySettings = uiState.historySettings,
         versionName = uiState.versionName,
         build = uiState.build,
         isRateAppAvailable = rateAppLinks.isNotEmpty(),
         snackbarState = snackbarState,
         onBackClicked = navigateBack,
         onSettingChanged = viewModel::onSettingChanged,
+        onHistorySettingChanged = viewModel::onHistorySettingChanged,
+        onHistoryRetentionChanged = viewModel::onHistoryRetentionChanged,
         onStarProjectClicked = { openLinks(listOf(ScannyLinks.GITHUB)) },
         onFeedbackClicked = navigateToFeedback,
         onRateAppClicked = { openLinks(rateAppLinks) },

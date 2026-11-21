@@ -3,6 +3,7 @@ package fr.skyle.scanny.domain.usecase.scan
 import fr.skyle.scanny.data.model.StoredCode
 import fr.skyle.scanny.data.model.StoredScan
 import fr.skyle.scanny.domain.fake.FakeScanRepository
+import fr.skyle.scanny.domain.fake.FakeSettingsRepository
 import fr.skyle.scanny.domain.fake.FixedClock
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
@@ -13,6 +14,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 class RecordScanUseCaseTest {
@@ -203,10 +205,161 @@ class RecordScanUseCaseTest {
         )
     }
 
-    private fun recordScanUseCase(scanRepository: FakeScanRepository): RecordScanUseCaseImpl =
+    @Test
+    fun `a scan is recorded out of the history when the user keeps none`() = runTest {
+        // Given
+        val recordScanUseCase = recordScanUseCase(
+            scanRepository = scanRepository,
+            settingsRepository = FakeSettingsRepository(isScanHistoryEnabled = false),
+        )
+
+        // When
+        val scan = recordScanUseCase(barcodes = listOf(barcode(rawValue = "Hello")))
+
+        // Then
+        assertEquals(
+            expected = setOf(scan.id),
+            actual = scanRepository.outOfHistoryIds,
+        )
+        assertEquals(
+            expected = "Hello",
+            actual = scan.codes.single().rawValue,
+        )
+    }
+
+    @Test
+    fun `the same codes as the latest capture a moment ago give it the new time`() = runTest {
+        // Given
+        val scanRepository = FakeScanRepository(
+            storedScans = listOf(
+                storedScan(
+                    id = 1,
+                    rawValues = listOf("First", "Second"),
+                    scannedAt = SCANNED_AT - 4.minutes,
+                ),
+            ),
+        )
+        val recordScanUseCase = recordScanUseCase(scanRepository = scanRepository)
+
+        // When
+        val scan = recordScanUseCase(
+            barcodes = listOf(
+                barcode(rawValue = "Second"),
+                barcode(rawValue = "First"),
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(1L to SCANNED_AT),
+            actual = scanRepository.storedScans.map { storedScan -> storedScan.id to storedScan.scannedAt },
+        )
+        assertEquals(
+            expected = 1,
+            actual = scan.id,
+        )
+    }
+
+    @Test
+    fun `the same codes as the latest capture long ago are a new capture`() = runTest {
+        // Given
+        val scanRepository = FakeScanRepository(
+            storedScans = listOf(
+                storedScan(
+                    id = 1,
+                    rawValues = listOf("Hello"),
+                    scannedAt = SCANNED_AT - 6.minutes,
+                ),
+            ),
+        )
+        val recordScanUseCase = recordScanUseCase(scanRepository = scanRepository)
+
+        // When
+        recordScanUseCase(barcodes = listOf(barcode(rawValue = "Hello")))
+
+        // Then
+        assertEquals(
+            expected = 2,
+            actual = scanRepository.storedScans.size,
+        )
+    }
+
+    @Test
+    fun `other codes than the latest capture are a new capture`() = runTest {
+        // Given
+        val scanRepository = FakeScanRepository(
+            storedScans = listOf(
+                storedScan(
+                    id = 1,
+                    rawValues = listOf("Hello"),
+                    scannedAt = SCANNED_AT,
+                ),
+            ),
+        )
+        val recordScanUseCase = recordScanUseCase(scanRepository = scanRepository)
+
+        // When
+        recordScanUseCase(barcodes = listOf(barcode(rawValue = "World")))
+
+        // Then
+        assertEquals(
+            expected = 2,
+            actual = scanRepository.storedScans.size,
+        )
+    }
+
+    @Test
+    fun `the same codes are a new capture when the user keeps the duplicates`() = runTest {
+        // Given
+        val scanRepository = FakeScanRepository(
+            storedScans = listOf(
+                storedScan(
+                    id = 1,
+                    rawValues = listOf("Hello"),
+                    scannedAt = SCANNED_AT,
+                ),
+            ),
+        )
+        val recordScanUseCase = recordScanUseCase(
+            scanRepository = scanRepository,
+            settingsRepository = FakeSettingsRepository(isConsecutiveDuplicateSkipped = false),
+        )
+
+        // When
+        recordScanUseCase(barcodes = listOf(barcode(rawValue = "Hello")))
+
+        // Then
+        assertEquals(
+            expected = 2,
+            actual = scanRepository.storedScans.size,
+        )
+    }
+
+    private fun recordScanUseCase(
+        scanRepository: FakeScanRepository,
+        settingsRepository: FakeSettingsRepository = FakeSettingsRepository(),
+    ): RecordScanUseCaseImpl =
         RecordScanUseCaseImpl(
             scanRepository = scanRepository,
+            settingsRepository = settingsRepository,
             clock = FixedClock(instant = SCANNED_AT),
+        )
+
+    private fun storedScan(
+        id: Long,
+        rawValues: List<String>,
+        scannedAt: Instant,
+    ): StoredScan =
+        StoredScan(
+            id = id,
+            scannedAt = scannedAt,
+            codes = rawValues.mapIndexed { index, rawValue ->
+                storedCode(
+                    id = id * 10 + index,
+                    scanId = id,
+                    rawValue = rawValue,
+                ).copy(scannedAt = scannedAt)
+            },
         )
 
     private fun recordedCodes(): List<Pair<String, String>> =

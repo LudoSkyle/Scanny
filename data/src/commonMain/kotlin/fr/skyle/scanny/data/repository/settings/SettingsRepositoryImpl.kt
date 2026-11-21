@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import fr.skyle.scanny.data.repository.settings.api.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -78,19 +79,58 @@ internal class SettingsRepositoryImpl(
         )
     }
 
-    private fun watch(
-        key: Preferences.Key<Boolean>,
-        defaultValue: Boolean,
-    ): Flow<Boolean> =
+    override fun watchIsScanHistoryEnabled(): Flow<Boolean> =
+        watch(
+            key = KEY_SCAN_HISTORY,
+            defaultValue = true,
+        )
+
+    override suspend fun setScanHistoryEnabled(isEnabled: Boolean) {
+        set(
+            key = KEY_SCAN_HISTORY,
+            value = isEnabled,
+        )
+    }
+
+    override fun watchIsConsecutiveDuplicateSkipped(): Flow<Boolean> =
+        watch(
+            key = KEY_CONSECUTIVE_DUPLICATE_SKIPPED,
+            defaultValue = true,
+        )
+
+    override suspend fun setConsecutiveDuplicateSkipped(isSkipped: Boolean) {
+        set(
+            key = KEY_CONSECUTIVE_DUPLICATE_SKIPPED,
+            value = isSkipped,
+        )
+    }
+
+    override fun watchHistoryRetentionDays(): Flow<Int> =
+        watch(
+            key = KEY_HISTORY_RETENTION_DAYS,
+            defaultValue = DEFAULT_HISTORY_RETENTION_DAYS,
+        )
+
+    override suspend fun setHistoryRetentionDays(days: Int) {
+        set(
+            key = KEY_HISTORY_RETENTION_DAYS,
+            value = days,
+        )
+    }
+
+    private fun <T> watch(
+        key: Preferences.Key<T>,
+        defaultValue: T,
+    ): Flow<T> =
         dataStore.data
             .map { preferences ->
                 preferences[key] ?: defaultValue
             }
             .distinctUntilChanged()
 
-    private suspend fun set(
-        key: Preferences.Key<Boolean>,
-        value: Boolean,
+    private suspend fun <T> set(
+        key: Preferences.Key<T>,
+        value: T,
     ) {
         dataStore.edit { preferences ->
             preferences[key] = value
@@ -107,5 +147,10 @@ internal class SettingsRepositoryImpl(
         // New with the v2
         val KEY_BEEP_AFTER_SCAN = booleanPreferencesKey(name = "KEY_IS_BEEP_AFTER_SCAN_ENABLED")
         val KEY_COPY_AFTER_SCAN = booleanPreferencesKey(name = "KEY_IS_COPY_AFTER_SCAN_ENABLED")
+        val KEY_SCAN_HISTORY = booleanPreferencesKey(name = "KEY_IS_SCAN_HISTORY_ENABLED")
+        val KEY_CONSECUTIVE_DUPLICATE_SKIPPED = booleanPreferencesKey(name = "KEY_IS_CONSECUTIVE_DUPLICATE_SKIPPED")
+        val KEY_HISTORY_RETENTION_DAYS = intPreferencesKey(name = "KEY_HISTORY_RETENTION_DAYS")
+
+        const val DEFAULT_HISTORY_RETENTION_DAYS = 30
     }
 }

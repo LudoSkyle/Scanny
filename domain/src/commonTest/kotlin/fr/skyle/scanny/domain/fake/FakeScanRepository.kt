@@ -19,9 +19,16 @@ internal class FakeScanRepository(
     val storedScans: List<StoredScan>
         get() = scans.value
 
+    // The ids of the captures recorded out of the history
+    val outOfHistoryIds = mutableSetOf<Long>()
+
+    // The time before which each purge deleted the captures, null for none
+    val purges = mutableListOf<Instant?>()
+
     override suspend fun saveScan(
         codes: List<CodeToSave>,
         scannedAt: Instant,
+        isInHistory: Boolean,
     ): Long {
         val scanId = (scans.value.maxOfOrNull { it.id } ?: 0) + 1
         val firstCodeId = (scans.value.flatMap { it.codes }.maxOfOrNull { it.id } ?: 0) + 1
@@ -40,11 +47,39 @@ internal class FakeScanRepository(
                 },
             )
         }
+        if (!isInHistory) {
+            outOfHistoryIds += scanId
+        }
         return scanId
     }
 
     override fun watchScans(): Flow<List<StoredScan>> =
-        scans
+        scans.map { storedScans ->
+            storedScans.filterNot { it.id in outOfHistoryIds }
+        }
+
+    override suspend fun findLatestScan(): StoredScan? =
+        scans.value
+            .filterNot { it.id in outOfHistoryIds }
+            .maxWithOrNull(compareBy<StoredScan> { it.scannedAt }.thenBy { it.id })
+
+    override suspend fun updateScanTime(
+        id: Long,
+        scannedAt: Instant,
+    ) {
+        scans.update { storedScans ->
+            storedScans.map { storedScan ->
+                if (storedScan.id == id) {
+                    storedScan.copy(
+                        scannedAt = scannedAt,
+                        codes = storedScan.codes.map { it.copy(scannedAt = scannedAt) },
+                    )
+                } else {
+                    storedScan
+                }
+            }
+        }
+    }
 
     override fun watchScan(id: Long): Flow<StoredScan?> =
         scans.map { storedScans ->
@@ -66,6 +101,15 @@ internal class FakeScanRepository(
 
     override suspend fun deleteAllScans() {
         scans.value = emptyList()
+    }
+
+    override suspend fun purgeScans(scannedBefore: Instant?) {
+        purges += scannedBefore
+        scans.update { storedScans ->
+            storedScans.filterNot { storedScan ->
+                storedScan.id in outOfHistoryIds || (scannedBefore != null && storedScan.scannedAt < scannedBefore)
+            }
+        }
     }
 
     override suspend fun deleteCode(id: Long) {

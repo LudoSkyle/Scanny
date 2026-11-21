@@ -1,0 +1,44 @@
+package fr.skyle.scanny.domain.usecase.history
+
+import fr.skyle.scanny.domain.fake.FakeSettingsRepository
+import fr.skyle.scanny.domain.model.HistorySetting
+import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class SetHistorySettingUseCaseTest {
+
+    private val settingsRepository = FakeSettingsRepository()
+
+    private val setHistorySettingUseCase = SetHistorySettingUseCaseImpl(settingsRepository = settingsRepository)
+
+    @Test
+    fun `the history of the scans changes alone`() = runTest {
+        // When
+        setHistorySettingUseCase(
+            setting = HistorySetting.SCAN_HISTORY,
+            isEnabled = false,
+        )
+
+        // Then
+        assertEquals(
+            expected = false to true,
+            actual = settingsRepository.isScanHistoryEnabled.value to settingsRepository.isConsecutiveDuplicateSkipped.value,
+        )
+    }
+
+    @Test
+    fun `the skipping of the consecutive duplicates changes alone`() = runTest {
+        // When
+        setHistorySettingUseCase(
+            setting = HistorySetting.CONSECUTIVE_DUPLICATE_SKIPPED,
+            isEnabled = false,
+        )
+
+        // Then
+        assertEquals(
+            expected = true to false,
+            actual = settingsRepository.isScanHistoryEnabled.value to settingsRepository.isConsecutiveDuplicateSkipped.value,
+        )
+    }
+}

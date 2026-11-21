@@ -38,6 +38,7 @@ internal class ScanRepositoryImplTest : DatabaseTest() {
                 ),
             ),
             scannedAt = scannedAt,
+            isInHistory = true,
         )
 
         // Then
@@ -63,6 +64,7 @@ internal class ScanRepositoryImplTest : DatabaseTest() {
             scanRepository.saveScan(
                 codes = emptyList(),
                 scannedAt = Instant.fromEpochMilliseconds(0),
+                isInHistory = true,
             )
         }
 
@@ -168,9 +170,83 @@ internal class ScanRepositoryImplTest : DatabaseTest() {
         )
     }
 
+    @Test
+    fun `the latest capture of the history is found and can be given a new time`() = runTest {
+        // Given
+        val latestId = saveScan(
+            rawValue = "latest",
+            scannedAtMillis = 2_000,
+        )
+        saveScan(
+            rawValue = "out of the history",
+            scannedAtMillis = 3_000,
+            isInHistory = false,
+        )
+
+        // When
+        scanRepository.updateScanTime(
+            id = latestId,
+            scannedAt = Instant.fromEpochMilliseconds(4_000),
+        )
+
+        // Then
+        assertEquals(
+            expected = latestId to Instant.fromEpochMilliseconds(4_000),
+            actual = scanRepository.findLatestScan()?.let { scan -> scan.id to scan.scannedAt },
+        )
+    }
+
+    @Test
+    fun `the purge deletes the captures out of the history and the older ones`() = runTest {
+        // Given
+        saveScan(
+            rawValue = "old",
+            scannedAtMillis = 1_000,
+        )
+        val keptId = saveScan(
+            rawValue = "recent",
+            scannedAtMillis = 3_000,
+        )
+        val outId = saveScan(
+            rawValue = "out of the history",
+            scannedAtMillis = 3_000,
+            isInHistory = false,
+        )
+
+        // When
+        scanRepository.purgeScans(scannedBefore = Instant.fromEpochMilliseconds(2_000))
+
+        // Then
+        assertEquals(
+            expected = listOf(keptId),
+            actual = scanRepository.watchScans().first().map(StoredScan::id),
+        )
+        assertNull(scanRepository.watchScan(id = outId).first())
+    }
+
+    @Test
+    fun `a purge without time keeps the whole history`() = runTest {
+        // Given
+        val keptId = saveScan(scannedAtMillis = 1_000)
+        saveScan(
+            scannedAtMillis = 1_000,
+            isInHistory = false,
+        )
+
+        // When
+        scanRepository.purgeScans(scannedBefore = null)
+
+        // Then
+        assertEquals(
+            expected = listOf(keptId),
+            actual = scanRepository.watchScans().first().map(StoredScan::id),
+        )
+    }
+
     private suspend fun saveScan(
         rawValue: String = "https://scanny.app",
         scannedAtMillis: Long = 0,
+        isInHistory: Boolean = true,
     ): Long =
         scanRepository.saveScan(
             codes = listOf(
@@ -180,5 +256,6 @@ internal class ScanRepositoryImplTest : DatabaseTest() {
                 ),
             ),
             scannedAt = Instant.fromEpochMilliseconds(scannedAtMillis),
+            isInHistory = isInHistory,
         )
 }

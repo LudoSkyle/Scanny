@@ -143,9 +143,9 @@ internal expect val platformDataModule: Module
 - **Les historiques sont des données de l'utilisateur : jamais de migration destructive.** Toute
   évolution du schéma monte la version et fournit sa migration (`AutoMigration` quand c'est
   possible). Les schémas sont exportés et versionnés (`data/schemas/`).
-- Exception tant que la v2 n'est pas publiée : aucun utilisateur n'a encore la base, la version 1 du
-  schéma peut donc évoluer sans migration (la table des créations du lot 11 s'y ajoute). La règle
-  s'applique dès la première publication.
+- La règle vaut avant même la publication de la v2 : les installations de développement ont des
+  données, et une base dont le schéma change sans que sa version monte ne s'ouvre plus. La version 2
+  ajoute `is_in_history` à `scan` (`AutoMigration` de 1 à 2).
 - Une requête de lecture multiple a un `ORDER BY` explicite : sans lui, l'ordre est un détail de
   SQLite dont l'UI finit par dépendre.
 - Un index est attendu sur toute colonne utilisée en filtre ou en tri (date de scan, type).
@@ -164,7 +164,7 @@ trouvés pendant un scan multiple. Deux tables :
 
 | Table | Colonnes | Rôle |
 |---|---|---|
-| `scan` | `id`, `scanned_at` (indexée) | la capture, et sa date |
+| `scan` | `id`, `scanned_at` (indexée), `is_in_history` (indexée, `1` par défaut) | la capture, sa date, et si elle est dans l'historique |
 | `scanned_code` | `id`, `scan_id` (indexée, clé étrangère vers `scan`, `ON DELETE CASCADE`), `position`, `raw_value`, `format` | un code de la capture, à sa place dans l'ordre de lecture |
 
 - Une capture et ses codes s'enregistrent dans une même transaction (`insertWithCodes`) : une
@@ -177,6 +177,11 @@ trouvés pendant un scan multiple. Deux tables :
   même milliseconde. Les codes d'une capture se rendent dans l'ordre de `position`.
 - Un code se lit seul (`watchCode`) avec la date de sa capture : l'écran d'un code ne charge pas
   tout le groupe.
+- Une capture hors de l'historique (`is_in_history = 0`, quand l'utilisateur n'en garde pas) se lit
+  par son identifiant, pour la feuille du résultat et le détail, mais jamais dans l'historique ni
+  comme sa dernière capture (`findLatestScan`). La purge (`purgeScans`) la supprime, avec les
+  captures de l'historique plus anciennes que la date donnée.
+- `updateScanTime` remet une capture à l'heure, pour un doublon consécutif (voir le domaine).
 
 ### Réglages (DataStore)
 
@@ -192,6 +197,8 @@ trouvés pendant un scan multiple. Deux tables :
   (défaut `false` ; le réglage ouvre désormais tout contenu, la clé garde son nom de la v1) et
   `KEY_IS_RAW_CONTENT_SHOWN` (défaut `false`). Les réglages venus avec la v2
   suivent la même forme : `KEY_IS_BEEP_AFTER_SCAN_ENABLED` et `KEY_IS_COPY_AFTER_SCAN_ENABLED`
-  (défaut `false`).
+  (défaut `false`), `KEY_IS_SCAN_HISTORY_ENABLED` et `KEY_IS_CONSECUTIVE_DUPLICATE_SKIPPED` (défaut
+  `true`), et `KEY_HISTORY_RETENTION_DAYS`, un entier (défaut `30`, `0` pour toujours) : `data` ne
+  connaît pas l'énumération du domaine.
 - `SettingsRepository` expose un `watchXxx(): Flow<T>` et un `suspend fun setXxx(value: T)` par
   réglage. La valeur par défaut est une constante du Repository, appliquée à la lecture.

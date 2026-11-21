@@ -22,6 +22,9 @@ import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBar
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBarDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.HistoryRetention
+import fr.skyle.scanny.domain.model.HistorySetting
+import fr.skyle.scanny.domain.model.HistorySettings
 import fr.skyle.scanny.domain.model.ScanSetting
 import fr.skyle.scanny.domain.model.ScanSettings
 import fr.skyle.scanny.resources.Res
@@ -29,45 +32,57 @@ import fr.skyle.scanny.resources.app_settings
 import fr.skyle.scanny.resources.beep_after_scan
 import fr.skyle.scanny.resources.copy_after_scan
 import fr.skyle.scanny.resources.give_feedback
+import fr.skyle.scanny.resources.history
+import fr.skyle.scanny.resources.ic_auto_delete
 import fr.skyle.scanny.resources.ic_chat
 import fr.skyle.scanny.resources.ic_chevron_right
 import fr.skyle.scanny.resources.ic_content_copy
+import fr.skyle.scanny.resources.ic_control_point_duplicate
 import fr.skyle.scanny.resources.ic_data_object
 import fr.skyle.scanny.resources.ic_domain
+import fr.skyle.scanny.resources.ic_history
 import fr.skyle.scanny.resources.ic_open_in_new
 import fr.skyle.scanny.resources.ic_shield
 import fr.skyle.scanny.resources.ic_star
 import fr.skyle.scanny.resources.ic_thumb_up
 import fr.skyle.scanny.resources.ic_vibration
 import fr.skyle.scanny.resources.ic_volume_up
+import fr.skyle.scanny.resources.keep_history
 import fr.skyle.scanny.resources.made_by_skyle
 import fr.skyle.scanny.resources.open_content_after_scan
 import fr.skyle.scanny.resources.openium
 import fr.skyle.scanny.resources.privacy_policy
 import fr.skyle.scanny.resources.rate_app
+import fr.skyle.scanny.resources.save_scans_in_history
 import fr.skyle.scanny.resources.scan_preferences
 import fr.skyle.scanny.resources.settings
 import fr.skyle.scanny.resources.show_raw_content
+import fr.skyle.scanny.resources.skip_consecutive_duplicates
 import fr.skyle.scanny.resources.star_project
 import fr.skyle.scanny.resources.support
 import fr.skyle.scanny.resources.vibrate_after_scan
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
 import fr.skyle.scanny.ui.screen.settings.ui.component.SettingsActionRow
+import fr.skyle.scanny.ui.screen.settings.ui.component.SettingsChoiceRow
 import fr.skyle.scanny.ui.screen.settings.ui.component.SettingsHeader
 import fr.skyle.scanny.ui.screen.settings.ui.component.SettingsRowDivider
 import fr.skyle.scanny.ui.screen.settings.ui.component.SettingsSwitchRow
+import fr.skyle.scanny.ui.screen.settings.ui.mapper.toText
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SettingsScreen(
     settings: ScanSettings?,
+    historySettings: HistorySettings?,
     versionName: String,
     build: String,
     isRateAppAvailable: Boolean,
     snackbarState: SCSnackbarState,
     onBackClicked: () -> Unit,
     onSettingChanged: (setting: ScanSetting, isEnabled: Boolean) -> Unit,
+    onHistorySettingChanged: (setting: HistorySetting, isEnabled: Boolean) -> Unit,
+    onHistoryRetentionChanged: (retention: HistoryRetention) -> Unit,
     onStarProjectClicked: () -> Unit,
     onFeedbackClicked: () -> Unit,
     onRateAppClicked: () -> Unit,
@@ -151,7 +166,49 @@ fun SettingsScreen(
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
+            }
 
+            if (historySettings != null) {
+                SCCardStructure(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = stringResource(Res.string.history),
+                    style = SCCardDefaults.Style.LIGHT,
+                ) {
+                    SettingsSwitchRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = painterResource(Res.drawable.ic_history),
+                        title = stringResource(Res.string.save_scans_in_history),
+                        isChecked = historySettings.isScanHistoryEnabled,
+                        onCheckedChange = { isEnabled -> onHistorySettingChanged(HistorySetting.SCAN_HISTORY, isEnabled) },
+                    )
+
+                    SettingsRowDivider(modifier = Modifier.fillMaxWidth())
+
+                    SettingsSwitchRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = painterResource(Res.drawable.ic_control_point_duplicate),
+                        title = stringResource(Res.string.skip_consecutive_duplicates),
+                        isChecked = historySettings.isConsecutiveDuplicateSkipped,
+                        onCheckedChange = { isEnabled -> onHistorySettingChanged(HistorySetting.CONSECUTIVE_DUPLICATE_SKIPPED, isEnabled) },
+                    )
+
+                    SettingsRowDivider(modifier = Modifier.fillMaxWidth())
+
+                    SettingsChoiceRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = painterResource(Res.drawable.ic_auto_delete),
+                        title = stringResource(Res.string.keep_history),
+                        options = HistoryRetention.entries,
+                        selectedOption = historySettings.retention,
+                        optionText = { retention -> stringResource(retention.toText()) },
+                        onOptionSelected = onHistoryRetentionChanged,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            if (settings != null) {
                 SCCardStructure(
                     modifier = Modifier.fillMaxWidth(),
                     title = stringResource(Res.string.app_settings),
@@ -250,12 +307,19 @@ private fun PreviewSettingsScreen() {
                 isOpenContentAfterScanEnabled = false,
                 isRawContentShown = false,
             ),
+            historySettings = HistorySettings(
+                isScanHistoryEnabled = true,
+                isConsecutiveDuplicateSkipped = true,
+                retention = HistoryRetention.ONE_MONTH,
+            ),
             versionName = "2.0",
             build = "20",
             isRateAppAvailable = true,
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
             onSettingChanged = { _, _ -> },
+            onHistorySettingChanged = { _, _ -> },
+            onHistoryRetentionChanged = {},
             onStarProjectClicked = {},
             onFeedbackClicked = {},
             onRateAppClicked = {},
