@@ -1,5 +1,6 @@
 package fr.skyle.scanny.ui.screen.createcode.ui
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.button.SCButton
 import fr.skyle.scanny.designsystem.core.button.SCButtonDefaults
@@ -46,6 +49,8 @@ fun CreateCodeScreen(
     onFormChanged: (CreationForm) -> Unit,
     onCreateClicked: () -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
+
     SCScreenStructure(
         modifier = Modifier.fillMaxSize(),
         style = SCScreenStructureDefaults.Style.BACKGROUND,
@@ -62,6 +67,12 @@ fun CreateCodeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                // A touch out of the fields closes the keyboard: the button under it can then be reached
+                .pointerInput(Unit) {
+                    detectTapGestures {
+                        focusManager.clearFocus()
+                    }
+                }
                 .verticalScroll(state = rememberScrollState())
                 .padding(contentPadding)
                 .padding(
