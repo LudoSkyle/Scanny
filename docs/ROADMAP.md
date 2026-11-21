@@ -12,7 +12,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 ### Scan
 
 - [x] Aperçu caméra plein écran, détection de tous les formats de `BarcodeFormat` *(détection en
-      direct à vérifier sur appareil)*
+      direct vérifiée sur un Galaxy S21 FE ; iOS à vérifier sur iPhone)*
 - [x] Lampe torche *(à vérifier sur appareil)*
 - [x] Détection dans une image de la galerie, avec un message si aucun code n'est trouvé *(iOS à
       vérifier sur iPhone)*
@@ -42,7 +42,8 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 
 ## Nouveautés
 
-- [x] Zoom (pincement) et mise au point (appui) *(à vérifier sur appareil)*
+- [x] Zoom (pincement) et mise au point (appui) *(zoom vérifié sur un Galaxy S21 FE ; mise au point
+      à vérifier)*
 - [x] Historique des scans : liste, détail, suppression
 - [x] Scan multiple : un mode qu'on active, on passe autant de codes qu'on veut devant la caméra, on
       termine, et la liste dédoublonnée des codes trouvés s'affiche et s'enregistre comme un groupe
@@ -174,6 +175,9 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
           horizontal, sans le fondu ni la réduction de l'écran quitté au geste retour d'Android ;
           vers et depuis la caméra, un fondu de l'autre écran par-dessus elle, immobile (vérifié sur
           l'émulateur, animations ralenties : ouverture, retour, geste retour)
+    - [x] Android : lecture de loin sans zoomer (le centre de l'image lu à part, une image sur deux)
+          et aperçu plus net (16:9 en 1920×1080) ; sur un Galaxy S21 FE, une carte lue à plus de
+          60 cm au lieu de 30, comme l'appareil photo de Samsung
 11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
     (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre
     l'éditeur prérempli avec son contenu.
