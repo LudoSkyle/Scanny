@@ -211,6 +211,22 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
           chacune effacée à part
     - [x] « Modifier » depuis le `ScanDetail` : l'éditeur prérempli avec le contenu du code (un
           code-barres que l'éditeur dessine reste un code-barres), la création remplaçant l'éditeur
+11 bis. **Retours après essai du lot 11** : la feuille d'un scan montre tout le contenu ; le code
+    s'affiche dans une feuille, depuis le détail d'un scan comme d'une création, avec le partage et
+    l'enregistrement de son image ; le contenu brut toujours accessible, replié, dans les deux détails
+    (le réglage disparaît) ; dans l'historique, le type en pastille, les groupes mis en avant, et un
+    glissement entre « Scans » et « Créations » ; une couleur libre en plus de la palette, avec un
+    avertissement si le code risque d'être mal lu. Décidé : PNG d'abord, l'export en SVG viendra
+    ensuite (qrose ne le fait pas : un dessin vectoriel à écrire, le plus coûteux pour les points
+    arrondis reliés et le logo).
+    - [x] La feuille d'un scan montre tous les champs du contenu (le message d'un SMS, le mot de
+          passe d'un réseau…), un long texte coupé à quatre lignes
+    - [ ] Le code dans une feuille, depuis les deux détails, avec le partage et l'enregistrement de
+          son image
+    - [ ] Le contenu brut replié dans les deux détails, sans réglage
+    - [ ] L'historique : le type en pastille, les groupes mis en avant, le glissement entre les vues
+    - [ ] Une couleur libre, avec un avertissement de lisibilité
+    - [ ] L'export en SVG *(décidé, non engagé)*
 12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI. Deux remarques
     d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton galerie le temps
     de son affichage, et le Photo Picker range les images de la plus récente à la plus ancienne.
@@ -244,8 +260,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
 - **Un scan est une capture de 1 à N codes** : un scan normal est une capture d'un code, un scan
   multiple une capture de tous les codes trouvés pendant la session. L'historique liste les captures,
   et retrouve ainsi un groupe complet.
-- **Après un scan, une feuille rapide** reste par-dessus la caméra : un code y montre son type, un
-  résumé et son action principale ; plusieurs codes (scan multiple) y sont listés. « Voir le détail »
+- **Après un scan, une feuille rapide** reste par-dessus la caméra : un code y montre son type, tout
+  son contenu (chaque champ, un long texte coupé à quatre lignes) et son action principale ; plusieurs codes (scan multiple) y sont listés. « Voir le détail »
   et un appui sur un code ouvrent l'écran `Route.ScanDetail(codeId)`, celui d'**un** code, partagé avec
   l'historique.
 - **« Modifier » un code scanné**, c'est reprendre son contenu dans l'éditeur de création, le

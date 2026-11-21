@@ -14,6 +14,8 @@ import fr.skyle.scanny.platform.camera.CameraCapabilities
 import fr.skyle.scanny.platform.camera.CameraLens
 import fr.skyle.scanny.platform.gallery.ImageScanResult
 import fr.skyle.scanny.ui.core.code.model.CodeAction
+import fr.skyle.scanny.ui.core.code.model.CodeField
+import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
 import fr.skyle.scanny.ui.core.code.model.CodeRowItem
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.screen.scan.ui.model.MultipleScanSession
@@ -81,13 +83,51 @@ class ScanViewModelTest {
                         codeId = 1,
                         type = CodeType.TEXT,
                         format = BarcodeFormat.QR_CODE,
-                        summary = "Hello",
+                        fields = listOf(
+                            CodeField(
+                                label = null,
+                                value = "Hello",
+                            ),
+                        ),
                         rawValue = "Hello",
                         action = null,
                     ),
                 ),
             ),
             actual = viewModel.uiState.value,
+        )
+    }
+
+    @Test
+    fun `an sms is shown with its number and its message`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(
+            recordScanUseCase = FakeRecordScanUseCase(
+                content = {
+                    BarcodeContent.Sms(
+                        phoneNumber = "+33600000000",
+                        message = "See you at eight",
+                    )
+                },
+            ),
+        )
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "SMSTO:+33600000000:See you at eight"))
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                CodeField(
+                    label = CodeFieldLabel.PHONE_NUMBER,
+                    value = "+33600000000",
+                ),
+                CodeField(
+                    label = CodeFieldLabel.MESSAGE,
+                    value = "See you at eight",
+                ),
+            ),
+            actual = (viewModel.uiState.value.result as? ScanResult.Code)?.item?.fields,
         )
     }
 
@@ -369,7 +409,12 @@ class ScanViewModelTest {
                     codeId = 1,
                     type = CodeType.LINK,
                     format = BarcodeFormat.QR_CODE,
-                    summary = "https://scanny.app",
+                    fields = listOf(
+                        CodeField(
+                            label = null,
+                            value = "https://scanny.app",
+                        ),
+                    ),
                     rawValue = "https://scanny.app",
                     action = CodeAction.OpenLink(link = "https://scanny.app"),
                 ),
@@ -773,7 +818,7 @@ class ScanViewModelTest {
         // Then
         assertEquals(
             expected = "Alone",
-            actual = (viewModel.uiState.value.result as? ScanResult.Code)?.item?.summary,
+            actual = (viewModel.uiState.value.result as? ScanResult.Code)?.item?.rawValue,
         )
     }
 
