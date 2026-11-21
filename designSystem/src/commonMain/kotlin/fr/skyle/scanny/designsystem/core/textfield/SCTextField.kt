@@ -3,10 +3,12 @@ package fr.skyle.scanny.designsystem.core.textfield
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -14,7 +16,10 @@ import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 
-/** A text the user writes, named by its [label], on [minLines] lines at least. */
+/**
+ * A text the user writes, named by its [label]: on one line when [isSingleLine], else on [minLines]
+ * lines at least. [keyboardType] opens the keyboard that suits it: a link, an e-mail, a phone number…
+ */
 @Composable
 fun SCTextField(
     value: String,
@@ -23,6 +28,8 @@ fun SCTextField(
     style: SCTextFieldDefaults.Style,
     modifier: Modifier = Modifier,
     minLines: Int = 1,
+    isSingleLine: Boolean = false,
+    keyboardType: KeyboardType = KeyboardType.Text,
 ) {
     OutlinedTextField(
         modifier = modifier,
@@ -37,6 +44,8 @@ fun SCTextField(
         },
         textStyle = SCTheme.typography.body1,
         minLines = minLines,
+        singleLine = isSingleLine,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         shape = SCTheme.shapes.medium,
         colors = OutlinedTextFieldDefaults.colors(
             focusedTextColor = style.textColor,
