@@ -13,7 +13,8 @@ On y trouve :
 - le thème : `SCColors`, `SCTypography`, `SCShapes`, `SCTheme` ;
 - les composants génériques : `SCScreenStructure` (fond, insets, barre du haut, messages, couleur
   des icônes système), `SCTopAppBar`, `SCIconButton`, `SCIconBadge`, `SCButton`, `SCText`, `SCCard`
-  et `SCCardStructure` (une carte et son titre), `SCDialog`, `SCBottomSheet`, `SCSnackbarState`,
+  et `SCCardStructure` (une carte et son titre), `SCDialog`, `SCContentDialog` (un contenu à regarder
+  et un bouton qui ferme), `SCBottomSheet`, `SCSnackbarState`,
   `SCSwitch`, `SCTextField`, `SCDropdownField` (un choix dans un menu qui se déplie sous le champ),
   `SCDropdownMenu` (le menu seul, sous l'élément où il est placé) et `SCDivider` (une ligne entre deux
   rangées d'une carte).
@@ -40,7 +41,7 @@ designSystem/src/commonMain/
 │       │   ├── SCButton.kt
 │       │   └── SCButtonDefaults.kt
 │       ├── card/              (SCCard : un bloc de contenu détaché du fond ; SCCardStructure : son titre au-dessus)
-│       ├── dialog/            (SCDialog : une question avant une action, confirmer ou annuler)
+│       ├── dialog/            (SCDialog : une question avant une action ; SCContentDialog : un contenu et un bouton qui ferme)
 │       ├── divider/           (SCDivider : une ligne fine entre deux rangées, de la couleur du fond)
 │       ├── dropdownfield/     (SCDropdownField : un choix dans un menu, aux styles de SCTextField)
 │       ├── dropdownmenu/      (SCDropdownMenu : un menu d'options, le choix en cours en couleur)
