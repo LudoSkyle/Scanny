@@ -153,7 +153,7 @@ final class CreateCodeUITests: XCTestCase {
         let addLogo = app.buttons["Add a logo"]
         scroll(to: addLogo, in: app)
         addLogo.tap()
-        pickASamplePhoto(in: app)
+        pickTheNewestPhoto(in: app)
         XCTAssertTrue(app.images["The logo"].waitForExistence(timeout: 10))
         keepScreenshot(named: "editor-with-a-logo", of: app)
 
@@ -164,7 +164,7 @@ final class CreateCodeUITests: XCTestCase {
 
         // Picked again, it goes with the creation
         app.buttons["Add a logo"].tap()
-        pickASamplePhoto(in: app)
+        pickTheNewestPhoto(in: app)
         XCTAssertTrue(app.buttons["Change the logo"].waitForExistence(timeout: 10))
         let createButton = app.buttons["Create"]
         scroll(to: createButton, in: app)
@@ -174,14 +174,12 @@ final class CreateCodeUITests: XCTestCase {
         keepScreenshot(named: "created-code-with-a-logo", of: app)
     }
 
-    // A photo of those every simulator comes with, found by its year, whatever the language
-    private func pickASamplePhoto(in app: XCUIApplication) {
-        let photo = app.images
-            .matching(NSPredicate(format: "identifier == %@ AND label CONTAINS %@", "PXGGridLayout-Info", "2018"))
-            .firstMatch
+    // The first photo of the grid, whatever the photos the other tests saved: an older one goes further
+    // down at each run, until the picker no longer lays it out
+    private func pickTheNewestPhoto(in app: XCUIApplication) {
+        let photo = app.images.matching(identifier: "PXGGridLayout-Info").firstMatch
         XCTAssertTrue(photo.waitForExistence(timeout: 10))
-        // Below the photos the tests saved, which come first
-        scroll(to: photo, in: app)
+        waitUntilStill(photo)
         // Touched at its place: the picker runs in another process, where XCUITest cannot always tell
         // whether a photo can be touched
         photo.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()

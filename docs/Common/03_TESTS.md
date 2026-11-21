@@ -224,11 +224,11 @@ et la durée de conservation), le feedback, les textes français.
   (`VNDetectBarcodesRequest`, depuis un court script Swift) : un second lecteur que l'app n'a pas
   écrit.
 - Le sélecteur de photos du système est visible de XCUITest : une photo y est une image
-  d'identifiant `PXGGridLayout-Info`, de libellé « Photo, » suivi de sa date. Un test choisit une des
-  photos livrées avec chaque simulateur, par son année (2018), que la langue ne change pas. Il fait
-  défiler jusqu'à elle (`scroll`), les images enregistrées par les tests passant devant, et la touche
-  à sa place (`coordinate`) : le sélecteur tourne dans un autre processus, où XCUITest ne sait pas
-  toujours dire qu'une photo peut être touchée.
+  d'identifiant `PXGGridLayout-Info`, de libellé « Photo, » suivi de sa date. Un test choisit la
+  première de la grille, la plus récente : une photo plus ancienne descend à chaque image que les
+  tests enregistrent, jusqu'à ce que le sélecteur ne la crée plus. Il la touche à sa place
+  (`coordinate`) : le sélecteur tourne dans un autre processus, où XCUITest ne sait pas toujours dire
+  qu'une photo peut être touchée.
 - La couleur d'un point de l'écran se lit dans la capture (`screenColor`, à une tolérance près) :
   c'est ce qui vérifie qu'une création garde les couleurs choisies. Le cadre d'une image de Compose
   est celui de l'image elle-même, sans la marge que lui donne son `padding`.
