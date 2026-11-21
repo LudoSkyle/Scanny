@@ -170,7 +170,9 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - Vérifié sur l'émulateur Android (écran, effacement de l'historique) et sur le simulateur iOS
       (tests d'interface : en-tête et sections, copie d'un code scanné collée dans le feedback,
       effacement de l'historique, textes français)
-    - [ ] Transitions entre les écrans : un glissement horizontal, sans réduction de l'écran quitté
+    - [x] Transitions entre les écrans : celles d'iOS sur les deux plateformes, un glissement
+          horizontal, sans le fondu ni la réduction de l'écran quitté au geste retour d'Android
+          (vérifié sur l'émulateur, animations ralenties : ouverture, retour, geste retour)
 11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
     (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre
     l'éditeur prérempli avec son contenu.
