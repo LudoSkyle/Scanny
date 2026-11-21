@@ -25,6 +25,7 @@ les deux plateformes.
 | Coroutines | `kotlinx-coroutines-test` (`runTest`, `UnconfinedTestDispatcher`) |
 | Room | vraie base en mémoire, `BundledSQLiteDriver` |
 | Android sur la JVM | Robolectric + `androidx.test:core-ktx`, seulement dans `androidHostTest` |
+| Lisibilité d'un code dessiné | Robolectric en rendu natif (`@GraphicsMode(NATIVE)`) + ZXing, dans `androidHostTest` de `shared` |
 | Composants Compose | `runComposeUiTest`, qui tourne sur la JVM et sur le simulateur iOS |
 | Doublures | Fakes écrits à la main, dans un package `fake/` du source set de test |
 
@@ -220,6 +221,9 @@ et la durée de conservation), le feedback, les textes français.
 - Un code que l'app dessine se vérifie en décodant sa capture sur le Mac, avec Vision
   (`VNDetectBarcodesRequest`, depuis un court script Swift) : un second lecteur que l'app n'a pas
   écrit.
+- La couleur d'un point de l'écran se lit dans la capture (`screenColor`, à une tolérance près) :
+  c'est ce qui vérifie qu'une création garde les couleurs choisies. Le cadre d'une image de Compose
+  est celui de l'image elle-même, sans la marge que lui donne son `padding`.
 - Un test garde ses captures d'écran (`XCTAttachment`, `lifetime = .keepAlways`) : elles se relisent
   après coup, extraites du `.xcresult`.
 - Le presse-papiers du simulateur se lit depuis le Mac : `xcrun simctl pbpaste booted`. Depuis le
@@ -237,8 +241,16 @@ et la durée de conservation), le feedback, les textes français.
 
 La détection des codes par la caméra et dans une image ne se teste pas sur le simulateur iOS : il n'a
 pas de caméra, et Vision n'y trouve aucun code (limite du simulateur, constatée quelle que soit la
-révision de la requête). Elle se vérifie à la main, sur un appareil. Tout ce qui suit la détection,
-en revanche, est couvert par les tests d'interface.
+révision de la requête, dans l'app comme dans les tests Kotlin, de même que le `CIDetector` de Core
+Image). Elle se vérifie à la main, sur un appareil. Tout ce qui suit la détection, en revanche, est
+couvert par les tests d'interface.
+
+La lisibilité des codes que l'app dessine se teste donc sur la JVM : `CodeImageReadabilityTest`
+dessine l'image d'un QR code pour de vrai, par le rendu natif de Robolectric, et la relit avec ZXing,
+un lecteur que l'app n'a pas écrit et plus strict que ceux des téléphones. Il couvre chaque forme
+dans les couleurs de la palette qui ressortent le moins, et chaque paire de couleurs avec les formes
+qui couvrent le moins le code. Le contraste de chaque paire de la palette est aussi vérifié (au moins
+4,5:1, celui que les règles d'accessibilité demandent d'un texte).
 
 ### Accès aux `internal` depuis les tests
 

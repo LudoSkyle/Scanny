@@ -1,6 +1,7 @@
 package fr.skyle.scanny.ui.core.code.image
 
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.platform.image.toNSData
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
@@ -21,6 +22,7 @@ class QroseCodeImageRendererTest {
         val png = renderer.renderPng(
             rawValue = "https://scanny.app",
             format = BarcodeFormat.QR_CODE,
+            style = CodeStyle(),
         )
 
         // Then
@@ -36,6 +38,7 @@ class QroseCodeImageRendererTest {
         val png = renderer.renderPng(
             rawValue = "4006381333931",
             format = BarcodeFormat.EAN_13,
+            style = CodeStyle(),
         )
 
         // Then

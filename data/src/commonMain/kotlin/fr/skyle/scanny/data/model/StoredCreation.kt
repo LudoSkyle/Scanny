@@ -7,5 +7,6 @@ data class StoredCreation(
     val rawValue: String,
     // The name of a BarcodeFormat of domain
     val format: String,
+    val style: StoredCodeStyle,
     val createdAt: Instant,
 )

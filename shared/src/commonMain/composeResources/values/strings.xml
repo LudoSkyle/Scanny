@@ -8,6 +8,7 @@
     <string name="app_settings">App settings</string>
     <string name="at_time">%1$s at %2$s</string>
     <string name="aztec" translatable="false">Aztec</string>
+    <string name="background_color">Color of the background</string>
     <string name="barcode">Barcode</string>
     <string name="barcode_value">Value</string>
     <string name="beep_after_scan">Beep after a scan</string>
@@ -32,6 +33,18 @@
         <item quantity="other">%1$d codes found</item>
     </plurals>
     <string name="codes_not_saved">They will not be saved.</string>
+    <string name="color_black">Black</string>
+    <string name="color_brown">Brown</string>
+    <string name="color_cream">Cream</string>
+    <string name="color_green">Green</string>
+    <string name="color_indigo">Indigo</string>
+    <string name="color_lavender">Lavender</string>
+    <string name="color_light_blue">Light blue</string>
+    <string name="color_light_green">Light green</string>
+    <string name="color_pink">Pink</string>
+    <string name="color_purple">Purple</string>
+    <string name="color_red">Red</string>
+    <string name="color_white">White</string>
     <string name="contact">Contact</string>
     <string name="content">Content</string>
     <string name="content_too_long">This content is too long for a QR code.</string>
@@ -40,9 +53,11 @@
     <string name="copied_to_clipboard">Copied to the clipboard</string>
     <string name="copy">Copy</string>
     <string name="copy_after_scan">Copy the code after a scan</string>
+    <string name="corner_shape">Shape of the corners</string>
     <string name="create">Create</string>
     <string name="create_code">Create a code</string>
     <string name="creation_not_saved">The code could not be created</string>
+    <string name="customize_code">Customize the code</string>
     <string name="data_matrix" translatable="false">Data Matrix</string>
     <string name="day_date">%2$s %1$d, %3$d</string>
     <string name="delete">Delete</string>
@@ -51,6 +66,8 @@
     <string name="description_and_time" translatable="false">%1$s · %2$s</string>
     <string name="discard">Discard</string>
     <string name="discard_codes_question">Discard the codes found?</string>
+    <string name="dot_color">Color of the dots</string>
+    <string name="dot_shape">Shape of the dots</string>
     <string name="ean_13" translatable="false">EAN-13</string>
     <string name="ean_8" translatable="false">EAN-8</string>
     <string name="email">E-mail</string>
@@ -134,6 +151,9 @@
     <string name="send_email">Send the e-mail</string>
     <string name="setting_not_saved">The setting could not be saved</string>
     <string name="settings">Settings</string>
+    <string name="shape_circle">Round</string>
+    <string name="shape_rounded">Rounded</string>
+    <string name="shape_square">Square</string>
     <string name="share">Share</string>
     <string name="show_code">Show the code</string>
     <string name="show_raw_content">Show the raw content</string>

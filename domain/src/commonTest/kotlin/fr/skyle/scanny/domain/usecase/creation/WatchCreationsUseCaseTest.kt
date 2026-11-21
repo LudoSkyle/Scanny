@@ -1,9 +1,12 @@
 package fr.skyle.scanny.domain.usecase.creation
 
+import fr.skyle.scanny.data.model.StoredCodeStyle
 import fr.skyle.scanny.data.model.StoredCreation
 import fr.skyle.scanny.domain.fake.FakeCreationRepository
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeShape
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.Creation
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -20,13 +23,19 @@ class WatchCreationsUseCaseTest {
                 id = 1,
                 rawValue = "https://scanny.app",
                 format = "QR_CODE",
+                style = StoredCodeStyle(
+                    darkColor = 0xFF1A237E,
+                    lightColor = 0xFFFFF8E1,
+                    dotShape = "CIRCLE",
+                    cornerShape = "ROUNDED",
+                ),
                 createdAt = CREATED_AT,
             ),
         ),
     )
 
     @Test
-    fun `the creations are watched with their content read from their text`() = runTest {
+    fun `the creations are watched with their content read from their text and their style`() = runTest {
         // When
         val creations = WatchCreationsUseCaseImpl(creationRepository = creationRepository)().first()
 
@@ -38,10 +47,46 @@ class WatchCreationsUseCaseTest {
                     content = BarcodeContent.Url(url = "https://scanny.app"),
                     rawValue = "https://scanny.app",
                     format = BarcodeFormat.QR_CODE,
+                    style = CodeStyle(
+                        darkColor = 0xFF1A237E,
+                        lightColor = 0xFFFFF8E1,
+                        dotShape = CodeShape.CIRCLE,
+                        cornerShape = CodeShape.ROUNDED,
+                    ),
                     createdAt = CREATED_AT,
                 ),
             ),
             actual = creations,
+        )
+    }
+
+    @Test
+    fun `a shape this version does not know is drawn square`() = runTest {
+        // Given
+        val creationRepository = FakeCreationRepository(
+            storedCreations = listOf(
+                StoredCreation(
+                    id = 1,
+                    rawValue = "https://scanny.app",
+                    format = "QR_CODE",
+                    style = StoredCodeStyle(
+                        darkColor = 0xFF000000,
+                        lightColor = 0xFFFFFFFF,
+                        dotShape = "STAR",
+                        cornerShape = "HEART",
+                    ),
+                    createdAt = CREATED_AT,
+                ),
+            ),
+        )
+
+        // When
+        val creation = WatchCreationUseCaseImpl(creationRepository = creationRepository)(creationId = 1).first()
+
+        // Then
+        assertEquals(
+            expected = CodeStyle(),
+            actual = creation?.style,
         )
     }
 

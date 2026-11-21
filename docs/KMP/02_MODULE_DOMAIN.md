@@ -132,9 +132,13 @@ session.
 ### Créations
 
 Une `Creation` est un code créé par l'utilisateur : son contenu, le texte mis dans le code, son
-format, sa date.
+format, son style, sa date.
 
-- `RecordCreationUseCase` reçoit un contenu et un format. Il écrit le texte du contenu
+- Le style (`CodeStyle`) dit comment dessiner un QR code : la couleur des points et celle du fond
+  (ARGB, noir sur blanc par défaut), la forme des points et celle des trois coins (`CodeShape` :
+  carré, arrondi, rond). Un code-barres garde le style par défaut. Une forme inconnue, écrite par
+  une version plus récente, se lit carrée.
+- `RecordCreationUseCase` reçoit un contenu, un format et un style. Il écrit le texte du contenu
   (`toRawValue`, l'encodeur, l'exact inverse du parseur), l'enregistre, hors de l'historique quand
   l'utilisateur n'en garde pas des créations, et rend la création relue.
 - `toRawValue` est publique : l'éditeur en tire l'aperçu du code avant tout enregistrement.

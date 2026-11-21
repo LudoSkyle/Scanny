@@ -3,8 +3,10 @@ package fr.skyle.scanny.domain.usecase.creation
 import fr.skyle.scanny.data.repository.creation.api.CreationRepository
 import fr.skyle.scanny.data.repository.settings.api.SettingsRepository
 import fr.skyle.scanny.domain.mapper.toCreation
+import fr.skyle.scanny.domain.mapper.toStoredCodeStyle
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.payload.toRawValue
 import kotlinx.coroutines.flow.first
@@ -13,12 +15,13 @@ import kotlin.time.Clock
 interface RecordCreationUseCase {
 
     /**
-     * Records a code holding [content], in [format], and returns it. When the user keeps no history of
+     * Records a code holding [content], in [format], drawn with [style], and returns it. When the user keeps no history of
      * the creations, it is recorded out of it, then purged.
      */
     suspend operator fun invoke(
         content: BarcodeContent,
         format: BarcodeFormat,
+        style: CodeStyle,
     ): Creation
 }
 
@@ -31,10 +34,12 @@ internal class RecordCreationUseCaseImpl(
     override suspend fun invoke(
         content: BarcodeContent,
         format: BarcodeFormat,
+        style: CodeStyle,
     ): Creation {
         val creationId = creationRepository.saveCreation(
             rawValue = content.toRawValue(),
             format = format.name,
+            style = style.toStoredCodeStyle(),
             createdAt = clock.now(),
             isInHistory = settingsRepository.watchIsCreationHistoryEnabled().first(),
         )

@@ -13,6 +13,8 @@ import fr.skyle.scanny.designsystem.core.card.SCCardDefaults
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeShape
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.content_too_long
 import fr.skyle.scanny.resources.fill_content_to_see_code
@@ -26,10 +28,11 @@ import org.jetbrains.compose.resources.stringResource
 // Large enough to be scanned from the screen, not so large it hides the fields
 private const val CODE_WIDTH_FRACTION = 0.7f
 
-/** The code as it will be created, or what is missing for it. */
+/** The code as it will be created, in its [style], or what is missing for it. */
 @Composable
 fun CodePreviewCard(
     preview: CodePreview,
+    style: CodeStyle,
     modifier: Modifier = Modifier,
 ) {
     SCCard(
@@ -48,6 +51,7 @@ fun CodePreviewCard(
                     rawValue = preview.rawValue,
                     format = preview.format,
                     contentDescription = stringResource(Res.string.the_code),
+                    style = style,
                 )
 
                 CodePreview.Incomplete -> SCText(
@@ -83,6 +87,10 @@ private fun PreviewCodePreviewCard() {
             preview = CodePreview.Code(
                 rawValue = "https://scanny.app",
                 format = BarcodeFormat.QR_CODE,
+            ),
+            style = CodeStyle(
+                darkColor = 0xFF3B43BE,
+                dotShape = CodeShape.CIRCLE,
             ),
         )
     }

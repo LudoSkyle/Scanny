@@ -6,6 +6,7 @@
     <string name="app_description">Scanny scanne les QR codes et les codes-barres, avec les dernières technologies et sans publicité, tout en restant légère et fiable.</string>
     <string name="app_settings">Réglages de l'app</string>
     <string name="at_time">%1$s à %2$s</string>
+    <string name="background_color">Couleur du fond</string>
     <string name="barcode">Code-barres</string>
     <string name="barcode_value">Valeur</string>
     <string name="beep_after_scan">Bip après un scan</string>
@@ -26,6 +27,18 @@
         <item quantity="other">%1$d codes trouvés</item>
     </plurals>
     <string name="codes_not_saved">Ils ne seront pas enregistrés.</string>
+    <string name="color_black">Noir</string>
+    <string name="color_brown">Marron</string>
+    <string name="color_cream">Crème</string>
+    <string name="color_green">Vert</string>
+    <string name="color_indigo">Indigo</string>
+    <string name="color_lavender">Lavande</string>
+    <string name="color_light_blue">Bleu clair</string>
+    <string name="color_light_green">Vert clair</string>
+    <string name="color_pink">Rose</string>
+    <string name="color_purple">Violet</string>
+    <string name="color_red">Rouge</string>
+    <string name="color_white">Blanc</string>
     <string name="contact">Contact</string>
     <string name="content">Contenu</string>
     <string name="content_too_long">Ce contenu est trop long pour un QR code.</string>
@@ -34,15 +47,19 @@
     <string name="copied_to_clipboard">Copié dans le presse-papiers</string>
     <string name="copy">Copier</string>
     <string name="copy_after_scan">Copier le code après un scan</string>
+    <string name="corner_shape">Forme des coins</string>
     <string name="create">Créer</string>
     <string name="create_code">Créer un code</string>
     <string name="creation_not_saved">Le code n'a pas pu être créé</string>
+    <string name="customize_code">Personnaliser le code</string>
     <string name="day_date">%1$d %2$s %3$d</string>
     <string name="delete">Supprimer</string>
     <string name="delete_code_question">Supprimer ce code ?</string>
     <string name="delete_group_question">Supprimer ce groupe ?</string>
     <string name="discard">Abandonner</string>
     <string name="discard_codes_question">Abandonner les codes trouvés ?</string>
+    <string name="dot_color">Couleur des points</string>
+    <string name="dot_shape">Forme des points</string>
     <string name="email">E-mail</string>
     <string name="feedback">Votre avis</string>
     <string name="feedback_about_other">Autre chose</string>
@@ -120,6 +137,9 @@
     <string name="send_email">Envoyer l'e-mail</string>
     <string name="setting_not_saved">Le réglage n'a pas pu être enregistré</string>
     <string name="settings">Réglages</string>
+    <string name="shape_circle">Rond</string>
+    <string name="shape_rounded">Arrondi</string>
+    <string name="shape_square">Carré</string>
     <string name="share">Partager</string>
     <string name="show_code">Afficher le code</string>
     <string name="show_raw_content">Afficher le contenu brut</string>

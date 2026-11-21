@@ -3,6 +3,8 @@ package fr.skyle.scanny.ui.screen.createcode.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.payload.toRawValue
 import fr.skyle.scanny.domain.usecase.creation.RecordCreationUseCase
 import fr.skyle.scanny.ui.core.code.mapper.canHold
@@ -39,6 +41,12 @@ class CreateCodeViewModel(
         }
     }
 
+    fun onStyleChanged(style: CodeStyle) {
+        _uiState.update { uiState ->
+            uiState.copy(style = style)
+        }
+    }
+
     fun onCreateClicked() {
         val uiState = _uiState.value
         val content = uiState.form.toBarcodeContent()
@@ -54,6 +62,8 @@ class CreateCodeViewModel(
                 val creation = recordCreationUseCase(
                     content = content,
                     format = uiState.form.format,
+                    // The style chosen for a QR code is kept when switching to a barcode, not given to it
+                    style = if (uiState.form.format == BarcodeFormat.QR_CODE) uiState.style else CodeStyle(),
                 )
 
                 _event.send(CreateCodeEvent.OpenCreationDetail(creationId = creation.id))
@@ -91,6 +101,7 @@ class CreateCodeViewModel(
     data class CreateCodeUIState(
         val form: CreationForm = CreationForm(),
         val preview: CodePreview = CodePreview.Incomplete,
+        val style: CodeStyle = CodeStyle(),
         val isCreating: Boolean = false,
     )
 

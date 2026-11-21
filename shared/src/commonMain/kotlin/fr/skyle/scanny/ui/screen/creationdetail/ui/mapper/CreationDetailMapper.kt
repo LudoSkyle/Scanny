@@ -23,4 +23,5 @@ internal fun Creation.toCreationDetailItem(
         createdTime = createdAt.toTimeText(timeZone = timeZone),
         fields = content.toCodeFields(),
         rawValue = rawValue,
+        style = style,
     )

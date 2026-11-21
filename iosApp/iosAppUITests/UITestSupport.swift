@@ -140,7 +140,60 @@ extension XCTestCase {
         }
     }
 
+    /// The color shown at a point of the screen, in points from its top left corner.
+    func screenColor(
+        at point: CGPoint,
+        in app: XCUIApplication,
+    ) -> ScreenColor {
+        let screenshot = app.screenshot().image
+        guard let image = screenshot.cgImage else {
+            return ScreenColor(red: 0, green: 0, blue: 0)
+        }
+        // Drawn into a single pixel in a known format, whatever the format of the screenshot
+        var pixel = [UInt8](repeating: 0, count: 4)
+        let context = CGContext(
+            data: &pixel,
+            width: 1,
+            height: 1,
+            bitsPerComponent: 8,
+            bytesPerRow: 4,
+            space: CGColorSpace(name: CGColorSpace.sRGB)!,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+        )
+        let x = (point.x * screenshot.scale).rounded(.down)
+        let y = (point.y * screenshot.scale).rounded(.down)
+        // Core Graphics counts its rows from the bottom
+        context?.draw(
+            image,
+            in: CGRect(
+                x: -x,
+                y: y - CGFloat(image.height) + 1,
+                width: CGFloat(image.width),
+                height: CGFloat(image.height),
+            ),
+        )
+        return ScreenColor(red: Int(pixel[0]), green: Int(pixel[1]), blue: Int(pixel[2]))
+    }
+
     private func allowTheCameraIfAsked() {
         allowTheSystemAlertIfAsked()
+    }
+}
+
+struct ScreenColor: CustomStringConvertible {
+    let red: Int
+    let green: Int
+    let blue: Int
+
+    var description: String {
+        String(format: "#%02X%02X%02X", red, green, blue)
+    }
+
+    /// Whether this color is [rgb], as 0xRRGGBB, give or take what the screen rounds.
+    func isClose(to rgb: Int) -> Bool {
+        let tolerance = 8
+        return abs(red - (rgb >> 16 & 0xFF)) <= tolerance
+            && abs(green - (rgb >> 8 & 0xFF)) <= tolerance
+            && abs(blue - (rgb & 0xFF)) <= tolerance
     }
 }

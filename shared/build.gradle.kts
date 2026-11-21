@@ -11,6 +11,8 @@ kotlin {
             // Kermit logs with android.util.Log, which the JVM of the host tests does not implement:
             // a test that goes through a log would fail on that call alone
             isReturnDefaultValues = true
+            // Required by Robolectric, which draws the images of the codes on the JVM
+            isIncludeAndroidResources = true
         }
     }
 
@@ -76,6 +78,13 @@ kotlin {
             implementation(libs.camerax.compose)
             implementation(libs.mlkit.barcode.scanning)
             implementation(libs.kotlinx.coroutines.play.services)
+        }
+
+        getByName("androidHostTest").dependencies {
+            implementation(libs.test.junit)
+            implementation(libs.test.robolectric)
+            // A second reader, which Scanny did not write, for the codes it draws
+            implementation(libs.test.zxing)
         }
     }
 }
