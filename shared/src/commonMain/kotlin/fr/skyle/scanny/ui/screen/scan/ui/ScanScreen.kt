@@ -19,6 +19,7 @@ import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.DetectedBarcode
 import fr.skyle.scanny.platform.camera.CameraCapabilities
+import fr.skyle.scanny.platform.camera.CameraLens
 import fr.skyle.scanny.platform.camera.CameraPermissionStatus
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.allow_camera
@@ -46,6 +47,7 @@ fun ScanScreen(
     permissionStatus: CameraPermissionStatus,
     isCameraUnavailable: Boolean,
     isDetectionPaused: Boolean,
+    cameraLens: CameraLens,
     isTorchEnabled: Boolean,
     cameraCapabilities: CameraCapabilities?,
     multipleScan: MultipleScanSession?,
@@ -93,6 +95,7 @@ fun ScanScreen(
                         hint = stringResource(
                             if (multipleScan != null) Res.string.pass_codes_in_front_of_camera else Res.string.place_code_in_frame,
                         ),
+                        lens = cameraLens,
                         isDetectionEnabled = !isDetectionPaused,
                         isTorchEnabled = isTorchEnabled,
                         capabilities = cameraCapabilities,
@@ -195,6 +198,7 @@ private fun PreviewScanScreen() {
             permissionStatus = CameraPermissionStatus.GRANTED,
             isCameraUnavailable = false,
             isDetectionPaused = false,
+            cameraLens = CameraLens.BACK,
             isTorchEnabled = false,
             cameraCapabilities = CameraCapabilities(
                 hasTorch = true,
@@ -233,6 +237,7 @@ private fun PreviewScanScreen_MultipleScan() {
             permissionStatus = CameraPermissionStatus.GRANTED,
             isCameraUnavailable = false,
             isDetectionPaused = false,
+            cameraLens = CameraLens.BACK,
             isTorchEnabled = false,
             cameraCapabilities = CameraCapabilities(
                 hasTorch = true,
@@ -271,6 +276,7 @@ private fun PreviewScanScreen_CameraBlocked() {
             permissionStatus = CameraPermissionStatus.DENIED_FOREVER,
             isCameraUnavailable = false,
             isDetectionPaused = false,
+            cameraLens = CameraLens.BACK,
             isTorchEnabled = false,
             cameraCapabilities = null,
             multipleScan = null,

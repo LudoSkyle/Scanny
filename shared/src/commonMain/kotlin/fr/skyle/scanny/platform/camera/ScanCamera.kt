@@ -21,12 +21,20 @@ data class FocusRequest(
     val id: Int,
 )
 
+/** The camera the scan uses. */
+enum class CameraLens {
+    BACK,
+    FRONT,
+}
+
 /**
- * The preview of the back camera, filling its bounds, and the detection of the codes it sees. The
- * screen gives the state to apply, the camera reports what only the device knows.
+ * The preview of the camera of [lens], filling its bounds, and the detection of the codes it sees. The
+ * screen gives the state to apply, the camera reports what only the device knows. Another [lens]
+ * opens the camera again.
  */
 @Composable
 expect fun ScanCamera(
+    lens: CameraLens,
     isDetectionEnabled: Boolean,
     isTorchEnabled: Boolean,
     zoomRatio: Float,

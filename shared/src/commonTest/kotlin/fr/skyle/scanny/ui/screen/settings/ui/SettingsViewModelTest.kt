@@ -51,6 +51,7 @@ class SettingsViewModelTest {
                 isCopyAfterScanEnabled = false,
                 isOpenContentAfterScanEnabled = false,
                 isRawContentShown = true,
+                isFrontCameraUsed = false,
             ),
         )
 
@@ -65,6 +66,7 @@ class SettingsViewModelTest {
                     isCopyAfterScanEnabled = false,
                     isOpenContentAfterScanEnabled = false,
                     isRawContentShown = true,
+                    isFrontCameraUsed = false,
                 ),
                 historySettings = HistorySettings(
                     isScanHistoryEnabled = true,

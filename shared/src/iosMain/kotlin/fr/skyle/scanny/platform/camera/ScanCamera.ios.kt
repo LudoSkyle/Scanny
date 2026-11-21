@@ -17,6 +17,7 @@ import platform.AVFoundation.AVCaptureConnection
 import platform.AVFoundation.AVCaptureDevice
 import platform.AVFoundation.AVCaptureDeviceInput
 import platform.AVFoundation.AVCaptureDevicePositionBack
+import platform.AVFoundation.AVCaptureDevicePositionFront
 import platform.AVFoundation.AVCaptureDeviceTypeBuiltInWideAngleCamera
 import platform.AVFoundation.AVCaptureExposureModeAutoExpose
 import platform.AVFoundation.AVCaptureFocusModeAutoFocus
@@ -56,6 +57,7 @@ import platform.darwin.dispatch_get_main_queue
 
 @Composable
 actual fun ScanCamera(
+    lens: CameraLens,
     isDetectionEnabled: Boolean,
     isTorchEnabled: Boolean,
     zoomRatio: Float,
@@ -77,6 +79,7 @@ actual fun ScanCamera(
     } else {
         DeviceScanCamera(
             modifier = modifier,
+            lens = lens,
             isDetectionEnabled = isDetectionEnabled,
             isTorchEnabled = isTorchEnabled,
             zoomRatio = zoomRatio,
@@ -90,6 +93,7 @@ actual fun ScanCamera(
 
 @Composable
 private fun DeviceScanCamera(
+    lens: CameraLens,
     isDetectionEnabled: Boolean,
     isTorchEnabled: Boolean,
     zoomRatio: Float,
@@ -101,7 +105,7 @@ private fun DeviceScanCamera(
 ) {
     val currentIsDetectionEnabled by rememberUpdatedState(isDetectionEnabled)
     val currentOnBarcodeDetected by rememberUpdatedState(onBarcodeDetected)
-    val camera = remember { IosScanCamera() }
+    val camera = remember(lens) { IosScanCamera(lens = lens) }
 
     DisposableEffect(camera) {
         val capabilities = camera.start { detectedBarcode ->
@@ -148,7 +152,9 @@ private fun DeviceScanCamera(
 }
 
 @OptIn(ExperimentalForeignApi::class)
-private class IosScanCamera {
+private class IosScanCamera(
+    private val lens: CameraLens,
+) {
 
     private val session = AVCaptureSession()
     private val metadataOutput = AVCaptureMetadataOutput()
@@ -159,15 +165,18 @@ private class IosScanCamera {
 
     val previewView = CameraPreviewView(session = session)
 
-    // Null when the device has no back camera, as the simulator
+    // Null when the device has no camera on this side, as the simulator
     fun start(onBarcodeDetected: (DetectedBarcode) -> Unit): CameraCapabilities? {
-        val backCamera = AVCaptureDevice.defaultDeviceWithDeviceType(
+        val camera = AVCaptureDevice.defaultDeviceWithDeviceType(
             deviceType = AVCaptureDeviceTypeBuiltInWideAngleCamera,
             mediaType = AVMediaTypeVideo,
-            position = AVCaptureDevicePositionBack,
+            position = when (lens) {
+                CameraLens.BACK -> AVCaptureDevicePositionBack
+                CameraLens.FRONT -> AVCaptureDevicePositionFront
+            },
         ) ?: return null
         val input = AVCaptureDeviceInput.deviceInputWithDevice(
-            device = backCamera,
+            device = camera,
             error = null,
         ) ?: return null
 
@@ -187,7 +196,7 @@ private class IosScanCamera {
         metadataOutput.metadataObjectTypes = scannedMetadataObjectTypes.filter { type -> type in availableTypes }
         session.commitConfiguration()
 
-        device = backCamera
+        device = camera
         metadataDelegate = delegate
 
         // Starting a session blocks until the camera runs: never on the main thread
@@ -196,9 +205,9 @@ private class IosScanCamera {
         }
 
         return CameraCapabilities(
-            hasTorch = backCamera.hasTorch,
-            minZoomRatio = backCamera.minAvailableVideoZoomFactor.toFloat(),
-            maxZoomRatio = backCamera.maxAvailableVideoZoomFactor.toFloat(),
+            hasTorch = camera.hasTorch,
+            minZoomRatio = camera.minAvailableVideoZoomFactor.toFloat(),
+            maxZoomRatio = camera.maxAvailableVideoZoomFactor.toFloat(),
         )
     }
 

@@ -6,4 +6,5 @@ data class ScanSettings(
     val isCopyAfterScanEnabled: Boolean,
     val isOpenContentAfterScanEnabled: Boolean,
     val isRawContentShown: Boolean,
+    val isFrontCameraUsed: Boolean,
 )

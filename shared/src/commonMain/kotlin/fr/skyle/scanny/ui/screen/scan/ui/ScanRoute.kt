@@ -123,6 +123,7 @@ fun ScanRoute(
         permissionStatus = cameraPermissionState.status,
         isCameraUnavailable = uiState.isCameraUnavailable,
         isDetectionPaused = uiState.isDetectionPaused,
+        cameraLens = uiState.cameraLens,
         isTorchEnabled = uiState.isTorchEnabled,
         cameraCapabilities = uiState.cameraCapabilities,
         multipleScan = uiState.multipleScan,

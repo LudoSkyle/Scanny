@@ -76,6 +76,7 @@ private val previewResolutionSelector = ResolutionSelector.Builder()
 
 @Composable
 actual fun ScanCamera(
+    lens: CameraLens,
     isDetectionEnabled: Boolean,
     isTorchEnabled: Boolean,
     zoomRatio: Float,
@@ -102,7 +103,7 @@ actual fun ScanCamera(
     var size by remember { mutableStateOf(IntSize.Zero) }
     val coordinateTransformer = remember { MutableCoordinateTransformer() }
 
-    LaunchedEffect(lifecycleOwner) {
+    LaunchedEffect(lifecycleOwner, lens) {
         val cameraProvider = ProcessCameraProvider.awaitInstance(context)
         val barcodeScanner = BarcodeScanning.getClient(mlKitScannerOptions)
         val analysisExecutor = Executors.newSingleThreadExecutor()
@@ -151,7 +152,10 @@ actual fun ScanCamera(
         try {
             val boundCamera = cameraProvider.bindToLifecycle(
                 lifecycleOwner,
-                CameraSelector.DEFAULT_BACK_CAMERA,
+                when (lens) {
+                    CameraLens.BACK -> CameraSelector.DEFAULT_BACK_CAMERA
+                    CameraLens.FRONT -> CameraSelector.DEFAULT_FRONT_CAMERA
+                },
                 preview,
                 imageAnalysis,
             )
@@ -161,8 +165,8 @@ actual fun ScanCamera(
             }
             awaitCancellation()
         } catch (exception: IllegalArgumentException) {
-            // The device has no back camera
-            Logger.w(throwable = exception) { "No camera to scan with" }
+            // The device has no camera on this side
+            Logger.w(throwable = exception) { "No $lens camera to scan with" }
             currentOnCameraUnavailable()
         } finally {
             zoomState?.removeObserver(zoomStateObserver)

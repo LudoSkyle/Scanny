@@ -15,19 +15,22 @@ internal class WatchScanSettingsUseCaseImpl(
 ) : WatchScanSettingsUseCase {
 
     override fun invoke(): Flow<ScanSettings> =
+        // More flows than a typed combine takes: their values come in the order of the flows
         combine(
             settingsRepository.watchIsVibrationAfterScanEnabled(),
             settingsRepository.watchIsBeepAfterScanEnabled(),
             settingsRepository.watchIsCopyAfterScanEnabled(),
             settingsRepository.watchIsOpenContentAfterScanEnabled(),
             settingsRepository.watchIsRawContentShown(),
-        ) { isVibrationAfterScanEnabled, isBeepAfterScanEnabled, isCopyAfterScanEnabled, isOpenContentAfterScanEnabled, isRawContentShown ->
+            settingsRepository.watchIsFrontCameraUsed(),
+        ) { values ->
             ScanSettings(
-                isVibrationAfterScanEnabled = isVibrationAfterScanEnabled,
-                isBeepAfterScanEnabled = isBeepAfterScanEnabled,
-                isCopyAfterScanEnabled = isCopyAfterScanEnabled,
-                isOpenContentAfterScanEnabled = isOpenContentAfterScanEnabled,
-                isRawContentShown = isRawContentShown,
+                isVibrationAfterScanEnabled = values[0],
+                isBeepAfterScanEnabled = values[1],
+                isCopyAfterScanEnabled = values[2],
+                isOpenContentAfterScanEnabled = values[3],
+                isRawContentShown = values[4],
+                isFrontCameraUsed = values[5],
             )
         }
 }

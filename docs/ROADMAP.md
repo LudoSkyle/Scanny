@@ -188,7 +188,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] Historique : enregistrer ou non les scans, ignorer les doublons consécutifs (les mêmes
           codes dans les 5 minutes), durée de conservation (30 jours par défaut, ou toujours),
           purgée au démarrage ; la base passe en version 2 par une migration automatique
-    - [ ] Caméra avant ou arrière, en réglage
+    - [x] Caméra avant ou arrière, en réglage (Android vérifié sur l'émulateur ; iOS à vérifier sur un
+          iPhone)
 11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
     (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre
     l'éditeur prérempli avec son contenu. Avec lui, l'enregistrement ou non des créations dans

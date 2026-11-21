@@ -15,7 +15,8 @@ final class SettingsUITests: XCTestCase {
 
         app.buttons["Settings"].tap()
         let rawContentSwitch = app.switches["Show the raw content"]
-        XCTAssertTrue(rawContentSwitch.waitForExistence(timeout: 5))
+        scroll(to: rawContentSwitch, in: app)
+        XCTAssertTrue(rawContentSwitch.exists)
         // The settings are kept from a launch to the next: the test starts from the setting off
         if isOn(rawContentSwitch) {
             rawContentSwitch.tap()
@@ -42,7 +43,7 @@ final class SettingsUITests: XCTestCase {
         app.buttons["Back"].tap()
         XCTAssertTrue(app.staticTexts["History"].waitForNonExistence(timeout: 5))
         app.buttons["Settings"].tap()
-        XCTAssertTrue(rawContentSwitch.waitForExistence(timeout: 5))
+        scroll(to: rawContentSwitch, in: app)
         rawContentSwitch.tap()
         XCTAssertFalse(isOn(rawContentSwitch))
     }
@@ -56,6 +57,7 @@ final class SettingsUITests: XCTestCase {
         XCTAssertTrue(app.otherElements["Scan preferences"].exists)
         XCTAssertTrue(app.switches["Beep after a scan"].exists)
         XCTAssertTrue(app.switches["Copy the code after a scan"].exists)
+        XCTAssertTrue(app.switches["Use the front camera"].exists)
         keepScreenshot(named: "settings-top", of: app)
 
         let feedbackRow = element(labelled: "Give your feedback", in: app)

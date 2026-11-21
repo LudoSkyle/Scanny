@@ -11,6 +11,7 @@ internal class FakeWatchScanSettingsUseCase(
     isCopyAfterScanEnabled: Boolean = false,
     isOpenContentAfterScanEnabled: Boolean = false,
     isRawContentShown: Boolean = false,
+    isFrontCameraUsed: Boolean = false,
 ) : WatchScanSettingsUseCase {
 
     val settings = MutableStateFlow(
@@ -20,6 +21,7 @@ internal class FakeWatchScanSettingsUseCase(
             isCopyAfterScanEnabled = isCopyAfterScanEnabled,
             isOpenContentAfterScanEnabled = isOpenContentAfterScanEnabled,
             isRawContentShown = isRawContentShown,
+            isFrontCameraUsed = isFrontCameraUsed,
         ),
     )
 

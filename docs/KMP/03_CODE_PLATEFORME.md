@@ -113,10 +113,14 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
 
 | Déclaration commune | Rôle | Android | iOS |
 |---|---|---|---|
-| `ScanCamera(...)` | Aperçu de la caméra arrière et détection en direct | CameraX (`CameraXViewfinder`) + ML Kit (`BarcodeAnalyzer`) | `AVCaptureSession`, `AVCaptureVideoPreviewLayer` dans une `UIView` (`UIKitView`), `AVCaptureMetadataOutput` |
+| `ScanCamera(...)` | Aperçu de la caméra choisie (arrière, ou avant en réglage) et détection en direct | CameraX (`CameraXViewfinder`) + ML Kit (`BarcodeAnalyzer`) | `AVCaptureSession`, `AVCaptureVideoPreviewLayer` dans une `UIView` (`UIKitView`), `AVCaptureMetadataOutput` |
 | `rememberCameraPermissionState()` | Statut de la permission, la demander, ouvrir les réglages de l'app | `RequestPermission`, `shouldShowRequestPermissionRationale` | `AVCaptureDevice.requestAccess`, `UIApplicationOpenSettingsURLString` |
 | `rememberImageBarcodeScanner(...)` | Choisir une image et y lire un code | Photo Picker + ML Kit | `PHPickerViewController` + Vision |
 
+- La caméra se choisit par `CameraLens` (`BACK` par défaut, `FRONT` quand le réglage « Utiliser la
+  caméra avant » le demande) : `CameraSelector.DEFAULT_FRONT_CAMERA` sur Android,
+  `AVCaptureDevicePositionFront` sur iOS. Une autre caméra rouvre la caméra ; ses capacités (torche,
+  zoom) remontent de nouveau. La caméra simulée du simulateur iOS l'ignore.
 - `ScanCamera` est piloté par l'état de l'écran : détection active ou en pause, torche, niveau de
   zoom, demande de mise au point (`FocusRequest`, un point en fraction de l'aperçu et un id qui
   distingue deux appuis au même endroit). Il remonte ce que seul l'appareil connaît
@@ -246,6 +250,7 @@ livrée ; le tableau est mis à jour dans le même commit.
 |---|---|---|---|
 | Aperçu et détection en direct | ✅ (Galaxy S21 FE, Android 16 : aperçu, détection de près et de loin ; émulateur : aperçu) — CameraX + ML Kit Barcode Scanning | Livré, à vérifier sur un iPhone — `AVCaptureSession` + `AVCaptureMetadataOutput` | `expect` composable |
 | Zoom, mise au point | ✅ zoom (Galaxy S21 FE) ; mise au point à vérifier sur un appareil — `CameraControl` (`setZoomRatio`, `startFocusAndMetering`) | Livré, à vérifier sur un iPhone — `AVCaptureDevice` (`videoZoomFactor`, `focusPointOfInterest`) | `expect` composable |
+| Caméra avant | ✅ (émulateur : caméra avant émulée) — `CameraSelector.DEFAULT_FRONT_CAMERA` | Livré, à vérifier sur un iPhone — `AVCaptureDevicePositionFront` | `expect` composable (`CameraLens`) |
 | Torche | Livré, à vérifier sur un appareil (l'émulateur n'a pas de flash) — `CameraControl.enableTorch` | Livré, à vérifier sur un iPhone — `AVCaptureDevice.torchMode` | `expect` composable |
 | Permission caméra | ✅ (refus, refus définitif, accord) — `RequestPermission` | ✅ demande et description affichées (simulateur) — `AVCaptureDevice.requestAccess` | `expect` composable |
 | Détection dans une image | ✅ (émulateur : code lu, enregistré ; image sans code signalée) — Photo Picker + ML Kit (`InputImage`) | Livré, à vérifier sur un iPhone — `PHPickerViewController` + Vision (`VNDetectBarcodesRequest`) | `expect` composable |

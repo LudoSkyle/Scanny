@@ -113,6 +113,7 @@
     <string name="today">Aujourd'hui</string>
     <string name="turn_off_torch">Éteindre la lampe</string>
     <string name="turn_on_torch">Allumer la lampe</string>
+    <string name="use_front_camera">Utiliser la caméra avant</string>
     <string name="version_and_build">Version %1$s (build %2$s)</string>
     <string name="vibrate_after_scan">Vibrer après un scan</string>
     <string name="website">Site web</string>
