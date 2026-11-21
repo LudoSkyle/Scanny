@@ -21,12 +21,14 @@ import kotlinx.coroutines.IO
         ScannedCodeEntity::class,
         CreationEntity::class,
     ],
-    version = 3,
+    version = 4,
     autoMigrations = [
         // The flag of a capture kept out of the history
         AutoMigration(from = 1, to = 2),
         // The table of the creations
         AutoMigration(from = 2, to = 3),
+        // How a creation is drawn: its colors and its shapes
+        AutoMigration(from = 3, to = 4),
     ],
 )
 internal abstract class ScannyDatabase : RoomDatabase() {

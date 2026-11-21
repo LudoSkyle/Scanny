@@ -11,13 +11,17 @@ import kotlin.test.assertNull
 internal class CreationDaoTest : DatabaseTest() {
 
     @Test
-    fun `a creation is recorded and watched by its id`() = runTest {
+    fun `a creation is recorded with how it is drawn and watched by its id`() = runTest {
         // When
         val creationId = creationDao.insert(
             entity = CreationEntity(
                 createdAt = 1_700_000_000_123,
                 rawValue = "https://scanny.app",
                 format = "QR_CODE",
+                darkColor = 0xFF1A237E,
+                lightColor = 0xFFFFF8E1,
+                dotShape = "CIRCLE",
+                cornerShape = "ROUNDED",
             ),
         )
 
@@ -28,6 +32,10 @@ internal class CreationDaoTest : DatabaseTest() {
                 createdAt = 1_700_000_000_123,
                 rawValue = "https://scanny.app",
                 format = "QR_CODE",
+                darkColor = 0xFF1A237E,
+                lightColor = 0xFFFFF8E1,
+                dotShape = "CIRCLE",
+                cornerShape = "ROUNDED",
             ),
             actual = creationDao.watchById(id = creationId).first(),
         )
@@ -112,6 +120,10 @@ internal class CreationDaoTest : DatabaseTest() {
                 createdAt = createdAt,
                 rawValue = "https://scanny.app",
                 format = "QR_CODE",
+                darkColor = 0xFF000000,
+                lightColor = 0xFFFFFFFF,
+                dotShape = "SQUARE",
+                cornerShape = "SQUARE",
                 isInHistory = isInHistory,
             ),
         )

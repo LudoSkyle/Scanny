@@ -103,6 +103,7 @@ class CreationDetailViewModel(
         codeImageRenderer.renderPng(
             rawValue = creation.rawValue,
             format = checkNotNull(creation.format) { "The creation $creationId has a format this version does not know" },
+            style = creation.style,
         )
 
     private fun imageFileName(): String =

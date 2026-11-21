@@ -202,8 +202,8 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   e-mail, un SMS, un contact, un réseau Wi-Fi que l'appareil sait rejoindre. Un texte, ou un réseau
   qu'il ne sait pas rejoindre, s'affiche dans la feuille. La détection reprend 2 s plus tard.
 - L'image d'un code créé se dessine en commun (`CodeImageRenderer`, hors du fil principal) : un PNG
-  de 1024 pixels de côté pour un QR code, 1200 × 480 pour un code-barres, sombre sur blanc, avec la
-  marge dont un lecteur a besoin autour d'un code.
+  de 1024 pixels de côté pour un QR code, dans son style, 1200 × 480 pour un code-barres, sombre sur
+  blanc, avec la marge dont un lecteur a besoin autour d'un code, de la couleur du fond.
 - La partager passe par `ImageSharer`. Android écrit le PNG dans le cache (`shared_images/`), que le
   `FileProvider` de l'app (`${applicationId}.files`, déclaré dans le manifeste de `shared`) prête à
   l'app choisie dans la feuille de partage. iOS partage une `UIImage` plutôt qu'un fichier : la

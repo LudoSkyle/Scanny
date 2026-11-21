@@ -2,6 +2,8 @@ package fr.skyle.scanny.ui.screen.creationdetail.ui
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeShape
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.fake.FakeCodeImageRenderer
 import fr.skyle.scanny.fake.FakeDeleteCreationUseCase
@@ -48,7 +50,7 @@ class CreationDetailViewModelTest {
     }
 
     @Test
-    fun `the creation is shown with its type its format its time and its content`() = runTest(testDispatcher) {
+    fun `the creation is shown with its type its format its time its content and its style`() = runTest(testDispatcher) {
         // When
         val viewModel = creationDetailViewModel()
 
@@ -66,6 +68,7 @@ class CreationDetailViewModelTest {
                     ),
                 ),
                 rawValue = "https://scanny.app",
+                style = STYLE,
             ),
             actual = viewModel.uiState.value.creation,
         )
@@ -118,7 +121,7 @@ class CreationDetailViewModelTest {
     }
 
     @Test
-    fun `sharing draws the code and shares its image named after the creation`() = runTest(testDispatcher) {
+    fun `sharing draws the code in its style and shares its image named after the creation`() = runTest(testDispatcher) {
         // Given
         val codeImageRenderer = FakeCodeImageRenderer()
         val imageSharer = FakeImageSharer()
@@ -132,7 +135,13 @@ class CreationDetailViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf("https://scanny.app" to BarcodeFormat.QR_CODE),
+            expected = listOf(
+                FakeCodeImageRenderer.RenderedCode(
+                    rawValue = "https://scanny.app",
+                    format = BarcodeFormat.QR_CODE,
+                    style = STYLE,
+                ),
+            ),
             actual = codeImageRenderer.renderedCodes,
         )
         assertEquals(
@@ -236,6 +245,7 @@ class CreationDetailViewModelTest {
             content = BarcodeContent.Url(url = "https://scanny.app"),
             rawValue = "https://scanny.app",
             format = BarcodeFormat.QR_CODE,
+            style = STYLE,
             createdAt = Instant.fromEpochMilliseconds(0),
         )
 
@@ -249,5 +259,12 @@ class CreationDetailViewModelTest {
 
     private companion object {
         const val CREATION_ID = 3L
+
+        val STYLE = CodeStyle(
+            darkColor = 0xFF283593,
+            lightColor = 0xFFFFF8E1,
+            dotShape = CodeShape.CIRCLE,
+            cornerShape = CodeShape.ROUNDED,
+        )
     }
 }

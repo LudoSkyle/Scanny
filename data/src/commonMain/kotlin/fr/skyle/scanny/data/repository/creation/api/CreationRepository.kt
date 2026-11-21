@@ -1,5 +1,6 @@
 package fr.skyle.scanny.data.repository.creation.api
 
+import fr.skyle.scanny.data.model.StoredCodeStyle
 import fr.skyle.scanny.data.model.StoredCreation
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
@@ -13,6 +14,7 @@ interface CreationRepository {
     suspend fun saveCreation(
         rawValue: String,
         format: String,
+        style: StoredCodeStyle,
         createdAt: Instant,
         isInHistory: Boolean,
     ): Long

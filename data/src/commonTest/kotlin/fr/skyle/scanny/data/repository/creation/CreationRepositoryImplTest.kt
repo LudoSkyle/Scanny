@@ -1,6 +1,7 @@
 package fr.skyle.scanny.data.repository.creation
 
 import fr.skyle.scanny.data.db.DatabaseTest
+import fr.skyle.scanny.data.model.StoredCodeStyle
 import fr.skyle.scanny.data.model.StoredCreation
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -14,14 +15,21 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
     private val creationRepository = CreationRepositoryImpl(creationDao = creationDao)
 
     @Test
-    fun `a saved creation is read back with its time to the millisecond`() = runTest {
+    fun `a saved creation is read back with its style and its time to the millisecond`() = runTest {
         // Given
         val createdAt = Instant.fromEpochMilliseconds(1_700_000_000_123)
+        val style = StoredCodeStyle(
+            darkColor = 0xFF1A237E,
+            lightColor = 0xFFFFF8E1,
+            dotShape = "CIRCLE",
+            cornerShape = "ROUNDED",
+        )
 
         // When
         val creationId = creationRepository.saveCreation(
-            rawValue = "4006381333931",
-            format = "EAN_13",
+            rawValue = "https://scanny.app",
+            format = "QR_CODE",
+            style = style,
             createdAt = createdAt,
             isInHistory = true,
         )
@@ -30,8 +38,9 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
         assertEquals(
             expected = StoredCreation(
                 id = creationId,
-                rawValue = "4006381333931",
-                format = "EAN_13",
+                rawValue = "https://scanny.app",
+                format = "QR_CODE",
+                style = style,
                 createdAt = createdAt,
             ),
             actual = creationRepository.watchCreation(id = creationId).first(),
@@ -115,6 +124,12 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
         creationRepository.saveCreation(
             rawValue = "https://scanny.app",
             format = "QR_CODE",
+            style = StoredCodeStyle(
+                darkColor = 0xFF000000,
+                lightColor = 0xFFFFFFFF,
+                dotShape = "SQUARE",
+                cornerShape = "SQUARE",
+            ),
             createdAt = Instant.fromEpochMilliseconds(createdAtMillis),
             isInHistory = isInHistory,
         )

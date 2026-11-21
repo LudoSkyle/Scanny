@@ -1,5 +1,6 @@
 package fr.skyle.scanny.domain.fake
 
+import fr.skyle.scanny.data.model.StoredCodeStyle
 import fr.skyle.scanny.data.model.StoredCreation
 import fr.skyle.scanny.data.repository.creation.api.CreationRepository
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +27,7 @@ internal class FakeCreationRepository(
     override suspend fun saveCreation(
         rawValue: String,
         format: String,
+        style: StoredCodeStyle,
         createdAt: Instant,
         isInHistory: Boolean,
     ): Long {
@@ -35,6 +37,7 @@ internal class FakeCreationRepository(
                 id = creationId,
                 rawValue = rawValue,
                 format = format,
+                style = style,
                 createdAt = createdAt,
             )
         }

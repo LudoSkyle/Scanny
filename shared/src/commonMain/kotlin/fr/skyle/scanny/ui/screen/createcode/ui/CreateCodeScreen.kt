@@ -26,13 +26,16 @@ import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBar
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBarDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.content_type
 import fr.skyle.scanny.resources.create
 import fr.skyle.scanny.resources.create_code
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
 import fr.skyle.scanny.ui.screen.createcode.ui.component.CodePreviewCard
+import fr.skyle.scanny.ui.screen.createcode.ui.component.CodeStyleFields
 import fr.skyle.scanny.ui.screen.createcode.ui.component.CreationFormFields
+import fr.skyle.scanny.ui.screen.createcode.ui.mapper.format
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toText
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
@@ -43,10 +46,12 @@ import org.jetbrains.compose.resources.stringResource
 fun CreateCodeScreen(
     form: CreationForm,
     preview: CodePreview,
+    style: CodeStyle,
     isCreating: Boolean,
     snackbarState: SCSnackbarState,
     onBackClicked: () -> Unit,
     onFormChanged: (CreationForm) -> Unit,
+    onStyleChanged: (CodeStyle) -> Unit,
     onCreateClicked: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -104,9 +109,21 @@ fun CreateCodeScreen(
             CodePreviewCard(
                 modifier = Modifier.fillMaxWidth(),
                 preview = preview,
+                style = style,
             )
 
             Spacer(modifier = Modifier.height(24.dp))
+
+            // A barcode stays dark on white
+            if (form.format == BarcodeFormat.QR_CODE) {
+                CodeStyleFields(
+                    modifier = Modifier.fillMaxWidth(),
+                    style = style,
+                    onStyleChanged = onStyleChanged,
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+            }
 
             SCButton(
                 modifier = Modifier.fillMaxWidth(),
@@ -133,10 +150,12 @@ private fun PreviewCreateCodeScreen() {
                 rawValue = "https://scanny.app",
                 format = BarcodeFormat.QR_CODE,
             ),
+            style = CodeStyle(),
             isCreating = false,
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
             onFormChanged = {},
+            onStyleChanged = {},
             onCreateClicked = {},
         )
     }

@@ -1,11 +1,14 @@
 package fr.skyle.scanny.domain.usecase.creation
 
+import fr.skyle.scanny.data.model.StoredCodeStyle
 import fr.skyle.scanny.data.model.StoredCreation
 import fr.skyle.scanny.domain.fake.FakeCreationRepository
 import fr.skyle.scanny.domain.fake.FakeSettingsRepository
 import fr.skyle.scanny.domain.fake.FixedClock
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeShape
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.WifiEncryption
 import kotlinx.coroutines.test.runTest
@@ -18,7 +21,7 @@ class RecordCreationUseCaseTest {
     private val creationRepository = FakeCreationRepository()
 
     @Test
-    fun `a creation is saved with the text of its content its format and the current time`() = runTest {
+    fun `a creation is saved with the text of its content its format its style and the current time`() = runTest {
         // Given
         val recordCreationUseCase = recordCreationUseCase()
 
@@ -30,6 +33,12 @@ class RecordCreationUseCaseTest {
                 password = "secret12",
             ),
             format = BarcodeFormat.QR_CODE,
+            style = CodeStyle(
+                darkColor = 0xFF1A237E,
+                lightColor = 0xFFFFF8E1,
+                dotShape = CodeShape.CIRCLE,
+                cornerShape = CodeShape.ROUNDED,
+            ),
         )
 
         // Then
@@ -39,6 +48,12 @@ class RecordCreationUseCaseTest {
                     id = 1,
                     rawValue = "WIFI:T:WPA;S:Scanny;P:secret12;;",
                     format = "QR_CODE",
+                    style = StoredCodeStyle(
+                        darkColor = 0xFF1A237E,
+                        lightColor = 0xFFFFF8E1,
+                        dotShape = "CIRCLE",
+                        cornerShape = "ROUNDED",
+                    ),
                     createdAt = NOW,
                 ),
             ),
@@ -55,6 +70,7 @@ class RecordCreationUseCaseTest {
         val creation = recordCreationUseCase(
             content = BarcodeContent.Text(text = "4006381333931"),
             format = BarcodeFormat.EAN_13,
+            style = CodeStyle(),
         )
 
         // Then
@@ -64,6 +80,7 @@ class RecordCreationUseCaseTest {
                 content = BarcodeContent.Text(text = "4006381333931"),
                 rawValue = "4006381333931",
                 format = BarcodeFormat.EAN_13,
+                style = CodeStyle(),
                 createdAt = NOW,
             ),
             actual = creation,
@@ -79,6 +96,7 @@ class RecordCreationUseCaseTest {
         val creation = recordCreationUseCase(
             content = BarcodeContent.Url(url = "https://scanny.app"),
             format = BarcodeFormat.QR_CODE,
+            style = CodeStyle(),
         )
 
         // Then

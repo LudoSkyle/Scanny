@@ -85,6 +85,57 @@ final class CreateCodeUITests: XCTestCase {
         keepScreenshot(named: "created-code-saved", of: app)
     }
 
+    func testAQrCodeIsCreatedInTheColorsAndTheShapesChosen() throws {
+        let app = launchApp()
+        app.buttons["Create a code"].tap()
+
+        let textField = textInput(labelled: "Text", in: app)
+        XCTAssertTrue(textField.waitForExistence(timeout: 5))
+        waitUntilStill(textField)
+        textField.tap()
+        textField.typeText("Styled by Scanny")
+        // A touch out of the fields closes the keyboard, over the choices
+        let preview = app.images["The code"]
+        XCTAssertTrue(preview.waitForExistence(timeout: 5))
+        preview.tap()
+
+        // A color is a disc, the chosen one selected
+        let indigo = element(labelled: "Indigo", in: app)
+        scroll(to: indigo, in: app)
+        indigo.tap()
+        let cream = element(labelled: "Cream", in: app)
+        cream.tap()
+        XCTAssertTrue(indigo.isSelected)
+        XCTAssertTrue(cream.isSelected)
+        XCTAssertFalse(element(labelled: "White", in: app).isSelected)
+
+        let dotShapeField = textInput(labelled: "Shape of the dots", in: app)
+        scroll(to: dotShapeField, in: app)
+        dotShapeField.tap()
+        // "Round", not "Rounded"
+        let roundShape = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Round")).firstMatch
+        XCTAssertTrue(roundShape.waitForExistence(timeout: 5))
+        waitUntilStill(roundShape)
+        roundShape.tap()
+        keepScreenshot(named: "editor-with-a-style", of: app)
+
+        let createButton = app.buttons["Create"]
+        scroll(to: createButton, in: app)
+        createButton.tap()
+
+        // The creation shows its code in the colors chosen: indigo on cream, its margin cream too. The
+        // frame of the image is the code itself, inside its margin
+        XCTAssertTrue(app.buttons["Save the image"].waitForExistence(timeout: 5))
+        let code = app.images["The code"]
+        XCTAssertTrue(code.exists)
+        waitUntilStill(code)
+        let margin = screenColor(at: CGPoint(x: code.frame.minX - 8, y: code.frame.minY - 8), in: app)
+        let topLeftCorner = screenColor(at: CGPoint(x: code.frame.minX + 3, y: code.frame.minY + 3), in: app)
+        XCTAssertTrue(margin.isClose(to: 0xFFF8E1), "The margin is \(margin)")
+        XCTAssertTrue(topLeftCorner.isClose(to: 0x3B43BE), "The corner is \(topLeftCorner)")
+        keepScreenshot(named: "created-code-with-a-style", of: app)
+    }
+
     func testABarcodeWithAWrongCheckDigitCannotBeCreated() throws {
         let app = launchApp()
         app.buttons["Create a code"].tap()

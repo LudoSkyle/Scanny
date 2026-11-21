@@ -51,6 +51,7 @@ firebaseBom = "34.14.1"
 junit = "4.13.2"
 robolectric = "4.18.1"
 androidxTestCore = "1.7.0"
+zxing = "3.5.4"
 
 # Plugins
 agp = "9.5.1"
@@ -125,6 +126,7 @@ test-okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", v
 test-junit = { module = "junit:junit", version.ref = "junit" }
 test-robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 test-androidx-core = { module = "androidx.test:core-ktx", version.ref = "androidxTestCore" }
+test-zxing = { module = "com.google.zxing:core", version.ref = "zxing" }
 
 # Gradle plugins, put on the build classpath by buildSrc
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "agp" }

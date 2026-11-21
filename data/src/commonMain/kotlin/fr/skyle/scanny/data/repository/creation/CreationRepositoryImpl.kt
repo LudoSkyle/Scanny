@@ -3,6 +3,7 @@ package fr.skyle.scanny.data.repository.creation
 import fr.skyle.scanny.data.db.dao.CreationDao
 import fr.skyle.scanny.data.db.entity.CreationEntity
 import fr.skyle.scanny.data.mapper.toStoredCreation
+import fr.skyle.scanny.data.model.StoredCodeStyle
 import fr.skyle.scanny.data.model.StoredCreation
 import fr.skyle.scanny.data.repository.creation.api.CreationRepository
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +20,7 @@ internal class CreationRepositoryImpl(
     override suspend fun saveCreation(
         rawValue: String,
         format: String,
+        style: StoredCodeStyle,
         createdAt: Instant,
         isInHistory: Boolean,
     ): Long =
@@ -27,6 +29,10 @@ internal class CreationRepositoryImpl(
                 createdAt = createdAt.toEpochMilliseconds(),
                 rawValue = rawValue,
                 format = format,
+                darkColor = style.darkColor,
+                lightColor = style.lightColor,
+                dotShape = style.dotShape,
+                cornerShape = style.cornerShape,
                 isInHistory = isInHistory,
             ),
         )

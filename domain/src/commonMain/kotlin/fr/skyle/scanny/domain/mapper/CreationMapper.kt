@@ -11,5 +11,6 @@ internal fun StoredCreation.toCreation(): Creation =
         content = BarcodeContentParser.parse(rawValue = rawValue),
         rawValue = rawValue,
         format = BarcodeFormat.entries.firstOrNull { it.name == format },
+        style = style.toCodeStyle(),
         createdAt = createdAt,
     )

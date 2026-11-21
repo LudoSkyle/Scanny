@@ -2,6 +2,8 @@ package fr.skyle.scanny.ui.screen.createcode.ui
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeShape
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.fake.FakeRecordCreationUseCase
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
@@ -114,12 +116,66 @@ class CreateCodeViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf<Pair<BarcodeContent, BarcodeFormat>>(BarcodeContent.Text(text = "4006381333931") to BarcodeFormat.EAN_13),
+            expected = listOf(
+                FakeRecordCreationUseCase.RecordedCreation(
+                    content = BarcodeContent.Text(text = "4006381333931"),
+                    format = BarcodeFormat.EAN_13,
+                    style = CodeStyle(),
+                ),
+            ),
             actual = recordCreationUseCase.recordedCreations,
         )
         assertEquals(
             expected = listOf(CreateCodeViewModel.CreateCodeEvent.OpenCreationDetail(creationId = 1)),
             actual = events,
+        )
+    }
+
+    @Test
+    fun `a qr code is created in the style chosen`() = runTest(testDispatcher) {
+        // Given
+        val recordCreationUseCase = FakeRecordCreationUseCase()
+        val viewModel = CreateCodeViewModel(recordCreationUseCase = recordCreationUseCase)
+        viewModel.onFormChanged(form = CreationForm(text = "Hello"))
+
+        // When
+        viewModel.onStyleChanged(style = STYLE)
+        viewModel.onCreateClicked()
+
+        // Then
+        assertEquals(
+            expected = STYLE to listOf(
+                FakeRecordCreationUseCase.RecordedCreation(
+                    content = BarcodeContent.Text(text = "Hello"),
+                    format = BarcodeFormat.QR_CODE,
+                    style = STYLE,
+                ),
+            ),
+            actual = viewModel.uiState.value.style to recordCreationUseCase.recordedCreations,
+        )
+    }
+
+    @Test
+    fun `a barcode is created dark on white whatever the style chosen for a qr code`() = runTest(testDispatcher) {
+        // Given
+        val recordCreationUseCase = FakeRecordCreationUseCase()
+        val viewModel = CreateCodeViewModel(recordCreationUseCase = recordCreationUseCase)
+        viewModel.onStyleChanged(style = STYLE)
+        viewModel.onFormChanged(
+            form = CreationForm(
+                kind = CreationKind.BARCODE,
+                barcodeFormat = BarcodeFormat.EAN_13,
+                barcodeValue = "4006381333931",
+            ),
+        )
+
+        // When
+        viewModel.onCreateClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(CodeStyle()),
+            actual = recordCreationUseCase.recordedCreations.map(FakeRecordCreationUseCase.RecordedCreation::style),
         )
     }
 
@@ -205,5 +261,14 @@ class CreateCodeViewModelTest {
             viewModel.event.toList(events)
         }
         return events
+    }
+
+    private companion object {
+        val STYLE = CodeStyle(
+            darkColor = 0xFF3B43BE,
+            lightColor = 0xFFFFF8E1,
+            dotShape = CodeShape.CIRCLE,
+            cornerShape = CodeShape.ROUNDED,
+        )
     }
 }

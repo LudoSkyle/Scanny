@@ -28,6 +28,7 @@ import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBar
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBarDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.at_time
 import fr.skyle.scanny.resources.content
@@ -164,6 +165,7 @@ fun CreationDetailScreen(
                                 rawValue = creation.rawValue,
                                 format = format,
                                 contentDescription = stringResource(Res.string.the_code),
+                                style = creation.style,
                             )
                         }
                     }
@@ -207,6 +209,7 @@ private fun PreviewCreationDetailScreen() {
                     ),
                 ),
                 rawValue = "https://scanny.app",
+                style = CodeStyle(),
             ),
             canSaveImage = true,
             isDeleting = false,

@@ -45,10 +45,12 @@ fun CreateCodeRoute(
     CreateCodeScreen(
         form = uiState.form,
         preview = uiState.preview,
+        style = uiState.style,
         isCreating = uiState.isCreating,
         snackbarState = snackbarState,
         onBackClicked = navigateBack,
         onFormChanged = viewModel::onFormChanged,
+        onStyleChanged = viewModel::onStyleChanged,
         onCreateClicked = viewModel::onCreateClicked,
     )
 }

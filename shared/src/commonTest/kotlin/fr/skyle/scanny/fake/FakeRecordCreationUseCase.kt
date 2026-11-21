@@ -2,6 +2,7 @@ package fr.skyle.scanny.fake
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.payload.toRawValue
 import fr.skyle.scanny.domain.usecase.creation.RecordCreationUseCase
@@ -17,15 +18,20 @@ internal class FakeRecordCreationUseCase(
     private val completion: CompletableDeferred<Unit>? = null,
 ) : RecordCreationUseCase {
 
-    val recordedCreations = mutableListOf<Pair<BarcodeContent, BarcodeFormat>>()
+    val recordedCreations = mutableListOf<RecordedCreation>()
 
     override suspend fun invoke(
         content: BarcodeContent,
         format: BarcodeFormat,
+        style: CodeStyle,
     ): Creation {
         error?.let { throw it }
 
-        recordedCreations += content to format
+        recordedCreations += RecordedCreation(
+            content = content,
+            format = format,
+            style = style,
+        )
         completion?.await()
 
         return Creation(
@@ -33,7 +39,14 @@ internal class FakeRecordCreationUseCase(
             content = content,
             rawValue = content.toRawValue(),
             format = format,
+            style = style,
             createdAt = Instant.fromEpochMilliseconds(0),
         )
     }
+
+    data class RecordedCreation(
+        val content: BarcodeContent,
+        val format: BarcodeFormat,
+        val style: CodeStyle,
+    )
 }
