@@ -23,6 +23,7 @@
     <string name="code_93" translatable="false">Code 93</string>
     <string name="code_count">%1$d codes</string>
     <string name="code_not_deleted">The code could not be deleted</string>
+    <string name="code_not_drawable">This code cannot be drawn again</string>
     <string name="code_removed_from_history">It will be removed from the history.</string>
     <plurals name="codes_found">
         <item quantity="one">%1$d code found</item>
@@ -85,6 +86,7 @@
     <string name="no_app_to_open">No app on this device can open it</string>
     <string name="no_code_in_image">No code found in this image</string>
     <string name="no_scan_yet">No scan yet</string>
+    <string name="ok">OK</string>
     <string name="open_content_after_scan">Open the content after a scan</string>
     <string name="open_link">Open the link</string>
     <string name="open_settings">Open the settings</string>
@@ -118,6 +120,7 @@
     <string name="setting_not_saved">The setting could not be saved</string>
     <string name="settings">Settings</string>
     <string name="share">Share</string>
+    <string name="show_code">Show the code</string>
     <string name="show_raw_content">Show the raw content</string>
     <string name="skip_consecutive_duplicates">Skip a code scanned again right away</string>
     <string name="sms" translatable="false">SMS</string>
@@ -125,6 +128,7 @@
     <string name="subject">Subject</string>
     <string name="support">Support</string>
     <string name="text">Text</string>
+    <string name="the_code">The code</string>
     <string name="today">Today</string>
     <string name="turn_off_torch">Turn off the torch</string>
     <string name="turn_on_torch">Turn on the torch</string>

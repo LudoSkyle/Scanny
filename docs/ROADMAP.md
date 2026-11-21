@@ -192,9 +192,19 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
           iPhone)
 11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
     (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre
-    l'éditeur prérempli avec son contenu. Avec lui, l'enregistrement ou non des créations dans
-    l'historique (réglage, activé par défaut), et un bouton dans la barre du `ScanDetail` qui affiche
-    le code scanné, régénéré, dans une boîte de dialogue.
+    l'éditeur prérempli avec son contenu. Décidé : la création s'ouvre par un « + » de la barre du
+    scan ; l'historique bascule entre « Scans » et « Créations » sur le même écran ; le logo est une
+    image de la galerie ; on crée un texte, un lien, un e-mail, un SMS, un réseau Wi-Fi, un contact,
+    et des codes-barres.
+    - [x] Le code d'un scan redessiné (qrose, qrose-oned) dans une boîte de dialogue, depuis la barre
+          du `ScanDetail` ; pas de bouton pour un Data Matrix, un Aztec ou un PDF417, que qrose ne
+          dessine pas
+    - [ ] Donnée et domaine des créations : table, encodage du contenu, enregistrement ou non dans
+          l'historique (réglage, activé par défaut), durée de conservation
+    - [ ] L'éditeur : type, formulaire, aperçu, enregistrement, partage et enregistrement de l'image
+    - [ ] La personnalisation : couleurs, formes, logo
+    - [ ] L'historique des créations
+    - [ ] « Modifier » depuis le `ScanDetail`
 12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI. Deux remarques
     d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton galerie le temps
     de son affichage, et le Photo Picker range les images de la plus récente à la plus ancienne.

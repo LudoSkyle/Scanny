@@ -207,6 +207,9 @@ et la durée de conservation), le feedback, les textes français.
   de l'app ; l'app lancée, la base est à la nouvelle version et la capture toujours là.
 - Une ligne cliquable est un bouton dont le texte est aussi vu à part : pour compter des lignes, on
   compte les boutons (`app.buttons`).
+- Un code que l'app dessine se vérifie en décodant sa capture sur le Mac, avec Vision
+  (`VNDetectBarcodesRequest`, depuis un court script Swift) : un second lecteur que l'app n'a pas
+  écrit.
 - Un test garde ses captures d'écran (`XCTAttachment`, `lifetime = .keepAlways`) : elles se relisent
   après coup, extraites du `.xcresult`.
 - Le presse-papiers du simulateur se lit depuis le Mac : `xcrun simctl pbpaste booted`. Depuis le

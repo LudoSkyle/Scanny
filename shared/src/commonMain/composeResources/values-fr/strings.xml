@@ -17,6 +17,7 @@
     <string name="clear_history_question">Effacer l'historique ?</string>
     <string name="code_count">%1$d codes</string>
     <string name="code_not_deleted">Le code n'a pas pu être supprimé</string>
+    <string name="code_not_drawable">Ce code ne peut pas être redessiné</string>
     <string name="code_removed_from_history">Il sera retiré de l'historique.</string>
     <plurals name="codes_found">
         <item quantity="one">%1$d code trouvé</item>
@@ -74,6 +75,7 @@
     <string name="no_app_to_open">Aucune app de cet appareil ne peut l'ouvrir</string>
     <string name="no_code_in_image">Aucun code trouvé dans cette image</string>
     <string name="no_scan_yet">Aucun scan pour l'instant</string>
+    <string name="ok">OK</string>
     <string name="open_content_after_scan">Ouvrir le contenu après un scan</string>
     <string name="open_link">Ouvrir le lien</string>
     <string name="open_settings">Ouvrir les réglages</string>
@@ -104,12 +106,14 @@
     <string name="setting_not_saved">Le réglage n'a pas pu être enregistré</string>
     <string name="settings">Réglages</string>
     <string name="share">Partager</string>
+    <string name="show_code">Afficher le code</string>
     <string name="show_raw_content">Afficher le contenu brut</string>
     <string name="skip_consecutive_duplicates">Ignorer un code scanné de nouveau aussitôt</string>
     <string name="star_project">Mettre une étoile au projet sur GitHub</string>
     <string name="subject">Objet</string>
     <string name="support">Support</string>
     <string name="text">Texte</string>
+    <string name="the_code">Le code</string>
     <string name="today">Aujourd'hui</string>
     <string name="turn_off_torch">Éteindre la lampe</string>
     <string name="turn_on_torch">Allumer la lampe</string>
