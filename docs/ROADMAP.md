@@ -171,8 +171,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - Vérifié sur l'émulateur Android (écran, effacement de l'historique) et sur le simulateur iOS
       (tests d'interface : en-tête et sections, copie d'un code scanné collée dans le feedback,
       effacement de l'historique, textes français)
-    - [x] Transitions entre les écrans : celles d'iOS sur les deux plateformes, un glissement
-          horizontal, sans le fondu ni la réduction de l'écran quitté au geste retour d'Android ;
+    - [x] Transitions entre les écrans : un glissement simple sur les deux plateformes, l'écran
+          ouvert pousse l'autre sur toute la largeur, le geste retour joue le retour ;
           vers et depuis la caméra, un fondu de l'autre écran par-dessus elle, immobile (vérifié sur
           l'émulateur, animations ralenties : ouverture, retour, geste retour)
     - [x] Android : lecture de loin sans zoomer (le centre de l'image lu à part, une image sur deux)

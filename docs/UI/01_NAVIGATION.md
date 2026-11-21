@@ -97,11 +97,11 @@ Les animations de transition sont déclarées une fois, sur `NavDisplay` (`trans
 `popTransitionSpec`, `predictivePopTransitionSpec`), pas écran par écran. Une entrée qui doit
 s'écarter du comportement par défaut le déclare dans ses `metadata`.
 
-Ces transitions sont celles d'iOS, sur les deux plateformes (`NavTransitions.kt`) : l'écran ouvert
-glisse depuis la fin par-dessus celui qu'il quitte, qui recule d'un quart en s'assombrissant ; le
-retour fait l'inverse, et le geste retour fait suivre le doigt à l'écran quitté. Les transitions par
-défaut de Navigation 3 sur Android, un fondu enchaîné, et au geste retour l'écran quitté qui
-rétrécit, sont écartées.
+Ces transitions sont simples, les mêmes sur les deux plateformes (`NavTransitions.kt`) : l'écran
+ouvert glisse depuis la fin et pousse celui qu'il quitte, tous deux sur toute la largeur, en un
+`tween()` par défaut ; le retour fait l'inverse, et le geste retour joue la même transition que le
+retour. Les transitions par défaut de Navigation 3 sur Android, un fondu enchaîné, et au geste retour
+l'écran quitté qui rétrécit, sont écartées.
 
 Vers et depuis l'écran de la caméra, l'autre écran apparaît et disparaît en fondu par-dessus elle,
 qui ne bouge pas : un aperçu de caméra déplacé ou estompé par Compose se rend mal. L'écran de la
