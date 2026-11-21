@@ -1,4 +1,4 @@
-package fr.skyle.scanny.ui.screen.scanhistory.ui.component
+package fr.skyle.scanny.ui.screen.history.ui.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -27,7 +27,7 @@ import fr.skyle.scanny.ui.core.code.mapper.toIcon
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
-import fr.skyle.scanny.ui.screen.scanhistory.ui.model.ScanHistoryItem
+import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

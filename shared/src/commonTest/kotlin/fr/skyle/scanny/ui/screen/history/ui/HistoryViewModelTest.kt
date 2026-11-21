@@ -1,4 +1,4 @@
-package fr.skyle.scanny.ui.screen.scanhistory.ui
+package fr.skyle.scanny.ui.screen.history.ui
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
@@ -9,8 +9,8 @@ import fr.skyle.scanny.fake.FakeWatchScansUseCase
 import fr.skyle.scanny.fake.FixedClock
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
-import fr.skyle.scanny.ui.screen.scanhistory.ui.model.ScanHistoryItem
-import fr.skyle.scanny.ui.screen.scanhistory.ui.model.ScanHistorySection
+import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
+import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
@@ -30,7 +30,7 @@ import kotlin.time.Instant
 
 // The test dispatchers of kotlinx-coroutines-test are still experimental
 @OptIn(ExperimentalCoroutinesApi::class)
-class ScanHistoryViewModelTest {
+class HistoryViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -98,7 +98,7 @@ class ScanHistoryViewModelTest {
         )
 
         // When
-        val viewModel = scanHistoryViewModel(watchScansUseCase = watchScansUseCase)
+        val viewModel = historyViewModel(watchScansUseCase = watchScansUseCase)
 
         // Then
         assertEquals(
@@ -158,7 +158,7 @@ class ScanHistoryViewModelTest {
     @Test
     fun `an empty history has no section`() = runTest(testDispatcher) {
         // When
-        val viewModel = scanHistoryViewModel(watchScansUseCase = FakeWatchScansUseCase(scans = emptyList()))
+        val viewModel = historyViewModel(watchScansUseCase = FakeWatchScansUseCase(scans = emptyList()))
 
         // Then
         assertEquals(
@@ -171,7 +171,7 @@ class ScanHistoryViewModelTest {
     fun `the history follows the captures recorded and deleted`() = runTest(testDispatcher) {
         // Given
         val watchScansUseCase = FakeWatchScansUseCase(scans = emptyList())
-        val viewModel = scanHistoryViewModel(watchScansUseCase = watchScansUseCase)
+        val viewModel = historyViewModel(watchScansUseCase = watchScansUseCase)
 
         // When
         watchScansUseCase.scans.value = listOf(
@@ -199,7 +199,7 @@ class ScanHistoryViewModelTest {
     @Test
     fun `a capture of one code opens its detail and a capture of several its group`() = runTest(testDispatcher) {
         // Given
-        val viewModel = scanHistoryViewModel()
+        val viewModel = historyViewModel()
         val events = collectEvents(viewModel = viewModel)
 
         // When
@@ -224,8 +224,8 @@ class ScanHistoryViewModelTest {
         // Then
         assertEquals(
             expected = listOf(
-                ScanHistoryViewModel.ScanHistoryEvent.OpenScanDetail(codeId = 1),
-                ScanHistoryViewModel.ScanHistoryEvent.OpenScanGroup(scanId = 2),
+                HistoryViewModel.HistoryEvent.OpenScanDetail(codeId = 1),
+                HistoryViewModel.HistoryEvent.OpenScanGroup(scanId = 2),
             ),
             actual = events,
         )
@@ -235,7 +235,7 @@ class ScanHistoryViewModelTest {
     fun `clearing the history deletes every capture`() = runTest(testDispatcher) {
         // Given
         val deleteAllScansUseCase = FakeDeleteAllScansUseCase()
-        val viewModel = scanHistoryViewModel(deleteAllScansUseCase = deleteAllScansUseCase)
+        val viewModel = historyViewModel(deleteAllScansUseCase = deleteAllScansUseCase)
 
         // When
         viewModel.onClearConfirmed()
@@ -250,7 +250,7 @@ class ScanHistoryViewModelTest {
     @Test
     fun `a history that cannot be cleared is reported`() = runTest(testDispatcher) {
         // Given
-        val viewModel = scanHistoryViewModel(
+        val viewModel = historyViewModel(
             deleteAllScansUseCase = FakeDeleteAllScansUseCase(error = IllegalStateException("Disk full")),
         )
         val events = collectEvents(viewModel = viewModel)
@@ -260,24 +260,24 @@ class ScanHistoryViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf(ScanHistoryViewModel.ScanHistoryEvent.ClearFailed),
+            expected = listOf(HistoryViewModel.HistoryEvent.ClearFailed),
             actual = events,
         )
     }
 
-    private fun scanHistoryViewModel(
+    private fun historyViewModel(
         watchScansUseCase: FakeWatchScansUseCase = FakeWatchScansUseCase(),
         deleteAllScansUseCase: FakeDeleteAllScansUseCase = FakeDeleteAllScansUseCase(),
-    ): ScanHistoryViewModel =
-        ScanHistoryViewModel(
+    ): HistoryViewModel =
+        HistoryViewModel(
             watchScansUseCase = watchScansUseCase,
             deleteAllScansUseCase = deleteAllScansUseCase,
             clock = FixedClock(instant = Instant.parse("2026-11-20T23:00:00Z")),
             timeZone = TimeZone.UTC,
         )
 
-    private fun TestScope.collectEvents(viewModel: ScanHistoryViewModel): List<ScanHistoryViewModel.ScanHistoryEvent> {
-        val events = mutableListOf<ScanHistoryViewModel.ScanHistoryEvent>()
+    private fun TestScope.collectEvents(viewModel: HistoryViewModel): List<HistoryViewModel.HistoryEvent> {
+        val events = mutableListOf<HistoryViewModel.HistoryEvent>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.event.toList(events)
         }

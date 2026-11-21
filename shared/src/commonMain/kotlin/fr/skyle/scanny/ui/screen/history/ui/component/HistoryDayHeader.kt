@@ -1,4 +1,4 @@
-package fr.skyle.scanny.ui.screen.scanhistory.ui.component
+package fr.skyle.scanny.ui.screen.history.ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,7 +16,7 @@ import kotlinx.datetime.LocalDate
 
 /** The day of the captures that follow it in the history. */
 @Composable
-fun ScanHistoryDayHeader(
+fun HistoryDayHeader(
     day: CalendarDay,
     modifier: Modifier = Modifier,
 ) {
@@ -37,9 +37,9 @@ fun ScanHistoryDayHeader(
 
 @AppPreviewWithBackground
 @Composable
-private fun PreviewScanHistoryDayHeader() {
+private fun PreviewHistoryDayHeader() {
     SCTheme {
-        ScanHistoryDayHeader(
+        HistoryDayHeader(
             modifier = Modifier.fillMaxWidth(),
             day = CalendarDay.Date(
                 date = LocalDate(

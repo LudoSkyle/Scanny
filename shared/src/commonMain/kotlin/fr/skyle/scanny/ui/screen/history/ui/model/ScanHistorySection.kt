@@ -1,4 +1,4 @@
-package fr.skyle.scanny.ui.screen.scanhistory.ui.model
+package fr.skyle.scanny.ui.screen.history.ui.model
 
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
