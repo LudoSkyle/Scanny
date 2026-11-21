@@ -136,6 +136,56 @@ final class CreateCodeUITests: XCTestCase {
         keepScreenshot(named: "created-code-with-a-style", of: app)
     }
 
+    func testALogoPickedInThePhotosIsPutAtTheCenterOfTheCode() throws {
+        let app = launchApp()
+        app.buttons["Create a code"].tap()
+
+        let textField = textInput(labelled: "Text", in: app)
+        XCTAssertTrue(textField.waitForExistence(timeout: 5))
+        waitUntilStill(textField)
+        textField.tap()
+        textField.typeText("Logo by Scanny")
+        // A touch out of the fields closes the keyboard, over the choices
+        let preview = app.images["The code"]
+        XCTAssertTrue(preview.waitForExistence(timeout: 5))
+        preview.tap()
+
+        let addLogo = app.buttons["Add a logo"]
+        scroll(to: addLogo, in: app)
+        addLogo.tap()
+        pickASamplePhoto(in: app)
+        XCTAssertTrue(app.images["The logo"].waitForExistence(timeout: 10))
+        keepScreenshot(named: "editor-with-a-logo", of: app)
+
+        // Removed, the logo leaves the code
+        app.buttons["Remove the logo"].tap()
+        XCTAssertTrue(app.buttons["Add a logo"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.images["The logo"].exists)
+
+        // Picked again, it goes with the creation
+        app.buttons["Add a logo"].tap()
+        pickASamplePhoto(in: app)
+        XCTAssertTrue(app.buttons["Change the logo"].waitForExistence(timeout: 10))
+        let createButton = app.buttons["Create"]
+        scroll(to: createButton, in: app)
+        createButton.tap()
+        XCTAssertTrue(app.buttons["Save the image"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.images["The code"].exists)
+        keepScreenshot(named: "created-code-with-a-logo", of: app)
+    }
+
+    // A photo of those every simulator comes with, found by its year, whatever the language
+    private func pickASamplePhoto(in app: XCUIApplication) {
+        let photo = app.images
+            .matching(NSPredicate(format: "identifier == %@ AND label CONTAINS %@", "PXGGridLayout-Info", "2018"))
+            .firstMatch
+        XCTAssertTrue(photo.waitForExistence(timeout: 10))
+        waitUntilStill(photo)
+        // Touched at its place: the picker runs in another process, where XCUITest cannot always tell
+        // whether a photo can be touched
+        photo.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+    }
+
     func testABarcodeWithAWrongCheckDigitCannotBeCreated() throws {
         let app = launchApp()
         app.buttons["Create a code"].tap()

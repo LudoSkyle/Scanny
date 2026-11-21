@@ -1,5 +1,6 @@
 <resources>
     <string name="add_contact">Ajouter le contact</string>
+    <string name="add_logo">Ajouter un logo</string>
     <string name="address">Adresse</string>
     <string name="all_scans_deleted">Tous les scans seront supprimés.</string>
     <string name="allow_camera">Autoriser la caméra</string>
@@ -14,6 +15,7 @@
     <string name="camera_needed">Scanny a besoin de la caméra pour scanner des codes.</string>
     <string name="camera_unavailable">Aucune caméra n'est disponible sur cet appareil. Vous pouvez toujours scanner un code dans une image.</string>
     <string name="cancel">Annuler</string>
+    <string name="change_logo">Changer le logo</string>
     <string name="choose_subject">Choisissez un sujet</string>
     <string name="clear">Effacer</string>
     <string name="clear_history">Effacer l'historique</string>
@@ -82,6 +84,8 @@
     <string name="join_network">Rejoindre le réseau</string>
     <string name="keep_history">Conserver l'historique</string>
     <string name="link">Lien</string>
+    <string name="logo">Logo</string>
+    <string name="logo_not_read">L'image n'a pas pu être lue</string>
     <string name="made_by_skyle">Fait par Skyle avec ❤️ chez Openium</string>
     <string name="mail_app_opens_with_message">Votre app de mail s'ouvre avec votre message, prêt à être envoyé.</string>
     <string name="message">Message</string>
@@ -119,6 +123,7 @@
     <string name="rate_app">Noter l'app</string>
     <string name="raw_content">Contenu brut</string>
     <string name="recipient">Destinataire</string>
+    <string name="remove_logo">Retirer le logo</string>
     <string name="retention_forever">Toujours</string>
     <string name="retention_one_month">30 jours</string>
     <string name="retention_one_week">7 jours</string>
@@ -149,6 +154,7 @@
     <string name="support">Support</string>
     <string name="text">Texte</string>
     <string name="the_code">Le code</string>
+    <string name="the_logo">Le logo</string>
     <string name="today">Aujourd'hui</string>
     <string name="turn_off_torch">Éteindre la lampe</string>
     <string name="turn_on_torch">Allumer la lampe</string>

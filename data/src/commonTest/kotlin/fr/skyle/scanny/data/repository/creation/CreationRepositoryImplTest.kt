@@ -15,7 +15,7 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
     private val creationRepository = CreationRepositoryImpl(creationDao = creationDao)
 
     @Test
-    fun `a saved creation is read back with its style and its time to the millisecond`() = runTest {
+    fun `a saved creation is read back with its style its logo and its time to the millisecond`() = runTest {
         // Given
         val createdAt = Instant.fromEpochMilliseconds(1_700_000_000_123)
         val style = StoredCodeStyle(
@@ -23,6 +23,7 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
             lightColor = 0xFFFFF8E1,
             dotShape = "CIRCLE",
             cornerShape = "ROUNDED",
+            logo = byteArrayOf(1, 2, 3),
         )
 
         // When
@@ -40,7 +41,8 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
                 id = creationId,
                 rawValue = "https://scanny.app",
                 format = "QR_CODE",
-                style = style,
+                // The logo read back from the database, another array of the same bytes
+                style = style.copy(logo = byteArrayOf(1, 2, 3)),
                 createdAt = createdAt,
             ),
             actual = creationRepository.watchCreation(id = creationId).first(),
@@ -129,6 +131,7 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
                 lightColor = 0xFFFFFFFF,
                 dotShape = "SQUARE",
                 cornerShape = "SQUARE",
+                logo = null,
             ),
             createdAt = Instant.fromEpochMilliseconds(createdAtMillis),
             isInHistory = isInHistory,

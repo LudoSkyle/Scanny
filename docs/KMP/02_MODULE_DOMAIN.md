@@ -136,8 +136,10 @@ format, son style, sa date.
 
 - Le style (`CodeStyle`) dit comment dessiner un QR code : la couleur des points et celle du fond
   (ARGB, noir sur blanc par défaut), la forme des points et celle des trois coins (`CodeShape` :
-  carré, arrondi, rond). Un code-barres garde le style par défaut. Une forme inconnue, écrite par
-  une version plus récente, se lit carrée.
+  carré, arrondi, rond), et le logo posé en son centre (un PNG, ou aucun). Un code-barres garde le
+  style par défaut. Une forme inconnue, écrite par une version plus récente, se lit carrée.
+- Un logo est un `ByteArray`, qu'une classe de données comparerait par référence : `CodeStyle` (comme
+  `StoredCodeStyle` et `CreationEntity` dans `data`) compare le sien par son contenu.
 - `RecordCreationUseCase` reçoit un contenu, un format et un style. Il écrit le texte du contenu
   (`toRawValue`, l'encodeur, l'exact inverse du parseur), l'enregistre, hors de l'historique quand
   l'utilisateur n'en garde pas des créations, et rend la création relue.

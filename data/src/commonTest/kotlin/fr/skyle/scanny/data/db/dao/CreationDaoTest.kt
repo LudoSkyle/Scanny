@@ -11,7 +11,7 @@ import kotlin.test.assertNull
 internal class CreationDaoTest : DatabaseTest() {
 
     @Test
-    fun `a creation is recorded with how it is drawn and watched by its id`() = runTest {
+    fun `a creation is recorded with how it is drawn and its logo and watched by its id`() = runTest {
         // When
         val creationId = creationDao.insert(
             entity = CreationEntity(
@@ -22,6 +22,7 @@ internal class CreationDaoTest : DatabaseTest() {
                 lightColor = 0xFFFFF8E1,
                 dotShape = "CIRCLE",
                 cornerShape = "ROUNDED",
+                logo = byteArrayOf(1, 2, 3),
             ),
         )
 
@@ -36,6 +37,7 @@ internal class CreationDaoTest : DatabaseTest() {
                 lightColor = 0xFFFFF8E1,
                 dotShape = "CIRCLE",
                 cornerShape = "ROUNDED",
+                logo = byteArrayOf(1, 2, 3),
             ),
             actual = creationDao.watchById(id = creationId).first(),
         )
@@ -124,6 +126,7 @@ internal class CreationDaoTest : DatabaseTest() {
                 lightColor = 0xFFFFFFFF,
                 dotShape = "SQUARE",
                 cornerShape = "SQUARE",
+                logo = null,
                 isInHistory = isInHistory,
             ),
         )

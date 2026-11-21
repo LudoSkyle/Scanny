@@ -116,6 +116,7 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
 | `ScanCamera(...)` | Aperçu de la caméra choisie (arrière, ou avant en réglage) et détection en direct | CameraX (`CameraXViewfinder`) + ML Kit (`BarcodeAnalyzer`) | `AVCaptureSession`, `AVCaptureVideoPreviewLayer` dans une `UIView` (`UIKitView`), `AVCaptureMetadataOutput` |
 | `rememberCameraPermissionState()` | Statut de la permission, la demander, ouvrir les réglages de l'app | `RequestPermission`, `shouldShowRequestPermissionRationale` | `AVCaptureDevice.requestAccess`, `UIApplicationOpenSettingsURLString` |
 | `rememberImageBarcodeScanner(...)` | Choisir une image et y lire un code | Photo Picker + ML Kit | `PHPickerViewController` + Vision |
+| `rememberLogoPicker(...)` | Choisir une image pour le logo d'un code, réduite | Photo Picker + `ImageDecoder` (`BitmapFactory` avant Android 9) | `PHPickerViewController` + `UIGraphicsImageRenderer` |
 
 - La caméra se choisit par `CameraLens` (`BACK` par défaut, `FRONT` quand le réglage « Utiliser la
   caméra avant » le demande) : `CameraSelector.DEFAULT_FRONT_CAMERA` sur Android,
@@ -204,6 +205,17 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
 - L'image d'un code créé se dessine en commun (`CodeImageRenderer`, hors du fil principal) : un PNG
   de 1024 pixels de côté pour un QR code, dans son style, 1200 × 480 pour un code-barres, sombre sur
   blanc, avec la marge dont un lecteur a besoin autour d'un code, de la couleur du fond.
+- Le logo d'un QR code est une image de la galerie, réduite dès qu'elle est choisie : redressée, en
+  PNG, de 256 pixels de côté au plus (`logoSize`, en commun), assez pour le cinquième d'une image de
+  1024 pixels qu'il occupe, et assez léger pour être gardé avec la création. Android la lit par
+  `ImageDecoder`, qui redresse une photo selon son EXIF et lit le HEIF ; avant Android 9,
+  `BitmapFactory` la lit à une fraction de sa taille, sans lire son EXIF. iOS la redessine par
+  `UIGraphicsImageRenderer`, qui la redresse ; le sélecteur de photos (`ImagePickerDelegate`,
+  `presentImagePicker`) sert aussi au scan d'une image. Une image illisible est dite par un message.
+- qrose dessine le logo au centre et efface les points sous lui et autour, pour que le fond y
+  paraisse. Un code avec logo est encodé à la correction la plus forte, fixée par Scanny : qrose
+  garderait la plus faible pour un logo posé sans marge. Le texte est jugé à cette même correction
+  avant d'être dessiné (`qrErrorCorrection`).
 - La partager passe par `ImageSharer`. Android écrit le PNG dans le cache (`shared_images/`), que le
   `FileProvider` de l'app (`${applicationId}.files`, déclaré dans le manifeste de `shared`) prête à
   l'app choisie dans la feuille de partage. iOS partage une `UIImage` plutôt qu'un fichier : la

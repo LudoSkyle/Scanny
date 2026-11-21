@@ -51,8 +51,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
       termine, et la liste dédoublonnée des codes trouvés s'affiche et s'enregistre comme un groupe
 - [x] Bip après un scan et copie du code après un scan (réglages) *(bip testé, non entendu)*
 - [x] Création de QR codes : texte, URL, email, SMS, WiFi *(et contact, codes-barres)*
-- [ ] Personnalisation d'un QR code : couleurs, logo au centre, formes *(couleurs et formes faites,
-      logo à venir)*
+- [x] Personnalisation d'un QR code : couleurs, logo au centre, formes
 - [ ] Modifier un code scanné : reprendre son contenu, le modifier, le personnaliser et générer le
       nouveau QR code
 - [x] Partager et enregistrer un QR code créé *(enregistrer : Android 10 et plus)*
@@ -207,7 +206,7 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
           suppression)
     - [x] Partager et enregistrer l'image d'un code créé
     - [x] La personnalisation : couleurs (une palette lisible) et formes, gardées avec la création
-    - [ ] Le logo au centre, depuis la galerie
+    - [x] Le logo au centre, depuis la galerie, réduit et gardé avec la création
     - [ ] L'historique des créations
     - [ ] « Modifier » depuis le `ScanDetail`
 12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI. Deux remarques

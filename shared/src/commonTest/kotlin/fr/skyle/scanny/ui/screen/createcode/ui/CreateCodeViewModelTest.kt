@@ -5,6 +5,7 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.fake.FakeRecordCreationUseCase
+import fr.skyle.scanny.platform.gallery.LogoPickResult
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
@@ -176,6 +177,41 @@ class CreateCodeViewModelTest {
         assertEquals(
             expected = listOf(CodeStyle()),
             actual = recordCreationUseCase.recordedCreations.map(FakeRecordCreationUseCase.RecordedCreation::style),
+        )
+    }
+
+    @Test
+    fun `a qr code is created with the logo picked`() = runTest(testDispatcher) {
+        // Given
+        val recordCreationUseCase = FakeRecordCreationUseCase()
+        val viewModel = CreateCodeViewModel(recordCreationUseCase = recordCreationUseCase)
+        viewModel.onFormChanged(form = CreationForm(text = "Hello"))
+
+        // When
+        viewModel.onLogoPicked(result = LogoPickResult.Picked(png = byteArrayOf(1, 2, 3)))
+        viewModel.onCreateClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(CodeStyle(logo = byteArrayOf(1, 2, 3))),
+            actual = recordCreationUseCase.recordedCreations.map(FakeRecordCreationUseCase.RecordedCreation::style),
+        )
+    }
+
+    @Test
+    fun `an image that cannot be read is told and leaves the logo as it was`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = CreateCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+        val events = collectEvents(viewModel = viewModel)
+        viewModel.onLogoPicked(result = LogoPickResult.Picked(png = byteArrayOf(1, 2, 3)))
+
+        // When
+        viewModel.onLogoPicked(result = LogoPickResult.Unreadable)
+
+        // Then
+        assertEquals(
+            expected = CodeStyle(logo = byteArrayOf(1, 2, 3)) to listOf(CreateCodeViewModel.CreateCodeEvent.LogoNotRead),
+            actual = viewModel.uiState.value.style to events,
         )
     }
 

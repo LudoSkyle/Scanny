@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-/** A code the user created: its text, as put in the code, its format, and how it is drawn. */
+/** A code the user created: its text, as put in the code, its format, and how it is drawn, its logo included. */
 @Entity(
     tableName = "creation",
     indices = [
@@ -36,7 +36,39 @@ internal data class CreationEntity(
     val dotShape: String,
     @ColumnInfo(name = "corner_shape", defaultValue = "SQUARE")
     val cornerShape: String,
+    // A PNG of a few hundred pixels a side at most, null for none
+    @ColumnInfo(name = "logo", typeAffinity = ColumnInfo.BLOB)
+    val logo: ByteArray?,
     // False when the user keeps no history of the creations: purged at the next start
     @ColumnInfo(name = "is_in_history", defaultValue = "1")
     val isInHistory: Boolean = true,
-)
+) {
+
+    // The logo compared by its bytes, not by its array
+    override fun equals(other: Any?): Boolean =
+        other is CreationEntity &&
+            id == other.id &&
+            createdAt == other.createdAt &&
+            rawValue == other.rawValue &&
+            format == other.format &&
+            darkColor == other.darkColor &&
+            lightColor == other.lightColor &&
+            dotShape == other.dotShape &&
+            cornerShape == other.cornerShape &&
+            logo.contentEquals(other.logo) &&
+            isInHistory == other.isInHistory
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + createdAt.hashCode()
+        result = 31 * result + rawValue.hashCode()
+        result = 31 * result + format.hashCode()
+        result = 31 * result + darkColor.hashCode()
+        result = 31 * result + lightColor.hashCode()
+        result = 31 * result + dotShape.hashCode()
+        result = 31 * result + cornerShape.hashCode()
+        result = 31 * result + logo.contentHashCode()
+        result = 31 * result + isInHistory.hashCode()
+        return result
+    }
+}

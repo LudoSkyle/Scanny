@@ -18,6 +18,7 @@ import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.code_not_drawable
 import fr.skyle.scanny.ui.core.code.mapper.backgroundColor
 import fr.skyle.scanny.ui.core.code.mapper.canHold
+import fr.skyle.scanny.ui.core.code.mapper.qrErrorCorrection
 import fr.skyle.scanny.ui.core.code.mapper.toBarcodeType
 import fr.skyle.scanny.ui.core.code.mapper.toQrOptions
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
@@ -41,9 +42,19 @@ fun CodeImage(
     modifier: Modifier = Modifier,
     style: CodeStyle = CodeStyle(),
 ) {
-    // Tried before drawing, with the encoder that draws it: a QR code too dense for qrose would fail
-    // while drawn, with no way to catch it
-    val canHold = remember(rawValue, format) { format.canHold(rawValue = rawValue) }
+    val barcodeType = format.toBarcodeType()
+    // A barcode stays dark on white
+    val drawnStyle = if (barcodeType != null) CodeStyle() else style
+
+    // Tried before drawing, with the encoder and the correction that draw it: a QR code too dense for
+    // qrose would fail while drawn, with no way to catch it
+    val errorCorrection = drawnStyle.qrErrorCorrection()
+    val canHold = remember(rawValue, format, errorCorrection) {
+        format.canHold(
+            rawValue = rawValue,
+            errorCorrection = errorCorrection,
+        )
+    }
     if (!canHold) {
         SCText(
             modifier = modifier,
@@ -54,9 +65,6 @@ fun CodeImage(
         return
     }
 
-    val barcodeType = format.toBarcodeType()
-    // A barcode stays dark on white
-    val drawnStyle = if (barcodeType != null) CodeStyle() else style
     Image(
         modifier = modifier
             .background(color = drawnStyle.backgroundColor())

@@ -21,7 +21,7 @@ class RecordCreationUseCaseTest {
     private val creationRepository = FakeCreationRepository()
 
     @Test
-    fun `a creation is saved with the text of its content its format its style and the current time`() = runTest {
+    fun `a creation is saved with the text of its content its format its style its logo and the current time`() = runTest {
         // Given
         val recordCreationUseCase = recordCreationUseCase()
 
@@ -38,6 +38,7 @@ class RecordCreationUseCaseTest {
                 lightColor = 0xFFFFF8E1,
                 dotShape = CodeShape.CIRCLE,
                 cornerShape = CodeShape.ROUNDED,
+                logo = byteArrayOf(1, 2, 3),
             ),
         )
 
@@ -53,6 +54,7 @@ class RecordCreationUseCaseTest {
                         lightColor = 0xFFFFF8E1,
                         dotShape = "CIRCLE",
                         cornerShape = "ROUNDED",
+                        logo = byteArrayOf(1, 2, 3),
                     ),
                     createdAt = NOW,
                 ),
