@@ -24,6 +24,10 @@ interface SettingsRepository {
 
     suspend fun setRawContentShown(isShown: Boolean)
 
+    fun watchIsFrontCameraUsed(): Flow<Boolean>
+
+    suspend fun setFrontCameraUsed(isUsed: Boolean)
+
     fun watchIsScanHistoryEnabled(): Flow<Boolean>
 
     suspend fun setScanHistoryEnabled(isEnabled: Boolean)

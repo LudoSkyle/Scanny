@@ -12,6 +12,7 @@ class SetScanSettingUseCaseTest {
         isVibrationAfterScanEnabled = true,
         isOpenContentAfterScanEnabled = false,
         isRawContentShown = false,
+        isFrontCameraUsed = false,
     )
 
     private val setScanSettingUseCase = SetScanSettingUseCaseImpl(settingsRepository = settingsRepository)
@@ -27,6 +28,7 @@ class SetScanSettingUseCaseTest {
         // Then
         assertEquals(
             expected = listOf(
+                false,
                 false,
                 false,
                 false,
@@ -53,6 +55,7 @@ class SetScanSettingUseCaseTest {
                 false,
                 false,
                 false,
+                false,
             ),
             actual = currentSettings(),
         )
@@ -72,6 +75,7 @@ class SetScanSettingUseCaseTest {
                 true,
                 false,
                 true,
+                false,
                 false,
                 false,
             ),
@@ -95,6 +99,7 @@ class SetScanSettingUseCaseTest {
                 false,
                 true,
                 false,
+                false,
             ),
             actual = currentSettings(),
         )
@@ -116,6 +121,29 @@ class SetScanSettingUseCaseTest {
                 false,
                 false,
                 true,
+                false,
+            ),
+            actual = currentSettings(),
+        )
+    }
+
+    @Test
+    fun `the use of the front camera changes alone`() = runTest {
+        // When
+        setScanSettingUseCase(
+            setting = ScanSetting.FRONT_CAMERA,
+            isEnabled = true,
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                true,
+                false,
+                false,
+                false,
+                false,
+                true,
             ),
             actual = currentSettings(),
         )
@@ -129,5 +157,6 @@ class SetScanSettingUseCaseTest {
             settingsRepository.isRawContentShown.value,
             settingsRepository.isBeepAfterScanEnabled.value,
             settingsRepository.isCopyAfterScanEnabled.value,
+            settingsRepository.isFrontCameraUsed.value,
         )
 }

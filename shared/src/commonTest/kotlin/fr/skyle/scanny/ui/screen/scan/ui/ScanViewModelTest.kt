@@ -11,6 +11,7 @@ import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
 import fr.skyle.scanny.fake.FakeWifiNetworkSupport
 import fr.skyle.scanny.fake.TestClock
 import fr.skyle.scanny.platform.camera.CameraCapabilities
+import fr.skyle.scanny.platform.camera.CameraLens
 import fr.skyle.scanny.platform.gallery.ImageScanResult
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeRowItem
@@ -969,6 +970,22 @@ class ScanViewModelTest {
         assertEquals(
             expected = MultipleScanSession(codeCount = 1),
             actual = viewModel.uiState.value.multipleScan,
+        )
+    }
+
+    @Test
+    fun `the camera follows the setting of the front camera`() = runTest(testDispatcher) {
+        // Given
+        val watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isFrontCameraUsed = false)
+        val viewModel = scanViewModel(watchScanSettingsUseCase = watchScanSettingsUseCase)
+
+        // When
+        watchScanSettingsUseCase.settings.value = watchScanSettingsUseCase.settings.value.copy(isFrontCameraUsed = true)
+
+        // Then
+        assertEquals(
+            expected = CameraLens.FRONT,
+            actual = viewModel.uiState.value.cameraLens,
         )
     }
 

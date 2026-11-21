@@ -79,6 +79,19 @@ internal class SettingsRepositoryImpl(
         )
     }
 
+    override fun watchIsFrontCameraUsed(): Flow<Boolean> =
+        watch(
+            key = KEY_FRONT_CAMERA,
+            defaultValue = false,
+        )
+
+    override suspend fun setFrontCameraUsed(isUsed: Boolean) {
+        set(
+            key = KEY_FRONT_CAMERA,
+            value = isUsed,
+        )
+    }
+
     override fun watchIsScanHistoryEnabled(): Flow<Boolean> =
         watch(
             key = KEY_SCAN_HISTORY,
@@ -147,6 +160,7 @@ internal class SettingsRepositoryImpl(
         // New with the v2
         val KEY_BEEP_AFTER_SCAN = booleanPreferencesKey(name = "KEY_IS_BEEP_AFTER_SCAN_ENABLED")
         val KEY_COPY_AFTER_SCAN = booleanPreferencesKey(name = "KEY_IS_COPY_AFTER_SCAN_ENABLED")
+        val KEY_FRONT_CAMERA = booleanPreferencesKey(name = "KEY_IS_FRONT_CAMERA_USED")
         val KEY_SCAN_HISTORY = booleanPreferencesKey(name = "KEY_IS_SCAN_HISTORY_ENABLED")
         val KEY_CONSECUTIVE_DUPLICATE_SKIPPED = booleanPreferencesKey(name = "KEY_IS_CONSECUTIVE_DUPLICATE_SKIPPED")
         val KEY_HISTORY_RETENTION_DAYS = intPreferencesKey(name = "KEY_HISTORY_RETENTION_DAYS")

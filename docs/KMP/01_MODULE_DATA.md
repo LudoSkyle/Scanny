@@ -197,7 +197,8 @@ trouvés pendant un scan multiple. Deux tables :
   (défaut `false` ; le réglage ouvre désormais tout contenu, la clé garde son nom de la v1) et
   `KEY_IS_RAW_CONTENT_SHOWN` (défaut `false`). Les réglages venus avec la v2
   suivent la même forme : `KEY_IS_BEEP_AFTER_SCAN_ENABLED` et `KEY_IS_COPY_AFTER_SCAN_ENABLED`
-  (défaut `false`), `KEY_IS_SCAN_HISTORY_ENABLED` et `KEY_IS_CONSECUTIVE_DUPLICATE_SKIPPED` (défaut
+  (défaut `false`), `KEY_IS_FRONT_CAMERA_USED` (défaut `false`), `KEY_IS_SCAN_HISTORY_ENABLED` et
+  `KEY_IS_CONSECUTIVE_DUPLICATE_SKIPPED` (défaut
   `true`), et `KEY_HISTORY_RETENTION_DAYS`, un entier (défaut `30`, `0` pour toujours) : `data` ne
   connaît pas l'énumération du domaine.
 - `SettingsRepository` expose un `watchXxx(): Flow<T>` et un `suspend fun setXxx(value: T)` par

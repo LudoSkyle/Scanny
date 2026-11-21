@@ -130,6 +130,7 @@
     <string name="turn_on_torch">Turn on the torch</string>
     <string name="upc_a" translatable="false">UPC-A</string>
     <string name="upc_e" translatable="false">UPC-E</string>
+    <string name="use_front_camera">Use the front camera</string>
     <string name="version_and_build">Version %1$s (build %2$s)</string>
     <string name="vibrate_after_scan">Vibrate after a scan</string>
     <string name="website">Website</string>

@@ -9,6 +9,7 @@ import fr.skyle.scanny.domain.model.ScanSettings
 import fr.skyle.scanny.domain.usecase.scan.RecordScanUseCase
 import fr.skyle.scanny.domain.usecase.settings.WatchScanSettingsUseCase
 import fr.skyle.scanny.platform.camera.CameraCapabilities
+import fr.skyle.scanny.platform.camera.CameraLens
 import fr.skyle.scanny.platform.contact.ContactAdder
 import fr.skyle.scanny.platform.gallery.ImageScanResult
 import fr.skyle.scanny.platform.sound.ScanBeeper
@@ -25,6 +26,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -57,6 +59,20 @@ class ScanViewModel(
     // before the camera, it would open its result again as soon as the user closes it
     private var lastSimpleScanBarcode: DetectedBarcode? = null
     private var detectionResumedAt: Instant? = null
+
+    init {
+        viewModelScope.launch {
+            watchScanSettingsUseCase()
+                .catch { exception ->
+                    Logger.e(throwable = exception) { "Failed to read the settings" }
+                }
+                .collect { settings ->
+                    _uiState.update { uiState ->
+                        uiState.copy(cameraLens = if (settings.isFrontCameraUsed) CameraLens.FRONT else CameraLens.BACK)
+                    }
+                }
+        }
+    }
 
     // The codes of the multiple scan in progress, in their order, each once
     private val multipleScanBarcodes = mutableListOf<DetectedBarcode>()
@@ -353,6 +369,7 @@ class ScanViewModel(
     }
 
     data class ScanUIState(
+        val cameraLens: CameraLens = CameraLens.BACK,
         val isDetectionPaused: Boolean = false,
         val isTorchEnabled: Boolean = false,
         val result: ScanResult? = null,

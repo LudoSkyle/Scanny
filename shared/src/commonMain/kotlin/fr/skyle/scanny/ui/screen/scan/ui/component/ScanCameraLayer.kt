@@ -33,6 +33,7 @@ import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.DetectedBarcode
 import fr.skyle.scanny.platform.camera.CameraCapabilities
+import fr.skyle.scanny.platform.camera.CameraLens
 import fr.skyle.scanny.platform.camera.FocusRequest
 import fr.skyle.scanny.platform.camera.ScanCamera
 import fr.skyle.scanny.resources.Res
@@ -53,6 +54,7 @@ private const val FOCUS_INDICATOR_DURATION_MILLIS = 800L
 @Composable
 fun ScanCameraLayer(
     hint: String,
+    lens: CameraLens,
     isDetectionEnabled: Boolean,
     isTorchEnabled: Boolean,
     capabilities: CameraCapabilities?,
@@ -81,6 +83,7 @@ fun ScanCameraLayer(
 
         ScanCamera(
             modifier = Modifier.fillMaxSize(),
+            lens = lens,
             isDetectionEnabled = isDetectionEnabled,
             isTorchEnabled = isTorchEnabled,
             zoomRatio = zoomRatio,
@@ -174,6 +177,7 @@ private fun PreviewScanCameraLayer() {
         ScanCameraLayer(
             modifier = Modifier.fillMaxSize(),
             hint = stringResource(Res.string.place_code_in_frame),
+            lens = CameraLens.BACK,
             isDetectionEnabled = true,
             isTorchEnabled = false,
             capabilities = null,
