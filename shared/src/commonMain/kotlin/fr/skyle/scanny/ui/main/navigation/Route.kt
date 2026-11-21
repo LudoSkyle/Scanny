@@ -18,8 +18,9 @@ sealed interface Route : NavKey {
     @Serializable
     data object History : Route
 
+    // From the scan, empty, or from a scanned code, filled with it
     @Serializable
-    data object CreateCode : Route
+    data class CreateCode(val scannedCodeId: Long? = null) : Route
 
     @Serializable
     data class CreationDetail(val creationId: Long) : Route

@@ -7,10 +7,12 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.payload.toRawValue
 import fr.skyle.scanny.domain.usecase.creation.RecordCreationUseCase
+import fr.skyle.scanny.domain.usecase.scan.WatchScannedCodeUseCase
 import fr.skyle.scanny.platform.gallery.LogoPickResult
 import fr.skyle.scanny.ui.core.code.mapper.canHold
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.format
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toBarcodeContent
+import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toCreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import io.github.alexzhirkevich.qrose.matrix.qr.QrErrorCorrection
@@ -19,11 +21,14 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CreateCodeViewModel(
+    scannedCodeId: Long?,
+    watchScannedCodeUseCase: WatchScannedCodeUseCase,
     private val recordCreationUseCase: RecordCreationUseCase,
 ) : ViewModel() {
 
@@ -32,6 +37,23 @@ class CreateCodeViewModel(
 
     private val _event = Channel<CreateCodeEvent>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
+
+    init {
+        // Filled once with the scanned code it opens on, then the user's
+        if (scannedCodeId != null) {
+            viewModelScope.launch {
+                try {
+                    watchScannedCodeUseCase(codeId = scannedCodeId).first()?.let { scannedCode ->
+                        onFormChanged(form = scannedCode.toCreationForm())
+                    }
+                } catch (exception: CancellationException) {
+                    throw exception
+                } catch (exception: Exception) {
+                    Logger.e(throwable = exception) { "Failed to read the scanned code $scannedCodeId" }
+                }
+            }
+        }
+    }
 
     fun onFormChanged(form: CreationForm) {
         _uiState.update { uiState ->

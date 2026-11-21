@@ -65,6 +65,7 @@
     <string name="discard_codes_question">Abandonner les codes trouvés ?</string>
     <string name="dot_color">Couleur des points</string>
     <string name="dot_shape">Forme des points</string>
+    <string name="edit_code">Modifier le code</string>
     <string name="email">E-mail</string>
     <string name="feedback">Votre avis</string>
     <string name="feedback_about_other">Autre chose</string>

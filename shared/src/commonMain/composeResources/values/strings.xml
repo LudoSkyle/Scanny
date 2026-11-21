@@ -75,6 +75,7 @@
     <string name="dot_shape">Shape of the dots</string>
     <string name="ean_13" translatable="false">EAN-13</string>
     <string name="ean_8" translatable="false">EAN-8</string>
+    <string name="edit_code">Edit the code</string>
     <string name="email">E-mail</string>
     <string name="feedback">Feedback</string>
     <string name="feedback_about_other">Something else</string>

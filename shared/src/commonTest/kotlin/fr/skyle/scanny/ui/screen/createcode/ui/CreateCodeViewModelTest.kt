@@ -4,7 +4,9 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
+import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.fake.FakeRecordCreationUseCase
+import fr.skyle.scanny.fake.FakeWatchScannedCodeUseCase
 import fr.skyle.scanny.platform.gallery.LogoPickResult
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
@@ -24,6 +26,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.time.Instant
 
 // The test dispatchers of kotlinx-coroutines-test are still experimental
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -44,7 +47,7 @@ class CreateCodeViewModelTest {
     @Test
     fun `the code shows once its content is filled in`() = runTest(testDispatcher) {
         // Given
-        val viewModel = CreateCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
         val initialPreview = viewModel.uiState.value.preview
 
         // When
@@ -60,7 +63,7 @@ class CreateCodeViewModelTest {
     @Test
     fun `the code of a link holds its scheme`() = runTest(testDispatcher) {
         // Given
-        val viewModel = CreateCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
 
         // When
         viewModel.onFormChanged(
@@ -80,7 +83,7 @@ class CreateCodeViewModelTest {
     @Test
     fun `a barcode its format refuses is told as refused`() = runTest(testDispatcher) {
         // Given
-        val viewModel = CreateCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
 
         // When
         viewModel.onFormChanged(
@@ -102,7 +105,7 @@ class CreateCodeViewModelTest {
     fun `creating records the content in its format and opens the creation`() = runTest(testDispatcher) {
         // Given
         val recordCreationUseCase = FakeRecordCreationUseCase()
-        val viewModel = CreateCodeViewModel(recordCreationUseCase = recordCreationUseCase)
+        val viewModel = createCodeViewModel(recordCreationUseCase = recordCreationUseCase)
         val events = collectEvents(viewModel = viewModel)
         viewModel.onFormChanged(
             form = CreationForm(
@@ -136,7 +139,7 @@ class CreateCodeViewModelTest {
     fun `a qr code is created in the style chosen`() = runTest(testDispatcher) {
         // Given
         val recordCreationUseCase = FakeRecordCreationUseCase()
-        val viewModel = CreateCodeViewModel(recordCreationUseCase = recordCreationUseCase)
+        val viewModel = createCodeViewModel(recordCreationUseCase = recordCreationUseCase)
         viewModel.onFormChanged(form = CreationForm(text = "Hello"))
 
         // When
@@ -160,7 +163,7 @@ class CreateCodeViewModelTest {
     fun `a barcode is created dark on white whatever the style chosen for a qr code`() = runTest(testDispatcher) {
         // Given
         val recordCreationUseCase = FakeRecordCreationUseCase()
-        val viewModel = CreateCodeViewModel(recordCreationUseCase = recordCreationUseCase)
+        val viewModel = createCodeViewModel(recordCreationUseCase = recordCreationUseCase)
         viewModel.onStyleChanged(style = STYLE)
         viewModel.onFormChanged(
             form = CreationForm(
@@ -184,7 +187,7 @@ class CreateCodeViewModelTest {
     fun `a qr code is created with the logo picked`() = runTest(testDispatcher) {
         // Given
         val recordCreationUseCase = FakeRecordCreationUseCase()
-        val viewModel = CreateCodeViewModel(recordCreationUseCase = recordCreationUseCase)
+        val viewModel = createCodeViewModel(recordCreationUseCase = recordCreationUseCase)
         viewModel.onFormChanged(form = CreationForm(text = "Hello"))
 
         // When
@@ -201,7 +204,7 @@ class CreateCodeViewModelTest {
     @Test
     fun `an image that cannot be read is told and leaves the logo as it was`() = runTest(testDispatcher) {
         // Given
-        val viewModel = CreateCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
         val events = collectEvents(viewModel = viewModel)
         viewModel.onLogoPicked(result = LogoPickResult.Picked(png = byteArrayOf(1, 2, 3)))
 
@@ -219,7 +222,7 @@ class CreateCodeViewModelTest {
     fun `nothing is created while the content is incomplete or refused`() = runTest(testDispatcher) {
         // Given
         val recordCreationUseCase = FakeRecordCreationUseCase()
-        val viewModel = CreateCodeViewModel(recordCreationUseCase = recordCreationUseCase)
+        val viewModel = createCodeViewModel(recordCreationUseCase = recordCreationUseCase)
 
         // When
         viewModel.onCreateClicked()
@@ -242,7 +245,7 @@ class CreateCodeViewModelTest {
     fun `a code being created is not created twice`() = runTest(testDispatcher) {
         // Given
         val recordCreationUseCase = FakeRecordCreationUseCase(completion = CompletableDeferred())
-        val viewModel = CreateCodeViewModel(recordCreationUseCase = recordCreationUseCase)
+        val viewModel = createCodeViewModel(recordCreationUseCase = recordCreationUseCase)
         viewModel.onFormChanged(form = CreationForm(text = "Hello"))
 
         // When
@@ -259,7 +262,7 @@ class CreateCodeViewModelTest {
     @Test
     fun `a code that cannot be created is reported and can be tried again`() = runTest(testDispatcher) {
         // Given
-        val viewModel = CreateCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase(error = IllegalStateException("Disk full")))
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase(error = IllegalStateException("Disk full")))
         val events = collectEvents(viewModel = viewModel)
         viewModel.onFormChanged(form = CreationForm(text = "Hello"))
 
@@ -277,7 +280,7 @@ class CreateCodeViewModelTest {
     @Test
     fun `switching to another kind and back keeps what was typed`() = runTest(testDispatcher) {
         // Given
-        val viewModel = CreateCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
         viewModel.onFormChanged(form = CreationForm(text = "Hello"))
 
         // When
@@ -290,6 +293,66 @@ class CreateCodeViewModelTest {
             actual = viewModel.uiState.value.preview,
         )
     }
+
+    @Test
+    fun `the editor opens filled with the scanned code it is given`() = runTest(testDispatcher) {
+        // Given
+        val watchScannedCodeUseCase = FakeWatchScannedCodeUseCase(
+            scannedCode = ScannedCode(
+                id = 4,
+                scanId = 2,
+                rawValue = "https://scanny.app",
+                content = BarcodeContent.Url(url = "https://scanny.app"),
+                format = BarcodeFormat.QR_CODE,
+                scannedAt = Instant.fromEpochMilliseconds(0),
+            ),
+        )
+
+        // When
+        val viewModel = createCodeViewModel(
+            scannedCodeId = 4,
+            watchScannedCodeUseCase = watchScannedCodeUseCase,
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(4L) to CreationForm(
+                kind = CreationKind.LINK,
+                url = "https://scanny.app",
+            ),
+            actual = watchScannedCodeUseCase.watchedCodeIds to viewModel.uiState.value.form,
+        )
+        assertEquals(
+            expected = CodePreview.Code(rawValue = "https://scanny.app", format = BarcodeFormat.QR_CODE),
+            actual = viewModel.uiState.value.preview,
+        )
+    }
+
+    @Test
+    fun `a scanned code deleted meanwhile leaves the editor empty`() = runTest(testDispatcher) {
+        // When
+        val viewModel = createCodeViewModel(
+            scannedCodeId = 4,
+            watchScannedCodeUseCase = FakeWatchScannedCodeUseCase(scannedCode = null),
+        )
+
+        // Then
+        assertEquals(
+            expected = CreationForm(),
+            actual = viewModel.uiState.value.form,
+        )
+    }
+
+    private fun createCodeViewModel(
+        recordCreationUseCase: FakeRecordCreationUseCase = FakeRecordCreationUseCase(),
+        scannedCodeId: Long? = null,
+        watchScannedCodeUseCase: FakeWatchScannedCodeUseCase = FakeWatchScannedCodeUseCase(scannedCode = null),
+    ): CreateCodeViewModel =
+        CreateCodeViewModel(
+            scannedCodeId = scannedCodeId,
+            watchScannedCodeUseCase = watchScannedCodeUseCase,
+            recordCreationUseCase = recordCreationUseCase,
+        )
 
     private fun TestScope.collectEvents(viewModel: CreateCodeViewModel): List<CreateCodeViewModel.CreateCodeEvent> {
         val events = mutableListOf<CreateCodeViewModel.CreateCodeEvent>()

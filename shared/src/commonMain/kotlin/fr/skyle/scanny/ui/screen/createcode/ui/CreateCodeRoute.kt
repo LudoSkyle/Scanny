@@ -15,12 +15,14 @@ import fr.skyle.scanny.resources.logo_not_read
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun CreateCodeRoute(
+    scannedCodeId: Long?,
     navigateToCreationDetail: (creationId: Long) -> Unit,
     navigateBack: () -> Unit,
-    viewModel: CreateCodeViewModel = koinViewModel(),
+    viewModel: CreateCodeViewModel = koinViewModel(parameters = { parametersOf(scannedCodeId) }),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
