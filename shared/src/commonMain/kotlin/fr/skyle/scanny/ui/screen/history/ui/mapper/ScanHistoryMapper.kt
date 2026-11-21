@@ -1,12 +1,12 @@
-package fr.skyle.scanny.ui.screen.scanhistory.ui.mapper
+package fr.skyle.scanny.ui.screen.history.ui.mapper
 
 import fr.skyle.scanny.domain.model.Scan
 import fr.skyle.scanny.ui.core.code.mapper.toCodeSummary
 import fr.skyle.scanny.ui.core.code.mapper.toCodeType
 import fr.skyle.scanny.ui.core.date.mapper.toCalendarDay
 import fr.skyle.scanny.ui.core.date.mapper.toTimeText
-import fr.skyle.scanny.ui.screen.scanhistory.ui.model.ScanHistoryItem
-import fr.skyle.scanny.ui.screen.scanhistory.ui.model.ScanHistorySection
+import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
+import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 

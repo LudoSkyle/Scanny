@@ -1,4 +1,4 @@
-package fr.skyle.scanny.ui.screen.scanhistory.ui.component
+package fr.skyle.scanny.ui.screen.history.ui.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

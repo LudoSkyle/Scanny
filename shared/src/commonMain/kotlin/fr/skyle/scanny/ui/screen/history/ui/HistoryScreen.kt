@@ -1,4 +1,4 @@
-package fr.skyle.scanny.ui.screen.scanhistory.ui
+package fr.skyle.scanny.ui.screen.history.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,17 +25,17 @@ import fr.skyle.scanny.resources.ic_delete
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
-import fr.skyle.scanny.ui.screen.scanhistory.ui.component.ScanHistoryDayHeader
-import fr.skyle.scanny.ui.screen.scanhistory.ui.component.ScanHistoryEmpty
-import fr.skyle.scanny.ui.screen.scanhistory.ui.component.ScanHistoryRow
-import fr.skyle.scanny.ui.screen.scanhistory.ui.model.ScanHistoryItem
-import fr.skyle.scanny.ui.screen.scanhistory.ui.model.ScanHistorySection
+import fr.skyle.scanny.ui.screen.history.ui.component.HistoryDayHeader
+import fr.skyle.scanny.ui.screen.history.ui.component.ScanHistoryEmpty
+import fr.skyle.scanny.ui.screen.history.ui.component.ScanHistoryRow
+import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
+import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ScanHistoryScreen(
+fun HistoryScreen(
     sections: List<ScanHistorySection>?,
     snackbarState: SCSnackbarState,
     onBackClicked: () -> Unit,
@@ -88,7 +88,7 @@ fun ScanHistoryScreen(
                         key = section.day.toString(),
                         contentType = "day",
                     ) {
-                        ScanHistoryDayHeader(
+                        HistoryDayHeader(
                             modifier = Modifier.fillMaxWidth(),
                             day = section.day,
                         )
@@ -113,9 +113,9 @@ fun ScanHistoryScreen(
 
 @AppScreenPreview
 @Composable
-private fun PreviewScanHistoryScreen() {
+private fun PreviewHistoryScreen() {
     SCTheme {
-        ScanHistoryScreen(
+        HistoryScreen(
             sections = listOf(
                 ScanHistorySection(
                     day = CalendarDay.Today,
@@ -168,9 +168,9 @@ private fun PreviewScanHistoryScreen() {
 
 @AppScreenPreview
 @Composable
-private fun PreviewScanHistoryScreen_Empty() {
+private fun PreviewHistoryScreen_Empty() {
     SCTheme {
-        ScanHistoryScreen(
+        HistoryScreen(
             sections = emptyList(),
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},

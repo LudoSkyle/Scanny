@@ -1,4 +1,4 @@
-package fr.skyle.scanny.ui.screen.scanhistory.ui
+package fr.skyle.scanny.ui.screen.history.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -13,17 +13,17 @@ import androidx.lifecycle.repeatOnLifecycle
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.history_not_cleared
-import fr.skyle.scanny.ui.screen.scanhistory.ui.component.ClearHistoryDialog
+import fr.skyle.scanny.ui.screen.history.ui.component.ClearHistoryDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ScanHistoryRoute(
+fun HistoryRoute(
     navigateToScanDetail: (codeId: Long) -> Unit,
     navigateToScanGroup: (scanId: Long) -> Unit,
     navigateBack: () -> Unit,
-    viewModel: ScanHistoryViewModel = koinViewModel(),
+    viewModel: HistoryViewModel = koinViewModel(),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -37,15 +37,15 @@ fun ScanHistoryRoute(
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.event.collect { event ->
                 when (event) {
-                    ScanHistoryViewModel.ScanHistoryEvent.ClearFailed -> launch {
+                    HistoryViewModel.HistoryEvent.ClearFailed -> launch {
                         snackbarState.show(message = getString(Res.string.history_not_cleared))
                     }
 
-                    is ScanHistoryViewModel.ScanHistoryEvent.OpenScanDetail -> {
+                    is HistoryViewModel.HistoryEvent.OpenScanDetail -> {
                         navigateToScanDetail(event.codeId)
                     }
 
-                    is ScanHistoryViewModel.ScanHistoryEvent.OpenScanGroup -> {
+                    is HistoryViewModel.HistoryEvent.OpenScanGroup -> {
                         navigateToScanGroup(event.scanId)
                     }
                 }
@@ -53,7 +53,7 @@ fun ScanHistoryRoute(
         }
     }
 
-    ScanHistoryScreen(
+    HistoryScreen(
         sections = uiState.sections,
         snackbarState = snackbarState,
         onBackClicked = navigateBack,

@@ -15,7 +15,7 @@ import fr.skyle.scanny.ui.screen.feedback.entry.feedbackRouteEntry
 import fr.skyle.scanny.ui.screen.scan.entry.scanRouteEntry
 import fr.skyle.scanny.ui.screen.scandetail.entry.scanDetailRouteEntry
 import fr.skyle.scanny.ui.screen.scangroup.entry.scanGroupRouteEntry
-import fr.skyle.scanny.ui.screen.scanhistory.entry.scanHistoryRouteEntry
+import fr.skyle.scanny.ui.screen.history.entry.historyRouteEntry
 import fr.skyle.scanny.ui.screen.settings.entry.settingsRouteEntry
 
 @Composable
@@ -43,7 +43,7 @@ fun RootNavDisplay(
 
             scanGroupRouteEntry(backStack = backStack)
 
-            scanHistoryRouteEntry(backStack = backStack)
+            historyRouteEntry(backStack = backStack)
 
             createCodeRouteEntry(backStack = backStack)
 

@@ -1,13 +1,13 @@
-package fr.skyle.scanny.ui.screen.scanhistory.ui
+package fr.skyle.scanny.ui.screen.history.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.usecase.scan.DeleteAllScansUseCase
 import fr.skyle.scanny.domain.usecase.scan.WatchScansUseCase
-import fr.skyle.scanny.ui.screen.scanhistory.ui.mapper.toScanHistorySections
-import fr.skyle.scanny.ui.screen.scanhistory.ui.model.ScanHistoryItem
-import fr.skyle.scanny.ui.screen.scanhistory.ui.model.ScanHistorySection
+import fr.skyle.scanny.ui.screen.history.ui.mapper.toScanHistorySections
+import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
+import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,17 +22,17 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 
-class ScanHistoryViewModel(
+class HistoryViewModel(
     private val watchScansUseCase: WatchScansUseCase,
     private val deleteAllScansUseCase: DeleteAllScansUseCase,
     private val clock: Clock,
     private val timeZone: TimeZone,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ScanHistoryUIState())
-    val uiState: StateFlow<ScanHistoryUIState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(HistoryUIState())
+    val uiState: StateFlow<HistoryUIState> = _uiState.asStateFlow()
 
-    private val _event = Channel<ScanHistoryEvent>(Channel.BUFFERED)
+    private val _event = Channel<HistoryEvent>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
 
     init {
@@ -57,9 +57,9 @@ class ScanHistoryViewModel(
 
     fun onScanClicked(item: ScanHistoryItem) {
         val event = if (item.codeCount > 1) {
-            ScanHistoryEvent.OpenScanGroup(scanId = item.scanId)
+            HistoryEvent.OpenScanGroup(scanId = item.scanId)
         } else {
-            ScanHistoryEvent.OpenScanDetail(codeId = item.firstCodeId)
+            HistoryEvent.OpenScanDetail(codeId = item.firstCodeId)
         }
         viewModelScope.launch {
             _event.send(event)
@@ -75,19 +75,19 @@ class ScanHistoryViewModel(
             } catch (exception: Exception) {
                 Logger.e(throwable = exception) { "Failed to clear the history of the scans" }
 
-                _event.send(ScanHistoryEvent.ClearFailed)
+                _event.send(HistoryEvent.ClearFailed)
             }
         }
     }
 
-    data class ScanHistoryUIState(
+    data class HistoryUIState(
         // Null while the history is read
         val sections: List<ScanHistorySection>? = null,
     )
 
-    sealed interface ScanHistoryEvent {
-        data object ClearFailed : ScanHistoryEvent
-        data class OpenScanDetail(val codeId: Long) : ScanHistoryEvent
-        data class OpenScanGroup(val scanId: Long) : ScanHistoryEvent
+    sealed interface HistoryEvent {
+        data object ClearFailed : HistoryEvent
+        data class OpenScanDetail(val codeId: Long) : HistoryEvent
+        data class OpenScanGroup(val scanId: Long) : HistoryEvent
     }
 }

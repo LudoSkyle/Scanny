@@ -36,7 +36,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ScanRoute(
     navigateToScanDetail: (codeId: Long) -> Unit,
     navigateToScanGroup: (scanId: Long) -> Unit,
-    navigateToScanHistory: () -> Unit,
+    navigateToHistory: () -> Unit,
     navigateToCreateCode: () -> Unit,
     navigateToSettings: () -> Unit,
     viewModel: ScanViewModel = koinViewModel(),
@@ -140,7 +140,7 @@ fun ScanRoute(
         onMultipleScanClicked = viewModel::onMultipleScanClicked,
         onMultipleScanFinished = viewModel::onMultipleScanFinished,
         onCreateClicked = navigateToCreateCode,
-        onHistoryClicked = navigateToScanHistory,
+        onHistoryClicked = navigateToHistory,
         onSettingsClicked = navigateToSettings,
         onResultActionClicked = openCodeAction,
         onCopyResultClicked = { text ->

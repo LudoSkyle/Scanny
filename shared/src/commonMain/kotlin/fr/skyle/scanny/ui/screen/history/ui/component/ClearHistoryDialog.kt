@@ -1,4 +1,4 @@
-package fr.skyle.scanny.ui.screen.scanhistory.ui.component
+package fr.skyle.scanny.ui.screen.history.ui.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
