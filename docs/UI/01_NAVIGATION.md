@@ -102,3 +102,9 @@ glisse depuis la fin par-dessus celui qu'il quitte, qui recule d'un quart en s'a
 retour fait l'inverse, et le geste retour fait suivre le doigt à l'écran quitté. Les transitions par
 défaut de Navigation 3 sur Android, un fondu enchaîné, et au geste retour l'écran quitté qui
 rétrécit, sont écartées.
+
+Vers et depuis l'écran de la caméra, l'autre écran apparaît et disparaît en fondu par-dessus elle,
+qui ne bouge pas : un aperçu de caméra déplacé ou estompé par Compose se rend mal. L'écran de la
+caméra le déclare dans ses `metadata` (`CameraScreenKey`) ; ce sont les transitions globales qui le
+lisent, sur l'écran de départ comme sur l'écran d'arrivée, car Navigation 3 ne consulte que les
+`metadata` de l'écran du dessus, et l'écran de la caméra est toujours en bas de la pile.
