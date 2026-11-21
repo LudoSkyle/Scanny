@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
@@ -69,9 +70,12 @@ fun ScanRoute(
         }
     }
 
-    // Composed again when back from another screen
-    LaunchedEffect(Unit) {
-        viewModel.onScreenShown()
+    // Resumed when back from another screen, from another app, or from a panel of the system
+    LifecycleResumeEffect(Unit) {
+        viewModel.onScreenResumed()
+        onPauseOrDispose {
+            viewModel.onScreenPaused()
+        }
     }
 
     LaunchedEffect(Unit) {

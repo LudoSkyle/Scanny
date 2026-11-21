@@ -181,9 +181,17 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] « Effacer l'historique » retiré des réglages : l'historique le propose déjà
     - [x] « Ouvrir les liens après un scan » devient « Ouvrir le contenu après un scan » : lien,
           e-mail, SMS, contact, réseau Wi-Fi
+    - [x] Garde-fou : en scan simple, le même code est ignoré 1,5 s après la reprise de la détection
+          (feuille fermée, retour du détail ou dans l'app) ; la caméra n'est pas écoutée quand une
+          autre app ou un panneau du système est devant
+    - [ ] Historique : enregistrer ou non les scans, ignorer les doublons consécutifs, durée de
+          conservation (30 jours par défaut, ou toujours)
+    - [ ] Caméra avant ou arrière, en réglage
 11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
     (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre
-    l'éditeur prérempli avec son contenu.
+    l'éditeur prérempli avec son contenu. Avec lui, l'enregistrement ou non des créations dans
+    l'historique (réglage, activé par défaut), et un bouton dans la barre du `ScanDetail` qui affiche
+    le code scanné, régénéré, dans une boîte de dialogue.
 12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI. Deux remarques
     d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton galerie le temps
     de son affichage, et le Photo Picker range les images de la plus récente à la plus ancienne.
