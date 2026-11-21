@@ -18,11 +18,13 @@ internal class WatchHistorySettingsUseCaseImpl(
     override fun invoke(): Flow<HistorySettings> =
         combine(
             settingsRepository.watchIsScanHistoryEnabled(),
+            settingsRepository.watchIsCreationHistoryEnabled(),
             settingsRepository.watchIsConsecutiveDuplicateSkipped(),
             settingsRepository.watchHistoryRetentionDays(),
-        ) { isScanHistoryEnabled, isConsecutiveDuplicateSkipped, retentionDays ->
+        ) { isScanHistoryEnabled, isCreationHistoryEnabled, isConsecutiveDuplicateSkipped, retentionDays ->
             HistorySettings(
                 isScanHistoryEnabled = isScanHistoryEnabled,
+                isCreationHistoryEnabled = isCreationHistoryEnabled,
                 isConsecutiveDuplicateSkipped = isConsecutiveDuplicateSkipped,
                 retention = HistoryRetention.fromDays(days = retentionDays),
             )

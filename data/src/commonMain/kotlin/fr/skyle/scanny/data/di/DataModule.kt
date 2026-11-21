@@ -1,6 +1,8 @@
 package fr.skyle.scanny.data.di
 
 import fr.skyle.scanny.data.db.ScannyDatabase
+import fr.skyle.scanny.data.repository.creation.CreationRepositoryImpl
+import fr.skyle.scanny.data.repository.creation.api.CreationRepository
 import fr.skyle.scanny.data.repository.scan.ScanRepositoryImpl
 import fr.skyle.scanny.data.repository.scan.api.ScanRepository
 import fr.skyle.scanny.data.repository.settings.SettingsRepositoryImpl
@@ -14,8 +16,10 @@ val dataModule = module {
     includes(platformDataModule)
 
     single { get<ScannyDatabase>().scanDao() }
+    single { get<ScannyDatabase>().creationDao() }
 
     singleOf(::ScanRepositoryImpl) bind ScanRepository::class
+    singleOf(::CreationRepositoryImpl) bind CreationRepository::class
     singleOf(::SettingsRepositoryImpl) bind SettingsRepository::class
 }
 

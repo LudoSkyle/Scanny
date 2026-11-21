@@ -93,7 +93,7 @@ class SettingsRepositoryImplTest {
     }
 
     @Test
-    fun `the history keeps the scans for 30 days and skips the consecutive duplicates by default`() = runTest {
+    fun `the history keeps the scans and the creations for 30 days and skips the consecutive duplicates by default`() = runTest {
         // Given
         val settingsRepository = SettingsRepositoryImpl(dataStore = inMemoryDataStore())
 
@@ -101,7 +101,7 @@ class SettingsRepositoryImplTest {
         assertEquals(
             expected = Triple(true, true, 30),
             actual = Triple(
-                settingsRepository.watchIsScanHistoryEnabled().first(),
+                settingsRepository.watchIsScanHistoryEnabled().first() && settingsRepository.watchIsCreationHistoryEnabled().first(),
                 settingsRepository.watchIsConsecutiveDuplicateSkipped().first(),
                 settingsRepository.watchHistoryRetentionDays().first(),
             ),
@@ -116,6 +116,7 @@ class SettingsRepositoryImplTest {
 
         // When
         settingsRepository.setScanHistoryEnabled(isEnabled = false)
+        settingsRepository.setCreationHistoryEnabled(isEnabled = false)
         settingsRepository.setConsecutiveDuplicateSkipped(isSkipped = false)
         settingsRepository.setHistoryRetentionDays(days = 0)
 
@@ -123,7 +124,7 @@ class SettingsRepositoryImplTest {
         assertEquals(
             expected = Triple(false, false, 0),
             actual = Triple(
-                settingsRepository.watchIsScanHistoryEnabled().first(),
+                settingsRepository.watchIsScanHistoryEnabled().first() || settingsRepository.watchIsCreationHistoryEnabled().first(),
                 settingsRepository.watchIsConsecutiveDuplicateSkipped().first(),
                 settingsRepository.watchHistoryRetentionDays().first(),
             ),
@@ -131,6 +132,7 @@ class SettingsRepositoryImplTest {
         assertEquals(
             expected = mapOf(
                 "KEY_IS_SCAN_HISTORY_ENABLED" to false,
+                "KEY_IS_CREATION_HISTORY_ENABLED" to false,
                 "KEY_IS_CONSECUTIVE_DUPLICATE_SKIPPED" to false,
                 "KEY_HISTORY_RETENTION_DAYS" to 0,
             ),

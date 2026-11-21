@@ -6,7 +6,9 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import fr.skyle.scanny.data.db.dao.CreationDao
 import fr.skyle.scanny.data.db.dao.ScanDao
+import fr.skyle.scanny.data.db.entity.CreationEntity
 import fr.skyle.scanny.data.db.entity.ScanEntity
 import fr.skyle.scanny.data.db.entity.ScannedCodeEntity
 import kotlinx.coroutines.Dispatchers
@@ -17,16 +19,21 @@ import kotlinx.coroutines.IO
     entities = [
         ScanEntity::class,
         ScannedCodeEntity::class,
+        CreationEntity::class,
     ],
-    version = 2,
+    version = 3,
     autoMigrations = [
         // The flag of a capture kept out of the history
         AutoMigration(from = 1, to = 2),
+        // The table of the creations
+        AutoMigration(from = 2, to = 3),
     ],
 )
 internal abstract class ScannyDatabase : RoomDatabase() {
 
     abstract fun scanDao(): ScanDao
+
+    abstract fun creationDao(): CreationDao
 
     companion object {
         const val NAME = "scanny.db"

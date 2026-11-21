@@ -43,6 +43,7 @@ import fr.skyle.scanny.resources.ic_data_object
 import fr.skyle.scanny.resources.ic_domain
 import fr.skyle.scanny.resources.ic_history
 import fr.skyle.scanny.resources.ic_open_in_new
+import fr.skyle.scanny.resources.ic_qr_code
 import fr.skyle.scanny.resources.ic_shield
 import fr.skyle.scanny.resources.ic_star
 import fr.skyle.scanny.resources.ic_thumb_up
@@ -54,6 +55,7 @@ import fr.skyle.scanny.resources.open_content_after_scan
 import fr.skyle.scanny.resources.openium
 import fr.skyle.scanny.resources.privacy_policy
 import fr.skyle.scanny.resources.rate_app
+import fr.skyle.scanny.resources.save_creations_in_history
 import fr.skyle.scanny.resources.save_scans_in_history
 import fr.skyle.scanny.resources.scan_preferences
 import fr.skyle.scanny.resources.settings
@@ -198,6 +200,16 @@ fun SettingsScreen(
 
                     SettingsSwitchRow(
                         modifier = Modifier.fillMaxWidth(),
+                        icon = painterResource(Res.drawable.ic_qr_code),
+                        title = stringResource(Res.string.save_creations_in_history),
+                        isChecked = historySettings.isCreationHistoryEnabled,
+                        onCheckedChange = { isEnabled -> onHistorySettingChanged(HistorySetting.CREATION_HISTORY, isEnabled) },
+                    )
+
+                    SettingsRowDivider(modifier = Modifier.fillMaxWidth())
+
+                    SettingsSwitchRow(
+                        modifier = Modifier.fillMaxWidth(),
                         icon = painterResource(Res.drawable.ic_control_point_duplicate),
                         title = stringResource(Res.string.skip_consecutive_duplicates),
                         isChecked = historySettings.isConsecutiveDuplicateSkipped,
@@ -322,6 +334,7 @@ private fun PreviewSettingsScreen() {
             ),
             historySettings = HistorySettings(
                 isScanHistoryEnabled = true,
+                isCreationHistoryEnabled = true,
                 isConsecutiveDuplicateSkipped = true,
                 retention = HistoryRetention.ONE_MONTH,
             ),

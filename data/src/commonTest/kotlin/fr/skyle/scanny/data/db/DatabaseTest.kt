@@ -1,5 +1,6 @@
 package fr.skyle.scanny.data.db
 
+import fr.skyle.scanny.data.db.dao.CreationDao
 import fr.skyle.scanny.data.db.dao.ScanDao
 import kotlin.test.AfterTest
 
@@ -15,6 +16,9 @@ internal abstract class DatabaseTest : PlatformTest() {
 
     protected val scanDao: ScanDao
         get() = database.scanDao()
+
+    protected val creationDao: CreationDao
+        get() = database.creationDao()
 
     @AfterTest
     fun closeDatabase() {

@@ -1,5 +1,6 @@
 package fr.skyle.scanny.domain.usecase.history
 
+import fr.skyle.scanny.domain.fake.FakeCreationRepository
 import fr.skyle.scanny.domain.fake.FakeScanRepository
 import fr.skyle.scanny.domain.fake.FakeSettingsRepository
 import fr.skyle.scanny.domain.fake.FixedClock
@@ -13,8 +14,10 @@ class PurgeHistoryUseCaseTest {
 
     private val scanRepository = FakeScanRepository()
 
+    private val creationRepository = FakeCreationRepository()
+
     @Test
-    fun `the purge deletes the captures older than the retention`() = runTest {
+    fun `the purge deletes the captures and the creations older than the retention`() = runTest {
         // Given
         val purgeHistoryUseCase = purgeHistoryUseCase(settingsRepository = FakeSettingsRepository(historyRetentionDays = 30))
 
@@ -23,8 +26,8 @@ class PurgeHistoryUseCaseTest {
 
         // Then
         assertEquals(
-            expected = listOf<Instant?>(NOW - 30.days),
-            actual = scanRepository.purges,
+            expected = listOf<Instant?>(NOW - 30.days) to listOf<Instant?>(NOW - 30.days),
+            actual = scanRepository.purges to creationRepository.purges,
         )
     }
 
@@ -38,14 +41,15 @@ class PurgeHistoryUseCaseTest {
 
         // Then
         assertEquals(
-            expected = listOf<Instant?>(null),
-            actual = scanRepository.purges,
+            expected = listOf<Instant?>(null) to listOf<Instant?>(null),
+            actual = scanRepository.purges to creationRepository.purges,
         )
     }
 
     private fun purgeHistoryUseCase(settingsRepository: FakeSettingsRepository): PurgeHistoryUseCaseImpl =
         PurgeHistoryUseCaseImpl(
             scanRepository = scanRepository,
+            creationRepository = creationRepository,
             settingsRepository = settingsRepository,
             clock = FixedClock(instant = NOW),
         )

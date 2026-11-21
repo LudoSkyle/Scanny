@@ -32,6 +32,10 @@ interface SettingsRepository {
 
     suspend fun setScanHistoryEnabled(isEnabled: Boolean)
 
+    fun watchIsCreationHistoryEnabled(): Flow<Boolean>
+
+    suspend fun setCreationHistoryEnabled(isEnabled: Boolean)
+
     fun watchIsConsecutiveDuplicateSkipped(): Flow<Boolean>
 
     suspend fun setConsecutiveDuplicateSkipped(isSkipped: Boolean)

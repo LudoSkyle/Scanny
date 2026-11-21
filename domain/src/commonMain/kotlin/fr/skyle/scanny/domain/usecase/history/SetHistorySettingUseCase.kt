@@ -21,6 +21,7 @@ internal class SetHistorySettingUseCaseImpl(
     ) {
         when (setting) {
             HistorySetting.SCAN_HISTORY -> settingsRepository.setScanHistoryEnabled(isEnabled = isEnabled)
+            HistorySetting.CREATION_HISTORY -> settingsRepository.setCreationHistoryEnabled(isEnabled = isEnabled)
             HistorySetting.CONSECUTIVE_DUPLICATE_SKIPPED -> settingsRepository.setConsecutiveDuplicateSkipped(isSkipped = isEnabled)
         }
     }
