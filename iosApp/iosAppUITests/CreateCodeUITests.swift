@@ -135,6 +135,45 @@ final class CreateCodeUITests: XCTestCase {
         keepScreenshot(named: "created-code-with-a-style", of: app)
     }
 
+    func testAFreeColorThatReadsPoorlyIsToldWithoutStoppingTheCreation() throws {
+        let app = launchApp()
+        app.buttons["Create a code"].tap()
+
+        let textField = textInput(labelled: "Text", in: app)
+        XCTAssertTrue(textField.waitForExistence(timeout: 5))
+        waitUntilStill(textField)
+        textField.tap()
+        textField.typeText("A pale code")
+        // A touch out of the fields closes the keyboard, over the choices
+        let preview = app.images["The code"]
+        XCTAssertTrue(preview.waitForExistence(timeout: 5))
+        preview.tap()
+
+        // The first "Other color" is the one of the dots
+        let otherDotColor = element(labelled: "Other color", in: app)
+        scroll(to: otherDotColor, in: app)
+        otherDotColor.tap()
+        let area = element(labelled: "Saturation and brightness", in: app)
+        XCTAssertTrue(area.waitForExistence(timeout: 5))
+        waitUntilStill(area)
+        // The top left corner of the square: almost white, on the white background
+        area.coordinate(withNormalizedOffset: CGVector(dx: 0.02, dy: 0.02)).tap()
+        keepScreenshot(named: "custom-color-picker", of: app)
+        app.buttons["Choose"].tap()
+
+        let warning = app.staticTexts["Its dots and its background stand out too little: some scanners may not read this code."]
+        XCTAssertTrue(warning.waitForExistence(timeout: 5))
+        XCTAssertTrue(otherDotColor.isSelected)
+        keepScreenshot(named: "custom-color-warning", of: app)
+
+        // Told, not stopped
+        let createButton = app.buttons["Create"]
+        scroll(to: createButton, in: app)
+        XCTAssertTrue(createButton.isEnabled)
+        createButton.tap()
+        XCTAssertTrue(app.buttons["Show the code"].waitForExistence(timeout: 5))
+    }
+
     func testALogoPickedInThePhotosIsPutAtTheCenterOfTheCode() throws {
         let app = launchApp()
         app.buttons["Create a code"].tap()

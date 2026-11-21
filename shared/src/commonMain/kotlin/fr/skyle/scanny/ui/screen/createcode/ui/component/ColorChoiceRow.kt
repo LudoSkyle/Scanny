@@ -14,9 +14,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.other_color
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
+import org.jetbrains.compose.resources.stringResource
 
-/** A color to choose among [options], as discs going to the next line on a narrow screen. */
+/**
+ * A color to choose among [options], as discs going to the next line on a narrow screen, or any other
+ * color: the last disc, [customColor] when it is the one chosen.
+ */
 @Composable
 fun <T> ColorChoiceRow(
     label: String,
@@ -25,6 +31,8 @@ fun <T> ColorChoiceRow(
     optionColor: (T) -> Color,
     optionName: @Composable (T) -> String,
     onOptionSelected: (T) -> Unit,
+    customColor: Color?,
+    onCustomColorClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -54,6 +62,12 @@ fun <T> ColorChoiceRow(
                     onClick = { onOptionSelected(option) },
                 )
             }
+
+            CustomColorSwatch(
+                color = customColor,
+                name = stringResource(Res.string.other_color),
+                onClick = onCustomColorClicked,
+            )
         }
     }
 }
@@ -70,6 +84,8 @@ private fun PreviewColorChoiceRow() {
             optionColor = { color -> color },
             optionName = { color -> color.toString() },
             onOptionSelected = {},
+            customColor = null,
+            onCustomColorClicked = {},
         )
     }
 }
