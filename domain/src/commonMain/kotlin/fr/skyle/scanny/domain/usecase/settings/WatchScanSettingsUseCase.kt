@@ -19,14 +19,14 @@ internal class WatchScanSettingsUseCaseImpl(
             settingsRepository.watchIsVibrationAfterScanEnabled(),
             settingsRepository.watchIsBeepAfterScanEnabled(),
             settingsRepository.watchIsCopyAfterScanEnabled(),
-            settingsRepository.watchIsOpenLinkAfterScanEnabled(),
+            settingsRepository.watchIsOpenContentAfterScanEnabled(),
             settingsRepository.watchIsRawContentShown(),
-        ) { isVibrationAfterScanEnabled, isBeepAfterScanEnabled, isCopyAfterScanEnabled, isOpenLinkAfterScanEnabled, isRawContentShown ->
+        ) { isVibrationAfterScanEnabled, isBeepAfterScanEnabled, isCopyAfterScanEnabled, isOpenContentAfterScanEnabled, isRawContentShown ->
             ScanSettings(
                 isVibrationAfterScanEnabled = isVibrationAfterScanEnabled,
                 isBeepAfterScanEnabled = isBeepAfterScanEnabled,
                 isCopyAfterScanEnabled = isCopyAfterScanEnabled,
-                isOpenLinkAfterScanEnabled = isOpenLinkAfterScanEnabled,
+                isOpenContentAfterScanEnabled = isOpenContentAfterScanEnabled,
                 isRawContentShown = isRawContentShown,
             )
         }

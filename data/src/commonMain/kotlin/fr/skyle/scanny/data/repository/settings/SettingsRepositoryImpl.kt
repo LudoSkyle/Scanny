@@ -52,13 +52,13 @@ internal class SettingsRepositoryImpl(
         )
     }
 
-    override fun watchIsOpenLinkAfterScanEnabled(): Flow<Boolean> =
+    override fun watchIsOpenContentAfterScanEnabled(): Flow<Boolean> =
         watch(
             key = KEY_OPEN_LINK_AFTER_SCAN,
             defaultValue = false,
         )
 
-    override suspend fun setOpenLinkAfterScanEnabled(isEnabled: Boolean) {
+    override suspend fun setOpenContentAfterScanEnabled(isEnabled: Boolean) {
         set(
             key = KEY_OPEN_LINK_AFTER_SCAN,
             value = isEnabled,
@@ -100,6 +100,7 @@ internal class SettingsRepositoryImpl(
     internal companion object {
         // The keys of the v1, so that the settings of the Android users survive the update
         val KEY_VIBRATION_AFTER_SCAN = booleanPreferencesKey(name = "KEY_IS_VIBRATION_AFTER_SCAN_ENABLED")
+        // The name of v1, where the setting opened the links only
         val KEY_OPEN_LINK_AFTER_SCAN = booleanPreferencesKey(name = "KEY_OPEN_LINK_AFTER_SCAN")
         val KEY_RAW_CONTENT_SHOWN = booleanPreferencesKey(name = "KEY_IS_RAW_CONTENT_SHOWN")
 

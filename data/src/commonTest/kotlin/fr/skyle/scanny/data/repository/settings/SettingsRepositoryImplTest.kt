@@ -43,7 +43,7 @@ class SettingsRepositoryImplTest {
 
         // When
         settingsRepository.setVibrationAfterScanEnabled(isEnabled = false)
-        settingsRepository.setOpenLinkAfterScanEnabled(isEnabled = true)
+        settingsRepository.setOpenContentAfterScanEnabled(isEnabled = true)
         settingsRepository.setRawContentShown(isShown = true)
         settingsRepository.setBeepAfterScanEnabled(isEnabled = true)
         settingsRepository.setCopyAfterScanEnabled(isEnabled = true)
@@ -69,7 +69,7 @@ class SettingsRepositoryImplTest {
 
         // When
         settingsRepository.setVibrationAfterScanEnabled(isEnabled = false)
-        settingsRepository.setOpenLinkAfterScanEnabled(isEnabled = true)
+        settingsRepository.setOpenContentAfterScanEnabled(isEnabled = true)
         settingsRepository.setRawContentShown(isShown = true)
         settingsRepository.setBeepAfterScanEnabled(isEnabled = true)
         settingsRepository.setCopyAfterScanEnabled(isEnabled = false)
@@ -91,7 +91,7 @@ class SettingsRepositoryImplTest {
     private suspend fun SettingsRepositoryImpl.currentSettings(): List<Boolean> =
         listOf(
             watchIsVibrationAfterScanEnabled().first(),
-            watchIsOpenLinkAfterScanEnabled().first(),
+            watchIsOpenContentAfterScanEnabled().first(),
             watchIsRawContentShown().first(),
             watchIsBeepAfterScanEnabled().first(),
             watchIsCopyAfterScanEnabled().first(),

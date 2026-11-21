@@ -19,7 +19,7 @@ class WatchScanSettingsUseCaseTest {
         isVibrationAfterScanEnabled = true,
         isBeepAfterScanEnabled = true,
         isCopyAfterScanEnabled = false,
-        isOpenLinkAfterScanEnabled = false,
+        isOpenContentAfterScanEnabled = false,
         isRawContentShown = true,
     )
 
@@ -36,7 +36,7 @@ class WatchScanSettingsUseCaseTest {
                 isVibrationAfterScanEnabled = true,
                 isBeepAfterScanEnabled = true,
                 isCopyAfterScanEnabled = false,
-                isOpenLinkAfterScanEnabled = false,
+                isOpenContentAfterScanEnabled = false,
                 isRawContentShown = true,
             ),
             actual = settings,
@@ -52,7 +52,7 @@ class WatchScanSettingsUseCaseTest {
         }
 
         // When
-        settingsRepository.setOpenLinkAfterScanEnabled(isEnabled = true)
+        settingsRepository.setOpenContentAfterScanEnabled(isEnabled = true)
 
         // Then
         assertEquals(
@@ -61,14 +61,14 @@ class WatchScanSettingsUseCaseTest {
                     isVibrationAfterScanEnabled = true,
                     isBeepAfterScanEnabled = true,
                     isCopyAfterScanEnabled = false,
-                    isOpenLinkAfterScanEnabled = false,
+                    isOpenContentAfterScanEnabled = false,
                     isRawContentShown = true,
                 ),
                 ScanSettings(
                     isVibrationAfterScanEnabled = true,
                     isBeepAfterScanEnabled = true,
                     isCopyAfterScanEnabled = false,
-                    isOpenLinkAfterScanEnabled = true,
+                    isOpenContentAfterScanEnabled = true,
                     isRawContentShown = true,
                 ),
             ),

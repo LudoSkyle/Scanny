@@ -73,8 +73,8 @@
     <string name="no_app_to_open">Aucune app de cet appareil ne peut l'ouvrir</string>
     <string name="no_code_in_image">Aucun code trouvé dans cette image</string>
     <string name="no_scan_yet">Aucun scan pour l'instant</string>
+    <string name="open_content_after_scan">Ouvrir le contenu après un scan</string>
     <string name="open_link">Ouvrir le lien</string>
-    <string name="open_links_after_scan">Ouvrir les liens après un scan</string>
     <string name="open_settings">Ouvrir les réglages</string>
     <string name="organization">Organisation</string>
     <string name="pass_codes_in_front_of_camera">Passez les codes devant la caméra</string>

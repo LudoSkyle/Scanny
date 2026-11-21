@@ -185,6 +185,10 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   ne sait pas construire l'entrée d'un texte. Depuis Android 13, le système montre lui-même ce qui a
   été copié : l'app ne le redit pas (`isCopyConfirmedBySystem`). Sous la feuille du résultat, où un
   message de l'écran serait caché, c'est le bouton qui affiche « Copié ».
+- Le réglage « Ouvrir le contenu après un scan » lance, dès le scan et sans la feuille, l'action du
+  bouton principal du résultat (`toCodeAction`), par le même chemin dans la `Route` : un lien, un
+  e-mail, un SMS, un contact, un réseau Wi-Fi que l'appareil sait rejoindre. Un texte, ou un réseau
+  qu'il ne sait pas rejoindre, s'affiche dans la feuille. La détection reprend 2 s plus tard.
 - Partager passe par `TextSharer`, une interface, et partage la valeur brute du code : c'est ce
   qu'une autre app, ou un autre scanner, sait relire. Le module Koin de plateforme
   (`platformSharedModule`) fournit son implémentation.

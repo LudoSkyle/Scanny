@@ -189,7 +189,8 @@ trouvés pendant un scan multiple. Deux tables :
 - Sur Android, le fichier et les clés de la v1 sont conservés pour que les réglages survivent à la
   mise à jour : fichier `sc_datastore.preferences_pb` dans le dossier `datastore` des fichiers de
   l'app, clés `KEY_IS_VIBRATION_AFTER_SCAN_ENABLED` (défaut `true`), `KEY_OPEN_LINK_AFTER_SCAN`
-  (défaut `false`) et `KEY_IS_RAW_CONTENT_SHOWN` (défaut `false`). Les réglages venus avec la v2
+  (défaut `false` ; le réglage ouvre désormais tout contenu, la clé garde son nom de la v1) et
+  `KEY_IS_RAW_CONTENT_SHOWN` (défaut `false`). Les réglages venus avec la v2
   suivent la même forme : `KEY_IS_BEEP_AFTER_SCAN_ENABLED` et `KEY_IS_COPY_AFTER_SCAN_ENABLED`
   (défaut `false`).
 - `SettingsRepository` expose un `watchXxx(): Flow<T>` et un `suspend fun setXxx(value: T)` par
