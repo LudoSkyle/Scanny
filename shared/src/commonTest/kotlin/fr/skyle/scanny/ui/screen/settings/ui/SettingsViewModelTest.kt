@@ -70,6 +70,7 @@ class SettingsViewModelTest {
                 ),
                 historySettings = HistorySettings(
                     isScanHistoryEnabled = true,
+                    isCreationHistoryEnabled = true,
                     isConsecutiveDuplicateSkipped = true,
                     retention = HistoryRetention.ONE_MONTH,
                 ),

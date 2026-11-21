@@ -208,6 +208,7 @@ final class SettingsUITests: XCTestCase {
         let retentionRow = element(labelled: "Keep the history", in: app)
         scroll(to: retentionRow, in: app)
         XCTAssertTrue(retentionRow.label.contains("30 days"))
+        XCTAssertTrue(app.switches["Save the creations in the history"].exists)
 
         retentionRow.tap()
         let forever = element(labelled: "Forever", in: app)

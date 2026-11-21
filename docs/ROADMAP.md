@@ -199,8 +199,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] Le code d'un scan redessiné (qrose, qrose-oned) dans une boîte de dialogue, depuis la barre
           du `ScanDetail` ; pas de bouton pour un Data Matrix, un Aztec ou un PDF417, que qrose ne
           dessine pas
-    - [ ] Donnée et domaine des créations : table, encodage du contenu, enregistrement ou non dans
-          l'historique (réglage, activé par défaut), durée de conservation
+    - [x] Donnée et domaine des créations : table (base en version 3), encodage du contenu,
+          enregistrement ou non dans l'historique (réglage, activé par défaut), durée de conservation
     - [ ] L'éditeur : type, formulaire, aperçu, enregistrement, partage et enregistrement de l'image
     - [ ] La personnalisation : couleurs, formes, logo
     - [ ] L'historique des créations

@@ -22,8 +22,23 @@ class SetHistorySettingUseCaseTest {
 
         // Then
         assertEquals(
-            expected = false to true,
-            actual = settingsRepository.isScanHistoryEnabled.value to settingsRepository.isConsecutiveDuplicateSkipped.value,
+            expected = listOf(false, true, true),
+            actual = currentSettings(),
+        )
+    }
+
+    @Test
+    fun `the history of the creations changes alone`() = runTest {
+        // When
+        setHistorySettingUseCase(
+            setting = HistorySetting.CREATION_HISTORY,
+            isEnabled = false,
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(true, false, true),
+            actual = currentSettings(),
         )
     }
 
@@ -37,8 +52,15 @@ class SetHistorySettingUseCaseTest {
 
         // Then
         assertEquals(
-            expected = true to false,
-            actual = settingsRepository.isScanHistoryEnabled.value to settingsRepository.isConsecutiveDuplicateSkipped.value,
+            expected = listOf(true, true, false),
+            actual = currentSettings(),
         )
     }
+
+    private fun currentSettings(): List<Boolean> =
+        listOf(
+            settingsRepository.isScanHistoryEnabled.value,
+            settingsRepository.isCreationHistoryEnabled.value,
+            settingsRepository.isConsecutiveDuplicateSkipped.value,
+        )
 }

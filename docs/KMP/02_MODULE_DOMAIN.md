@@ -129,6 +129,19 @@ session.
   (`SetHistoryRetentionUseCase`), pour qu'une durée plus courte s'applique tout de suite.
 - Supprimer le dernier code d'une capture supprime la capture (règle portée par `data`).
 
+### Créations
+
+Une `Creation` est un code créé par l'utilisateur : son contenu, le texte mis dans le code, son
+format, sa date.
+
+- `RecordCreationUseCase` reçoit un contenu et un format. Il écrit le texte du contenu
+  (`toRawValue`, l'encodeur, l'exact inverse du parseur), l'enregistre, hors de l'historique quand
+  l'utilisateur n'en garde pas des créations, et rend la création relue.
+- `toRawValue` est publique : l'éditeur en tire l'aperçu du code avant tout enregistrement.
+- Pour un code-barres, le contenu est un `Text` de ses chiffres ou de ses caractères.
+- La purge de l'historique (`PurgeHistoryUseCase`) vaut pour les créations comme pour les captures,
+  avec la même durée de conservation.
+
 ### UseCases
 
 - Un UseCase est **une interface et son implémentation, dans le même fichier**, nommé d'après

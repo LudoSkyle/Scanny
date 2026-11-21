@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 internal class FakeWatchHistorySettingsUseCase(
     isScanHistoryEnabled: Boolean = true,
+    isCreationHistoryEnabled: Boolean = true,
     isConsecutiveDuplicateSkipped: Boolean = true,
     retention: HistoryRetention = HistoryRetention.ONE_MONTH,
 ) : WatchHistorySettingsUseCase {
@@ -15,6 +16,7 @@ internal class FakeWatchHistorySettingsUseCase(
     val settings = MutableStateFlow(
         HistorySettings(
             isScanHistoryEnabled = isScanHistoryEnabled,
+            isCreationHistoryEnabled = isCreationHistoryEnabled,
             isConsecutiveDuplicateSkipped = isConsecutiveDuplicateSkipped,
             retention = retention,
         ),

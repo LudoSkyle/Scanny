@@ -16,6 +16,7 @@ class WatchHistorySettingsUseCaseTest {
         val watchHistorySettingsUseCase = WatchHistorySettingsUseCaseImpl(
             settingsRepository = FakeSettingsRepository(
                 isScanHistoryEnabled = false,
+                isCreationHistoryEnabled = true,
                 isConsecutiveDuplicateSkipped = true,
                 historyRetentionDays = 90,
             ),
@@ -28,6 +29,7 @@ class WatchHistorySettingsUseCaseTest {
         assertEquals(
             expected = HistorySettings(
                 isScanHistoryEnabled = false,
+                isCreationHistoryEnabled = true,
                 isConsecutiveDuplicateSkipped = true,
                 retention = HistoryRetention.THREE_MONTHS,
             ),

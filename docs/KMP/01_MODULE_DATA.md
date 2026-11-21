@@ -145,7 +145,8 @@ internal expect val platformDataModule: Module
   possible). Les schémas sont exportés et versionnés (`data/schemas/`).
 - La règle vaut avant même la publication de la v2 : les installations de développement ont des
   données, et une base dont le schéma change sans que sa version monte ne s'ouvre plus. La version 2
-  ajoute `is_in_history` à `scan` (`AutoMigration` de 1 à 2).
+  ajoute `is_in_history` à `scan` (`AutoMigration` de 1 à 2), la version 3 la table `creation` (de 2
+  à 3).
 - Une requête de lecture multiple a un `ORDER BY` explicite : sans lui, l'ordre est un détail de
   SQLite dont l'UI finit par dépendre.
 - Un index est attendu sur toute colonne utilisée en filtre ou en tri (date de scan, type).
@@ -183,6 +184,17 @@ trouvés pendant un scan multiple. Deux tables :
   captures de l'historique plus anciennes que la date donnée.
 - `updateScanTime` remet une capture à l'heure, pour un doublon consécutif (voir le domaine).
 
+### Historique des créations
+
+| Table | Colonnes | Rôle |
+|---|---|---|
+| `creation` | `id`, `created_at` (indexée), `raw_value`, `format`, `is_in_history` (indexée, `1` par défaut) | un code créé : le texte mis dans le code, son format, sa date |
+
+- Seul le texte du code est stocké, comme pour un scan : le contenu se relit depuis lui.
+- Comme une capture, une création hors de l'historique (`is_in_history = 0`) se lit par son
+  identifiant mais jamais dans l'historique, et la purge (`purgeCreations`) la supprime avec les
+  créations plus anciennes que la date donnée.
+
 ### Réglages (DataStore)
 
 - Un seul DataStore de préférences pour toute l'app, créé une fois (`single` Koin) avec
@@ -197,8 +209,8 @@ trouvés pendant un scan multiple. Deux tables :
   (défaut `false` ; le réglage ouvre désormais tout contenu, la clé garde son nom de la v1) et
   `KEY_IS_RAW_CONTENT_SHOWN` (défaut `false`). Les réglages venus avec la v2
   suivent la même forme : `KEY_IS_BEEP_AFTER_SCAN_ENABLED` et `KEY_IS_COPY_AFTER_SCAN_ENABLED`
-  (défaut `false`), `KEY_IS_FRONT_CAMERA_USED` (défaut `false`), `KEY_IS_SCAN_HISTORY_ENABLED` et
-  `KEY_IS_CONSECUTIVE_DUPLICATE_SKIPPED` (défaut
+  (défaut `false`), `KEY_IS_FRONT_CAMERA_USED` (défaut `false`), `KEY_IS_SCAN_HISTORY_ENABLED`,
+  `KEY_IS_CREATION_HISTORY_ENABLED` et `KEY_IS_CONSECUTIVE_DUPLICATE_SKIPPED` (défaut
   `true`), et `KEY_HISTORY_RETENTION_DAYS`, un entier (défaut `30`, `0` pour toujours) : `data` ne
   connaît pas l'énumération du domaine.
 - `SettingsRepository` expose un `watchXxx(): Flow<T>` et un `suspend fun setXxx(value: T)` par

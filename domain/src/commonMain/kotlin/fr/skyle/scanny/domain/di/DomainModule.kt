@@ -1,6 +1,16 @@
 package fr.skyle.scanny.domain.di
 
 import fr.skyle.scanny.data.di.dataModule
+import fr.skyle.scanny.domain.usecase.creation.DeleteAllCreationsUseCase
+import fr.skyle.scanny.domain.usecase.creation.DeleteAllCreationsUseCaseImpl
+import fr.skyle.scanny.domain.usecase.creation.DeleteCreationUseCase
+import fr.skyle.scanny.domain.usecase.creation.DeleteCreationUseCaseImpl
+import fr.skyle.scanny.domain.usecase.creation.RecordCreationUseCase
+import fr.skyle.scanny.domain.usecase.creation.RecordCreationUseCaseImpl
+import fr.skyle.scanny.domain.usecase.creation.WatchCreationUseCase
+import fr.skyle.scanny.domain.usecase.creation.WatchCreationUseCaseImpl
+import fr.skyle.scanny.domain.usecase.creation.WatchCreationsUseCase
+import fr.skyle.scanny.domain.usecase.creation.WatchCreationsUseCaseImpl
 import fr.skyle.scanny.domain.usecase.history.PurgeHistoryUseCase
 import fr.skyle.scanny.domain.usecase.history.PurgeHistoryUseCaseImpl
 import fr.skyle.scanny.domain.usecase.history.SetHistoryRetentionUseCase
@@ -44,6 +54,11 @@ val domainModule = module {
     factoryOf(::DeleteScanUseCaseImpl) bind DeleteScanUseCase::class
     factoryOf(::DeleteAllScansUseCaseImpl) bind DeleteAllScansUseCase::class
     factoryOf(::DeleteScannedCodeUseCaseImpl) bind DeleteScannedCodeUseCase::class
+    factoryOf(::RecordCreationUseCaseImpl) bind RecordCreationUseCase::class
+    factoryOf(::WatchCreationsUseCaseImpl) bind WatchCreationsUseCase::class
+    factoryOf(::WatchCreationUseCaseImpl) bind WatchCreationUseCase::class
+    factoryOf(::DeleteCreationUseCaseImpl) bind DeleteCreationUseCase::class
+    factoryOf(::DeleteAllCreationsUseCaseImpl) bind DeleteAllCreationsUseCase::class
     factoryOf(::WatchScanSettingsUseCaseImpl) bind WatchScanSettingsUseCase::class
     factoryOf(::SetScanSettingUseCaseImpl) bind SetScanSettingUseCase::class
     factoryOf(::WatchHistorySettingsUseCaseImpl) bind WatchHistorySettingsUseCase::class

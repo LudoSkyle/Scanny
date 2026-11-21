@@ -105,6 +105,19 @@ internal class SettingsRepositoryImpl(
         )
     }
 
+    override fun watchIsCreationHistoryEnabled(): Flow<Boolean> =
+        watch(
+            key = KEY_CREATION_HISTORY,
+            defaultValue = true,
+        )
+
+    override suspend fun setCreationHistoryEnabled(isEnabled: Boolean) {
+        set(
+            key = KEY_CREATION_HISTORY,
+            value = isEnabled,
+        )
+    }
+
     override fun watchIsConsecutiveDuplicateSkipped(): Flow<Boolean> =
         watch(
             key = KEY_CONSECUTIVE_DUPLICATE_SKIPPED,
@@ -162,6 +175,7 @@ internal class SettingsRepositoryImpl(
         val KEY_COPY_AFTER_SCAN = booleanPreferencesKey(name = "KEY_IS_COPY_AFTER_SCAN_ENABLED")
         val KEY_FRONT_CAMERA = booleanPreferencesKey(name = "KEY_IS_FRONT_CAMERA_USED")
         val KEY_SCAN_HISTORY = booleanPreferencesKey(name = "KEY_IS_SCAN_HISTORY_ENABLED")
+        val KEY_CREATION_HISTORY = booleanPreferencesKey(name = "KEY_IS_CREATION_HISTORY_ENABLED")
         val KEY_CONSECUTIVE_DUPLICATE_SKIPPED = booleanPreferencesKey(name = "KEY_IS_CONSECUTIVE_DUPLICATE_SKIPPED")
         val KEY_HISTORY_RETENTION_DAYS = intPreferencesKey(name = "KEY_HISTORY_RETENTION_DAYS")
 
