@@ -1,5 +1,6 @@
 package fr.skyle.scanny.platform.camera
 
+import android.util.Size
 import androidx.camera.compose.CameraXViewfinder
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
@@ -9,6 +10,9 @@ import androidx.camera.core.Preview
 import androidx.camera.core.SurfaceOrientedMeteringPointFactory
 import androidx.camera.core.SurfaceRequest
 import androidx.camera.core.ZoomState
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.lifecycle.awaitInstance
 import androidx.camera.mlkit.vision.MlKitAnalyzer
@@ -39,6 +43,21 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import fr.skyle.scanny.domain.model.DetectedBarcode
 import kotlinx.coroutines.awaitCancellation
 import java.util.concurrent.Executors
+
+/**
+ * The preview: 1920x1080 in 16:9, rather than the 1440x1080 in 4:3 of CameraX. Cropped to fill a
+ * phone screen, the 4:3 image is enlarged about 1.6 times and looks blurred; the 16:9 one about 1.2
+ * times. Along with the analysis, a pair of sizes every device supports.
+ */
+private val previewResolutionSelector = ResolutionSelector.Builder()
+    .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+    .setResolutionStrategy(
+        ResolutionStrategy(
+            Size(1920, 1080),
+            ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER,
+        ),
+    )
+    .build()
 
 @Composable
 actual fun ScanCamera(
@@ -73,11 +92,14 @@ actual fun ScanCamera(
         val barcodeScanner = BarcodeScanning.getClient(mlKitScannerOptions)
         val analysisExecutor = Executors.newSingleThreadExecutor()
 
-        val preview = Preview.Builder().build().apply {
-            setSurfaceProvider { request ->
-                surfaceRequest = request
+        val preview = Preview.Builder()
+            .setResolutionSelector(previewResolutionSelector)
+            .build()
+            .apply {
+                setSurfaceProvider { request ->
+                    surfaceRequest = request
+                }
             }
-        }
         val imageAnalysis = ImageAnalysis.Builder()
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
