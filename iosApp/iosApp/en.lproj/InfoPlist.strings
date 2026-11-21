@@ -1,1 +1,2 @@
 "NSCameraUsageDescription" = "Scanny uses the camera to scan codes.";
+"NSPhotoLibraryAddUsageDescription" = "Scanny keeps in your photos the images of the codes you save.";

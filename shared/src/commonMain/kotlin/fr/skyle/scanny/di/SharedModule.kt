@@ -1,6 +1,8 @@
 package fr.skyle.scanny.di
 
 import fr.skyle.scanny.domain.di.domainModule
+import fr.skyle.scanny.ui.core.code.image.CodeImageRenderer
+import fr.skyle.scanny.ui.core.code.image.QroseCodeImageRenderer
 import fr.skyle.scanny.ui.main.MainViewModel
 import fr.skyle.scanny.ui.screen.createcode.ui.CreateCodeViewModel
 import fr.skyle.scanny.ui.screen.creationdetail.ui.CreationDetailViewModel
@@ -22,6 +24,8 @@ val sharedModule = module {
 
     // Read at each screen: the user may change it while the app runs
     factory { TimeZone.currentSystemDefault() }
+
+    single<CodeImageRenderer> { QroseCodeImageRenderer() }
 
     viewModelOf(::MainViewModel)
     viewModelOf(::ScanViewModel)

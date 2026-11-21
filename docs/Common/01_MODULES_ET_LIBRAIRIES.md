@@ -81,7 +81,7 @@ Communes (`commonMain`) :
 | Fichiers | kotlinx-io |
 | Coroutines | kotlinx-coroutines |
 | Logs | Kermit (`Logger`). Sur Android, `ScannyApplication` envoie avertissements et erreurs à Crashlytics (`CrashlyticsLogWriter`), et le build debug ajoute logcat |
-| Génération de QR codes | qrose (rendu `Painter`, export PNG, personnalisation) et qrose-oned (les codes-barres d'une dimension), dans `shared` : un code se redessine depuis son texte par `CodeImage` (`ui/core/code`) |
+| Génération de QR codes | qrose (rendu `Painter`, export PNG, personnalisation) et qrose-oned (les codes-barres d'une dimension), dans `shared` : un code se redessine depuis son texte par `CodeImage` (`ui/core/code`), et son image PNG, à partager ou enregistrer, par `CodeImageRenderer` |
 
 Android (`androidMain`, `androidApp`) :
 

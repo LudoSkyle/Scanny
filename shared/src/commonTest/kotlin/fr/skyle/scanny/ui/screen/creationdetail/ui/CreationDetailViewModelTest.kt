@@ -3,7 +3,10 @@ package fr.skyle.scanny.ui.screen.creationdetail.ui
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.Creation
+import fr.skyle.scanny.fake.FakeCodeImageRenderer
 import fr.skyle.scanny.fake.FakeDeleteCreationUseCase
+import fr.skyle.scanny.fake.FakeImageSaver
+import fr.skyle.scanny.fake.FakeImageSharer
 import fr.skyle.scanny.fake.FakeWatchCreationUseCase
 import fr.skyle.scanny.fake.FixedClock
 import fr.skyle.scanny.ui.core.code.model.CodeField
@@ -24,6 +27,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.time.Instant
 
@@ -113,14 +117,114 @@ class CreationDetailViewModelTest {
         )
     }
 
+    @Test
+    fun `sharing draws the code and shares its image named after the creation`() = runTest(testDispatcher) {
+        // Given
+        val codeImageRenderer = FakeCodeImageRenderer()
+        val imageSharer = FakeImageSharer()
+        val viewModel = creationDetailViewModel(
+            codeImageRenderer = codeImageRenderer,
+            imageSharer = imageSharer,
+        )
+
+        // When
+        viewModel.onShareClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf("https://scanny.app" to BarcodeFormat.QR_CODE),
+            actual = codeImageRenderer.renderedCodes,
+        )
+        assertEquals(
+            expected = listOf(listOf<Byte>(1, 2, 3) to "scanny-3.png"),
+            actual = imageSharer.sharedImages,
+        )
+    }
+
+    @Test
+    fun `an image that cannot be drawn is reported instead of shared`() = runTest(testDispatcher) {
+        // Given
+        val imageSharer = FakeImageSharer()
+        val viewModel = creationDetailViewModel(
+            codeImageRenderer = FakeCodeImageRenderer(error = IllegalArgumentException("Code length overflow")),
+            imageSharer = imageSharer,
+        )
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onShareClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(CreationDetailViewModel.CreationDetailEvent.ImageNotShared),
+            actual = events,
+        )
+        assertEquals(
+            expected = emptyList(),
+            actual = imageSharer.sharedImages,
+        )
+    }
+
+    @Test
+    fun `saving keeps the image in the photos and says it`() = runTest(testDispatcher) {
+        // Given
+        val imageSaver = FakeImageSaver()
+        val viewModel = creationDetailViewModel(imageSaver = imageSaver)
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onSaveClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(listOf<Byte>(1, 2, 3) to "scanny-3.png"),
+            actual = imageSaver.savedImages,
+        )
+        assertEquals(
+            expected = listOf(CreationDetailViewModel.CreationDetailEvent.ImageSaved),
+            actual = events,
+        )
+    }
+
+    @Test
+    fun `an image the photos refuse is reported`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = creationDetailViewModel(imageSaver = FakeImageSaver(error = IllegalStateException("No access to the photos")))
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onSaveClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(CreationDetailViewModel.CreationDetailEvent.ImageNotSaved),
+            actual = events,
+        )
+    }
+
+    @Test
+    fun `saving is not offered on a device that does not let the app keep an image`() = runTest(testDispatcher) {
+        // When
+        val viewModel = creationDetailViewModel(imageSaver = FakeImageSaver(canSave = false))
+
+        // Then
+        assertFalse(viewModel.uiState.value.canSaveImage)
+    }
+
     private fun creationDetailViewModel(
         watchCreationUseCase: FakeWatchCreationUseCase = FakeWatchCreationUseCase(creation = linkCreation()),
         deleteCreationUseCase: FakeDeleteCreationUseCase = FakeDeleteCreationUseCase(),
+        codeImageRenderer: FakeCodeImageRenderer = FakeCodeImageRenderer(),
+        imageSharer: FakeImageSharer = FakeImageSharer(),
+        imageSaver: FakeImageSaver = FakeImageSaver(),
     ): CreationDetailViewModel =
         CreationDetailViewModel(
             creationId = CREATION_ID,
             watchCreationUseCase = watchCreationUseCase,
             deleteCreationUseCase = deleteCreationUseCase,
+            codeImageRenderer = codeImageRenderer,
+            imageSharer = imageSharer,
+            imageSaver = imageSaver,
             // Created at the very moment of the test, in UTC
             clock = FixedClock(instant = Instant.fromEpochMilliseconds(0)),
             timeZone = TimeZone.UTC,

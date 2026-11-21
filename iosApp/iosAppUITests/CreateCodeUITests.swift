@@ -47,6 +47,44 @@ final class CreateCodeUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Create a code"].exists)
     }
 
+    func testACreatedCodeIsSharedAndSavedAsAnImage() throws {
+        let app = launchApp()
+        app.buttons["Create a code"].tap()
+
+        // A text, the kind the editor opens on
+        let textField = textInput(labelled: "Text", in: app)
+        XCTAssertTrue(textField.waitForExistence(timeout: 5))
+        waitUntilStill(textField)
+        textField.tap()
+        textField.typeText("Shared from Scanny")
+        // A touch out of the fields closes the keyboard, over the button
+        let preview = app.images["The code"]
+        XCTAssertTrue(preview.waitForExistence(timeout: 5))
+        preview.tap()
+        let createButton = app.buttons["Create"]
+        scroll(to: createButton, in: app)
+        createButton.tap()
+        XCTAssertTrue(app.buttons["Save the image"].waitForExistence(timeout: 5))
+
+        app.buttons["Share"].tap()
+        let shareSheet = app.otherElements["ActivityListView"]
+        XCTAssertTrue(shareSheet.waitForExistence(timeout: 5))
+        keepScreenshot(named: "created-code-share", of: app)
+        // The share sheet has no button to close it: a touch above it does
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.2)).tap()
+        XCTAssertTrue(shareSheet.waitForNonExistence(timeout: 5))
+
+        app.buttons["Save the image"].tap()
+        // The photos are asked for at the first save only: otherwise the message, shown a few seconds,
+        // comes right away
+        let savedMessage = app.staticTexts["The image is saved in your photos"]
+        if !savedMessage.waitForExistence(timeout: 3) {
+            allowTheSystemAlertIfAsked(timeout: 2)
+            XCTAssertTrue(savedMessage.waitForExistence(timeout: 10))
+        }
+        keepScreenshot(named: "created-code-saved", of: app)
+    }
+
     func testABarcodeWithAWrongCheckDigitCannotBeCreated() throws {
         let app = launchApp()
         app.buttons["Create a code"].tap()

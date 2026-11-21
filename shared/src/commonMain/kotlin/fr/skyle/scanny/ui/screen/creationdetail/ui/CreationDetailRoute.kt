@@ -18,6 +18,9 @@ import fr.skyle.scanny.platform.clipboard.textClipEntry
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.code_not_deleted
 import fr.skyle.scanny.resources.copied_to_clipboard
+import fr.skyle.scanny.resources.image_not_saved
+import fr.skyle.scanny.resources.image_not_shared
+import fr.skyle.scanny.resources.image_saved
 import fr.skyle.scanny.ui.core.code.component.DeleteCodeDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -51,6 +54,18 @@ fun CreationDetailRoute(
                     CreationDetailViewModel.CreationDetailEvent.DeleteFailed -> launch {
                         snackbarState.show(message = getString(Res.string.code_not_deleted))
                     }
+
+                    CreationDetailViewModel.CreationDetailEvent.ImageSaved -> launch {
+                        snackbarState.show(message = getString(Res.string.image_saved))
+                    }
+
+                    CreationDetailViewModel.CreationDetailEvent.ImageNotSaved -> launch {
+                        snackbarState.show(message = getString(Res.string.image_not_saved))
+                    }
+
+                    CreationDetailViewModel.CreationDetailEvent.ImageNotShared -> launch {
+                        snackbarState.show(message = getString(Res.string.image_not_shared))
+                    }
                 }
             }
         }
@@ -58,9 +73,12 @@ fun CreationDetailRoute(
 
     CreationDetailScreen(
         creation = uiState.creation,
+        canSaveImage = uiState.canSaveImage,
         isDeleting = uiState.isDeleting,
         snackbarState = snackbarState,
         onBackClicked = navigateBack,
+        onShareClicked = viewModel::onShareClicked,
+        onSaveClicked = viewModel::onSaveClicked,
         onDeleteClicked = {
             isDeleteDialogVisible = true
         },
