@@ -14,8 +14,9 @@ On y trouve :
 - les composants génériques : `SCScreenStructure` (fond, insets, barre du haut, messages, couleur
   des icônes système), `SCTopAppBar`, `SCIconButton`, `SCIconBadge`, `SCButton`, `SCText`, `SCCard`
   et `SCCardStructure` (une carte et son titre), `SCDialog`, `SCBottomSheet`, `SCSnackbarState`,
-  `SCSwitch`, `SCTextField`, `SCDropdownField` (un choix dans un menu qui se déplie sous le champ) et
-  `SCDivider` (une ligne entre deux rangées d'une carte).
+  `SCSwitch`, `SCTextField`, `SCDropdownField` (un choix dans un menu qui se déplie sous le champ),
+  `SCDropdownMenu` (le menu seul, sous l'élément où il est placé) et `SCDivider` (une ligne entre deux
+  rangées d'une carte).
   Les autres arrivent avec le premier écran qui en a besoin ;
 - les polices (Lato), les icônes et les textes des composants, dans Compose Resources.
 
@@ -42,6 +43,7 @@ designSystem/src/commonMain/
 │       ├── dialog/            (SCDialog : une question avant une action, confirmer ou annuler)
 │       ├── divider/           (SCDivider : une ligne fine entre deux rangées, de la couleur du fond)
 │       ├── dropdownfield/     (SCDropdownField : un choix dans un menu, aux styles de SCTextField)
+│       ├── dropdownmenu/      (SCDropdownMenu : un menu d'options, le choix en cours en couleur)
 │       ├── iconbadge/         (SCIconBadge : une icône dans un rond, non cliquable ; MEDIUM dans une rangée, LARGE en tête d'un écran)
 │       ├── iconbutton/
 │       │   ├── SCIconButton.kt
