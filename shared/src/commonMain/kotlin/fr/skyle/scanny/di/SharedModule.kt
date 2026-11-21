@@ -13,6 +13,7 @@ import fr.skyle.scanny.ui.screen.history.ui.HistoryViewModel
 import fr.skyle.scanny.ui.screen.settings.ui.SettingsViewModel
 import kotlinx.datetime.TimeZone
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -33,7 +34,14 @@ val sharedModule = module {
     viewModelOf(::ScanGroupViewModel)
     viewModelOf(::HistoryViewModel)
     viewModelOf(::SettingsViewModel)
-    viewModelOf(::CreateCodeViewModel)
+    // Opened empty from the scan, with no scanned code to fill it
+    viewModel { parameters ->
+        CreateCodeViewModel(
+            scannedCodeId = parameters.getOrNull(),
+            watchScannedCodeUseCase = get(),
+            recordCreationUseCase = get(),
+        )
+    }
     viewModelOf(::CreationDetailViewModel)
 }
 

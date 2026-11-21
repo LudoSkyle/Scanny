@@ -29,7 +29,9 @@ import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.at_time
 import fr.skyle.scanny.resources.content
 import fr.skyle.scanny.resources.delete
+import fr.skyle.scanny.resources.edit_code
 import fr.skyle.scanny.resources.ic_delete
+import fr.skyle.scanny.resources.ic_edit
 import fr.skyle.scanny.resources.ic_qr_code
 import fr.skyle.scanny.resources.ic_share
 import fr.skyle.scanny.resources.raw_content
@@ -58,6 +60,7 @@ fun ScanDetailScreen(
     snackbarState: SCSnackbarState,
     onBackClicked: () -> Unit,
     onShowCodeClicked: () -> Unit,
+    onEditClicked: () -> Unit,
     onShareClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
     onCopyClicked: (text: String) -> Unit,
@@ -83,6 +86,16 @@ fun ScanDetailScreen(
                                 size = SCIconButtonDefaults.Size.MEDIUM,
                             )
                         }
+
+                        // Its content in the editor, to be changed and created as a new code
+                        SCIconButton(
+                            modifier = Modifier.wrapContentSize(),
+                            icon = painterResource(Res.drawable.ic_edit),
+                            contentDescription = stringResource(Res.string.edit_code),
+                            onClick = onEditClicked,
+                            style = SCIconButtonDefaults.Style.DARK,
+                            size = SCIconButtonDefaults.Size.MEDIUM,
+                        )
 
                         SCIconButton(
                             modifier = Modifier.wrapContentSize(),
@@ -214,6 +227,7 @@ private fun PreviewScanDetailScreen() {
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
             onShowCodeClicked = {},
+            onEditClicked = {},
             onShareClicked = {},
             onDeleteClicked = {},
             onCopyClicked = {},
@@ -246,6 +260,7 @@ private fun PreviewScanDetailScreen_Text() {
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
             onShowCodeClicked = {},
+            onEditClicked = {},
             onShareClicked = {},
             onDeleteClicked = {},
             onCopyClicked = {},
@@ -264,6 +279,7 @@ private fun PreviewScanDetailScreen_Loading() {
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
             onShowCodeClicked = {},
+            onEditClicked = {},
             onShareClicked = {},
             onDeleteClicked = {},
             onCopyClicked = {},

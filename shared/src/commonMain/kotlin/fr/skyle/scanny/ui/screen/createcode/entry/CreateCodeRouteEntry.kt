@@ -8,9 +8,10 @@ import fr.skyle.scanny.ui.screen.createcode.ui.CreateCodeRoute
 fun EntryProviderScope<Route>.createCodeRouteEntry(
     backStack: NavBackStack<Route>,
 ) {
-    entry<Route.CreateCode> {
+    entry<Route.CreateCode> { route ->
         CreateCodeRoute(
-            // The editor gives way to the creation: back from it returns to the scan
+            scannedCodeId = route.scannedCodeId,
+            // The editor gives way to the creation: back from it returns to the screen that opened it
             navigateToCreationDetail = { creationId ->
                 backStack.removeLastOrNull()
                 backStack.add(Route.CreationDetail(creationId = creationId))

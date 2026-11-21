@@ -13,9 +13,11 @@ intermédiaire.
 - L'hôte de navigation est `ui/main/navigation/RootNavDisplay.kt`, affiché par `ScannyApp`.
 - Ce que l'app fait une fois à son démarrage, quel que soit l'écran (la purge de l'historique), vit
   dans `ui/main/MainViewModel`, créé par `ScannyApp` : pas dans le ViewModel du scan.
-- La création d'un code s'ouvre par le « + » de la barre du scan (`Route.CreateCode`). Créer
-  remplace l'éditeur par l'écran de la création (`Route.CreationDetail(creationId)`) : le retour depuis
-  elle revient au scan.
+- La création d'un code s'ouvre par le « + » de la barre du scan (`Route.CreateCode()`), ou par
+  « Modifier le code » du détail d'un scan, prérempli avec son contenu
+  (`Route.CreateCode(scannedCodeId)`). Créer remplace l'éditeur par l'écran de la création
+  (`Route.CreationDetail(creationId)`) : le retour depuis elle revient à l'écran qui a ouvert
+  l'éditeur.
 - L'historique (`Route.History`) montre les scans ou les créations, sur le même écran : une bascule
   sous sa barre (`SCSegmentedControl`) choisit la vue, sans toucher au back stack. Ce n'est pas une
   navigation par onglets : chaque vue ouvre ses écrans par-dessus l'historique, qui garde la vue

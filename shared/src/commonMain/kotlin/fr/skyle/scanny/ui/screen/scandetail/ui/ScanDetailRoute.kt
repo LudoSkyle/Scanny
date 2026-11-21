@@ -33,6 +33,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun ScanDetailRoute(
     codeId: Long,
+    navigateToCreateCode: () -> Unit,
     navigateBack: () -> Unit,
     viewModel: ScanDetailViewModel = koinViewModel(parameters = { parametersOf(codeId) }),
 ) {
@@ -76,6 +77,7 @@ fun ScanDetailRoute(
         onShowCodeClicked = {
             isCodeImageDialogVisible = true
         },
+        onEditClicked = navigateToCreateCode,
         onBackClicked = navigateBack,
         onShareClicked = viewModel::onShareClicked,
         onDeleteClicked = {

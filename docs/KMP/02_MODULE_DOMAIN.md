@@ -153,6 +153,10 @@ format, son style, sa date.
   code-barres refuse une mauvaise longueur ou un mauvais chiffre de contrôle, un QR code un texte
   trop long pour la correction la plus forte, celle qu'un logo peut demander. qrose encode un QR code
   en le dessinant, sans moyen d'en rattraper l'échec : un texte n'est dessiné qu'une fois accepté.
+- À l'inverse, un code scanné remplit le formulaire (`ScannedCodeFormMapper`) pour être modifié et
+  créé à nouveau : un code-barres d'un format que l'éditeur dessine reste un code-barres de sa
+  valeur, tout autre code devient un QR code de son contenu, et un contact garde le premier de ses
+  numéros, e-mails, adresses et sites. Un contenu complet, rempli puis relu, revient tel quel.
 - La purge de l'historique (`PurgeHistoryUseCase`) vaut pour les créations comme pour les captures,
   avec la même durée de conservation.
 
