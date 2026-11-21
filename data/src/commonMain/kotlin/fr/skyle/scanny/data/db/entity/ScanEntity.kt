@@ -10,6 +10,7 @@ import androidx.room.PrimaryKey
     tableName = "scan",
     indices = [
         Index(value = ["scanned_at"]),
+        Index(value = ["is_in_history"]),
     ],
 )
 internal data class ScanEntity(
@@ -19,4 +20,7 @@ internal data class ScanEntity(
     // Epoch milliseconds
     @ColumnInfo(name = "scanned_at")
     val scannedAt: Long,
+    // False when the user keeps no history: the capture is shown once, then purged
+    @ColumnInfo(name = "is_in_history", defaultValue = "1")
+    val isInHistory: Boolean = true,
 )

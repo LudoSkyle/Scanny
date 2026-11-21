@@ -10,6 +10,9 @@ internal class FakeSettingsRepository(
     isCopyAfterScanEnabled: Boolean = false,
     isOpenContentAfterScanEnabled: Boolean = false,
     isRawContentShown: Boolean = false,
+    isScanHistoryEnabled: Boolean = true,
+    isConsecutiveDuplicateSkipped: Boolean = true,
+    historyRetentionDays: Int = 30,
 ) : SettingsRepository {
 
     val isVibrationAfterScanEnabled = MutableStateFlow(isVibrationAfterScanEnabled)
@@ -17,6 +20,9 @@ internal class FakeSettingsRepository(
     val isCopyAfterScanEnabled = MutableStateFlow(isCopyAfterScanEnabled)
     val isOpenContentAfterScanEnabled = MutableStateFlow(isOpenContentAfterScanEnabled)
     val isRawContentShown = MutableStateFlow(isRawContentShown)
+    val isScanHistoryEnabled = MutableStateFlow(isScanHistoryEnabled)
+    val isConsecutiveDuplicateSkipped = MutableStateFlow(isConsecutiveDuplicateSkipped)
+    val historyRetentionDays = MutableStateFlow(historyRetentionDays)
 
     override fun watchIsVibrationAfterScanEnabled(): Flow<Boolean> =
         isVibrationAfterScanEnabled
@@ -51,5 +57,26 @@ internal class FakeSettingsRepository(
 
     override suspend fun setRawContentShown(isShown: Boolean) {
         isRawContentShown.value = isShown
+    }
+
+    override fun watchIsScanHistoryEnabled(): Flow<Boolean> =
+        isScanHistoryEnabled
+
+    override suspend fun setScanHistoryEnabled(isEnabled: Boolean) {
+        isScanHistoryEnabled.value = isEnabled
+    }
+
+    override fun watchIsConsecutiveDuplicateSkipped(): Flow<Boolean> =
+        isConsecutiveDuplicateSkipped
+
+    override suspend fun setConsecutiveDuplicateSkipped(isSkipped: Boolean) {
+        isConsecutiveDuplicateSkipped.value = isSkipped
+    }
+
+    override fun watchHistoryRetentionDays(): Flow<Int> =
+        historyRetentionDays
+
+    override suspend fun setHistoryRetentionDays(days: Int) {
+        historyRetentionDays.value = days
     }
 }

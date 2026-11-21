@@ -3,8 +3,14 @@ package fr.skyle.scanny.ui.screen.settings.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import fr.skyle.scanny.domain.model.HistoryRetention
+import fr.skyle.scanny.domain.model.HistorySetting
+import fr.skyle.scanny.domain.model.HistorySettings
 import fr.skyle.scanny.domain.model.ScanSetting
 import fr.skyle.scanny.domain.model.ScanSettings
+import fr.skyle.scanny.domain.usecase.history.SetHistoryRetentionUseCase
+import fr.skyle.scanny.domain.usecase.history.SetHistorySettingUseCase
+import fr.skyle.scanny.domain.usecase.history.WatchHistorySettingsUseCase
 import fr.skyle.scanny.domain.usecase.settings.SetScanSettingUseCase
 import fr.skyle.scanny.domain.usecase.settings.WatchScanSettingsUseCase
 import fr.skyle.scanny.platform.app.AppVersion
@@ -21,6 +27,9 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     private val watchScanSettingsUseCase: WatchScanSettingsUseCase,
     private val setScanSettingUseCase: SetScanSettingUseCase,
+    private val watchHistorySettingsUseCase: WatchHistorySettingsUseCase,
+    private val setHistorySettingUseCase: SetHistorySettingUseCase,
+    private val setHistoryRetentionUseCase: SetHistoryRetentionUseCase,
     appVersion: AppVersion,
 ) : ViewModel() {
 
@@ -47,23 +56,61 @@ class SettingsViewModel(
                     }
                 }
         }
+        viewModelScope.launch {
+            watchHistorySettingsUseCase()
+                .catch { exception ->
+                    Logger.e(throwable = exception) { "Failed to read the settings of the history" }
+                }
+                .collect { historySettings ->
+                    _uiState.update { uiState ->
+                        uiState.copy(historySettings = historySettings)
+                    }
+                }
+        }
     }
 
-    // Shown again by the settings read back: nothing to update here
     fun onSettingChanged(
         setting: ScanSetting,
         isEnabled: Boolean,
     ) {
+        save(name = "the setting $setting") {
+            setScanSettingUseCase(
+                setting = setting,
+                isEnabled = isEnabled,
+            )
+        }
+    }
+
+    fun onHistorySettingChanged(
+        setting: HistorySetting,
+        isEnabled: Boolean,
+    ) {
+        save(name = "the setting $setting") {
+            setHistorySettingUseCase(
+                setting = setting,
+                isEnabled = isEnabled,
+            )
+        }
+    }
+
+    fun onHistoryRetentionChanged(retention: HistoryRetention) {
+        save(name = "the retention $retention") {
+            setHistoryRetentionUseCase(retention = retention)
+        }
+    }
+
+    // Shown again by the settings read back: nothing to update here
+    private fun save(
+        name: String,
+        block: suspend () -> Unit,
+    ) {
         viewModelScope.launch {
             try {
-                setScanSettingUseCase(
-                    setting = setting,
-                    isEnabled = isEnabled,
-                )
+                block()
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: Exception) {
-                Logger.e(throwable = exception) { "Failed to save the setting $setting" }
+                Logger.e(throwable = exception) { "Failed to save $name" }
 
                 _event.send(SettingsEvent.SettingNotSaved)
             }
@@ -75,6 +122,7 @@ class SettingsViewModel(
         val build: String,
         // Null while the settings are read
         val settings: ScanSettings? = null,
+        val historySettings: HistorySettings? = null,
     )
 
     sealed interface SettingsEvent {

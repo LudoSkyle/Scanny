@@ -1,5 +1,6 @@
 package fr.skyle.scanny.data.db
 
+import androidx.room.AutoMigration
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -17,7 +18,11 @@ import kotlinx.coroutines.IO
         ScanEntity::class,
         ScannedCodeEntity::class,
     ],
-    version = 1,
+    version = 2,
+    autoMigrations = [
+        // The flag of a capture kept out of the history
+        AutoMigration(from = 1, to = 2),
+    ],
 )
 internal abstract class ScannyDatabase : RoomDatabase() {
 

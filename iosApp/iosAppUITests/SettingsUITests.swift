@@ -150,6 +150,82 @@ final class SettingsUITests: XCTestCase {
         XCTAssertFalse(isOn(switchBack))
     }
 
+    func testAScanIsLeftOutOfTheHistoryWhenTheSettingAsks() throws {
+        let app = launchApp()
+        app.buttons["Settings"].tap()
+        let historySwitch = app.switches["Save the scans in the history"]
+        scroll(to: historySwitch, in: app)
+        if isOn(historySwitch) {
+            historySwitch.tap()
+        }
+        XCTAssertFalse(isOn(historySwitch))
+        app.terminate()
+
+        let code = "Left out \(Int(Date().timeIntervalSince1970))"
+        let scanningApp = launchScanning(code: code)
+        XCTAssertTrue(scanningApp.buttons["Close sheet"].waitForExistence(timeout: 10))
+        scanningApp.buttons["Close sheet"].tap()
+        scanningApp.buttons["History"].tap()
+        XCTAssertTrue(scanningApp.staticTexts["History"].waitForExistence(timeout: 5))
+        XCTAssertFalse(element(labelled: code, in: scanningApp).exists)
+        keepScreenshot(named: "history-without-the-scan", of: scanningApp)
+
+        // Back to the history kept, as the other tests expect it
+        scanningApp.buttons["Back"].tap()
+        XCTAssertTrue(scanningApp.staticTexts["History"].waitForNonExistence(timeout: 5))
+        scanningApp.buttons["Settings"].tap()
+        let switchBack = scanningApp.switches["Save the scans in the history"]
+        scroll(to: switchBack, in: scanningApp)
+        switchBack.tap()
+        XCTAssertTrue(isOn(switchBack))
+    }
+
+    func testTheSameCodeScannedAgainRightAwayIsKeptOnce() throws {
+        let code = "Twice \(Int(Date().timeIntervalSince1970))"
+        let firstApp = launchScanning(code: code)
+        XCTAssertTrue(firstApp.buttons["Close sheet"].waitForExistence(timeout: 10))
+        firstApp.buttons["Close sheet"].tap()
+        firstApp.terminate()
+
+        let app = launchScanning(code: code)
+        XCTAssertTrue(app.buttons["Close sheet"].waitForExistence(timeout: 10))
+        app.buttons["Close sheet"].tap()
+        app.buttons["History"].tap()
+        XCTAssertTrue(app.staticTexts["History"].waitForExistence(timeout: 5))
+
+        // A row is a button, its texts read together; its text is also seen apart
+        let rows = app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", code))
+        XCTAssertTrue(rows.firstMatch.waitForExistence(timeout: 5))
+        XCTAssertEqual(rows.count, 1)
+        keepScreenshot(named: "history-with-the-code-once", of: app)
+    }
+
+    func testTheRetentionOfTheHistoryIsChosenInAMenu() throws {
+        let app = launchApp()
+        app.buttons["Settings"].tap()
+        let retentionRow = element(labelled: "Keep the history", in: app)
+        scroll(to: retentionRow, in: app)
+        XCTAssertTrue(retentionRow.label.contains("30 days"))
+
+        retentionRow.tap()
+        let forever = element(labelled: "Forever", in: app)
+        XCTAssertTrue(forever.waitForExistence(timeout: 5))
+        keepScreenshot(named: "retention-menu", of: app)
+        forever.tap()
+        XCTAssertTrue(forever.waitForNonExistence(timeout: 5) || retentionRow.label.contains("Forever"))
+        XCTAssertTrue(element(labelled: "Keep the history", in: app).label.contains("Forever"))
+
+        // Back to 30 days, as the other tests expect it
+        element(labelled: "Keep the history", in: app).tap()
+        let thirtyDays = element(labelled: "30 days", in: app)
+        XCTAssertTrue(thirtyDays.waitForExistence(timeout: 5))
+        thirtyDays.tap()
+        XCTAssertTrue(
+            NSPredicate(format: "label CONTAINS[c] %@", "30 days")
+                .evaluate(with: element(labelled: "Keep the history", in: app)),
+        )
+    }
+
     func testThePrivacyPolicyOpensInSafari() throws {
         let app = launchApp()
         app.buttons["Settings"].tap()

@@ -49,6 +49,7 @@
     <string name="history_not_cleared">L'historique n'a pas pu être effacé</string>
     <string name="job_title">Fonction</string>
     <string name="join_network">Rejoindre le réseau</string>
+    <string name="keep_history">Conserver l'historique</string>
     <string name="link">Lien</string>
     <string name="made_by_skyle">Fait par Skyle avec ❤️ chez Openium</string>
     <string name="mail_app_opens_with_message">Votre app de mail s'ouvre avec votre message, prêt à être envoyé.</string>
@@ -86,6 +87,12 @@
     <string name="rate_app">Noter l'app</string>
     <string name="raw_content">Contenu brut</string>
     <string name="recipient">Destinataire</string>
+    <string name="retention_forever">Toujours</string>
+    <string name="retention_one_month">30 jours</string>
+    <string name="retention_one_week">7 jours</string>
+    <string name="retention_one_year">1 an</string>
+    <string name="retention_three_months">90 jours</string>
+    <string name="save_scans_in_history">Enregistrer les scans dans l'historique</string>
     <string name="scan_image">Scanner une image</string>
     <string name="scan_not_saved">Le scan n'a pas pu être enregistré</string>
     <string name="scan_preferences">Préférences du scan</string>
@@ -98,6 +105,7 @@
     <string name="settings">Réglages</string>
     <string name="share">Partager</string>
     <string name="show_raw_content">Afficher le contenu brut</string>
+    <string name="skip_consecutive_duplicates">Ignorer un code scanné de nouveau aussitôt</string>
     <string name="star_project">Mettre une étoile au projet sur GitHub</string>
     <string name="subject">Objet</string>
     <string name="support">Support</string>

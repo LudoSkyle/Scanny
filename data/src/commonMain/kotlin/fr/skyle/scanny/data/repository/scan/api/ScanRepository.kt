@@ -8,13 +8,27 @@ import kotlin.time.Instant
 
 interface ScanRepository {
 
-    /** Records a capture of [codes], at least one, in their order, and returns its id. */
+    /**
+     * Records a capture of [codes], at least one, in their order, and returns its id. Out of the
+     * history ([isInHistory] false), it can still be watched by its id until [purgeScans].
+     */
     suspend fun saveScan(
         codes: List<CodeToSave>,
         scannedAt: Instant,
+        isInHistory: Boolean,
     ): Long
 
+    /** The captures of the history, from the newest to the oldest. */
     fun watchScans(): Flow<List<StoredScan>>
+
+    /** The newest capture of the history, null when it is empty. */
+    suspend fun findLatestScan(): StoredScan?
+
+    /** Gives a capture a new time, as if it was just recorded. */
+    suspend fun updateScanTime(
+        id: Long,
+        scannedAt: Instant,
+    )
 
     fun watchScan(id: Long): Flow<StoredScan?>
 
@@ -23,6 +37,9 @@ interface ScanRepository {
     suspend fun deleteScan(id: Long)
 
     suspend fun deleteAllScans()
+
+    /** Deletes the captures out of the history, and those of the history older than [scannedBefore], if set. */
+    suspend fun purgeScans(scannedBefore: Instant?)
 
     /** Deletes a code, and its capture when it was the last code of it. */
     suspend fun deleteCode(id: Long)

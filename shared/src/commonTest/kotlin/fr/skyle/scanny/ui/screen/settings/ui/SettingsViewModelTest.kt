@@ -1,9 +1,15 @@
 package fr.skyle.scanny.ui.screen.settings.ui
 
+import fr.skyle.scanny.domain.model.HistoryRetention
+import fr.skyle.scanny.domain.model.HistorySetting
+import fr.skyle.scanny.domain.model.HistorySettings
 import fr.skyle.scanny.domain.model.ScanSetting
 import fr.skyle.scanny.domain.model.ScanSettings
 import fr.skyle.scanny.fake.FakeAppVersion
+import fr.skyle.scanny.fake.FakeSetHistoryRetentionUseCase
+import fr.skyle.scanny.fake.FakeSetHistorySettingUseCase
 import fr.skyle.scanny.fake.FakeSetScanSettingUseCase
+import fr.skyle.scanny.fake.FakeWatchHistorySettingsUseCase
 import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -59,6 +65,11 @@ class SettingsViewModelTest {
                     isCopyAfterScanEnabled = false,
                     isOpenContentAfterScanEnabled = false,
                     isRawContentShown = true,
+                ),
+                historySettings = HistorySettings(
+                    isScanHistoryEnabled = true,
+                    isConsecutiveDuplicateSkipped = true,
+                    retention = HistoryRetention.ONE_MONTH,
                 ),
             ),
             actual = viewModel.uiState.value,
@@ -119,13 +130,86 @@ class SettingsViewModelTest {
         )
     }
 
+    @Test
+    fun `the settings of the history follow their changes`() = runTest(testDispatcher) {
+        // Given
+        val watchHistorySettingsUseCase = FakeWatchHistorySettingsUseCase()
+        val viewModel = settingsViewModel(watchHistorySettingsUseCase = watchHistorySettingsUseCase)
+
+        // When
+        watchHistorySettingsUseCase.settings.value = watchHistorySettingsUseCase.settings.value.copy(retention = HistoryRetention.FOREVER)
+
+        // Then
+        assertEquals(
+            expected = HistoryRetention.FOREVER,
+            actual = viewModel.uiState.value.historySettings?.retention,
+        )
+    }
+
+    @Test
+    fun `a changed setting of the history is saved`() = runTest(testDispatcher) {
+        // Given
+        val setHistorySettingUseCase = FakeSetHistorySettingUseCase()
+        val viewModel = settingsViewModel(setHistorySettingUseCase = setHistorySettingUseCase)
+
+        // When
+        viewModel.onHistorySettingChanged(
+            setting = HistorySetting.SCAN_HISTORY,
+            isEnabled = false,
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(HistorySetting.SCAN_HISTORY to false),
+            actual = setHistorySettingUseCase.savedSettings,
+        )
+    }
+
+    @Test
+    fun `a chosen retention is saved`() = runTest(testDispatcher) {
+        // Given
+        val setHistoryRetentionUseCase = FakeSetHistoryRetentionUseCase()
+        val viewModel = settingsViewModel(setHistoryRetentionUseCase = setHistoryRetentionUseCase)
+
+        // When
+        viewModel.onHistoryRetentionChanged(retention = HistoryRetention.ONE_WEEK)
+
+        // Then
+        assertEquals(
+            expected = listOf(HistoryRetention.ONE_WEEK),
+            actual = setHistoryRetentionUseCase.savedRetentions,
+        )
+    }
+
+    @Test
+    fun `a retention that cannot be saved is reported`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = settingsViewModel(setHistoryRetentionUseCase = FakeSetHistoryRetentionUseCase(error = IllegalStateException("Disk full")))
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onHistoryRetentionChanged(retention = HistoryRetention.ONE_YEAR)
+
+        // Then
+        assertEquals(
+            expected = listOf(SettingsViewModel.SettingsEvent.SettingNotSaved),
+            actual = events,
+        )
+    }
+
     private fun settingsViewModel(
         watchScanSettingsUseCase: FakeWatchScanSettingsUseCase = FakeWatchScanSettingsUseCase(),
         setScanSettingUseCase: FakeSetScanSettingUseCase = FakeSetScanSettingUseCase(),
+        watchHistorySettingsUseCase: FakeWatchHistorySettingsUseCase = FakeWatchHistorySettingsUseCase(),
+        setHistorySettingUseCase: FakeSetHistorySettingUseCase = FakeSetHistorySettingUseCase(),
+        setHistoryRetentionUseCase: FakeSetHistoryRetentionUseCase = FakeSetHistoryRetentionUseCase(),
     ): SettingsViewModel =
         SettingsViewModel(
             watchScanSettingsUseCase = watchScanSettingsUseCase,
             setScanSettingUseCase = setScanSettingUseCase,
+            watchHistorySettingsUseCase = watchHistorySettingsUseCase,
+            setHistorySettingUseCase = setHistorySettingUseCase,
+            setHistoryRetentionUseCase = setHistoryRetentionUseCase,
             appVersion = FakeAppVersion(
                 name = "2.1",
                 build = "21",

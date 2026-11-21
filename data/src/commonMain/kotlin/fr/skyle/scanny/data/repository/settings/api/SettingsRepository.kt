@@ -23,4 +23,17 @@ interface SettingsRepository {
     fun watchIsRawContentShown(): Flow<Boolean>
 
     suspend fun setRawContentShown(isShown: Boolean)
+
+    fun watchIsScanHistoryEnabled(): Flow<Boolean>
+
+    suspend fun setScanHistoryEnabled(isEnabled: Boolean)
+
+    fun watchIsConsecutiveDuplicateSkipped(): Flow<Boolean>
+
+    suspend fun setConsecutiveDuplicateSkipped(isSkipped: Boolean)
+
+    /** How many days a capture stays in the history; 0 when it stays forever. */
+    fun watchHistoryRetentionDays(): Flow<Int>
+
+    suspend fun setHistoryRetentionDays(days: Int)
 }
