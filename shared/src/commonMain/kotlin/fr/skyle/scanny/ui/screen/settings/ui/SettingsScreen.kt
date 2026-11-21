@@ -27,14 +27,12 @@ import fr.skyle.scanny.domain.model.ScanSettings
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.app_settings
 import fr.skyle.scanny.resources.beep_after_scan
-import fr.skyle.scanny.resources.clear_history
 import fr.skyle.scanny.resources.copy_after_scan
 import fr.skyle.scanny.resources.give_feedback
 import fr.skyle.scanny.resources.ic_chat
 import fr.skyle.scanny.resources.ic_chevron_right
 import fr.skyle.scanny.resources.ic_content_copy
 import fr.skyle.scanny.resources.ic_data_object
-import fr.skyle.scanny.resources.ic_delete
 import fr.skyle.scanny.resources.ic_domain
 import fr.skyle.scanny.resources.ic_open_in_new
 import fr.skyle.scanny.resources.ic_shield
@@ -70,7 +68,6 @@ fun SettingsScreen(
     snackbarState: SCSnackbarState,
     onBackClicked: () -> Unit,
     onSettingChanged: (setting: ScanSetting, isEnabled: Boolean) -> Unit,
-    onClearHistoryClicked: () -> Unit,
     onStarProjectClicked: () -> Unit,
     onFeedbackClicked: () -> Unit,
     onRateAppClicked: () -> Unit,
@@ -154,14 +151,12 @@ fun SettingsScreen(
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
-            }
 
-            SCCardStructure(
-                modifier = Modifier.fillMaxWidth(),
-                title = stringResource(Res.string.app_settings),
-                style = SCCardDefaults.Style.LIGHT,
-            ) {
-                if (settings != null) {
+                SCCardStructure(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = stringResource(Res.string.app_settings),
+                    style = SCCardDefaults.Style.LIGHT,
+                ) {
                     SettingsSwitchRow(
                         modifier = Modifier.fillMaxWidth(),
                         icon = painterResource(Res.drawable.ic_data_object),
@@ -169,20 +164,10 @@ fun SettingsScreen(
                         isChecked = settings.isRawContentShown,
                         onCheckedChange = { isEnabled -> onSettingChanged(ScanSetting.RAW_CONTENT_SHOWN, isEnabled) },
                     )
-
-                    SettingsRowDivider(modifier = Modifier.fillMaxWidth())
                 }
 
-                SettingsActionRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    icon = painterResource(Res.drawable.ic_delete),
-                    title = stringResource(Res.string.clear_history),
-                    trailingIcon = null,
-                    onClick = onClearHistoryClicked,
-                )
+                Spacer(modifier = Modifier.height(24.dp))
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
 
             SCCardStructure(
                 modifier = Modifier.fillMaxWidth(),
@@ -271,7 +256,6 @@ private fun PreviewSettingsScreen() {
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
             onSettingChanged = { _, _ -> },
-            onClearHistoryClicked = {},
             onStarProjectClicked = {},
             onFeedbackClicked = {},
             onRateAppClicked = {},

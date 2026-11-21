@@ -178,7 +178,7 @@ La cible `iosAppUITests` du projet Xcode (XCUITest, en Swift) lance l'app sur le
 vérifie ce qui suit un scan : la feuille, le détail, la copie, le partage, l'ouverture d'un lien dans
 Safari, d'un SMS dans Messages, l'ajout d'un contact dans Contacts, la suppression, l'historique et
 son effacement, le scan multiple et l'écran du groupe, les réglages (dont la copie du code après un
-scan et l'effacement de l'historique), le feedback, les textes français.
+scan), le feedback, les textes français.
 
 - Le simulateur n'a pas de caméra : un build Debug y lit le code de la variable d'environnement
   `SCANNY_SIMULATED_CODE` comme si la caméra le voyait (voir

@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.model.ScanSetting
 import fr.skyle.scanny.domain.model.ScanSettings
-import fr.skyle.scanny.domain.usecase.scan.DeleteAllScansUseCase
 import fr.skyle.scanny.domain.usecase.settings.SetScanSettingUseCase
 import fr.skyle.scanny.domain.usecase.settings.WatchScanSettingsUseCase
 import fr.skyle.scanny.platform.app.AppVersion
@@ -22,7 +21,6 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     private val watchScanSettingsUseCase: WatchScanSettingsUseCase,
     private val setScanSettingUseCase: SetScanSettingUseCase,
-    private val deleteAllScansUseCase: DeleteAllScansUseCase,
     appVersion: AppVersion,
 ) : ViewModel() {
 
@@ -72,22 +70,6 @@ class SettingsViewModel(
         }
     }
 
-    fun onClearHistoryConfirmed() {
-        viewModelScope.launch {
-            try {
-                deleteAllScansUseCase()
-
-                _event.send(SettingsEvent.HistoryCleared)
-            } catch (exception: CancellationException) {
-                throw exception
-            } catch (exception: Exception) {
-                Logger.e(throwable = exception) { "Failed to clear the history of the scans" }
-
-                _event.send(SettingsEvent.HistoryNotCleared)
-            }
-        }
-    }
-
     data class SettingsUIState(
         val versionName: String,
         val build: String,
@@ -96,8 +78,6 @@ class SettingsViewModel(
     )
 
     sealed interface SettingsEvent {
-        data object HistoryCleared : SettingsEvent
-        data object HistoryNotCleared : SettingsEvent
         data object SettingNotSaved : SettingsEvent
     }
 }

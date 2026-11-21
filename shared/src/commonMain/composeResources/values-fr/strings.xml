@@ -46,7 +46,6 @@
     <string name="group_codes_removed_from_history">Ses codes seront retirés de l'historique.</string>
     <string name="group_not_deleted">Le groupe n'a pas pu être supprimé</string>
     <string name="history">Historique</string>
-    <string name="history_cleared">L'historique est effacé</string>
     <string name="history_not_cleared">L'historique n'a pas pu être effacé</string>
     <string name="job_title">Fonction</string>
     <string name="join_network">Rejoindre le réseau</string>

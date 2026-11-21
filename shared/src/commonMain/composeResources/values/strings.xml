@@ -56,7 +56,6 @@
     <string name="group_codes_removed_from_history">Its codes will be removed from the history.</string>
     <string name="group_not_deleted">The group could not be deleted</string>
     <string name="history">History</string>
-    <string name="history_cleared">The history is cleared</string>
     <string name="history_not_cleared">The history could not be cleared</string>
     <string name="itf" translatable="false">ITF</string>
     <string name="job_title">Job title</string>
