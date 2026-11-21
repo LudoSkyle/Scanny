@@ -180,7 +180,8 @@ final class CreateCodeUITests: XCTestCase {
             .matching(NSPredicate(format: "identifier == %@ AND label CONTAINS %@", "PXGGridLayout-Info", "2018"))
             .firstMatch
         XCTAssertTrue(photo.waitForExistence(timeout: 10))
-        waitUntilStill(photo)
+        // Below the photos the tests saved, which come first
+        scroll(to: photo, in: app)
         // Touched at its place: the picker runs in another process, where XCUITest cannot always tell
         // whether a photo can be touched
         photo.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
