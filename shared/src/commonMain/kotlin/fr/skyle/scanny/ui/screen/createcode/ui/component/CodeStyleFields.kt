@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.heading
@@ -23,6 +27,7 @@ import fr.skyle.scanny.resources.corner_shape
 import fr.skyle.scanny.resources.customize_code
 import fr.skyle.scanny.resources.dot_color
 import fr.skyle.scanny.resources.dot_shape
+import fr.skyle.scanny.ui.core.code.mapper.readability
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toText
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeBackgroundColor
@@ -37,6 +42,12 @@ fun CodeStyleFields(
     onAddLogoClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // The color being picked out of the palette, with what it is applied to
+    var customColorTarget by remember { mutableStateOf<CustomColorTarget?>(null) }
+    // A color out of the palette shows on the last disc
+    val customDotColor = style.darkColor.takeIf { argb -> CodeDotColor.entries.none { color -> color.argb == argb } }
+    val customBackgroundColor = style.lightColor.takeIf { argb -> CodeBackgroundColor.entries.none { color -> color.argb == argb } }
+
     Column(modifier = modifier) {
         SCText(
             modifier = Modifier
@@ -58,6 +69,8 @@ fun CodeStyleFields(
             optionColor = { color -> Color(color = color.argb) },
             optionName = { color -> stringResource(color.toText()) },
             onOptionSelected = { color -> onStyleChanged(style.copy(darkColor = color.argb)) },
+            customColor = customDotColor?.let { argb -> Color(color = argb) },
+            onCustomColorClicked = { customColorTarget = CustomColorTarget.DOTS },
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -70,6 +83,19 @@ fun CodeStyleFields(
             optionColor = { color -> Color(color = color.argb) },
             optionName = { color -> stringResource(color.toText()) },
             onOptionSelected = { color -> onStyleChanged(style.copy(lightColor = color.argb)) },
+            customColor = customBackgroundColor?.let { argb -> Color(color = argb) },
+            onCustomColorClicked = { customColorTarget = CustomColorTarget.BACKGROUND },
+        )
+
+        CodeReadabilityWarning(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 4.dp,
+                    top = 12.dp,
+                    end = 4.dp,
+                ),
+            readability = style.readability(),
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -107,6 +133,30 @@ fun CodeStyleFields(
             onRemoveLogoClicked = { onStyleChanged(style.copy(logo = null)) },
         )
     }
+
+    customColorTarget?.let { target ->
+        CustomColorSheet(
+            initialArgb = when (target) {
+                CustomColorTarget.DOTS -> style.darkColor
+                CustomColorTarget.BACKGROUND -> style.lightColor
+            },
+            onColorChosen = { argb ->
+                customColorTarget = null
+                onStyleChanged(
+                    when (target) {
+                        CustomColorTarget.DOTS -> style.copy(darkColor = argb)
+                        CustomColorTarget.BACKGROUND -> style.copy(lightColor = argb)
+                    },
+                )
+            },
+            onDismissRequest = { customColorTarget = null },
+        )
+    }
+}
+
+private enum class CustomColorTarget {
+    DOTS,
+    BACKGROUND,
 }
 
 @AppPreviewWithBackground

@@ -16,11 +16,15 @@
     <string name="camera_unavailable">Aucune caméra n'est disponible sur cet appareil. Vous pouvez toujours scanner un code dans une image.</string>
     <string name="cancel">Annuler</string>
     <string name="change_logo">Changer le logo</string>
+    <string name="choose">Choisir</string>
+    <string name="choose_color">Choisir une couleur</string>
     <string name="choose_subject">Choisissez un sujet</string>
     <string name="clear">Effacer</string>
     <string name="clear_history">Effacer l'historique</string>
     <string name="clear_history_question">Effacer l'historique ?</string>
     <string name="code_count">%1$d codes</string>
+    <string name="code_inverted">Ses points sont plus clairs que son fond : beaucoup de lecteurs lisent mal un tel code.</string>
+    <string name="code_low_contrast">Ses points et son fond ressortent trop peu : certains lecteurs pourraient ne pas lire ce code.</string>
     <string name="code_not_deleted">Le code n'a pas pu être supprimé</string>
     <string name="code_not_drawable">Ce code ne peut pas être redessiné</string>
     <string name="code_removed_from_history">Il sera retiré de l'historique.</string>
@@ -118,6 +122,7 @@
     <string name="open_link">Ouvrir le lien</string>
     <string name="open_settings">Ouvrir les réglages</string>
     <string name="organization">Organisation</string>
+    <string name="other_color">Autre couleur</string>
     <string name="pass_codes_in_front_of_camera">Passez les codes devant la caméra</string>
     <string name="password">Mot de passe</string>
     <string name="phone">Téléphone</string>

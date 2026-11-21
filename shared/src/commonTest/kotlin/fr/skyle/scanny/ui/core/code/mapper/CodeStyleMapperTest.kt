@@ -1,6 +1,7 @@
 package fr.skyle.scanny.ui.core.code.mapper
 
 import fr.skyle.scanny.domain.model.CodeStyle
+import fr.skyle.scanny.ui.core.code.model.CodeReadability
 import io.github.alexzhirkevich.qrose.matrix.qr.QrErrorCorrection
 import io.github.alexzhirkevich.qrose.options.QrErrorCorrectionLevel
 import kotlin.test.Test
@@ -36,6 +37,51 @@ class CodeStyleMapperTest {
         assertEquals(
             expected = QrErrorCorrectionLevel.Auto to QrErrorCorrection.L,
             actual = options.errorCorrectionLevel to style.qrErrorCorrection(),
+        )
+    }
+
+    @Test
+    fun `dark dots on a light background read well`() {
+        // When
+        val readability = CodeStyle(
+            darkColor = 0xFF000000,
+            lightColor = 0xFFFFFFFF,
+        ).readability()
+
+        // Then
+        assertEquals(
+            expected = CodeReadability.GOOD to 21.0,
+            actual = readability to contrastRatio(0xFF000000, 0xFFFFFFFF),
+        )
+    }
+
+    @Test
+    fun `grey dots on a white background stand out too little`() {
+        // When
+        val readability = CodeStyle(
+            darkColor = 0xFFAAAAAA,
+            lightColor = 0xFFFFFFFF,
+        ).readability()
+
+        // Then
+        assertEquals(
+            expected = CodeReadability.LOW_CONTRAST,
+            actual = readability,
+        )
+    }
+
+    @Test
+    fun `light dots on a dark background are inverted however contrasted`() {
+        // When
+        val readability = CodeStyle(
+            darkColor = 0xFFFFFFFF,
+            lightColor = 0xFF000000,
+        ).readability()
+
+        // Then
+        assertEquals(
+            expected = CodeReadability.INVERTED,
+            actual = readability,
         )
     }
 

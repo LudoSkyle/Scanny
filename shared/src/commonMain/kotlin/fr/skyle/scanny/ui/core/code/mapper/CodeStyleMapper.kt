@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
+import fr.skyle.scanny.ui.core.code.model.CodeReadability
 import io.github.alexzhirkevich.qrose.options.QrBallShape
 import io.github.alexzhirkevich.qrose.options.QrBrush
 import io.github.alexzhirkevich.qrose.options.QrColors
@@ -21,6 +22,10 @@ import io.github.alexzhirkevich.qrose.options.roundCorners
 import io.github.alexzhirkevich.qrose.options.solid
 import io.github.alexzhirkevich.qrose.options.square
 import org.jetbrains.compose.resources.decodeToImageBitmap
+import kotlin.math.pow
+
+// The contrast the WCAG asks of a text: a scanner reads a code as well
+private const val MIN_CONTRAST_RATIO = 4.5
 
 // Of the side of a corner: rounded, still far from a circle
 private const val CORNER_RADIUS = 0.25f
@@ -60,6 +65,33 @@ internal fun CodeStyle.backgroundColor(): Color =
     Color(color = lightColor)
 
 // The dots under the logo and around it cleared, for the background to show there
+/** How well a scanner reads a code in this style: its dots darker than its background, and enough apart. */
+internal fun CodeStyle.readability(): CodeReadability =
+    when {
+        relativeLuminance(darkColor) > relativeLuminance(lightColor) -> CodeReadability.INVERTED
+        contrastRatio(darkColor, lightColor) < MIN_CONTRAST_RATIO -> CodeReadability.LOW_CONTRAST
+        else -> CodeReadability.GOOD
+    }
+
+/** The contrast ratio of the WCAG between two ARGB colors, from 1 for the same color to 21 for black and white. */
+internal fun contrastRatio(
+    firstArgb: Long,
+    secondArgb: Long,
+): Double {
+    val firstLuminance = relativeLuminance(firstArgb)
+    val secondLuminance = relativeLuminance(secondArgb)
+    return (maxOf(firstLuminance, secondLuminance) + 0.05) / (minOf(firstLuminance, secondLuminance) + 0.05)
+}
+
+// The relative luminance of the WCAG: how light a color looks, from 0 for black to 1 for white
+private fun relativeLuminance(argb: Long): Double {
+    fun channel(shift: Int): Double {
+        val value = ((argb shr shift) and 0xFF) / 255.0
+        return if (value <= 0.03928) value / 12.92 else ((value + 0.055) / 1.055).pow(2.4)
+    }
+    return 0.2126 * channel(shift = 16) + 0.7152 * channel(shift = 8) + 0.0722 * channel(shift = 0)
+}
+
 private fun CodeStyle.toQrLogo(): QrLogo {
     val png = logo ?: return QrLogo()
     val image = try {

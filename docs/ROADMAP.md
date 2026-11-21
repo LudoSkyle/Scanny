@@ -227,7 +227,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
           qui sont leur propre contenu brut)
     - [x] L'historique : le type en pastille, les groupes mis en avant (badge et pastille remplis), le
           glissement entre les vues
-    - [ ] Une couleur libre, avec un avertissement de lisibilité
+    - [x] Une couleur libre, avec un avertissement de lisibilité (contraste trop faible ou code clair
+          sur fond sombre), qui n'empêche pas de créer
     - [ ] L'export en SVG *(décidé, non engagé)*
 12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI. Deux remarques
     d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton galerie le temps

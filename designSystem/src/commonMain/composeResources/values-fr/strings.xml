@@ -2,4 +2,6 @@
     <string name="back">Retour</string>
     <string name="collapsed">Replié</string>
     <string name="expanded">Déplié</string>
+    <string name="hue">Teinte</string>
+    <string name="saturation_brightness">Saturation et luminosité</string>
 </resources>

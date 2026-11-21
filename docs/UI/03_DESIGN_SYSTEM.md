@@ -18,8 +18,10 @@ On y trouve :
   `SCSwitch`, `SCTextField`, `SCDropdownField` (un choix dans un menu qui se déplie sous le champ),
   `SCDropdownMenu` (le menu seul, sous l'élément où il est placé), `SCDivider` (une ligne entre deux
   rangées d'une carte), `SCSegmentedControl` (un choix entre quelques options côte à côte, chacune
-  lue comme un onglet) et `SCTag` (un court libellé dans une pastille, qui classe ce qu'il
-  accompagne : un type, un groupe ; `FILLED` ressort parmi les `LIGHT`).
+  lue comme un onglet), `SCTag` (un court libellé dans une pastille, qui classe ce qu'il
+  accompagne : un type, un groupe ; `FILLED` ressort parmi les `LIGHT`) et `SCColorPicker`
+  (n'importe quelle couleur, par sa teinte sur une barre puis sa saturation et sa luminosité sur un
+  carré, en HSV que l'appelant garde).
   Les autres arrivent avec le premier écran qui en a besoin ;
 - les polices (Lato), les icônes et les textes des composants, dans Compose Resources.
 
@@ -42,6 +44,7 @@ designSystem/src/commonMain/
 │       ├── button/
 │       │   ├── SCButton.kt
 │       │   └── SCButtonDefaults.kt
+│       ├── colorpicker/       (SCColorPicker : n'importe quelle couleur, teinte puis saturation et luminosité)
 │       ├── card/              (SCCard : un bloc de contenu détaché du fond ; SCCardStructure : son titre au-dessus ; SCExpandableCardStructure : repliée sous son titre)
 │       ├── dialog/            (SCDialog : une question avant une action)
 │       ├── divider/           (SCDivider : une ligne fine entre deux rangées, de la couleur du fond)

@@ -2,4 +2,6 @@
     <string name="back">Back</string>
     <string name="collapsed">Collapsed</string>
     <string name="expanded">Expanded</string>
+    <string name="hue">Hue</string>
+    <string name="saturation_brightness">Saturation and brightness</string>
 </resources>
