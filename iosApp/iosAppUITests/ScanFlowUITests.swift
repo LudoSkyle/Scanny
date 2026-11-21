@@ -27,8 +27,7 @@ final class ScanFlowUITests: XCTestCase {
     func testTheDetailCopiesSharesAndGoesBackToTheScan() throws {
         let app = launchScanning(code: "https://scanny.app/detail")
 
-        XCTAssertTrue(app.buttons["See the detail"].waitForExistence(timeout: 10))
-        app.buttons["See the detail"].tap()
+        openTheDetail(in: app)
 
         XCTAssertTrue(app.otherElements["Content"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["https://scanny.app/detail"].exists)
@@ -79,8 +78,7 @@ final class ScanFlowUITests: XCTestCase {
     func testAnEmailShowsItsRecipientAndItsSubject() throws {
         let app = launchScanning(code: "mailto:john@doe.fr?subject=Hello%20Scanny")
 
-        XCTAssertTrue(app.buttons["See the detail"].waitForExistence(timeout: 10))
-        app.buttons["See the detail"].tap()
+        openTheDetail(in: app)
 
         XCTAssertTrue(app.staticTexts["Recipient"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["john@doe.fr"].exists)
@@ -141,7 +139,7 @@ final class ScanFlowUITests: XCTestCase {
         XCTAssertFalse(app.buttons["Join the network"].exists)
         keepScreenshot(named: "wifi-sheet", of: app)
 
-        app.buttons["See the detail"].tap()
+        openTheDetail(in: app)
         XCTAssertTrue(app.staticTexts["Password"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["secret123"].exists)
         keepScreenshot(named: "wifi-detail", of: app)
@@ -160,8 +158,7 @@ final class ScanFlowUITests: XCTestCase {
 
     func testTheDetailShowsTheQrCodeDrawnAgain() throws {
         let app = launchScanning(code: "https://ludoskyle.github.io/scanny.github.io/")
-        XCTAssertTrue(app.buttons["See the detail"].waitForExistence(timeout: 10))
-        app.buttons["See the detail"].tap()
+        openTheDetail(in: app)
 
         let showCodeButton = app.buttons["Show the code"]
         XCTAssertTrue(showCodeButton.waitForExistence(timeout: 5))
@@ -178,8 +175,7 @@ final class ScanFlowUITests: XCTestCase {
             code: "4006381333931",
             format: "EAN_13",
         )
-        XCTAssertTrue(app.buttons["See the detail"].waitForExistence(timeout: 10))
-        app.buttons["See the detail"].tap()
+        openTheDetail(in: app)
 
         let showCodeButton = app.buttons["Show the code"]
         XCTAssertTrue(showCodeButton.waitForExistence(timeout: 5))
@@ -194,8 +190,7 @@ final class ScanFlowUITests: XCTestCase {
             code: "In a matrix",
             format: "DATA_MATRIX",
         )
-        XCTAssertTrue(app.buttons["See the detail"].waitForExistence(timeout: 10))
-        app.buttons["See the detail"].tap()
+        openTheDetail(in: app)
 
         XCTAssertTrue(app.buttons["Share"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["Show the code"].exists)
@@ -204,8 +199,7 @@ final class ScanFlowUITests: XCTestCase {
     func testADeletedCodeGoesBackToTheScan() throws {
         let app = launchScanning(code: "A code to delete")
 
-        XCTAssertTrue(app.buttons["See the detail"].waitForExistence(timeout: 10))
-        app.buttons["See the detail"].tap()
+        openTheDetail(in: app)
         XCTAssertTrue(app.buttons["Delete"].waitForExistence(timeout: 5))
 
         app.buttons["Delete"].tap()
@@ -228,7 +222,7 @@ final class ScanFlowUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Copier"].exists)
         keepScreenshot(named: "french-sheet", of: app)
 
-        app.buttons["Voir le détail"].tap()
+        openTheDetail(in: app, labelled: "Voir le détail")
         XCTAssertTrue(app.otherElements["Contenu"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["Partager"].exists)
         keepScreenshot(named: "french-detail", of: app)

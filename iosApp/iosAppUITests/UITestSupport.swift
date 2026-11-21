@@ -109,6 +109,18 @@ extension XCTestCase {
         }
     }
 
+    /// Opens the detail of the code shown in the result sheet, once the sheet stops rising: a touch on
+    /// a sheet still moving is lost.
+    func openTheDetail(
+        in app: XCUIApplication,
+        labelled label: String = "See the detail",
+    ) {
+        let button = app.buttons[label]
+        XCTAssertTrue(button.waitForExistence(timeout: 10))
+        waitUntilStill(button)
+        button.tap()
+    }
+
     func waitUntilStill(_ element: XCUIElement) {
         var frame = element.exists ? element.frame : .zero
         for _ in 0..<10 {
