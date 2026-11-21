@@ -10,7 +10,6 @@ internal class FakeWatchScanSettingsUseCase(
     isBeepAfterScanEnabled: Boolean = false,
     isCopyAfterScanEnabled: Boolean = false,
     isOpenContentAfterScanEnabled: Boolean = false,
-    isRawContentShown: Boolean = false,
     isFrontCameraUsed: Boolean = false,
 ) : WatchScanSettingsUseCase {
 
@@ -20,7 +19,6 @@ internal class FakeWatchScanSettingsUseCase(
             isBeepAfterScanEnabled = isBeepAfterScanEnabled,
             isCopyAfterScanEnabled = isCopyAfterScanEnabled,
             isOpenContentAfterScanEnabled = isOpenContentAfterScanEnabled,
-            isRawContentShown = isRawContentShown,
             isFrontCameraUsed = isFrontCameraUsed,
         ),
     )

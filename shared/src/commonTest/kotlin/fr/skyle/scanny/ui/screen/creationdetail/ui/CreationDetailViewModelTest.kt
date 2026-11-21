@@ -69,6 +69,7 @@ class CreationDetailViewModelTest {
                     ),
                 ),
                 rawValue = "https://scanny.app",
+                isRawValueShown = false,
                 style = STYLE,
             ),
             actual = viewModel.uiState.value.creation,

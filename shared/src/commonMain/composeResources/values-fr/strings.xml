@@ -6,7 +6,6 @@
     <string name="all_scans_deleted">Tous les scans seront supprimés.</string>
     <string name="allow_camera">Autoriser la caméra</string>
     <string name="app_description">Scanny scanne les QR codes et les codes-barres, avec les dernières technologies et sans publicité, tout en restant légère et fiable.</string>
-    <string name="app_settings">Réglages de l'app</string>
     <string name="at_time">%1$s à %2$s</string>
     <string name="background_color">Couleur du fond</string>
     <string name="barcode">Code-barres</string>
@@ -153,7 +152,6 @@
     <string name="share">Partager</string>
     <string name="share_image">Partager l'image</string>
     <string name="show_code">Afficher le code</string>
-    <string name="show_raw_content">Afficher le contenu brut</string>
     <string name="skip_consecutive_duplicates">Ignorer un code scanné de nouveau aussitôt</string>
     <string name="star_project">Mettre une étoile au projet sur GitHub</string>
     <string name="subject">Objet</string>

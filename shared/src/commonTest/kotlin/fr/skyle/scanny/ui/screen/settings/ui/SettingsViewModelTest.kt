@@ -50,7 +50,6 @@ class SettingsViewModelTest {
                 isBeepAfterScanEnabled = true,
                 isCopyAfterScanEnabled = false,
                 isOpenContentAfterScanEnabled = false,
-                isRawContentShown = true,
                 isFrontCameraUsed = false,
             ),
         )
@@ -65,7 +64,6 @@ class SettingsViewModelTest {
                     isBeepAfterScanEnabled = true,
                     isCopyAfterScanEnabled = false,
                     isOpenContentAfterScanEnabled = false,
-                    isRawContentShown = true,
                     isFrontCameraUsed = false,
                 ),
                 historySettings = HistorySettings(
@@ -103,13 +101,13 @@ class SettingsViewModelTest {
 
         // When
         viewModel.onSettingChanged(
-            setting = ScanSetting.RAW_CONTENT_SHOWN,
+            setting = ScanSetting.COPY_AFTER_SCAN,
             isEnabled = true,
         )
 
         // Then
         assertEquals(
-            expected = listOf(ScanSetting.RAW_CONTENT_SHOWN to true),
+            expected = listOf(ScanSetting.COPY_AFTER_SCAN to true),
             actual = setScanSettingUseCase.savedSettings,
         )
     }

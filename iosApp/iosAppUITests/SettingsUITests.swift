@@ -7,47 +7,6 @@ final class SettingsUITests: XCTestCase {
         continueAfterFailure = false
     }
 
-    func testTheRawContentSettingShowsTheRawContentOfACode() throws {
-        let network = "RawNet\(Int(Date().timeIntervalSince1970))"
-        let app = launchScanning(code: "WIFI:T:WPA;S:\(network);P:secret123;;")
-        XCTAssertTrue(app.buttons["Close sheet"].waitForExistence(timeout: 10))
-        app.buttons["Close sheet"].tap()
-
-        app.buttons["Settings"].tap()
-        let rawContentSwitch = app.switches["Show the raw content"]
-        scroll(to: rawContentSwitch, in: app)
-        XCTAssertTrue(rawContentSwitch.exists)
-        // The settings are kept from a launch to the next: the test starts from the setting off
-        if isOn(rawContentSwitch) {
-            rawContentSwitch.tap()
-        }
-        rawContentSwitch.tap()
-        XCTAssertTrue(isOn(rawContentSwitch))
-        keepScreenshot(named: "settings", of: app)
-
-        app.buttons["Back"].tap()
-        // A touch during the transition back to the scan would be lost
-        XCTAssertTrue(app.staticTexts["Settings"].waitForNonExistence(timeout: 5))
-        app.buttons["History"].tap()
-        let row = element(labelled: network, in: app)
-        XCTAssertTrue(row.waitForExistence(timeout: 5))
-        row.tap()
-
-        XCTAssertTrue(app.otherElements["Raw content"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["WIFI:T:WPA;S:\(network);P:secret123;;"].exists)
-        keepScreenshot(named: "detail-with-raw-content", of: app)
-
-        // Back to the setting off, as the other tests expect it, one screen after the other
-        app.buttons["Back"].tap()
-        XCTAssertTrue(app.otherElements["Raw content"].waitForNonExistence(timeout: 5))
-        app.buttons["Back"].tap()
-        XCTAssertTrue(app.staticTexts["History"].waitForNonExistence(timeout: 5))
-        app.buttons["Settings"].tap()
-        scroll(to: rawContentSwitch, in: app)
-        rawContentSwitch.tap()
-        XCTAssertFalse(isOn(rawContentSwitch))
-    }
-
     func testTheSettingsShowTheAppAndLeadToTheFeedback() throws {
         let app = launchApp()
         app.buttons["Settings"].tap()

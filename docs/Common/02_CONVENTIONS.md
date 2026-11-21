@@ -57,11 +57,11 @@ Conventions transverses à tous les modules. Pour l'UI, voir en complément
       ```kotlin
       combine(
           settingsRepository.watchIsVibrationEnabled(),
-          settingsRepository.watchIsRawContentShown(),
-      ) { isVibrationEnabled, isRawContentShown ->
+          settingsRepository.watchIsCopyAfterScanEnabled(),
+      ) { isVibrationEnabled, isCopyAfterScanEnabled ->
           ScanSettings(
               isVibrationEnabled = isVibrationEnabled,
-              isRawContentShown = isRawContentShown,
+              isCopyAfterScanEnabled = isCopyAfterScanEnabled,
           )
       }
       ```

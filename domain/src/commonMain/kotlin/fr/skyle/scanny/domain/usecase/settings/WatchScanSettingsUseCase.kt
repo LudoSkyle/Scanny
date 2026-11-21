@@ -21,7 +21,6 @@ internal class WatchScanSettingsUseCaseImpl(
             settingsRepository.watchIsBeepAfterScanEnabled(),
             settingsRepository.watchIsCopyAfterScanEnabled(),
             settingsRepository.watchIsOpenContentAfterScanEnabled(),
-            settingsRepository.watchIsRawContentShown(),
             settingsRepository.watchIsFrontCameraUsed(),
         ) { values ->
             ScanSettings(
@@ -29,8 +28,7 @@ internal class WatchScanSettingsUseCaseImpl(
                 isBeepAfterScanEnabled = values[1],
                 isCopyAfterScanEnabled = values[2],
                 isOpenContentAfterScanEnabled = values[3],
-                isRawContentShown = values[4],
-                isFrontCameraUsed = values[5],
+                isFrontCameraUsed = values[4],
             )
         }
 }
