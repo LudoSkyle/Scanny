@@ -13,6 +13,9 @@ intermédiaire.
 - L'hôte de navigation est `ui/main/navigation/RootNavDisplay.kt`, affiché par `ScannyApp`.
 - Ce que l'app fait une fois à son démarrage, quel que soit l'écran (la purge de l'historique), vit
   dans `ui/main/MainViewModel`, créé par `ScannyApp` : pas dans le ViewModel du scan.
+- La création d'un code s'ouvre par le « + » de la barre du scan (`Route.CreateCode`). Créer
+  remplace l'éditeur par l'écran de la création (`Route.CreationDetail(creationId)`) : le retour depuis
+  elle revient au scan.
 - Une route implémente `NavKey` et est annotée `@Serializable` : le back stack est sauvegardé et
   restauré (recréation de l'activité, mort du process sur Android).
 - Le back stack se crée avec `rememberSerializable` et un `NavBackStackSerializer` construit sur le

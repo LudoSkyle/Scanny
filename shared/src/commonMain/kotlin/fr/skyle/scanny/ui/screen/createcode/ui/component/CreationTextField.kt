@@ -1,0 +1,53 @@
+package fr.skyle.scanny.ui.screen.createcode.ui.component
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import fr.skyle.scanny.designsystem.core.textfield.SCTextField
+import fr.skyle.scanny.designsystem.core.textfield.SCTextFieldDefaults
+import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.link
+import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
+import org.jetbrains.compose.resources.stringResource
+
+/** A field of the content of a code, on one line unless more are asked for. */
+@Composable
+fun CreationTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier,
+    minLines: Int = 1,
+    keyboardType: KeyboardType = KeyboardType.Text,
+) {
+    SCTextField(
+        modifier = modifier,
+        value = value,
+        onValueChange = onValueChange,
+        label = label,
+        style = SCTextFieldDefaults.Style.LIGHT,
+        minLines = minLines,
+        isSingleLine = minLines == 1,
+        keyboardType = keyboardType,
+    )
+}
+
+@AppPreviewWithBackground
+@Composable
+private fun PreviewCreationTextField() {
+    SCTheme {
+        CreationTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp),
+            value = "scanny.app",
+            onValueChange = {},
+            label = stringResource(Res.string.link),
+            keyboardType = KeyboardType.Uri,
+        )
+    }
+}

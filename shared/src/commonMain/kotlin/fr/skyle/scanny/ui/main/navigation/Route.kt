@@ -19,6 +19,12 @@ sealed interface Route : NavKey {
     data object ScanHistory : Route
 
     @Serializable
+    data object CreateCode : Route
+
+    @Serializable
+    data class CreationDetail(val creationId: Long) : Route
+
+    @Serializable
     data object Settings : Route
 
     @Serializable

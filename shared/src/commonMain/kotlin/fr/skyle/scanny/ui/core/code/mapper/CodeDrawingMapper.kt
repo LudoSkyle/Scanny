@@ -1,6 +1,9 @@
 package fr.skyle.scanny.ui.core.code.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import io.github.alexzhirkevich.qrose.QroseEncoders
+import io.github.alexzhirkevich.qrose.matrix.QR
+import io.github.alexzhirkevich.qrose.matrix.qr.QrErrorCorrection
 import io.github.alexzhirkevich.qrose.oned.BarcodeType
 
 /** Whether Scanny can draw a code of this format again from its text: a QR code, or a barcode. */
@@ -26,3 +29,26 @@ internal fun BarcodeFormat.toBarcodeType(): BarcodeType? =
         BarcodeFormat.PDF417,
         -> null
     }
+
+/**
+ * Whether a code of this format can hold [rawValue], tried with the encoder that draws it: a barcode
+ * refuses a wrong length or a wrong check digit, a QR code a text too long for [errorCorrection].
+ * A QR code that may get a logo is tried with the highest correction, the one a logo can ask for.
+ */
+internal fun BarcodeFormat.canHold(
+    rawValue: String,
+    errorCorrection: QrErrorCorrection = QrErrorCorrection.L,
+): Boolean {
+    if (rawValue.isEmpty() || !isDrawable) {
+        return false
+    }
+
+    return runCatching {
+        val barcodeType = toBarcodeType()
+        if (barcodeType != null) {
+            barcodeType.encoder.encode(rawValue)
+        } else {
+            QroseEncoders.QR(errorCorrection = errorCorrection).encode(rawValue)
+        }
+    }.isSuccess
+}

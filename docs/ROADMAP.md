@@ -201,7 +201,10 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
           dessine pas
     - [x] Donnée et domaine des créations : table (base en version 3), encodage du contenu,
           enregistrement ou non dans l'historique (réglage, activé par défaut), durée de conservation
-    - [ ] L'éditeur : type, formulaire, aperçu, enregistrement, partage et enregistrement de l'image
+    - [x] L'éditeur : le « + » du scan, le type, les champs de chacun, l'aperçu en direct, la
+          validation, l'enregistrement, et l'écran d'une création (son code, son contenu, sa
+          suppression)
+    - [ ] Partager et enregistrer l'image d'un code créé
     - [ ] La personnalisation : couleurs, formes, logo
     - [ ] L'historique des créations
     - [ ] « Modifier » depuis le `ScanDetail`

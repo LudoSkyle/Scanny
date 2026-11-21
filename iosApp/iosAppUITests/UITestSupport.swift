@@ -74,6 +74,56 @@ extension XCTestCase {
         add(attachment)
     }
 
+    /**
+     * A screen longer than the screen: an element out of it is not seen at all, and an element cut by
+     * its edge is seen cut. Scrolled to until it stands clear of the edges, then until it stops moving:
+     * a touch on a list that still moves, or on a screen still coming in, only stops it.
+     */
+    func scroll(
+        to element: XCUIElement,
+        in app: XCUIApplication,
+        upward: Bool = false,
+    ) {
+        let window = app.windows.firstMatch
+        let clearArea = CGRect(
+            x: window.frame.minX,
+            y: window.frame.minY + 120,
+            width: window.frame.width,
+            height: window.frame.height - 220,
+        )
+        waitUntilStill(element)
+        var swipeCount = 0
+        while !(element.exists && clearArea.contains(element.frame)) && swipeCount < 5 {
+            if upward {
+                app.swipeDown(velocity: .slow)
+            } else {
+                app.swipeUp(velocity: .slow)
+            }
+            swipeCount += 1
+            waitUntilStill(element)
+        }
+    }
+
+    func waitUntilStill(_ element: XCUIElement) {
+        var frame = element.exists ? element.frame : .zero
+        for _ in 0..<10 {
+            Thread.sleep(forTimeInterval: 0.3)
+            let newFrame = element.exists ? element.frame : .zero
+            if newFrame == frame {
+                return
+            }
+            frame = newFrame
+        }
+    }
+
+    /// A text field of Compose, seen as a text view when it may hold several lines.
+    func textInput(
+        labelled label: String,
+        in app: XCUIApplication,
+    ) -> XCUIElement {
+        app.textViews[label].exists ? app.textViews[label] : app.textFields[label]
+    }
+
     // Asked at the first launch only: the simulator remembers the answer
     private func allowTheCameraIfAsked() {
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")

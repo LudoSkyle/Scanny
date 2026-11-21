@@ -37,6 +37,7 @@ fun ScanRoute(
     navigateToScanDetail: (codeId: Long) -> Unit,
     navigateToScanGroup: (scanId: Long) -> Unit,
     navigateToScanHistory: () -> Unit,
+    navigateToCreateCode: () -> Unit,
     navigateToSettings: () -> Unit,
     viewModel: ScanViewModel = koinViewModel(),
 ) {
@@ -138,6 +139,7 @@ fun ScanRoute(
         onTorchClicked = viewModel::onTorchClicked,
         onMultipleScanClicked = viewModel::onMultipleScanClicked,
         onMultipleScanFinished = viewModel::onMultipleScanFinished,
+        onCreateClicked = navigateToCreateCode,
         onHistoryClicked = navigateToScanHistory,
         onSettingsClicked = navigateToSettings,
         onResultActionClicked = openCodeAction,
