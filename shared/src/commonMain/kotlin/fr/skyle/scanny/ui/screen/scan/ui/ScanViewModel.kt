@@ -50,6 +50,14 @@ class ScanViewModel(
 
     private var isAwayFromScan = false
 
+    // Another app or a panel of the system in front: what the camera still sees is not for the scan
+    private var isScreenResumed = true
+
+    // Read again just after the detection resumed, the last code of a simple scan is ignored: still
+    // before the camera, it would open its result again as soon as the user closes it
+    private var lastSimpleScanBarcode: DetectedBarcode? = null
+    private var detectionResumedAt: Instant? = null
+
     // The codes of the multiple scan in progress, in their order, each once
     private val multipleScanBarcodes = mutableListOf<DetectedBarcode>()
 
@@ -57,14 +65,23 @@ class ScanViewModel(
     private val multipleScanCandidates = mutableMapOf<DetectedBarcode, Candidate>()
 
     fun onBarcodeDetected(barcode: DetectedBarcode) {
+        if (!isScreenResumed) {
+            return
+        }
+
         if (_uiState.value.multipleScan != null) {
             onMultipleScanBarcodeDetected(barcode = barcode)
-        } else {
-            onSimpleScanBarcodeDetected(barcode = barcode)
+        } else if (!isReadAgainTooSoon(barcode = barcode)) {
+            recordSimpleScan(barcode = barcode)
         }
     }
 
-    private fun onSimpleScanBarcodeDetected(barcode: DetectedBarcode) {
+    private fun isReadAgainTooSoon(barcode: DetectedBarcode): Boolean {
+        val resumedAt = detectionResumedAt ?: return false
+        return barcode == lastSimpleScanBarcode && clock.now() - resumedAt < SAME_CODE_PAUSE
+    }
+
+    private fun recordSimpleScan(barcode: DetectedBarcode) {
         // Paused before anything else: the camera reads the same code several times in a row
         if (_uiState.value.isDetectionPaused) {
             return
@@ -72,6 +89,7 @@ class ScanViewModel(
         _uiState.update { uiState ->
             uiState.copy(isDetectionPaused = true)
         }
+        lastSimpleScanBarcode = barcode
 
         viewModelScope.launch {
             try {
@@ -239,11 +257,12 @@ class ScanViewModel(
 
     fun onImageScanned(result: ImageScanResult) {
         when (result) {
-            // Read once on purpose, from a still image: counted at once by a multiple scan
+            // Read once on purpose, from a still image: counted at once by a multiple scan, and
+            // recorded even if just read by the camera
             is ImageScanResult.Detected -> if (_uiState.value.multipleScan != null) {
                 addToMultipleScan(barcode = result.barcode)
             } else {
-                onBarcodeDetected(barcode = result.barcode)
+                recordSimpleScan(barcode = result.barcode)
             }
 
             ImageScanResult.NoBarcode -> viewModelScope.launch {
@@ -254,11 +273,9 @@ class ScanViewModel(
 
     fun onResultDismissed() {
         _uiState.update { uiState ->
-            uiState.copy(
-                result = null,
-                isDetectionPaused = false,
-            )
+            uiState.copy(result = null)
         }
+        resumeDetection()
     }
 
     fun onAddContactClicked(contact: BarcodeContent.Contact) {
@@ -284,11 +301,19 @@ class ScanViewModel(
         leaveScan(event = ScanEvent.OpenScanGroup(scanId = result.scanId))
     }
 
-    fun onScreenShown() {
+    // Back from another screen of the app, from another app, or at the first display
+    fun onScreenResumed() {
+        isScreenResumed = true
         if (isAwayFromScan) {
             isAwayFromScan = false
             resumeDetection()
+        } else {
+            detectionResumedAt = clock.now()
         }
+    }
+
+    fun onScreenPaused() {
+        isScreenResumed = false
     }
 
     fun onTorchClicked() {
@@ -321,6 +346,7 @@ class ScanViewModel(
     }
 
     private fun resumeDetection() {
+        detectionResumedAt = clock.now()
         _uiState.update { uiState ->
             uiState.copy(isDetectionPaused = false)
         }
@@ -354,6 +380,7 @@ class ScanViewModel(
 
     internal companion object {
         val CONTENT_OPENING_PAUSE = 2.seconds
+        val SAME_CODE_PAUSE = 1.5.seconds
         const val CONFIRMATION_READINGS = 3
         val CONFIRMATION_WINDOW = 1.seconds
     }

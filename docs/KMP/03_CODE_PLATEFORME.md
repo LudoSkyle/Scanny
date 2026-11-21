@@ -139,8 +139,16 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   compte tout de suite. La caméra simulée du simulateur iOS lit donc chacun de ses codes plusieurs
   fois.
 - Elle reste en pause quand la feuille du résultat ouvre le détail du code : la caméra lit encore
-  pendant la transition vers l'écran suivant. Elle reprend au retour sur le scan, que la `Route`
-  signale en se composant de nouveau (`onScreenShown`).
+  pendant la transition vers l'écran suivant. Elle reprend au retour sur le scan, quand l'écran
+  repasse au premier plan (`onScreenResumed`).
+- En scan simple, le même code relu juste après une reprise de la détection (feuille fermée, retour
+  du détail ou dans l'app, fin de la pause qui suit l'ouverture du contenu) est ignoré pendant 1,5 s
+  (`SAME_CODE_PAUSE`) : encore devant la caméra, il rouvrirait son résultat dès qu'on le ferme. Un
+  autre code, ou une image de la galerie, est lu tout de suite.
+- Quand une autre app ou un panneau du système passe devant (navigateur, Contacts, ajout d'un
+  réseau), l'écran n'est plus `RESUMED` et ce que la caméra voit encore est ignoré : la `Route` le
+  signale depuis un `LifecycleResumeEffect` (`onScreenPaused`, `onScreenResumed`). Sans quoi un
+  contenu ouvert automatiquement se rouvrirait en boucle, le code étant toujours devant la caméra.
 - Le geste de zoom (pincement, plafonné à ×8) et le geste de mise au point (appui) sont détectés en
   commun, dans `ScanCameraLayer` ; seule leur application à la caméra est native.
 - Android, lecture de loin : ML Kit réduit lui-même une image avant d'y chercher des codes, et une

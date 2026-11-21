@@ -38,6 +38,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 // The test dispatchers of kotlinx-coroutines-test are still experimental
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -512,9 +513,10 @@ class ScanViewModelTest {
         val viewModel = scanViewModel()
         viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
         viewModel.onSeeDetailClicked()
+        viewModel.onScreenPaused()
 
         // When
-        viewModel.onScreenShown()
+        viewModel.onScreenResumed()
 
         // Then
         assertFalse(viewModel.uiState.value.isDetectionPaused)
@@ -525,12 +527,129 @@ class ScanViewModelTest {
         // Given
         val viewModel = scanViewModel()
         viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+        viewModel.onScreenPaused()
 
         // When
-        viewModel.onScreenShown()
+        viewModel.onScreenResumed()
 
         // Then
         assertTrue(viewModel.uiState.value.isDetectionPaused)
+    }
+
+    @Test
+    fun `the same code read again just after the result is dismissed is ignored`() = runTest(testDispatcher) {
+        // Given
+        val recordScanUseCase = FakeRecordScanUseCase()
+        val viewModel = scanViewModel(recordScanUseCase = recordScanUseCase)
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+        viewModel.onResultDismissed()
+
+        // When
+        testClock.advanceBy(1.seconds)
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+
+        // Then
+        assertEquals(
+            expected = 1,
+            actual = recordScanUseCase.recordedScans.size,
+        )
+        assertNull(viewModel.uiState.value.result)
+    }
+
+    @Test
+    fun `the same code read again after the pause that follows the result is recorded`() = runTest(testDispatcher) {
+        // Given
+        val recordScanUseCase = FakeRecordScanUseCase()
+        val viewModel = scanViewModel(recordScanUseCase = recordScanUseCase)
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+        viewModel.onResultDismissed()
+
+        // When
+        testClock.advanceBy(ScanViewModel.SAME_CODE_PAUSE)
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+
+        // Then
+        assertEquals(
+            expected = 2,
+            actual = recordScanUseCase.recordedScans.size,
+        )
+    }
+
+    @Test
+    fun `another code read just after the result is dismissed is recorded`() = runTest(testDispatcher) {
+        // Given
+        val recordScanUseCase = FakeRecordScanUseCase()
+        val viewModel = scanViewModel(recordScanUseCase = recordScanUseCase)
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+        viewModel.onResultDismissed()
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "World"))
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                listOf(qrCode(rawValue = "Hello")),
+                listOf(qrCode(rawValue = "World")),
+            ),
+            actual = recordScanUseCase.recordedScans,
+        )
+    }
+
+    @Test
+    fun `the same code read again just after coming back to the app is ignored`() = runTest(testDispatcher) {
+        // Given
+        val recordScanUseCase = FakeRecordScanUseCase()
+        val viewModel = scanViewModel(recordScanUseCase = recordScanUseCase)
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+        viewModel.onResultDismissed()
+        testClock.advanceBy(10.seconds)
+        viewModel.onScreenPaused()
+
+        // When
+        viewModel.onScreenResumed()
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+
+        // Then
+        assertEquals(
+            expected = 1,
+            actual = recordScanUseCase.recordedScans.size,
+        )
+    }
+
+    @Test
+    fun `no code is read while another app is in front`() = runTest(testDispatcher) {
+        // Given
+        val recordScanUseCase = FakeRecordScanUseCase()
+        val viewModel = scanViewModel(recordScanUseCase = recordScanUseCase)
+
+        // When
+        viewModel.onScreenPaused()
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = recordScanUseCase.recordedScans,
+        )
+    }
+
+    @Test
+    fun `a code found in an image is recorded even just after the camera read it`() = runTest(testDispatcher) {
+        // Given
+        val recordScanUseCase = FakeRecordScanUseCase()
+        val viewModel = scanViewModel(recordScanUseCase = recordScanUseCase)
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+        viewModel.onResultDismissed()
+
+        // When
+        viewModel.onImageScanned(result = ImageScanResult.Detected(barcode = qrCode(rawValue = "Hello")))
+
+        // Then
+        assertEquals(
+            expected = 2,
+            actual = recordScanUseCase.recordedScans.size,
+        )
     }
 
     @Test
