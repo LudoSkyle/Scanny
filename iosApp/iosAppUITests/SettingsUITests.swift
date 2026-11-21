@@ -123,26 +123,6 @@ final class SettingsUITests: XCTestCase {
         XCTAssertFalse(isOn(scanningApp.switches["Copy the code after a scan"]))
     }
 
-    func testClearingTheHistoryFromTheSettingsEmptiesIt() throws {
-        let app = launchScanning(code: "Cleared\(Int(Date().timeIntervalSince1970))")
-        XCTAssertTrue(app.buttons["Close sheet"].waitForExistence(timeout: 10))
-        app.buttons["Close sheet"].tap()
-
-        app.buttons["Settings"].tap()
-        let clearRow = element(labelled: "Clear the history", in: app)
-        scroll(to: clearRow, in: app)
-        clearRow.tap()
-        XCTAssertTrue(app.staticTexts["Clear the history?"].waitForExistence(timeout: 5))
-        app.buttons["Clear"].tap()
-        XCTAssertTrue(app.staticTexts["The history is cleared"].waitForExistence(timeout: 5))
-        keepScreenshot(named: "history-cleared", of: app)
-
-        app.buttons["Back"].tap()
-        XCTAssertTrue(app.staticTexts["Settings"].waitForNonExistence(timeout: 5))
-        app.buttons["History"].tap()
-        XCTAssertTrue(app.staticTexts["No scan yet"].waitForExistence(timeout: 5))
-    }
-
     func testThePrivacyPolicyOpensInSafari() throws {
         let app = launchApp()
         app.buttons["Settings"].tap()

@@ -48,7 +48,6 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [x] Scan multiple : un mode qu'on active, on passe autant de codes qu'on veut devant la caméra, on
       termine, et la liste dédoublonnée des codes trouvés s'affiche et s'enregistre comme un groupe
 - [x] Bip après un scan et copie du code après un scan (réglages) *(bip testé, non entendu)*
-- [x] Effacer l'historique depuis les réglages
 - [ ] Création de QR codes : texte, URL, email, SMS, WiFi
 - [ ] Personnalisation d'un QR code : couleurs, logo au centre, formes
 - [ ] Modifier un code scanné : reprendre son contenu, le modifier, le personnaliser et générer le
@@ -164,8 +163,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] Scan multiple : un code ne compte qu'une fois lu trois fois en une seconde, pour écarter
           les lectures erronées d'un code tenu devant la caméra
     - [x] Réglages redécoupés : un en-tête (logo, nom, version, description), puis « Préférences du
-          scan » (vibration, bip, copie, ouverture des liens), « Réglages de l'app » (contenu brut,
-          effacer l'historique) et « Support » (étoile sur GitHub, feedback, noter l'app, politique
+          scan » (vibration, bip, copie, ouverture des liens), « Réglages de l'app » (contenu brut)
+          et « Support » (étoile sur GitHub, feedback, noter l'app, politique
           de confidentialité, Openium) ; des lignes à icône ronde ; l'écran À propos est retiré, son
           contenu passe dans l'en-tête
     - Vérifié sur l'émulateur Android (écran, effacement de l'historique) et sur le simulateur iOS
@@ -178,6 +177,7 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] Android : lecture de loin sans zoomer (le centre de l'image lu à part, une image sur deux)
           et aperçu plus net (16:9 en 1920×1080) ; sur un Galaxy S21 FE, une carte lue à plus de
           60 cm au lieu de 30, comme l'appareil photo de Samsung
+    - [x] « Effacer l'historique » retiré des réglages : l'historique le propose déjà
 11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
     (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre
     l'éditeur prérempli avec son contenu.
