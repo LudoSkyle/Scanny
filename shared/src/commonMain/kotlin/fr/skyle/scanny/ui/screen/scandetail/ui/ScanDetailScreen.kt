@@ -36,6 +36,7 @@ import fr.skyle.scanny.resources.raw_content
 import fr.skyle.scanny.resources.share
 import fr.skyle.scanny.resources.show_code
 import fr.skyle.scanny.ui.core.code.component.CodeActionButton
+import fr.skyle.scanny.ui.core.code.component.CodeFieldRow
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
 import fr.skyle.scanny.ui.core.code.mapper.isDrawable
 import fr.skyle.scanny.ui.core.code.mapper.toText
@@ -46,7 +47,6 @@ import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.component.calendarDayText
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
-import fr.skyle.scanny.ui.screen.scandetail.ui.component.ScanDetailFieldRow
 import fr.skyle.scanny.ui.screen.scandetail.ui.model.ScanDetailItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -146,7 +146,7 @@ fun ScanDetailScreen(
                     style = SCCardDefaults.Style.LIGHT,
                 ) {
                     code.fields.forEach { field ->
-                        ScanDetailFieldRow(
+                        CodeFieldRow(
                             modifier = Modifier.fillMaxWidth(),
                             label = field.label?.let { label -> stringResource(label.toText()) },
                             value = field.value,
@@ -163,7 +163,7 @@ fun ScanDetailScreen(
                         title = stringResource(Res.string.raw_content),
                         style = SCCardDefaults.Style.LIGHT,
                     ) {
-                        ScanDetailFieldRow(
+                        CodeFieldRow(
                             modifier = Modifier.fillMaxWidth(),
                             label = null,
                             value = code.rawValue,

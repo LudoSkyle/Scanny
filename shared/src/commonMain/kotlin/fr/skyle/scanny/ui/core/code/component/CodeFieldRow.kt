@@ -1,4 +1,4 @@
-package fr.skyle.scanny.ui.screen.scandetail.ui.component
+package fr.skyle.scanny.ui.core.code.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /** A piece of the content, named unless it is the content itself, and the button to copy it. */
 @Composable
-fun ScanDetailFieldRow(
+fun CodeFieldRow(
     label: String?,
     value: String,
     onCopyClicked: () -> Unit,
@@ -76,9 +76,9 @@ fun ScanDetailFieldRow(
 
 @AppPreviewWithBackground
 @Composable
-private fun PreviewScanDetailFieldRow() {
+private fun PreviewCodeFieldRow() {
     SCTheme {
-        ScanDetailFieldRow(
+        CodeFieldRow(
             modifier = Modifier.fillMaxWidth(),
             label = stringResource(Res.string.password),
             value = "secret",
@@ -89,9 +89,9 @@ private fun PreviewScanDetailFieldRow() {
 
 @AppPreviewWithBackground
 @Composable
-private fun PreviewScanDetailFieldRow_LongValueWithoutLabel() {
+private fun PreviewCodeFieldRow_LongValueWithoutLabel() {
     SCTheme {
-        ScanDetailFieldRow(
+        CodeFieldRow(
             modifier = Modifier.fillMaxWidth(),
             label = null,
             value = "A long text read in a code, that goes on several lines to see how the button to copy it stays in place",
