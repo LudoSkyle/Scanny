@@ -105,6 +105,33 @@ final class ScanHistoryUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Edit the code"].waitForExistence(timeout: 5))
     }
 
+    func testTheViewsOfTheHistorySwitchBySwiping() throws {
+        let app = launchApp()
+        app.buttons["History"].tap()
+        let scansTab = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Scans")).firstMatch
+        let creationsTab = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Creations")).firstMatch
+        XCTAssertTrue(scansTab.waitForExistence(timeout: 5))
+        waitUntilStill(scansTab)
+        XCTAssertTrue(scansTab.isSelected)
+
+        // The views follow the finger, the switch follows the view
+        app.swipeLeft()
+        waitUntilSelected(creationsTab)
+        keepScreenshot(named: "history-swiped-to-creations", of: app)
+        app.swipeRight()
+        waitUntilSelected(scansTab)
+
+        // On the first view, the back gesture from the edge still leaves the history
+        let edge = app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.5))
+        edge.press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5)))
+        XCTAssertTrue(app.buttons["Create a code"].waitForExistence(timeout: 5))
+    }
+
+    private func waitUntilSelected(_ element: XCUIElement) {
+        let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: element)
+        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 5), .completed)
+    }
+
     func testAClearedHistoryIsEmpty() throws {
         let app = launchScanning(code: "To clear")
         closeTheResult(of: app)

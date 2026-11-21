@@ -16,12 +16,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.iconbadge.SCIconBadge
 import fr.skyle.scanny.designsystem.core.iconbadge.SCIconBadgeDefaults
+import fr.skyle.scanny.designsystem.core.tag.SCTag
+import fr.skyle.scanny.designsystem.core.tag.SCTagDefaults
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.resources.Res
-import fr.skyle.scanny.resources.code_count
-import fr.skyle.scanny.resources.description_and_time
 import fr.skyle.scanny.resources.group
+import fr.skyle.scanny.resources.group_of_codes
 import fr.skyle.scanny.resources.ic_stacks
 import fr.skyle.scanny.ui.core.code.mapper.toIcon
 import fr.skyle.scanny.ui.core.code.mapper.toText
@@ -31,7 +32,10 @@ import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-/** A capture of the history: what it holds, its type or its number of codes, and its time. */
+/**
+ * A capture of the history: what it holds, its type or its number of codes in a pill, and its time. A
+ * group stands out among the single codes, filled.
+ */
 @Composable
 fun ScanHistoryRow(
     item: ScanHistoryItem,
@@ -40,11 +44,6 @@ fun ScanHistoryRow(
 ) {
     // A group is drawn as such, not as its first code
     val isGroup = item.codeCount > 1
-    val description = if (isGroup) {
-        stringResource(Res.string.code_count, item.codeCount)
-    } else {
-        stringResource(item.type.toText())
-    }
 
     Row(
         modifier = modifier
@@ -59,7 +58,7 @@ fun ScanHistoryRow(
             modifier = Modifier.wrapContentSize(),
             icon = painterResource(if (isGroup) Res.drawable.ic_stacks else item.type.toIcon()),
             contentDescription = stringResource(if (isGroup) Res.string.group else item.type.toText()),
-            style = SCIconBadgeDefaults.Style.PRIMARY,
+            style = if (isGroup) SCIconBadgeDefaults.Style.FILLED else SCIconBadgeDefaults.Style.PRIMARY,
             size = SCIconBadgeDefaults.Size.LARGE,
         )
 
@@ -75,15 +74,29 @@ fun ScanHistoryRow(
                 overflow = TextOverflow.Ellipsis,
             )
 
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            SCText(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.description_and_time, description, item.time),
-                style = SCTheme.typography.subtitle2,
-                color = SCTheme.colors.text,
-                maxLines = 1,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                SCTag(
+                    modifier = Modifier.weight(weight = 1f, fill = false),
+                    text = if (isGroup) {
+                        stringResource(Res.string.group_of_codes, item.codeCount)
+                    } else {
+                        stringResource(item.type.toText())
+                    },
+                    style = if (isGroup) SCTagDefaults.Style.FILLED else SCTagDefaults.Style.LIGHT,
+                    size = SCTagDefaults.Size.MEDIUM,
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                SCText(
+                    text = item.time,
+                    style = SCTheme.typography.subtitle2,
+                    color = SCTheme.colors.text,
+                    maxLines = 1,
+                )
+            }
         }
     }
 }
