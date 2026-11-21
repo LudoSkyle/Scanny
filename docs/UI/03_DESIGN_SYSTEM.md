@@ -17,8 +17,9 @@ On y trouve :
   son titre jusqu'à un toucher), `SCDialog`, `SCBottomSheet`, `SCSnackbarState`,
   `SCSwitch`, `SCTextField`, `SCDropdownField` (un choix dans un menu qui se déplie sous le champ),
   `SCDropdownMenu` (le menu seul, sous l'élément où il est placé), `SCDivider` (une ligne entre deux
-  rangées d'une carte) et `SCSegmentedControl` (un choix entre quelques options côte à côte, chacune
-  lue comme un onglet).
+  rangées d'une carte), `SCSegmentedControl` (un choix entre quelques options côte à côte, chacune
+  lue comme un onglet) et `SCTag` (un court libellé dans une pastille, qui classe ce qu'il
+  accompagne : un type, un groupe ; `FILLED` ressort parmi les `LIGHT`).
   Les autres arrivent avec le premier écran qui en a besoin ;
 - les polices (Lato), les icônes et les textes des composants, dans Compose Resources.
 
@@ -46,7 +47,7 @@ designSystem/src/commonMain/
 │       ├── divider/           (SCDivider : une ligne fine entre deux rangées, de la couleur du fond)
 │       ├── dropdownfield/     (SCDropdownField : un choix dans un menu, aux styles de SCTextField)
 │       ├── dropdownmenu/      (SCDropdownMenu : un menu d'options, le choix en cours en couleur)
-│       ├── iconbadge/         (SCIconBadge : une icône dans un rond, non cliquable ; MEDIUM dans une rangée, LARGE en tête d'un écran)
+│       ├── iconbadge/         (SCIconBadge : une icône dans un rond, non cliquable ; MEDIUM dans une rangée, LARGE en tête d'un écran ; FILLED ressort parmi les PRIMARY)
 │       ├── iconbutton/
 │       │   ├── SCIconButton.kt
 │       │   └── SCIconButtonDefaults.kt
@@ -54,6 +55,7 @@ designSystem/src/commonMain/
 │       ├── segmentedcontrol/  (SCSegmentedControl : un choix entre quelques options côte à côte)
 │       ├── snackbar/          (SCSnackbarState : les messages courts d'un écran)
 │       ├── switch/            (SCSwitch : un réglage allumé ou éteint)
+│       ├── tag/               (SCTag : un court libellé dans une pastille, non cliquable)
 │       ├── text/              (SCText : un texte dans un style du thème)
 │       ├── textfield/         (SCTextField : un texte que l'utilisateur écrit)
 │       └── topappbar/         (SCTopAppBar : retour, titre, actions)

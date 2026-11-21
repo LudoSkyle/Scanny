@@ -225,7 +225,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
           son image (un code scanné aussi)
     - [x] Le contenu brut replié dans les deux détails, sans réglage (pas pour un texte ou un lien,
           qui sont leur propre contenu brut)
-    - [ ] L'historique : le type en pastille, les groupes mis en avant, le glissement entre les vues
+    - [x] L'historique : le type en pastille, les groupes mis en avant (badge et pastille remplis), le
+          glissement entre les vues
     - [ ] Une couleur libre, avec un avertissement de lisibilité
     - [ ] L'export en SVG *(décidé, non engagé)*
 12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI. Deux remarques

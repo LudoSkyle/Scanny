@@ -6,7 +6,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButton
@@ -51,6 +57,20 @@ fun HistoryScreen(
     onScanClicked: (ScanHistoryItem) -> Unit,
     onCreationClicked: (CreationHistoryItem) -> Unit,
 ) {
+    // A swipe between the views settles on a page: the page and the switch follow each other
+    val pagerState = rememberPagerState(initialPage = selectedView.ordinal) { HistoryView.entries.size }
+    LaunchedEffect(selectedView) {
+        if (pagerState.settledPage != selectedView.ordinal) {
+            pagerState.animateScrollToPage(page = selectedView.ordinal)
+        }
+    }
+    val currentOnViewSelected by rememberUpdatedState(onViewSelected)
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.settledPage }.collect { page ->
+            currentOnViewSelected(HistoryView.entries[page])
+        }
+    }
+
     // Only the view shown is cleared: nothing to clear when it is empty
     val isShownViewEmpty = when (selectedView) {
         HistoryView.SCANS -> scanSections.isNullOrEmpty()
@@ -104,20 +124,26 @@ fun HistoryScreen(
 
             // The list goes under the navigation bar, its last row above it
             val listPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding())
-            when (selectedView) {
-                HistoryView.SCANS -> ScanHistoryList(
-                    modifier = Modifier.fillMaxSize(),
-                    sections = scanSections,
-                    contentPadding = listPadding,
-                    onScanClicked = onScanClicked,
-                )
+            HorizontalPager(
+                modifier = Modifier.fillMaxSize(),
+                state = pagerState,
+                key = { page -> HistoryView.entries[page].name },
+            ) { page ->
+                when (HistoryView.entries[page]) {
+                    HistoryView.SCANS -> ScanHistoryList(
+                        modifier = Modifier.fillMaxSize(),
+                        sections = scanSections,
+                        contentPadding = listPadding,
+                        onScanClicked = onScanClicked,
+                    )
 
-                HistoryView.CREATIONS -> CreationHistoryList(
-                    modifier = Modifier.fillMaxSize(),
-                    sections = creationSections,
-                    contentPadding = listPadding,
-                    onCreationClicked = onCreationClicked,
-                )
+                    HistoryView.CREATIONS -> CreationHistoryList(
+                        modifier = Modifier.fillMaxSize(),
+                        sections = creationSections,
+                        contentPadding = listPadding,
+                        onCreationClicked = onCreationClicked,
+                    )
+                }
             }
         }
     }

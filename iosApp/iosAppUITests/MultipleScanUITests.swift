@@ -53,7 +53,8 @@ final class MultipleScanUITests: XCTestCase {
         app.buttons["History"].tap()
         let groupRow = element(labelled: link, in: app)
         XCTAssertTrue(groupRow.waitForExistence(timeout: 5))
-        XCTAssertTrue(groupRow.label.contains("3 codes"))
+        // A group says so in its pill, apart from the single codes
+        XCTAssertTrue(groupRow.label.contains("Group · 3 codes"))
         keepScreenshot(named: "history-with-group", of: app)
         groupRow.tap()
         XCTAssertTrue(app.staticTexts["Group"].waitForExistence(timeout: 5))

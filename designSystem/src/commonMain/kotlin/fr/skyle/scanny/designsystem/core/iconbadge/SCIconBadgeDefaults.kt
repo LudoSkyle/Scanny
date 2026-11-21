@@ -9,18 +9,22 @@ import fr.skyle.scanny.designsystem.theme.SCTheme
 object SCIconBadgeDefaults {
 
     enum class Style {
-        PRIMARY;
+        PRIMARY,
+        // Stands out among PRIMARY ones, a group among single codes for instance
+        FILLED;
 
         val containerColor: Color
             @Composable
             get() = when (this) {
                 PRIMARY -> SCTheme.colors.backgroundIcon
+                FILLED -> SCTheme.colors.primary
             }
 
         val contentColor: Color
             @Composable
             get() = when (this) {
                 PRIMARY -> SCTheme.colors.primary
+                FILLED -> SCTheme.colors.textLight
             }
     }
 

@@ -67,7 +67,6 @@
     <string name="delete">Delete</string>
     <string name="delete_code_question">Delete this code?</string>
     <string name="delete_group_question">Delete this group?</string>
-    <string name="description_and_time" translatable="false">%1$s · %2$s</string>
     <string name="discard">Discard</string>
     <string name="discard_codes_question">Discard the codes found?</string>
     <string name="dot_color">Color of the dots</string>
@@ -87,6 +86,7 @@
     <string name="group">Group</string>
     <string name="group_codes_removed_from_history">Its codes will be removed from the history.</string>
     <string name="group_not_deleted">The group could not be deleted</string>
+    <string name="group_of_codes">Group · %1$d codes</string>
     <string name="hidden_network">Hidden network</string>
     <string name="history">History</string>
     <string name="history_not_cleared">The history could not be cleared</string>

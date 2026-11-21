@@ -16,10 +16,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.iconbadge.SCIconBadge
 import fr.skyle.scanny.designsystem.core.iconbadge.SCIconBadgeDefaults
+import fr.skyle.scanny.designsystem.core.tag.SCTag
+import fr.skyle.scanny.designsystem.core.tag.SCTagDefaults
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
-import fr.skyle.scanny.resources.Res
-import fr.skyle.scanny.resources.description_and_time
 import fr.skyle.scanny.ui.core.code.mapper.toIcon
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeType
@@ -28,7 +28,7 @@ import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistoryItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-/** A code created: what it holds, its type, and its time. */
+/** A code created: what it holds, its type in a pill, and its time. */
 @Composable
 fun CreationHistoryRow(
     item: CreationHistoryItem,
@@ -64,15 +64,25 @@ fun CreationHistoryRow(
                 overflow = TextOverflow.Ellipsis,
             )
 
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            SCText(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.description_and_time, stringResource(item.type.toText()), item.time),
-                style = SCTheme.typography.subtitle2,
-                color = SCTheme.colors.text,
-                maxLines = 1,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                SCTag(
+                    modifier = Modifier.weight(weight = 1f, fill = false),
+                    text = stringResource(item.type.toText()),
+                    style = SCTagDefaults.Style.LIGHT,
+                    size = SCTagDefaults.Size.MEDIUM,
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                SCText(
+                    text = item.time,
+                    style = SCTheme.typography.subtitle2,
+                    color = SCTheme.colors.text,
+                    maxLines = 1,
+                )
+            }
         }
     }
 }
