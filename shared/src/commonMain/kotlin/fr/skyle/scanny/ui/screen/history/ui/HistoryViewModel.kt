@@ -3,10 +3,16 @@ package fr.skyle.scanny.ui.screen.history.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import fr.skyle.scanny.domain.usecase.creation.DeleteAllCreationsUseCase
+import fr.skyle.scanny.domain.usecase.creation.WatchCreationsUseCase
 import fr.skyle.scanny.domain.usecase.scan.DeleteAllScansUseCase
 import fr.skyle.scanny.domain.usecase.scan.WatchScansUseCase
+import fr.skyle.scanny.ui.screen.history.ui.mapper.toCreationHistorySections
 import fr.skyle.scanny.ui.screen.history.ui.mapper.toScanHistorySections
+import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistoryItem
+import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistorySection
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
+import fr.skyle.scanny.ui.screen.history.ui.model.HistoryView
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
@@ -24,7 +30,9 @@ import kotlin.time.Clock
 
 class HistoryViewModel(
     private val watchScansUseCase: WatchScansUseCase,
+    private val watchCreationsUseCase: WatchCreationsUseCase,
     private val deleteAllScansUseCase: DeleteAllScansUseCase,
+    private val deleteAllCreationsUseCase: DeleteAllCreationsUseCase,
     private val clock: Clock,
     private val timeZone: TimeZone,
 ) : ViewModel() {
@@ -49,9 +57,32 @@ class HistoryViewModel(
                 }
                 .collect { sections ->
                     _uiState.update { uiState ->
-                        uiState.copy(sections = sections)
+                        uiState.copy(scanSections = sections)
                     }
                 }
+        }
+        viewModelScope.launch {
+            watchCreationsUseCase()
+                .map { creations ->
+                    creations.toCreationHistorySections(
+                        today = clock.now().toLocalDateTime(timeZone).date,
+                        timeZone = timeZone,
+                    )
+                }
+                .catch { exception ->
+                    Logger.e(throwable = exception) { "Failed to read the history of the creations" }
+                }
+                .collect { sections ->
+                    _uiState.update { uiState ->
+                        uiState.copy(creationSections = sections)
+                    }
+                }
+        }
+    }
+
+    fun onViewSelected(view: HistoryView) {
+        _uiState.update { uiState ->
+            uiState.copy(selectedView = view)
         }
     }
 
@@ -66,14 +97,25 @@ class HistoryViewModel(
         }
     }
 
+    fun onCreationClicked(item: CreationHistoryItem) {
+        viewModelScope.launch {
+            _event.send(HistoryEvent.OpenCreationDetail(creationId = item.creationId))
+        }
+    }
+
+    // Clears the view shown, the other one kept
     fun onClearConfirmed() {
+        val view = _uiState.value.selectedView
         viewModelScope.launch {
             try {
-                deleteAllScansUseCase()
+                when (view) {
+                    HistoryView.SCANS -> deleteAllScansUseCase()
+                    HistoryView.CREATIONS -> deleteAllCreationsUseCase()
+                }
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: Exception) {
-                Logger.e(throwable = exception) { "Failed to clear the history of the scans" }
+                Logger.e(throwable = exception) { "Failed to clear the history of the ${view.name.lowercase()}" }
 
                 _event.send(HistoryEvent.ClearFailed)
             }
@@ -81,13 +123,16 @@ class HistoryViewModel(
     }
 
     data class HistoryUIState(
+        val selectedView: HistoryView = HistoryView.SCANS,
         // Null while the history is read
-        val sections: List<ScanHistorySection>? = null,
+        val scanSections: List<ScanHistorySection>? = null,
+        val creationSections: List<CreationHistorySection>? = null,
     )
 
     sealed interface HistoryEvent {
         data object ClearFailed : HistoryEvent
         data class OpenScanDetail(val codeId: Long) : HistoryEvent
         data class OpenScanGroup(val scanId: Long) : HistoryEvent
+        data class OpenCreationDetail(val creationId: Long) : HistoryEvent
     }
 }

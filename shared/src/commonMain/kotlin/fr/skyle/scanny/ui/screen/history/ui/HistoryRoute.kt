@@ -22,6 +22,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HistoryRoute(
     navigateToScanDetail: (codeId: Long) -> Unit,
     navigateToScanGroup: (scanId: Long) -> Unit,
+    navigateToCreationDetail: (creationId: Long) -> Unit,
     navigateBack: () -> Unit,
     viewModel: HistoryViewModel = koinViewModel(),
 ) {
@@ -48,23 +49,32 @@ fun HistoryRoute(
                     is HistoryViewModel.HistoryEvent.OpenScanGroup -> {
                         navigateToScanGroup(event.scanId)
                     }
+
+                    is HistoryViewModel.HistoryEvent.OpenCreationDetail -> {
+                        navigateToCreationDetail(event.creationId)
+                    }
                 }
             }
         }
     }
 
     HistoryScreen(
-        sections = uiState.sections,
+        selectedView = uiState.selectedView,
+        scanSections = uiState.scanSections,
+        creationSections = uiState.creationSections,
         snackbarState = snackbarState,
         onBackClicked = navigateBack,
+        onViewSelected = viewModel::onViewSelected,
         onClearClicked = {
             isClearDialogVisible = true
         },
         onScanClicked = viewModel::onScanClicked,
+        onCreationClicked = viewModel::onCreationClicked,
     )
 
     if (isClearDialogVisible) {
         ClearHistoryDialog(
+            view = uiState.selectedView,
             onConfirmClicked = {
                 isClearDialogVisible = false
                 viewModel.onClearConfirmed()

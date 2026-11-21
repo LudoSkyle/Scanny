@@ -2,13 +2,22 @@ package fr.skyle.scanny.ui.screen.history.ui
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeStyle
+import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.Scan
 import fr.skyle.scanny.domain.model.ScannedCode
+import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.payload.toRawValue
+import fr.skyle.scanny.fake.FakeDeleteAllCreationsUseCase
 import fr.skyle.scanny.fake.FakeDeleteAllScansUseCase
+import fr.skyle.scanny.fake.FakeWatchCreationsUseCase
 import fr.skyle.scanny.fake.FakeWatchScansUseCase
 import fr.skyle.scanny.fake.FixedClock
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
+import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistoryItem
+import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistorySection
+import fr.skyle.scanny.ui.screen.history.ui.model.HistoryView
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
 import kotlinx.coroutines.Dispatchers
@@ -151,7 +160,7 @@ class HistoryViewModelTest {
                     ),
                 ),
             ),
-            actual = viewModel.uiState.value.sections,
+            actual = viewModel.uiState.value.scanSections,
         )
     }
 
@@ -163,7 +172,7 @@ class HistoryViewModelTest {
         // Then
         assertEquals(
             expected = emptyList(),
-            actual = viewModel.uiState.value.sections,
+            actual = viewModel.uiState.value.scanSections,
         )
     }
 
@@ -190,7 +199,7 @@ class HistoryViewModelTest {
         // Then
         assertEquals(
             expected = listOf(1L),
-            actual = viewModel.uiState.value.sections?.flatMap { section ->
+            actual = viewModel.uiState.value.scanSections?.flatMap { section ->
                 section.items.map { it.scanId }
             },
         )
@@ -232,18 +241,22 @@ class HistoryViewModelTest {
     }
 
     @Test
-    fun `clearing the history deletes every capture`() = runTest(testDispatcher) {
+    fun `clearing the scans deletes every capture and keeps the creations`() = runTest(testDispatcher) {
         // Given
         val deleteAllScansUseCase = FakeDeleteAllScansUseCase()
-        val viewModel = historyViewModel(deleteAllScansUseCase = deleteAllScansUseCase)
+        val deleteAllCreationsUseCase = FakeDeleteAllCreationsUseCase()
+        val viewModel = historyViewModel(
+            deleteAllScansUseCase = deleteAllScansUseCase,
+            deleteAllCreationsUseCase = deleteAllCreationsUseCase,
+        )
 
         // When
         viewModel.onClearConfirmed()
 
         // Then
         assertEquals(
-            expected = 1,
-            actual = deleteAllScansUseCase.clearCount,
+            expected = 1 to 0,
+            actual = deleteAllScansUseCase.clearCount to deleteAllCreationsUseCase.clearCount,
         )
     }
 
@@ -265,13 +278,129 @@ class HistoryViewModelTest {
         )
     }
 
+    @Test
+    fun `the history opens on the scans`() = runTest(testDispatcher) {
+        // When
+        val viewModel = historyViewModel()
+
+        // Then
+        assertEquals(
+            expected = HistoryView.SCANS,
+            actual = viewModel.uiState.value.selectedView,
+        )
+    }
+
+    @Test
+    fun `the creations are shown by day from the newest`() = runTest(testDispatcher) {
+        // Given
+        val watchCreationsUseCase = FakeWatchCreationsUseCase(
+            creations = listOf(
+                creation(
+                    id = 2,
+                    createdAt = "2026-11-20T21:48:00Z",
+                    content = BarcodeContent.Wifi(
+                        ssid = "Scanny",
+                        encryption = WifiEncryption.WPA,
+                        password = "secret12",
+                    ),
+                ),
+                creation(
+                    id = 1,
+                    createdAt = "2026-11-19T18:00:00Z",
+                    content = BarcodeContent.Text(text = "Yesterday"),
+                ),
+            ),
+        )
+
+        // When
+        val viewModel = historyViewModel(watchCreationsUseCase = watchCreationsUseCase)
+        viewModel.onViewSelected(view = HistoryView.CREATIONS)
+
+        // Then
+        assertEquals(
+            expected = HistoryView.CREATIONS to listOf(
+                CreationHistorySection(
+                    day = CalendarDay.Today,
+                    items = listOf(
+                        CreationHistoryItem(
+                            creationId = 2,
+                            type = CodeType.WIFI,
+                            summary = "Scanny",
+                            time = "21:48",
+                        ),
+                    ),
+                ),
+                CreationHistorySection(
+                    day = CalendarDay.Yesterday,
+                    items = listOf(
+                        CreationHistoryItem(
+                            creationId = 1,
+                            type = CodeType.TEXT,
+                            summary = "Yesterday",
+                            time = "18:00",
+                        ),
+                    ),
+                ),
+            ),
+            actual = viewModel.uiState.value.selectedView to viewModel.uiState.value.creationSections,
+        )
+    }
+
+    @Test
+    fun `a creation opens its detail`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = historyViewModel()
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onCreationClicked(
+            item = CreationHistoryItem(
+                creationId = 7,
+                type = CodeType.TEXT,
+                summary = "Created",
+                time = "10:00",
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(HistoryViewModel.HistoryEvent.OpenCreationDetail(creationId = 7)),
+            actual = events,
+        )
+    }
+
+    @Test
+    fun `clearing the creations keeps the scans`() = runTest(testDispatcher) {
+        // Given
+        val deleteAllScansUseCase = FakeDeleteAllScansUseCase()
+        val deleteAllCreationsUseCase = FakeDeleteAllCreationsUseCase()
+        val viewModel = historyViewModel(
+            deleteAllScansUseCase = deleteAllScansUseCase,
+            deleteAllCreationsUseCase = deleteAllCreationsUseCase,
+        )
+        viewModel.onViewSelected(view = HistoryView.CREATIONS)
+
+        // When
+        viewModel.onClearConfirmed()
+
+        // Then
+        assertEquals(
+            expected = 0 to 1,
+            actual = deleteAllScansUseCase.clearCount to deleteAllCreationsUseCase.clearCount,
+        )
+    }
+
     private fun historyViewModel(
         watchScansUseCase: FakeWatchScansUseCase = FakeWatchScansUseCase(),
+        watchCreationsUseCase: FakeWatchCreationsUseCase = FakeWatchCreationsUseCase(),
         deleteAllScansUseCase: FakeDeleteAllScansUseCase = FakeDeleteAllScansUseCase(),
+        deleteAllCreationsUseCase: FakeDeleteAllCreationsUseCase = FakeDeleteAllCreationsUseCase(),
     ): HistoryViewModel =
         HistoryViewModel(
             watchScansUseCase = watchScansUseCase,
+            watchCreationsUseCase = watchCreationsUseCase,
             deleteAllScansUseCase = deleteAllScansUseCase,
+            deleteAllCreationsUseCase = deleteAllCreationsUseCase,
             clock = FixedClock(instant = Instant.parse("2026-11-20T23:00:00Z")),
             timeZone = TimeZone.UTC,
         )
@@ -309,6 +438,20 @@ class HistoryViewModelTest {
             content = content,
             format = BarcodeFormat.QR_CODE,
             scannedAt = Instant.fromEpochMilliseconds(0),
+        )
+
+    private fun creation(
+        id: Long,
+        createdAt: String,
+        content: BarcodeContent,
+    ): Creation =
+        Creation(
+            id = id,
+            content = content,
+            rawValue = content.toRawValue(),
+            format = BarcodeFormat.QR_CODE,
+            style = CodeStyle(),
+            createdAt = Instant.parse(createdAt),
         )
 
     private fun item(

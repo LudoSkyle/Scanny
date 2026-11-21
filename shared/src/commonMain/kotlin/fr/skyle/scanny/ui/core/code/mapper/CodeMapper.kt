@@ -1,6 +1,7 @@
 package fr.skyle.scanny.ui.core.code.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.payload.toMailtoLink
@@ -42,14 +43,20 @@ internal fun ScannedCode.toCodeRowItem(): CodeRowItem =
 
 /** What a code holds, in one line: the recipient of an e-mail, the name of a network… */
 internal fun ScannedCode.toCodeSummary(): String =
-    when (val content = content) {
-        is BarcodeContent.Text -> content.text
-        is BarcodeContent.Url -> content.url
-        is BarcodeContent.Email -> content.address ?: content.subject ?: content.body
-        is BarcodeContent.Sms -> content.phoneNumber ?: content.message
-        is BarcodeContent.Wifi -> content.ssid
-        is BarcodeContent.Contact ->
-            content.displayName ?: content.organization ?: content.phones.firstOrNull() ?: content.emails.firstOrNull()
+    content.toSummary(rawValue = rawValue)
+
+internal fun Creation.toCodeSummary(): String =
+    content.toSummary(rawValue = rawValue)
+
+// The text of the code when its content has nothing better to show
+private fun BarcodeContent.toSummary(rawValue: String): String =
+    when (this) {
+        is BarcodeContent.Text -> text
+        is BarcodeContent.Url -> url
+        is BarcodeContent.Email -> address ?: subject ?: body
+        is BarcodeContent.Sms -> phoneNumber ?: message
+        is BarcodeContent.Wifi -> ssid
+        is BarcodeContent.Contact -> displayName ?: organization ?: phones.firstOrNull() ?: emails.firstOrNull()
     } ?: rawValue
 
 internal fun BarcodeContent.toCodeFields(): List<CodeField> =

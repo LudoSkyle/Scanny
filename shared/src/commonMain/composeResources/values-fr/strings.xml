@@ -2,6 +2,7 @@
     <string name="add_contact">Ajouter le contact</string>
     <string name="add_logo">Ajouter un logo</string>
     <string name="address">Adresse</string>
+    <string name="all_creations_deleted">Toutes les créations seront supprimées.</string>
     <string name="all_scans_deleted">Tous les scans seront supprimés.</string>
     <string name="allow_camera">Autoriser la caméra</string>
     <string name="app_description">Scanny scanne les QR codes et les codes-barres, avec les dernières technologies et sans publicité, tout en restant légère et fiable.</string>
@@ -52,7 +53,9 @@
     <string name="corner_shape">Forme des coins</string>
     <string name="create">Créer</string>
     <string name="create_code">Créer un code</string>
+    <string name="created_codes_appear_here">Les codes que vous créez, avec le + du scan, apparaissent ici.</string>
     <string name="creation_not_saved">Le code n'a pas pu être créé</string>
+    <string name="creations">Créations</string>
     <string name="customize_code">Personnaliser le code</string>
     <string name="day_date">%1$d %2$s %3$d</string>
     <string name="delete">Supprimer</string>
@@ -108,6 +111,7 @@
     <string name="network">Réseau</string>
     <string name="no_app_to_open">Aucune app de cet appareil ne peut l'ouvrir</string>
     <string name="no_code_in_image">Aucun code trouvé dans cette image</string>
+    <string name="no_creation_yet">Aucune création pour l'instant</string>
     <string name="no_scan_yet">Aucun scan pour l'instant</string>
     <string name="ok">OK</string>
     <string name="open_content_after_scan">Ouvrir le contenu après un scan</string>
@@ -136,6 +140,7 @@
     <string name="scan_not_saved">Le scan n'a pas pu être enregistré</string>
     <string name="scan_preferences">Préférences du scan</string>
     <string name="scanned_codes_appear_here">Les codes que vous scannez apparaissent ici.</string>
+    <string name="scans">Scans</string>
     <string name="security">Sécurité</string>
     <string name="see_detail">Voir le détail</string>
     <string name="see_group">Voir le groupe</string>

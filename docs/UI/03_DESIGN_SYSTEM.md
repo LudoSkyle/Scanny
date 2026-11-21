@@ -16,8 +16,9 @@ On y trouve :
   et `SCCardStructure` (une carte et son titre), `SCDialog`, `SCContentDialog` (un contenu à regarder
   et un bouton qui ferme), `SCBottomSheet`, `SCSnackbarState`,
   `SCSwitch`, `SCTextField`, `SCDropdownField` (un choix dans un menu qui se déplie sous le champ),
-  `SCDropdownMenu` (le menu seul, sous l'élément où il est placé) et `SCDivider` (une ligne entre deux
-  rangées d'une carte).
+  `SCDropdownMenu` (le menu seul, sous l'élément où il est placé), `SCDivider` (une ligne entre deux
+  rangées d'une carte) et `SCSegmentedControl` (un choix entre quelques options côte à côte, chacune
+  lue comme un onglet).
   Les autres arrivent avec le premier écran qui en a besoin ;
 - les polices (Lato), les icônes et les textes des composants, dans Compose Resources.
 

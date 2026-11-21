@@ -2,6 +2,7 @@
     <string name="add_contact">Add the contact</string>
     <string name="add_logo">Add a logo</string>
     <string name="address">Address</string>
+    <string name="all_creations_deleted">Every creation will be deleted.</string>
     <string name="all_scans_deleted">Every scan will be deleted.</string>
     <string name="allow_camera">Allow the camera</string>
     <string name="app_description">Scanny scans QR codes and barcodes, with the latest technologies and without advertising, while staying light and reliable.</string>
@@ -58,7 +59,9 @@
     <string name="corner_shape">Shape of the corners</string>
     <string name="create">Create</string>
     <string name="create_code">Create a code</string>
+    <string name="created_codes_appear_here">The codes you create, with the + of the scan, appear here.</string>
     <string name="creation_not_saved">The code could not be created</string>
+    <string name="creations">Creations</string>
     <string name="customize_code">Customize the code</string>
     <string name="data_matrix" translatable="false">Data Matrix</string>
     <string name="day_date">%2$s %1$d, %3$d</string>
@@ -119,6 +122,7 @@
     <string name="network">Network</string>
     <string name="no_app_to_open">No app on this device can open it</string>
     <string name="no_code_in_image">No code found in this image</string>
+    <string name="no_creation_yet">No creation yet</string>
     <string name="no_scan_yet">No scan yet</string>
     <string name="ok">OK</string>
     <string name="open_content_after_scan">Open the content after a scan</string>
@@ -150,6 +154,7 @@
     <string name="scan_not_saved">The scan could not be saved</string>
     <string name="scan_preferences">Scan preferences</string>
     <string name="scanned_codes_appear_here">The codes you scan appear here.</string>
+    <string name="scans">Scans</string>
     <string name="security">Security</string>
     <string name="see_detail">See the detail</string>
     <string name="see_group">See the group</string>
