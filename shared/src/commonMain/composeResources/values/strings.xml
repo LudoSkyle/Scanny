@@ -84,8 +84,8 @@
     <string name="no_app_to_open">No app on this device can open it</string>
     <string name="no_code_in_image">No code found in this image</string>
     <string name="no_scan_yet">No scan yet</string>
+    <string name="open_content_after_scan">Open the content after a scan</string>
     <string name="open_link">Open the link</string>
-    <string name="open_links_after_scan">Open the links after a scan</string>
     <string name="open_settings">Open the settings</string>
     <string name="openium" translatable="false">Openium</string>
     <string name="organization">Organization</string>

@@ -9,7 +9,7 @@ internal class FakeWatchScanSettingsUseCase(
     isVibrationAfterScanEnabled: Boolean = true,
     isBeepAfterScanEnabled: Boolean = false,
     isCopyAfterScanEnabled: Boolean = false,
-    isOpenLinkAfterScanEnabled: Boolean = false,
+    isOpenContentAfterScanEnabled: Boolean = false,
     isRawContentShown: Boolean = false,
 ) : WatchScanSettingsUseCase {
 
@@ -18,7 +18,7 @@ internal class FakeWatchScanSettingsUseCase(
             isVibrationAfterScanEnabled = isVibrationAfterScanEnabled,
             isBeepAfterScanEnabled = isBeepAfterScanEnabled,
             isCopyAfterScanEnabled = isCopyAfterScanEnabled,
-            isOpenLinkAfterScanEnabled = isOpenLinkAfterScanEnabled,
+            isOpenContentAfterScanEnabled = isOpenContentAfterScanEnabled,
             isRawContentShown = isRawContentShown,
         ),
     )

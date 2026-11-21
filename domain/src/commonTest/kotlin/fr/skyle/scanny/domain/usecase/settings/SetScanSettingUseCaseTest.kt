@@ -10,7 +10,7 @@ class SetScanSettingUseCaseTest {
 
     private val settingsRepository = FakeSettingsRepository(
         isVibrationAfterScanEnabled = true,
-        isOpenLinkAfterScanEnabled = false,
+        isOpenContentAfterScanEnabled = false,
         isRawContentShown = false,
     )
 
@@ -38,10 +38,10 @@ class SetScanSettingUseCaseTest {
     }
 
     @Test
-    fun `the opening of a link after a scan changes alone`() = runTest {
+    fun `the opening of the content after a scan changes alone`() = runTest {
         // When
         setScanSettingUseCase(
-            setting = ScanSetting.OPEN_LINK_AFTER_SCAN,
+            setting = ScanSetting.OPEN_CONTENT_AFTER_SCAN,
             isEnabled = true,
         )
 
@@ -125,7 +125,7 @@ class SetScanSettingUseCaseTest {
     private fun currentSettings(): List<Boolean> =
         listOf(
             settingsRepository.isVibrationAfterScanEnabled.value,
-            settingsRepository.isOpenLinkAfterScanEnabled.value,
+            settingsRepository.isOpenContentAfterScanEnabled.value,
             settingsRepository.isRawContentShown.value,
             settingsRepository.isBeepAfterScanEnabled.value,
             settingsRepository.isCopyAfterScanEnabled.value,

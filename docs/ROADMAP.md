@@ -18,7 +18,8 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
       vérifier sur iPhone)*
 - [x] Écran de permission refusée, avec un accès aux réglages de l'app
 - [x] Vibration après un scan (réglage) *(testée, non observée)*
-- [x] Ouverture automatique des liens après un scan (réglage) *(testée, non observée)*
+- [x] Ouverture automatique du contenu après un scan (réglage) : lien, e-mail, SMS, contact,
+      réseau Wi-Fi *(lien observé sur le simulateur iOS)*
 - [x] Détection en pause tant qu'un résultat est affiché *(testée)*
 
 ### Détail d'un scan
@@ -163,7 +164,7 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] Scan multiple : un code ne compte qu'une fois lu trois fois en une seconde, pour écarter
           les lectures erronées d'un code tenu devant la caméra
     - [x] Réglages redécoupés : un en-tête (logo, nom, version, description), puis « Préférences du
-          scan » (vibration, bip, copie, ouverture des liens), « Réglages de l'app » (contenu brut)
+          scan » (vibration, bip, copie, ouverture du contenu), « Réglages de l'app » (contenu brut)
           et « Support » (étoile sur GitHub, feedback, noter l'app, politique
           de confidentialité, Openium) ; des lignes à icône ronde ; l'écran À propos est retiré, son
           contenu passe dans l'en-tête
@@ -178,6 +179,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
           et aperçu plus net (16:9 en 1920×1080) ; sur un Galaxy S21 FE, une carte lue à plus de
           60 cm au lieu de 30, comme l'appareil photo de Samsung
     - [x] « Effacer l'historique » retiré des réglages : l'historique le propose déjà
+    - [x] « Ouvrir les liens après un scan » devient « Ouvrir le contenu après un scan » : lien,
+          e-mail, SMS, contact, réseau Wi-Fi
 11. **Création de QR codes et historique des créations** : l'éditeur et la personnalisation
     (couleurs, logo au centre, formes), et « Modifier » depuis le `ScanDetail` d'un code, qui ouvre
     l'éditeur prérempli avec son contenu.

@@ -16,9 +16,9 @@ interface SettingsRepository {
 
     suspend fun setCopyAfterScanEnabled(isEnabled: Boolean)
 
-    fun watchIsOpenLinkAfterScanEnabled(): Flow<Boolean>
+    fun watchIsOpenContentAfterScanEnabled(): Flow<Boolean>
 
-    suspend fun setOpenLinkAfterScanEnabled(isEnabled: Boolean)
+    suspend fun setOpenContentAfterScanEnabled(isEnabled: Boolean)
 
     fun watchIsRawContentShown(): Flow<Boolean>
 

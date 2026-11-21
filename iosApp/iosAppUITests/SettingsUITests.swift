@@ -123,6 +123,33 @@ final class SettingsUITests: XCTestCase {
         XCTAssertFalse(isOn(scanningApp.switches["Copy the code after a scan"]))
     }
 
+    func testTheContentOfAScannedCodeOpensWhenTheSettingAsks() throws {
+        let app = launchApp()
+        app.buttons["Settings"].tap()
+        let openSwitch = app.switches["Open the content after a scan"]
+        XCTAssertTrue(openSwitch.waitForExistence(timeout: 5))
+        if !isOn(openSwitch) {
+            openSwitch.tap()
+        }
+        XCTAssertTrue(isOn(openSwitch))
+        app.terminate()
+
+        // A link opens in Safari, without the sheet of the result
+        let scanningApp = launchScanning(code: "https://ludoskyle.github.io/scanny.github.io/privacy-policy.html")
+        let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+        XCTAssertTrue(safari.wait(for: .runningForeground, timeout: 10))
+        keepScreenshot(named: "content-opened", of: safari)
+
+        // Back to the setting off, as the other tests expect it
+        scanningApp.activate()
+        XCTAssertTrue(scanningApp.buttons["Settings"].waitForExistence(timeout: 5))
+        scanningApp.buttons["Settings"].tap()
+        let switchBack = scanningApp.switches["Open the content after a scan"]
+        XCTAssertTrue(switchBack.waitForExistence(timeout: 5))
+        switchBack.tap()
+        XCTAssertFalse(isOn(switchBack))
+    }
+
     func testThePrivacyPolicyOpensInSafari() throws {
         let app = launchApp()
         app.buttons["Settings"].tap()

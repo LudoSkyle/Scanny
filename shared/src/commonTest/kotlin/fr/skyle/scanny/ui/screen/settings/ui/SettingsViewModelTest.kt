@@ -43,7 +43,7 @@ class SettingsViewModelTest {
                 isVibrationAfterScanEnabled = true,
                 isBeepAfterScanEnabled = true,
                 isCopyAfterScanEnabled = false,
-                isOpenLinkAfterScanEnabled = false,
+                isOpenContentAfterScanEnabled = false,
                 isRawContentShown = true,
             ),
         )
@@ -57,7 +57,7 @@ class SettingsViewModelTest {
                     isVibrationAfterScanEnabled = true,
                     isBeepAfterScanEnabled = true,
                     isCopyAfterScanEnabled = false,
-                    isOpenLinkAfterScanEnabled = false,
+                    isOpenContentAfterScanEnabled = false,
                     isRawContentShown = true,
                 ),
             ),
@@ -68,16 +68,16 @@ class SettingsViewModelTest {
     @Test
     fun `the settings follow their changes`() = runTest(testDispatcher) {
         // Given
-        val watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isOpenLinkAfterScanEnabled = false)
+        val watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isOpenContentAfterScanEnabled = false)
         val viewModel = settingsViewModel(watchScanSettingsUseCase = watchScanSettingsUseCase)
 
         // When
-        watchScanSettingsUseCase.settings.value = watchScanSettingsUseCase.settings.value.copy(isOpenLinkAfterScanEnabled = true)
+        watchScanSettingsUseCase.settings.value = watchScanSettingsUseCase.settings.value.copy(isOpenContentAfterScanEnabled = true)
 
         // Then
         assertEquals(
             expected = true,
-            actual = viewModel.uiState.value.settings?.isOpenLinkAfterScanEnabled,
+            actual = viewModel.uiState.value.settings?.isOpenContentAfterScanEnabled,
         )
     }
 

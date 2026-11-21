@@ -15,7 +15,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import co.touchlab.kermit.Logger
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.platform.camera.CameraPermissionStatus
 import fr.skyle.scanny.platform.camera.rememberCameraPermissionState
@@ -55,6 +54,15 @@ fun ScanRoute(
 
     var isDiscardDialogVisible by rememberSaveable { mutableStateOf(false) }
 
+    // Under the sheet, a message would not be seen: a failure is only logged
+    val openCodeAction: (CodeAction) -> Unit = { action ->
+        when (action) {
+            is CodeAction.Link -> uriHandler.open(action = action)
+            is CodeAction.AddContact -> viewModel.onAddContactClicked(contact = action.contact)
+            is CodeAction.JoinWifi -> joinWifiNetwork(action.wifi)
+        }
+    }
+
     LaunchedEffect(cameraPermissionState) {
         if (cameraPermissionState.status == CameraPermissionStatus.UNKNOWN) {
             cameraPermissionState.request()
@@ -78,13 +86,8 @@ fun ScanRoute(
                         clipboard.setClipEntry(textClipEntry(text = event.text))
                     }
 
-                    is ScanViewModel.ScanEvent.OpenUrl -> {
-                        try {
-                            uriHandler.openUri(event.url)
-                        } catch (exception: Exception) {
-                            // No app on the device opens this link
-                            Logger.w(throwable = exception) { "Failed to open a scanned link" }
-                        }
+                    is ScanViewModel.ScanEvent.OpenContent -> {
+                        openCodeAction(event.action)
                     }
 
                     // Launched apart: a message stays a few seconds, the next events do not wait for it
@@ -132,14 +135,7 @@ fun ScanRoute(
         onMultipleScanFinished = viewModel::onMultipleScanFinished,
         onHistoryClicked = navigateToScanHistory,
         onSettingsClicked = navigateToSettings,
-        onResultActionClicked = { action ->
-            when (action) {
-                // Under the sheet, a message would not be seen: the failure is only logged
-                is CodeAction.Link -> uriHandler.open(action = action)
-                is CodeAction.AddContact -> viewModel.onAddContactClicked(contact = action.contact)
-                is CodeAction.JoinWifi -> joinWifiNetwork(action.wifi)
-            }
-        },
+        onResultActionClicked = openCodeAction,
         onCopyResultClicked = { text ->
             coroutineScope.launch {
                 clipboard.setClipEntry(textClipEntry(text = text))

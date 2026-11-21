@@ -239,13 +239,13 @@ class ScanViewModelTest {
     }
 
     @Test
-    fun `a link is opened when the setting asks it and the detection resumes after a pause`() = runTest(testDispatcher) {
+    fun `the content is opened when the setting asks it and the detection resumes after a pause`() = runTest(testDispatcher) {
         // Given
         val viewModel = scanViewModel(
             recordScanUseCase = FakeRecordScanUseCase(content = { rawValue -> BarcodeContent.Url(url = rawValue) }),
             watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(
                 isVibrationAfterScanEnabled = false,
-                isOpenLinkAfterScanEnabled = true,
+                isOpenContentAfterScanEnabled = true,
             ),
         )
         val events = collectEvents(viewModel = viewModel)
@@ -255,15 +255,98 @@ class ScanViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf(ScanViewModel.ScanEvent.OpenUrl(url = "https://scanny.app")),
+            expected = listOf(ScanViewModel.ScanEvent.OpenContent(action = CodeAction.OpenLink(link = "https://scanny.app"))),
             actual = events,
         )
         assertNull(viewModel.uiState.value.result)
         assertTrue(viewModel.uiState.value.isDetectionPaused)
 
-        advanceTimeBy(ScanViewModel.LINK_OPENING_PAUSE)
+        advanceTimeBy(ScanViewModel.CONTENT_OPENING_PAUSE)
         runCurrent()
         assertFalse(viewModel.uiState.value.isDetectionPaused)
+    }
+
+    @Test
+    fun `a contact is added when the setting asks to open the content`() = runTest(testDispatcher) {
+        // Given
+        val contact = BarcodeContent.Contact(formattedName = "John Doe")
+        val viewModel = scanViewModel(
+            recordScanUseCase = FakeRecordScanUseCase(content = { contact }),
+            watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(
+                isVibrationAfterScanEnabled = false,
+                isOpenContentAfterScanEnabled = true,
+            ),
+        )
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "MECARD:N:Doe,John;;"))
+
+        // Then
+        assertEquals(
+            expected = listOf(ScanViewModel.ScanEvent.OpenContent(action = CodeAction.AddContact(contact = contact))),
+            actual = events,
+        )
+    }
+
+    @Test
+    fun `a network the device cannot join is shown even when the setting asks to open the content`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(
+            recordScanUseCase = FakeRecordScanUseCase(
+                content = {
+                    BarcodeContent.Wifi(
+                        ssid = "Scanny",
+                        encryption = WifiEncryption.WEP,
+                        password = "secret",
+                    )
+                },
+            ),
+            watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(
+                isVibrationAfterScanEnabled = false,
+                isOpenContentAfterScanEnabled = true,
+            ),
+            wifiNetworkSupport = FakeWifiNetworkSupport(canJoin = false),
+        )
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "WIFI:T:WEP;S:Scanny;P:secret;;"))
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = events,
+        )
+        assertEquals(
+            expected = CodeType.WIFI,
+            actual = (viewModel.uiState.value.result as? ScanResult.Code)?.item?.type,
+        )
+    }
+
+    @Test
+    fun `a text is shown even when the setting asks to open the content`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(
+            watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(
+                isVibrationAfterScanEnabled = false,
+                isOpenContentAfterScanEnabled = true,
+            ),
+        )
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = events,
+        )
+        assertEquals(
+            expected = CodeType.TEXT,
+            actual = (viewModel.uiState.value.result as? ScanResult.Code)?.item?.type,
+        )
     }
 
     @Test
@@ -271,7 +354,7 @@ class ScanViewModelTest {
         // Given
         val viewModel = scanViewModel(
             recordScanUseCase = FakeRecordScanUseCase(content = { rawValue -> BarcodeContent.Url(url = rawValue) }),
-            watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isOpenLinkAfterScanEnabled = false),
+            watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isOpenContentAfterScanEnabled = false),
         )
 
         // When

@@ -41,7 +41,7 @@ import fr.skyle.scanny.resources.ic_thumb_up
 import fr.skyle.scanny.resources.ic_vibration
 import fr.skyle.scanny.resources.ic_volume_up
 import fr.skyle.scanny.resources.made_by_skyle
-import fr.skyle.scanny.resources.open_links_after_scan
+import fr.skyle.scanny.resources.open_content_after_scan
 import fr.skyle.scanny.resources.openium
 import fr.skyle.scanny.resources.privacy_policy
 import fr.skyle.scanny.resources.rate_app
@@ -144,9 +144,9 @@ fun SettingsScreen(
                     SettingsSwitchRow(
                         modifier = Modifier.fillMaxWidth(),
                         icon = painterResource(Res.drawable.ic_open_in_new),
-                        title = stringResource(Res.string.open_links_after_scan),
-                        isChecked = settings.isOpenLinkAfterScanEnabled,
-                        onCheckedChange = { isEnabled -> onSettingChanged(ScanSetting.OPEN_LINK_AFTER_SCAN, isEnabled) },
+                        title = stringResource(Res.string.open_content_after_scan),
+                        isChecked = settings.isOpenContentAfterScanEnabled,
+                        onCheckedChange = { isEnabled -> onSettingChanged(ScanSetting.OPEN_CONTENT_AFTER_SCAN, isEnabled) },
                     )
                 }
 
@@ -247,7 +247,7 @@ private fun PreviewSettingsScreen() {
                 isVibrationAfterScanEnabled = true,
                 isBeepAfterScanEnabled = false,
                 isCopyAfterScanEnabled = false,
-                isOpenLinkAfterScanEnabled = false,
+                isOpenContentAfterScanEnabled = false,
                 isRawContentShown = false,
             ),
             versionName = "2.0",

@@ -13,6 +13,8 @@ import fr.skyle.scanny.platform.contact.ContactAdder
 import fr.skyle.scanny.platform.gallery.ImageScanResult
 import fr.skyle.scanny.platform.sound.ScanBeeper
 import fr.skyle.scanny.platform.wifi.WifiNetworkSupport
+import fr.skyle.scanny.ui.core.code.mapper.toCodeAction
+import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.screen.scan.ui.mapper.toScanResult
 import fr.skyle.scanny.ui.screen.scan.ui.mapper.toScanResultItem
 import fr.skyle.scanny.ui.screen.scan.ui.model.MultipleScanSession
@@ -83,11 +85,13 @@ class ScanViewModel(
                     _event.send(ScanEvent.CopyToClipboard(text = scannedCode.rawValue))
                 }
 
-                val content = scannedCode.content
-                if (content is BarcodeContent.Url && settings.isOpenLinkAfterScanEnabled) {
-                    _event.send(ScanEvent.OpenUrl(url = content.url))
-                    // The browser takes a moment to open: meanwhile the camera would read the code again
-                    delay(LINK_OPENING_PAUSE)
+                // Opened as by the main button of its result, when the device can: a network it cannot
+                // join, or a text, is shown instead
+                val action = scannedCode.content.toCodeAction(canJoinWifi = wifiNetworkSupport::canJoin)
+                if (action != null && settings.isOpenContentAfterScanEnabled) {
+                    _event.send(ScanEvent.OpenContent(action = action))
+                    // The app opened takes a moment to come up: meanwhile the camera would read the code again
+                    delay(CONTENT_OPENING_PAUSE)
                     resumeDetection()
                 } else {
                     _uiState.update { uiState ->
@@ -335,7 +339,7 @@ class ScanViewModel(
     sealed interface ScanEvent {
         data object Vibrate : ScanEvent
         data class CopyToClipboard(val text: String) : ScanEvent
-        data class OpenUrl(val url: String) : ScanEvent
+        data class OpenContent(val action: CodeAction) : ScanEvent
         data object NoCodeInImage : ScanEvent
         data object ScanNotSaved : ScanEvent
         data class OpenScanDetail(val codeId: Long) : ScanEvent
@@ -349,7 +353,7 @@ class ScanViewModel(
     )
 
     internal companion object {
-        val LINK_OPENING_PAUSE = 2.seconds
+        val CONTENT_OPENING_PAUSE = 2.seconds
         const val CONFIRMATION_READINGS = 3
         val CONFIRMATION_WINDOW = 1.seconds
     }

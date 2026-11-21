@@ -8,14 +8,14 @@ internal class FakeSettingsRepository(
     isVibrationAfterScanEnabled: Boolean = true,
     isBeepAfterScanEnabled: Boolean = false,
     isCopyAfterScanEnabled: Boolean = false,
-    isOpenLinkAfterScanEnabled: Boolean = false,
+    isOpenContentAfterScanEnabled: Boolean = false,
     isRawContentShown: Boolean = false,
 ) : SettingsRepository {
 
     val isVibrationAfterScanEnabled = MutableStateFlow(isVibrationAfterScanEnabled)
     val isBeepAfterScanEnabled = MutableStateFlow(isBeepAfterScanEnabled)
     val isCopyAfterScanEnabled = MutableStateFlow(isCopyAfterScanEnabled)
-    val isOpenLinkAfterScanEnabled = MutableStateFlow(isOpenLinkAfterScanEnabled)
+    val isOpenContentAfterScanEnabled = MutableStateFlow(isOpenContentAfterScanEnabled)
     val isRawContentShown = MutableStateFlow(isRawContentShown)
 
     override fun watchIsVibrationAfterScanEnabled(): Flow<Boolean> =
@@ -39,11 +39,11 @@ internal class FakeSettingsRepository(
         isCopyAfterScanEnabled.value = isEnabled
     }
 
-    override fun watchIsOpenLinkAfterScanEnabled(): Flow<Boolean> =
-        isOpenLinkAfterScanEnabled
+    override fun watchIsOpenContentAfterScanEnabled(): Flow<Boolean> =
+        isOpenContentAfterScanEnabled
 
-    override suspend fun setOpenLinkAfterScanEnabled(isEnabled: Boolean) {
-        isOpenLinkAfterScanEnabled.value = isEnabled
+    override suspend fun setOpenContentAfterScanEnabled(isEnabled: Boolean) {
+        isOpenContentAfterScanEnabled.value = isEnabled
     }
 
     override fun watchIsRawContentShown(): Flow<Boolean> =
