@@ -1,6 +1,7 @@
 package fr.skyle.scanny.di
 
 import fr.skyle.scanny.domain.di.domainModule
+import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
 import fr.skyle.scanny.ui.core.code.image.CodeImageRenderer
 import fr.skyle.scanny.ui.core.code.image.QroseCodeImageRenderer
 import fr.skyle.scanny.ui.main.MainViewModel
@@ -13,6 +14,7 @@ import fr.skyle.scanny.ui.screen.history.ui.HistoryViewModel
 import fr.skyle.scanny.ui.screen.settings.ui.SettingsViewModel
 import kotlinx.datetime.TimeZone
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -27,6 +29,7 @@ val sharedModule = module {
     factory { TimeZone.currentSystemDefault() }
 
     single<CodeImageRenderer> { QroseCodeImageRenderer() }
+    factoryOf(::CodeImageExporter)
 
     viewModelOf(::MainViewModel)
     viewModelOf(::ScanViewModel)

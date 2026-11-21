@@ -35,11 +35,12 @@ final class CreateCodeUITests: XCTestCase {
         XCTAssertTrue(createButton.isEnabled)
         createButton.tap()
 
-        // The creation takes the place of the editor
+        // The creation takes the place of the editor, its code shown in a sheet
         XCTAssertTrue(app.staticTexts["Link"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.images["The code"].exists)
         XCTAssertTrue(element(labelled: "https://ludoskyle.github.io/scanny.github.io/", in: app).exists)
+        showTheCode(in: app)
         keepScreenshot(named: "created-link", of: app)
+        closeTheSheet(of: app)
 
         // Back on the scan, which the simulator shows without a camera
         app.buttons["Back"].tap()
@@ -64,23 +65,23 @@ final class CreateCodeUITests: XCTestCase {
         let createButton = app.buttons["Create"]
         scroll(to: createButton, in: app)
         createButton.tap()
-        XCTAssertTrue(app.buttons["Save the image"].waitForExistence(timeout: 5))
+        showTheCode(in: app)
 
-        app.buttons["Share"].tap()
+        app.buttons["Share the image"].tap()
         let shareSheet = app.otherElements["ActivityListView"]
         XCTAssertTrue(shareSheet.waitForExistence(timeout: 5))
         keepScreenshot(named: "created-code-share", of: app)
-        // The share sheet has no button to close it: a touch above it does
-        app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.2)).tap()
+        // The share sheet has no button to close it: swiped down, it leaves the sheet of the code open,
+        // where a touch above it would close both
+        shareSheet.swipeDown(velocity: .fast)
         XCTAssertTrue(shareSheet.waitForNonExistence(timeout: 5))
 
         app.buttons["Save the image"].tap()
-        // The photos are asked for at the first save only: otherwise the message, shown a few seconds,
-        // comes right away
-        let savedMessage = app.staticTexts["The image is saved in your photos"]
-        if !savedMessage.waitForExistence(timeout: 3) {
+        // The photos are asked for at the first save only. Saved, the button of the sheet says so
+        let savedButton = app.buttons["Image saved"]
+        if !savedButton.waitForExistence(timeout: 3) {
             allowTheSystemAlertIfAsked(timeout: 2)
-            XCTAssertTrue(savedMessage.waitForExistence(timeout: 10))
+            XCTAssertTrue(savedButton.waitForExistence(timeout: 10))
         }
         keepScreenshot(named: "created-code-saved", of: app)
     }
@@ -123,12 +124,10 @@ final class CreateCodeUITests: XCTestCase {
         scroll(to: createButton, in: app)
         createButton.tap()
 
-        // The creation shows its code in the colors chosen: indigo on cream, its margin cream too. The
-        // frame of the image is the code itself, inside its margin
-        XCTAssertTrue(app.buttons["Save the image"].waitForExistence(timeout: 5))
+        // The sheet of the creation shows its code in the colors chosen: indigo on cream, its margin
+        // cream too. The frame of the image is the code itself, inside its margin
+        showTheCode(in: app)
         let code = app.images["The code"]
-        XCTAssertTrue(code.exists)
-        waitUntilStill(code)
         let margin = screenColor(at: CGPoint(x: code.frame.minX - 8, y: code.frame.minY - 8), in: app)
         let topLeftCorner = screenColor(at: CGPoint(x: code.frame.minX + 3, y: code.frame.minY + 3), in: app)
         XCTAssertTrue(margin.isClose(to: 0xFFF8E1), "The margin is \(margin)")
@@ -169,8 +168,7 @@ final class CreateCodeUITests: XCTestCase {
         let createButton = app.buttons["Create"]
         scroll(to: createButton, in: app)
         createButton.tap()
-        XCTAssertTrue(app.buttons["Save the image"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.images["The code"].exists)
+        showTheCode(in: app)
         keepScreenshot(named: "created-code-with-a-logo", of: app)
     }
 

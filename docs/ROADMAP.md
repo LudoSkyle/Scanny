@@ -221,8 +221,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     arrondis reliés et le logo).
     - [x] La feuille d'un scan montre tous les champs du contenu (le message d'un SMS, le mot de
           passe d'un réseau…), un long texte coupé à quatre lignes
-    - [ ] Le code dans une feuille, depuis les deux détails, avec le partage et l'enregistrement de
-          son image
+    - [x] Le code dans une feuille, depuis les deux détails, avec le partage et l'enregistrement de
+          son image (un code scanné aussi)
     - [ ] Le contenu brut replié dans les deux détails, sans réglage
     - [ ] L'historique : le type en pastille, les groupes mis en avant, le glissement entre les vues
     - [ ] Une couleur libre, avec un avertissement de lisibilité

@@ -11,6 +11,7 @@ import fr.skyle.scanny.fake.FakeImageSaver
 import fr.skyle.scanny.fake.FakeImageSharer
 import fr.skyle.scanny.fake.FakeWatchCreationUseCase
 import fr.skyle.scanny.fake.FixedClock
+import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
 import fr.skyle.scanny.ui.core.code.model.CodeField
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
@@ -131,7 +132,7 @@ class CreationDetailViewModelTest {
         )
 
         // When
-        viewModel.onShareClicked()
+        viewModel.onShareImageClicked()
 
         // Then
         assertEquals(
@@ -161,7 +162,7 @@ class CreationDetailViewModelTest {
         val events = collectEvents(viewModel = viewModel)
 
         // When
-        viewModel.onShareClicked()
+        viewModel.onShareImageClicked()
 
         // Then
         assertEquals(
@@ -182,7 +183,7 @@ class CreationDetailViewModelTest {
         val events = collectEvents(viewModel = viewModel)
 
         // When
-        viewModel.onSaveClicked()
+        viewModel.onSaveImageClicked()
 
         // Then
         assertEquals(
@@ -202,7 +203,7 @@ class CreationDetailViewModelTest {
         val events = collectEvents(viewModel = viewModel)
 
         // When
-        viewModel.onSaveClicked()
+        viewModel.onSaveImageClicked()
 
         // Then
         assertEquals(
@@ -231,9 +232,11 @@ class CreationDetailViewModelTest {
             creationId = CREATION_ID,
             watchCreationUseCase = watchCreationUseCase,
             deleteCreationUseCase = deleteCreationUseCase,
-            codeImageRenderer = codeImageRenderer,
-            imageSharer = imageSharer,
-            imageSaver = imageSaver,
+            codeImageExporter = CodeImageExporter(
+                codeImageRenderer = codeImageRenderer,
+                imageSharer = imageSharer,
+                imageSaver = imageSaver,
+            ),
             // Created at the very moment of the test, in UTC
             clock = FixedClock(instant = Instant.fromEpochMilliseconds(0)),
             timeZone = TimeZone.UTC,

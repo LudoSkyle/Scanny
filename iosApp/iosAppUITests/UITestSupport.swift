@@ -121,6 +121,25 @@ extension XCTestCase {
         button.tap()
     }
 
+    /// Opens the sheet of the code from a detail, and waits for the code drawn in it to stop rising.
+    func showTheCode(in app: XCUIApplication) {
+        let showCodeButton = app.buttons["Show the code"]
+        XCTAssertTrue(showCodeButton.waitForExistence(timeout: 5))
+        waitUntilStill(showCodeButton)
+        showCodeButton.tap()
+        let code = app.images["The code"]
+        XCTAssertTrue(code.waitForExistence(timeout: 5))
+        waitUntilStill(code)
+    }
+
+    /// Closes the sheet shown, by a touch above it.
+    func closeTheSheet(of app: XCUIApplication) {
+        let closeButton = app.buttons["Close sheet"]
+        XCTAssertTrue(closeButton.waitForExistence(timeout: 5))
+        closeButton.tap()
+        XCTAssertTrue(closeButton.waitForNonExistence(timeout: 5))
+    }
+
     func waitUntilStill(_ element: XCUIElement) {
         var frame = element.exists ? element.frame : .zero
         for _ in 0..<10 {
