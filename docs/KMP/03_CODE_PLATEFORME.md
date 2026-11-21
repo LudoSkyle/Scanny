@@ -113,7 +113,7 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
 
 | Déclaration commune | Rôle | Android | iOS |
 |---|---|---|---|
-| `ScanCamera(...)` | Aperçu de la caméra arrière et détection en direct | CameraX (`CameraXViewfinder`) + ML Kit (`MlKitAnalyzer`) | `AVCaptureSession`, `AVCaptureVideoPreviewLayer` dans une `UIView` (`UIKitView`), `AVCaptureMetadataOutput` |
+| `ScanCamera(...)` | Aperçu de la caméra arrière et détection en direct | CameraX (`CameraXViewfinder`) + ML Kit (`BarcodeAnalyzer`) | `AVCaptureSession`, `AVCaptureVideoPreviewLayer` dans une `UIView` (`UIKitView`), `AVCaptureMetadataOutput` |
 | `rememberCameraPermissionState()` | Statut de la permission, la demander, ouvrir les réglages de l'app | `RequestPermission`, `shouldShowRequestPermissionRationale` | `AVCaptureDevice.requestAccess`, `UIApplicationOpenSettingsURLString` |
 | `rememberImageBarcodeScanner(...)` | Choisir une image et y lire un code | Photo Picker + ML Kit | `PHPickerViewController` + Vision |
 
@@ -143,6 +143,20 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   signale en se composant de nouveau (`onScreenShown`).
 - Le geste de zoom (pincement, plafonné à ×8) et le geste de mise au point (appui) sont détectés en
   commun, dans `ScanCameraLayer` ; seule leur application à la caméra est native.
+- Android, lecture de loin : ML Kit réduit lui-même une image avant d'y chercher des codes, et une
+  image plus fine ne lit pas plus loin (constaté sur un Galaxy S21 FE : la même carte lue à 30 cm en
+  960×720, en 1440×1080 comme en 4000×3000). Une image sur deux, `BarcodeAnalyzer` ne lui donne que
+  le centre, la moitié du petit côté (le cadre de l'écran avec une marge), découpé dans une image
+  1920×1440 : un code lointain y est lu comme si la caméra zoomait, sans que l'aperçu zoome (la même
+  carte lue à plus de 60 cm). L'autre image part entière, pour un code tenu de près, plus large que
+  le centre. `MlKitAnalyzer` de CameraX ne sait pas donner une partie de l'image à ML Kit :
+  `BarcodeAnalyzer` est un `ImageAnalysis.Analyzer`, qui ferme chaque image dans tous les cas, sans
+  quoi CameraX n'envoie plus les suivantes.
+- Android, aperçu : il remplit l'écran, son image est donc coupée sur les côtés et agrandie. Le 4:3
+  par défaut de CameraX (1440×1080) l'est d'environ 1,6 fois sur un téléphone, et paraît flou ;
+  l'aperçu demande donc du 16:9 en 1920×1080, agrandi d'environ 1,2 fois. L'analyse reste en 4:3, le
+  champ entier de la caméra, plus large que l'aperçu : tout code à l'écran est lu. Les deux tailles
+  forment une paire que tout appareil sait produire en même temps.
 - La permission a quatre statuts : `UNKNOWN` (pas encore demandée, ou réponse attendue), `GRANTED`,
   `DENIED` (Android laisse encore la redemander) et `DENIED_FOREVER` (seuls les réglages peuvent
   l'accorder : après deux refus sur Android, dès le premier sur iOS). L'écran la demande à son
@@ -218,8 +232,8 @@ livrée ; le tableau est mis à jour dans le même commit.
 
 | Capacité | Android | iOS | Forme |
 |---|---|---|---|
-| Aperçu et détection en direct | ✅ aperçu vérifié (émulateur) ; détection en direct à vérifier sur un appareil — CameraX + ML Kit Barcode Scanning | Livré, à vérifier sur un iPhone — `AVCaptureSession` + `AVCaptureMetadataOutput` | `expect` composable |
-| Zoom, mise au point | Livré, à vérifier sur un appareil — `CameraControl` (`setZoomRatio`, `startFocusAndMetering`) | Livré, à vérifier sur un iPhone — `AVCaptureDevice` (`videoZoomFactor`, `focusPointOfInterest`) | `expect` composable |
+| Aperçu et détection en direct | ✅ (Galaxy S21 FE, Android 16 : aperçu, détection de près et de loin ; émulateur : aperçu) — CameraX + ML Kit Barcode Scanning | Livré, à vérifier sur un iPhone — `AVCaptureSession` + `AVCaptureMetadataOutput` | `expect` composable |
+| Zoom, mise au point | ✅ zoom (Galaxy S21 FE) ; mise au point à vérifier sur un appareil — `CameraControl` (`setZoomRatio`, `startFocusAndMetering`) | Livré, à vérifier sur un iPhone — `AVCaptureDevice` (`videoZoomFactor`, `focusPointOfInterest`) | `expect` composable |
 | Torche | Livré, à vérifier sur un appareil (l'émulateur n'a pas de flash) — `CameraControl.enableTorch` | Livré, à vérifier sur un iPhone — `AVCaptureDevice.torchMode` | `expect` composable |
 | Permission caméra | ✅ (refus, refus définitif, accord) — `RequestPermission` | ✅ demande et description affichées (simulateur) — `AVCaptureDevice.requestAccess` | `expect` composable |
 | Détection dans une image | ✅ (émulateur : code lu, enregistré ; image sans code signalée) — Photo Picker + ML Kit (`InputImage`) | Livré, à vérifier sur un iPhone — `PHPickerViewController` + Vision (`VNDetectBarcodesRequest`) | `expect` composable |

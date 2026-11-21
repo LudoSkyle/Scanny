@@ -15,7 +15,6 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.lifecycle.awaitInstance
-import androidx.camera.mlkit.vision.MlKitAnalyzer
 import androidx.camera.viewfinder.compose.MutableCoordinateTransformer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -43,6 +42,22 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import fr.skyle.scanny.domain.model.DetectedBarcode
 import kotlinx.coroutines.awaitCancellation
 import java.util.concurrent.Executors
+
+/**
+ * The images ML Kit reads: 1920x1440 rather than the 640x480 of CameraX, for their center to keep its
+ * details once cut out (see [BarcodeAnalyzer]); the whole image of the camera reads no farther. In
+ * 4:3, the whole field of the camera: wider than the preview, which is cropped to fill the screen, so
+ * the codes it shows are all read.
+ */
+private val analysisResolutionSelector = ResolutionSelector.Builder()
+    .setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
+    .setResolutionStrategy(
+        ResolutionStrategy(
+            Size(1920, 1440),
+            ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER,
+        ),
+    )
+    .build()
 
 /**
  * The preview: 1920x1080 in 16:9, rather than the 1440x1080 in 4:3 of CameraX. Cropped to fill a
@@ -101,20 +116,20 @@ actual fun ScanCamera(
                 }
             }
         val imageAnalysis = ImageAnalysis.Builder()
+            .setResolutionSelector(analysisResolutionSelector)
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
         imageAnalysis.setAnalyzer(
             analysisExecutor,
-            MlKitAnalyzer(
-                listOf(barcodeScanner),
-                ImageAnalysis.COORDINATE_SYSTEM_ORIGINAL,
-                ContextCompat.getMainExecutor(context),
-            ) { result ->
+            BarcodeAnalyzer(
+                barcodeScanner = barcodeScanner,
+                resultExecutor = ContextCompat.getMainExecutor(context),
+            ) { barcodes ->
                 if (currentIsDetectionEnabled) {
-                    // Every code of the frame: a multiple scan keeps them all, a simple one the first
-                    result.getValue(barcodeScanner)
-                        ?.mapNotNull { barcode -> barcode.toDetectedBarcode() }
-                        ?.forEach { detectedBarcode -> currentOnBarcodeDetected(detectedBarcode) }
+                    // Every code of the image: a multiple scan keeps them all, a simple one the first
+                    barcodes
+                        .mapNotNull { barcode -> barcode.toDetectedBarcode() }
+                        .forEach { detectedBarcode -> currentOnBarcodeDetected(detectedBarcode) }
                 }
             },
         )

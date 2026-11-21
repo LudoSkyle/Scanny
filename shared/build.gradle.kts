@@ -70,7 +70,6 @@ kotlin {
             implementation(libs.camerax.camera2)
             implementation(libs.camerax.lifecycle)
             implementation(libs.camerax.compose)
-            implementation(libs.camerax.mlkit.vision)
             implementation(libs.mlkit.barcode.scanning)
             implementation(libs.kotlinx.coroutines.play.services)
         }
