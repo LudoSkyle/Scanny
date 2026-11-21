@@ -214,6 +214,9 @@ et la durée de conservation), le feedback, les textes français.
   libellé ou un champ de texte (`textInput`, vu comme une vue de texte quand il peut tenir plusieurs
   lignes), faire défiler jusqu'à un élément et attendre qu'il ne bouge plus avant de le toucher
   (`scroll`, `waitUntilStill`), y compris pendant l'arrivée d'un écran ou l'ouverture d'un menu.
+  Après un balayage, `scroll` attend encore une seconde : une liste glisse d'une fraction de point
+  après avoir l'air immobile, et Compose prend le premier toucher pour l'arrêter, sans toucher la
+  ligne.
 - Un code que l'app dessine se vérifie en décodant sa capture sur le Mac, avec Vision
   (`VNDetectBarcodesRequest`, depuis un court script Swift) : un second lecteur que l'app n'a pas
   écrit.
