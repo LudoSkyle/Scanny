@@ -1,11 +1,11 @@
 package fr.skyle.scanny.ui.screen.history.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -13,6 +13,8 @@ import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButton
 import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButtonDefaults
 import fr.skyle.scanny.designsystem.core.screenstructure.SCScreenStructure
 import fr.skyle.scanny.designsystem.core.screenstructure.SCScreenStructureDefaults
+import fr.skyle.scanny.designsystem.core.segmentedcontrol.SCSegmentedControl
+import fr.skyle.scanny.designsystem.core.segmentedcontrol.SCSegmentedControlDefaults
 import fr.skyle.scanny.designsystem.core.snackbar.SCSnackbarState
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBar
@@ -25,9 +27,12 @@ import fr.skyle.scanny.resources.ic_delete
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
-import fr.skyle.scanny.ui.screen.history.ui.component.HistoryDayHeader
-import fr.skyle.scanny.ui.screen.history.ui.component.ScanHistoryEmpty
-import fr.skyle.scanny.ui.screen.history.ui.component.ScanHistoryRow
+import fr.skyle.scanny.ui.screen.history.ui.component.CreationHistoryList
+import fr.skyle.scanny.ui.screen.history.ui.component.ScanHistoryList
+import fr.skyle.scanny.ui.screen.history.ui.mapper.toText
+import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistoryItem
+import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistorySection
+import fr.skyle.scanny.ui.screen.history.ui.model.HistoryView
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
 import kotlinx.datetime.LocalDate
@@ -36,12 +41,22 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HistoryScreen(
-    sections: List<ScanHistorySection>?,
+    selectedView: HistoryView,
+    scanSections: List<ScanHistorySection>?,
+    creationSections: List<CreationHistorySection>?,
     snackbarState: SCSnackbarState,
     onBackClicked: () -> Unit,
+    onViewSelected: (HistoryView) -> Unit,
     onClearClicked: () -> Unit,
     onScanClicked: (ScanHistoryItem) -> Unit,
+    onCreationClicked: (CreationHistoryItem) -> Unit,
 ) {
+    // Only the view shown is cleared: nothing to clear when it is empty
+    val isShownViewEmpty = when (selectedView) {
+        HistoryView.SCANS -> scanSections.isNullOrEmpty()
+        HistoryView.CREATIONS -> creationSections.isNullOrEmpty()
+    }
+
     SCScreenStructure(
         modifier = Modifier.fillMaxSize(),
         style = SCScreenStructureDefaults.Style.BACKGROUND,
@@ -52,7 +67,7 @@ fun HistoryScreen(
                 title = stringResource(Res.string.history),
                 onBackClicked = onBackClicked,
                 actions = {
-                    if (!sections.isNullOrEmpty()) {
+                    if (!isShownViewEmpty) {
                         SCIconButton(
                             modifier = Modifier.wrapContentSize(),
                             icon = painterResource(Res.drawable.ic_delete),
@@ -67,45 +82,42 @@ fun HistoryScreen(
         },
         snackbarState = snackbarState,
     ) { contentPadding ->
-        when {
-            // Read in a moment: an empty screen rather than a message that would flash
-            sections == null -> Unit
-
-            sections.isEmpty() -> ScanHistoryEmpty(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = contentPadding.calculateTopPadding()),
+        ) {
+            SCSegmentedControl(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(contentPadding)
-                    .wrapContentSize()
-                    .padding(horizontal = 32.dp),
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 8.dp,
+                    ),
+                options = HistoryView.entries,
+                selectedOption = selectedView,
+                optionText = { view -> stringResource(view.toText()) },
+                onOptionSelected = onViewSelected,
+                style = SCSegmentedControlDefaults.Style.PRIMARY,
+                size = SCSegmentedControlDefaults.Size.MEDIUM,
             )
 
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = contentPadding,
-            ) {
-                sections.forEach { section ->
-                    item(
-                        key = section.day.toString(),
-                        contentType = "day",
-                    ) {
-                        HistoryDayHeader(
-                            modifier = Modifier.fillMaxWidth(),
-                            day = section.day,
-                        )
-                    }
+            // The list goes under the navigation bar, its last row above it
+            val listPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding())
+            when (selectedView) {
+                HistoryView.SCANS -> ScanHistoryList(
+                    modifier = Modifier.fillMaxSize(),
+                    sections = scanSections,
+                    contentPadding = listPadding,
+                    onScanClicked = onScanClicked,
+                )
 
-                    items(
-                        items = section.items,
-                        key = { item -> item.scanId },
-                        contentType = { "scan" },
-                    ) { item ->
-                        ScanHistoryRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            item = item,
-                            onClick = { onScanClicked(item) },
-                        )
-                    }
-                }
+                HistoryView.CREATIONS -> CreationHistoryList(
+                    modifier = Modifier.fillMaxSize(),
+                    sections = creationSections,
+                    contentPadding = listPadding,
+                    onCreationClicked = onCreationClicked,
+                )
             }
         }
     }
@@ -116,7 +128,8 @@ fun HistoryScreen(
 private fun PreviewHistoryScreen() {
     SCTheme {
         HistoryScreen(
-            sections = listOf(
+            selectedView = HistoryView.SCANS,
+            scanSections = listOf(
                 ScanHistorySection(
                     day = CalendarDay.Today,
                     items = listOf(
@@ -158,24 +171,31 @@ private fun PreviewHistoryScreen() {
                     ),
                 ),
             ),
+            creationSections = emptyList(),
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
+            onViewSelected = {},
             onClearClicked = {},
             onScanClicked = {},
+            onCreationClicked = {},
         )
     }
 }
 
 @AppScreenPreview
 @Composable
-private fun PreviewHistoryScreen_Empty() {
+private fun PreviewHistoryScreen_EmptyCreations() {
     SCTheme {
         HistoryScreen(
-            sections = emptyList(),
+            selectedView = HistoryView.CREATIONS,
+            scanSections = emptyList(),
+            creationSections = emptyList(),
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
+            onViewSelected = {},
             onClearClicked = {},
             onScanClicked = {},
+            onCreationClicked = {},
         )
     }
 }

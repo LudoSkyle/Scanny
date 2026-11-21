@@ -16,6 +16,9 @@ fun EntryProviderScope<Route>.historyRouteEntry(
             navigateToScanGroup = { scanId ->
                 backStack.add(Route.ScanGroup(scanId = scanId))
             },
+            navigateToCreationDetail = { creationId ->
+                backStack.add(Route.CreationDetail(creationId = creationId))
+            },
             navigateBack = {
                 backStack.removeLastOrNull()
             },

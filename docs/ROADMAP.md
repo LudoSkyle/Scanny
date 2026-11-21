@@ -55,7 +55,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [ ] Modifier un code scanné : reprendre son contenu, le modifier, le personnaliser et générer le
       nouveau QR code
 - [x] Partager et enregistrer un QR code créé *(enregistrer : Android 10 et plus)*
-- [ ] Historique des créations
+- [x] Historique des créations
 - [ ] Favori et annotation d'une capture, scan simple ou groupe entier *(pas urgent)*
 - Pistes, non engagées : contact parmi les types créés, affichage des types téléphone, position et
   événement, avis et mise à jour depuis l'app.
@@ -207,7 +207,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] Partager et enregistrer l'image d'un code créé
     - [x] La personnalisation : couleurs (une palette lisible) et formes, gardées avec la création
     - [x] Le logo au centre, depuis la galerie, réduit et gardé avec la création
-    - [ ] L'historique des créations
+    - [x] L'historique des créations : une seconde vue de l'historique, « Scans » ou « Créations »,
+          chacune effacée à part
     - [ ] « Modifier » depuis le `ScanDetail`
 12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI. Deux remarques
     d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton galerie le temps

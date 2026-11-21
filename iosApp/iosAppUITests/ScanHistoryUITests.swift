@@ -1,7 +1,7 @@
 import XCTest
 
-/// The history of the scans, reached from the scan, on the simulator: each test first scans its own
-/// code (see `launchScanning`).
+/// The history of the scans and of the creations, reached from the scan, on the simulator: each test
+/// first scans or creates its own code (see `launchScanning`).
 final class ScanHistoryUITests: XCTestCase {
 
     override func setUpWithError() throws {
@@ -33,6 +33,48 @@ final class ScanHistoryUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["History"].waitForExistence(timeout: 5))
         app.buttons["Back"].tap()
         XCTAssertTrue(app.staticTexts["Place a code in the frame"].waitForExistence(timeout: 5))
+    }
+
+    func testACreationAppearsInTheCreationsOfTheHistoryAndOpens() throws {
+        let text = "Created for the history \(Int(Date().timeIntervalSince1970))"
+        let app = launchApp()
+        app.buttons["Create a code"].tap()
+        let textField = textInput(labelled: "Text", in: app)
+        XCTAssertTrue(textField.waitForExistence(timeout: 5))
+        waitUntilStill(textField)
+        textField.tap()
+        textField.typeText(text)
+        // A touch out of the fields closes the keyboard, over the button
+        app.images["The code"].tap()
+        let createButton = app.buttons["Create"]
+        scroll(to: createButton, in: app)
+        createButton.tap()
+        XCTAssertTrue(app.buttons["Save the image"].waitForExistence(timeout: 5))
+        app.buttons["Back"].tap()
+
+        // The history opens on the scans, its creations a tab away
+        app.buttons["History"].tap()
+        let creationsTab = element(labelled: "Creations", in: app)
+        XCTAssertTrue(creationsTab.waitForExistence(timeout: 5))
+        waitUntilStill(creationsTab)
+        creationsTab.tap()
+        XCTAssertTrue(creationsTab.isSelected)
+        let row = element(labelled: text, in: app)
+        XCTAssertTrue(row.waitForExistence(timeout: 5))
+        keepScreenshot(named: "history-creations", of: app)
+
+        row.tap()
+        XCTAssertTrue(app.buttons["Save the image"].waitForExistence(timeout: 5))
+        XCTAssertTrue(element(labelled: text, in: app).exists)
+
+        // Back on the creations, which are cleared on their own
+        app.buttons["Back"].tap()
+        XCTAssertTrue(app.buttons["Clear the history"].waitForExistence(timeout: 5))
+        app.buttons["Clear the history"].tap()
+        XCTAssertTrue(app.staticTexts["Every creation will be deleted."].waitForExistence(timeout: 5))
+        app.buttons["Clear"].tap()
+        XCTAssertTrue(app.staticTexts["No creation yet"].waitForExistence(timeout: 5))
+        keepScreenshot(named: "history-creations-empty", of: app)
     }
 
     func testAClearedHistoryIsEmpty() throws {

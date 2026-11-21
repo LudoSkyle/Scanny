@@ -16,6 +16,10 @@ intermédiaire.
 - La création d'un code s'ouvre par le « + » de la barre du scan (`Route.CreateCode`). Créer
   remplace l'éditeur par l'écran de la création (`Route.CreationDetail(creationId)`) : le retour depuis
   elle revient au scan.
+- L'historique (`Route.History`) montre les scans ou les créations, sur le même écran : une bascule
+  sous sa barre (`SCSegmentedControl`) choisit la vue, sans toucher au back stack. Ce n'est pas une
+  navigation par onglets : chaque vue ouvre ses écrans par-dessus l'historique, qui garde la vue
+  choisie au retour. Effacer ne vide que la vue montrée.
 - Une route implémente `NavKey` et est annotée `@Serializable` : le back stack est sauvegardé et
   restauré (recréation de l'activité, mort du process sur Android).
 - Le back stack se crée avec `rememberSerializable` et un `NavBackStackSerializer` construit sur le
