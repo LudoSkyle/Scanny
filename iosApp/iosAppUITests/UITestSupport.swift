@@ -102,6 +102,11 @@ extension XCTestCase {
             swipeCount += 1
             waitUntilStill(element)
         }
+        // A list still glides by less than a point once it looks still, and Compose takes the first touch
+        // to stop it: the touch would be lost
+        if swipeCount > 0 {
+            Thread.sleep(forTimeInterval: 1)
+        }
     }
 
     func waitUntilStill(_ element: XCUIElement) {
