@@ -14,12 +14,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.bottomsheet.SCBottomSheet
 import fr.skyle.scanny.designsystem.core.button.SCButton
 import fr.skyle.scanny.designsystem.core.button.SCButtonDefaults
-import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
@@ -27,8 +25,12 @@ import fr.skyle.scanny.resources.copied
 import fr.skyle.scanny.resources.copy
 import fr.skyle.scanny.resources.see_detail
 import fr.skyle.scanny.ui.core.code.component.CodeActionButton
+import fr.skyle.scanny.ui.core.code.component.CodeFieldText
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
+import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeAction
+import fr.skyle.scanny.ui.core.code.model.CodeField
+import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultItem
@@ -37,6 +39,8 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 
 private val COPIED_DURATION = 2.seconds
+
+private const val FIELD_MAX_LINES = 4
 
 /** The code just scanned: what it is, what it holds, and what to do with it. */
 @Composable
@@ -76,14 +80,19 @@ fun ScanResultSheet(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            SCText(
-                modifier = Modifier.fillMaxWidth(),
-                text = result.summary,
-                style = SCTheme.typography.body1,
-                color = SCTheme.colors.textDark,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-            )
+            // The whole content, a long text cut: the detail shows it whole
+            result.fields.forEachIndexed { index, field ->
+                if (index > 0) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+
+                CodeFieldText(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = field.label?.let { label -> stringResource(label.toText()) },
+                    value = field.value,
+                    maxLines = FIELD_MAX_LINES,
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -133,7 +142,12 @@ private fun PreviewScanResultSheet() {
                 codeId = 1,
                 type = CodeType.LINK,
                 format = BarcodeFormat.QR_CODE,
-                summary = "https://scanny.app",
+                fields = listOf(
+                    CodeField(
+                        label = null,
+                        value = "https://scanny.app",
+                    ),
+                ),
                 rawValue = "https://scanny.app",
                 action = CodeAction.OpenLink(link = "https://scanny.app"),
             ),
@@ -153,10 +167,19 @@ private fun PreviewScanResultSheet_WithoutAction() {
             modifier = Modifier.fillMaxWidth(),
             result = ScanResultItem(
                 codeId = 1,
-                type = CodeType.WIFI,
+                type = CodeType.SMS,
                 format = BarcodeFormat.QR_CODE,
-                summary = "Scanny",
-                rawValue = "WIFI:T:WPA;S:Scanny;P:secret;;",
+                fields = listOf(
+                    CodeField(
+                        label = CodeFieldLabel.PHONE_NUMBER,
+                        value = "+33600000000",
+                    ),
+                    CodeField(
+                        label = CodeFieldLabel.MESSAGE,
+                        value = "See you at eight in front of the cinema",
+                    ),
+                ),
+                rawValue = "SMSTO:+33600000000:See you at eight in front of the cinema",
                 action = null,
             ),
             onActionClicked = {},

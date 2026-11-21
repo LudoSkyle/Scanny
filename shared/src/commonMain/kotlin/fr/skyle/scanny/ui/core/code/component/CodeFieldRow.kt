@@ -1,10 +1,8 @@
 package fr.skyle.scanny.ui.core.code.component
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -14,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButton
 import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButtonDefaults
-import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.copy
@@ -41,25 +38,11 @@ fun CodeFieldRow(
         ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            if (label != null) {
-                SCText(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = label,
-                    style = SCTheme.typography.caption,
-                    color = SCTheme.colors.text,
-                )
-
-                Spacer(modifier = Modifier.height(2.dp))
-            }
-
-            SCText(
-                modifier = Modifier.fillMaxWidth(),
-                text = value,
-                style = SCTheme.typography.body1,
-                color = SCTheme.colors.textDark,
-            )
-        }
+        CodeFieldText(
+            modifier = Modifier.weight(1f),
+            label = label,
+            value = value,
+        )
 
         Spacer(modifier = Modifier.width(8.dp))
 
