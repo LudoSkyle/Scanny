@@ -207,6 +207,10 @@ et la durée de conservation), le feedback, les textes français.
   de l'app ; l'app lancée, la base est à la nouvelle version et la capture toujours là.
 - Une ligne cliquable est un bouton dont le texte est aussi vu à part : pour compter des lignes, on
   compte les boutons (`app.buttons`).
+- Les aides des tests sont communes (`UITestSupport`) : lancer l'app, trouver un élément par son
+  libellé ou un champ de texte (`textInput`, vu comme une vue de texte quand il peut tenir plusieurs
+  lignes), faire défiler jusqu'à un élément et attendre qu'il ne bouge plus avant de le toucher
+  (`scroll`, `waitUntilStill`), y compris pendant l'arrivée d'un écran ou l'ouverture d'un menu.
 - Un code que l'app dessine se vérifie en décodant sa capture sur le Mac, avec Vision
   (`VNDetectBarcodesRequest`, depuis un court script Swift) : un second lecteur que l'app n'a pas
   écrit.

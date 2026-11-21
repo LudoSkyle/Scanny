@@ -62,6 +62,7 @@ fun ScanScreen(
     onTorchClicked: () -> Unit,
     onMultipleScanClicked: () -> Unit,
     onMultipleScanFinished: () -> Unit,
+    onCreateClicked: () -> Unit,
     onHistoryClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     onResultActionClicked: (CodeAction) -> Unit,
@@ -129,6 +130,7 @@ fun ScanScreen(
                     .padding(contentPadding)
                     .padding(all = 16.dp)
                     .wrapContentSize(),
+                onCreateClicked = onCreateClicked,
                 onHistoryClicked = onHistoryClicked,
                 onSettingsClicked = onSettingsClicked,
             )
@@ -217,6 +219,7 @@ private fun PreviewScanScreen() {
             onTorchClicked = {},
             onMultipleScanClicked = {},
             onMultipleScanFinished = {},
+            onCreateClicked = {},
             onHistoryClicked = {},
             onSettingsClicked = {},
             onResultActionClicked = {},
@@ -256,6 +259,7 @@ private fun PreviewScanScreen_MultipleScan() {
             onTorchClicked = {},
             onMultipleScanClicked = {},
             onMultipleScanFinished = {},
+            onCreateClicked = {},
             onHistoryClicked = {},
             onSettingsClicked = {},
             onResultActionClicked = {},
@@ -291,6 +295,7 @@ private fun PreviewScanScreen_CameraBlocked() {
             onTorchClicked = {},
             onMultipleScanClicked = {},
             onMultipleScanFinished = {},
+            onCreateClicked = {},
             onHistoryClicked = {},
             onSettingsClicked = {},
             onResultActionClicked = {},

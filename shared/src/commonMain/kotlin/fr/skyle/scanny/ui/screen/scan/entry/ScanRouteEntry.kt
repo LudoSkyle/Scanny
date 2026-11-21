@@ -25,6 +25,9 @@ fun EntryProviderScope<Route>.scanRouteEntry(
             navigateToScanHistory = {
                 backStack.add(Route.ScanHistory)
             },
+            navigateToCreateCode = {
+                backStack.add(Route.CreateCode)
+            },
             navigateToSettings = {
                 backStack.add(Route.Settings)
             },

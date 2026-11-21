@@ -139,6 +139,14 @@ format, sa date.
   l'utilisateur n'en garde pas des créations, et rend la création relue.
 - `toRawValue` est publique : l'éditeur en tire l'aperçu du code avant tout enregistrement.
 - Pour un code-barres, le contenu est un `Text` de ses chiffres ou de ses caractères.
+- Le formulaire de l'éditeur (`CreationFormMapper`, dans `shared`) rend un contenu seulement quand ce
+  qu'il exige est là : un texte, un lien (sans schéma, il reçoit `https://`, sans quoi un lecteur le
+  lirait comme un texte), le destinataire d'un e-mail, le numéro d'un SMS, le nom d'un contact, le
+  nom d'un réseau et, pour un réseau WPA, un mot de passe de 8 à 63 caractères (ceux qu'Android
+  accepte). Le format juge ensuite le texte (`canHold`), avec l'encodeur qui le dessine : un
+  code-barres refuse une mauvaise longueur ou un mauvais chiffre de contrôle, un QR code un texte
+  trop long pour la correction la plus forte, celle qu'un logo peut demander. qrose encode un QR code
+  en le dessinant, sans moyen d'en rattraper l'échec : un texte n'est dessiné qu'une fois accepté.
 - La purge de l'historique (`PurgeHistoryUseCase`) vaut pour les créations comme pour les captures,
   avec la même durée de conservation.
 

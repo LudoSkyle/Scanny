@@ -8,6 +8,8 @@
     <string name="app_settings">App settings</string>
     <string name="at_time">%1$s at %2$s</string>
     <string name="aztec" translatable="false">Aztec</string>
+    <string name="barcode">Barcode</string>
+    <string name="barcode_value">Value</string>
     <string name="beep_after_scan">Beep after a scan</string>
     <string name="camera_blocked">The camera is blocked for Scanny. Allow it in the settings of your device to scan codes.</string>
     <string name="camera_needed">Scanny needs the camera to scan codes.</string>
@@ -32,10 +34,15 @@
     <string name="codes_not_saved">They will not be saved.</string>
     <string name="contact">Contact</string>
     <string name="content">Content</string>
+    <string name="content_too_long">This content is too long for a QR code.</string>
+    <string name="content_type">Type</string>
     <string name="copied">Copied</string>
     <string name="copied_to_clipboard">Copied to the clipboard</string>
     <string name="copy">Copy</string>
     <string name="copy_after_scan">Copy the code after a scan</string>
+    <string name="create">Create</string>
+    <string name="create_code">Create a code</string>
+    <string name="creation_not_saved">The code could not be created</string>
     <string name="data_matrix" translatable="false">Data Matrix</string>
     <string name="day_date">%2$s %1$d, %3$d</string>
     <string name="delete">Delete</string>
@@ -51,11 +58,14 @@
     <string name="feedback_about_other">Something else</string>
     <string name="feedback_about_scan">The scan</string>
     <string name="feedback_about_type_detection">The detection of the type of a code</string>
+    <string name="fill_content_to_see_code">Fill in the content to see the code.</string>
     <string name="finish">Finish</string>
+    <string name="format">Format</string>
     <string name="give_feedback">Give your feedback</string>
     <string name="group">Group</string>
     <string name="group_codes_removed_from_history">Its codes will be removed from the history.</string>
     <string name="group_not_deleted">The group could not be deleted</string>
+    <string name="hidden_network">Hidden network</string>
     <string name="history">History</string>
     <string name="history_not_cleared">The history could not be cleared</string>
     <string name="itf" translatable="false">ITF</string>
@@ -136,10 +146,15 @@
     <string name="upc_a" translatable="false">UPC-A</string>
     <string name="upc_e" translatable="false">UPC-E</string>
     <string name="use_front_camera">Use the front camera</string>
+    <string name="value_not_for_format">This value does not suit this format.</string>
     <string name="version_and_build">Version %1$s (build %2$s)</string>
     <string name="vibrate_after_scan">Vibrate after a scan</string>
     <string name="website">Website</string>
     <string name="wifi" translatable="false">Wi-Fi</string>
+    <string name="wifi_security_none">None</string>
+    <string name="wifi_security_wep" translatable="false">WEP</string>
+    <string name="wifi_security_wpa" translatable="false">WPA/WPA2</string>
+    <string name="wifi_security_wpa3" translatable="false">WPA3</string>
     <string name="write_email">Write an e-mail</string>
     <string name="write_sms">Write an SMS</string>
     <string name="yesterday">Yesterday</string>
