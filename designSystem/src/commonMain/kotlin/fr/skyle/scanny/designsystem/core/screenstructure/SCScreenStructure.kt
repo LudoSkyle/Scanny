@@ -7,14 +7,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import fr.skyle.scanny.designsystem.core.snackbar.SCSnackbarHost
 import fr.skyle.scanny.designsystem.core.snackbar.SCSnackbarState
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBar
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBarDefaults
@@ -35,14 +34,7 @@ fun SCScreenStructure(
         topBar = topBar,
         snackbarHost = {
             if (snackbarState != null) {
-                SnackbarHost(hostState = snackbarState.hostState) { snackbarData ->
-                    Snackbar(
-                        snackbarData = snackbarData,
-                        shape = SCTheme.shapes.medium,
-                        containerColor = SCTheme.colors.textDark,
-                        contentColor = SCTheme.colors.textLight,
-                    )
-                }
+                SCSnackbarHost(state = snackbarState)
             }
         },
         containerColor = style.containerColor,
