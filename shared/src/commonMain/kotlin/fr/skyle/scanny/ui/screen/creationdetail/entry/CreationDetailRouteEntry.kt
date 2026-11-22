@@ -11,6 +11,9 @@ fun EntryProviderScope<Route>.creationDetailRouteEntry(
     entry<Route.CreationDetail> { route ->
         CreationDetailRoute(
             creationId = route.creationId,
+            navigateToCreateCode = {
+                backStack.add(Route.CreateCode(creationId = route.creationId))
+            },
             navigateBack = {
                 backStack.removeLastOrNull()
             },

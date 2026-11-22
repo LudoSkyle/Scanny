@@ -1,17 +1,36 @@
 package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.ui.core.code.mapper.toBarcodeType
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 
+/** The form a scanned code fills, to be changed and created as a new code. */
+internal fun ScannedCode.toCreationForm(): CreationForm =
+    content.toCreationForm(
+        rawValue = rawValue,
+        format = format,
+    )
+
+/** The form a created code fills, to be changed and created as a new code: its style goes apart. */
+internal fun Creation.toCreationForm(): CreationForm =
+    content.toCreationForm(
+        rawValue = rawValue,
+        format = format,
+    )
+
 /**
- * The form a scanned code fills, to be changed and created again. A barcode of a format the editor
- * draws stays a barcode of its value; any other code becomes a QR code holding its content. The
- * editor holds one phone, one e-mail, one address and one website for a contact: the first of each.
+ * The form a code fills. A barcode of a format the editor draws stays a barcode of its value; any other
+ * code becomes a QR code holding its content. The editor holds one phone, one e-mail, one address and
+ * one website for a contact: the first of each.
  */
-internal fun ScannedCode.toCreationForm(): CreationForm {
+private fun BarcodeContent.toCreationForm(
+    rawValue: String,
+    format: BarcodeFormat?,
+): CreationForm {
     val barcodeFormat = format?.takeIf { format -> format.toBarcodeType() != null }
     if (barcodeFormat != null) {
         return CreationForm(
@@ -21,7 +40,7 @@ internal fun ScannedCode.toCreationForm(): CreationForm {
         )
     }
 
-    return when (val content = content) {
+    return when (val content = this) {
         is BarcodeContent.Text -> CreationForm(
             kind = CreationKind.TEXT,
             text = content.text,

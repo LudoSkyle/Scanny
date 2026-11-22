@@ -4,13 +4,16 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
+import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.fake.FakeRecordCreationUseCase
+import fr.skyle.scanny.fake.FakeWatchCreationUseCase
 import fr.skyle.scanny.fake.FakeWatchScannedCodeUseCase
 import fr.skyle.scanny.platform.gallery.LogoPickResult
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationSource
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -371,7 +374,7 @@ class CreateCodeViewModelTest {
 
         // When
         val viewModel = createCodeViewModel(
-            scannedCodeId = 4,
+            source = CreationSource.ScannedCode(codeId = 4),
             watchScannedCodeUseCase = watchScannedCodeUseCase,
         )
 
@@ -393,7 +396,7 @@ class CreateCodeViewModelTest {
     fun `a scanned code deleted meanwhile leaves the editor empty`() = runTest(testDispatcher) {
         // When
         val viewModel = createCodeViewModel(
-            scannedCodeId = 4,
+            source = CreationSource.ScannedCode(codeId = 4),
             watchScannedCodeUseCase = FakeWatchScannedCodeUseCase(scannedCode = null),
         )
 
@@ -404,14 +407,79 @@ class CreateCodeViewModelTest {
         )
     }
 
+    @Test
+    fun `the editor opens filled with the content and the style of a created code`() = runTest(testDispatcher) {
+        // Given
+        val watchCreationUseCase = FakeWatchCreationUseCase(
+            creation = Creation(
+                id = 3,
+                content = BarcodeContent.Text(text = "Hello"),
+                rawValue = "Hello",
+                format = BarcodeFormat.QR_CODE,
+                style = STYLE,
+                createdAt = Instant.fromEpochMilliseconds(0),
+            ),
+        )
+
+        // When
+        val viewModel = createCodeViewModel(
+            source = CreationSource.CreatedCode(creationId = 3),
+            watchCreationUseCase = watchCreationUseCase,
+        )
+
+        // Then
+        assertEquals(
+            expected = CreationForm(text = "Hello") to STYLE,
+            actual = viewModel.uiState.value.form to viewModel.uiState.value.style,
+        )
+    }
+
+    @Test
+    fun `a created code changed is recorded as a new code`() = runTest(testDispatcher) {
+        // Given
+        val recordCreationUseCase = FakeRecordCreationUseCase()
+        val viewModel = createCodeViewModel(
+            recordCreationUseCase = recordCreationUseCase,
+            source = CreationSource.CreatedCode(creationId = 3),
+            watchCreationUseCase = FakeWatchCreationUseCase(
+                creation = Creation(
+                    id = 3,
+                    content = BarcodeContent.Text(text = "Hello"),
+                    rawValue = "Hello",
+                    format = BarcodeFormat.QR_CODE,
+                    style = STYLE,
+                    createdAt = Instant.fromEpochMilliseconds(0),
+                ),
+            ),
+        )
+
+        // When
+        viewModel.onFormChanged(form = viewModel.uiState.value.form.copy(text = "Hello again"))
+        viewModel.onCreateClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                FakeRecordCreationUseCase.RecordedCreation(
+                    content = BarcodeContent.Text(text = "Hello again"),
+                    format = BarcodeFormat.QR_CODE,
+                    style = STYLE,
+                ),
+            ),
+            actual = recordCreationUseCase.recordedCreations,
+        )
+    }
+
     private fun createCodeViewModel(
         recordCreationUseCase: FakeRecordCreationUseCase = FakeRecordCreationUseCase(),
-        scannedCodeId: Long? = null,
+        source: CreationSource = CreationSource.New,
         watchScannedCodeUseCase: FakeWatchScannedCodeUseCase = FakeWatchScannedCodeUseCase(scannedCode = null),
+        watchCreationUseCase: FakeWatchCreationUseCase = FakeWatchCreationUseCase(creation = null),
     ): CreateCodeViewModel =
         CreateCodeViewModel(
-            scannedCodeId = scannedCodeId,
+            source = source,
             watchScannedCodeUseCase = watchScannedCodeUseCase,
+            watchCreationUseCase = watchCreationUseCase,
             recordCreationUseCase = recordCreationUseCase,
         )
 

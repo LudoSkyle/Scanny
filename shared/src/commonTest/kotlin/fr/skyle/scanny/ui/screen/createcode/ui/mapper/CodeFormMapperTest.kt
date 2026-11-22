@@ -2,6 +2,8 @@ package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeStyle
+import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.payload.toRawValue
@@ -11,7 +13,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Instant
 
-class ScannedCodeFormMapperTest {
+class CodeFormMapperTest {
 
     @Test
     fun `a scanned qr code filled in the editor gives back its content`() {
@@ -121,6 +123,28 @@ class ScannedCodeFormMapperTest {
                 contactAddress = "1 rue de Scanny",
                 contactWebsite = "https://scanny.app",
             ),
+            actual = form,
+        )
+    }
+
+    @Test
+    fun `a created code fills the form as a scanned one would`() {
+        // Given
+        val content = BarcodeContent.Url(url = "https://scanny.app")
+
+        // When
+        val form = Creation(
+            id = 1,
+            content = content,
+            rawValue = content.toRawValue(),
+            format = BarcodeFormat.QR_CODE,
+            style = CodeStyle(darkColor = 0xFF3B43BE),
+            createdAt = Instant.fromEpochMilliseconds(0),
+        ).toCreationForm()
+
+        // Then
+        assertEquals(
+            expected = scannedCode(content = content).toCreationForm(),
             actual = form,
         )
     }

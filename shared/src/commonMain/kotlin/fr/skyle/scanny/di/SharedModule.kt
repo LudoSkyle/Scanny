@@ -37,11 +37,12 @@ val sharedModule = module {
     viewModelOf(::ScanGroupViewModel)
     viewModelOf(::HistoryViewModel)
     viewModelOf(::SettingsViewModel)
-    // Opened empty from the scan, with no scanned code to fill it
+    // Opened from what the route says it starts from
     viewModel { parameters ->
         CreateCodeViewModel(
-            scannedCodeId = parameters.getOrNull(),
+            source = parameters.get(),
             watchScannedCodeUseCase = get(),
+            watchCreationUseCase = get(),
             recordCreationUseCase = get(),
         )
     }

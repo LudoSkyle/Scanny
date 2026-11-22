@@ -30,7 +30,9 @@ import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.at_time
 import fr.skyle.scanny.resources.content
 import fr.skyle.scanny.resources.delete
+import fr.skyle.scanny.resources.edit_code
 import fr.skyle.scanny.resources.ic_delete
+import fr.skyle.scanny.resources.ic_edit
 import fr.skyle.scanny.resources.ic_qr_code
 import fr.skyle.scanny.resources.show_code
 import fr.skyle.scanny.ui.core.code.component.CodeFieldRow
@@ -55,6 +57,7 @@ fun CreationDetailScreen(
     snackbarState: SCSnackbarState,
     onBackClicked: () -> Unit,
     onShowCodeClicked: () -> Unit,
+    onEditClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
     onCopyClicked: (text: String) -> Unit,
 ) {
@@ -79,6 +82,16 @@ fun CreationDetailScreen(
                                 size = SCIconButtonDefaults.Size.MEDIUM,
                             )
                         }
+
+                        // Its content and its style in the editor, to be changed and created as a new code
+                        SCIconButton(
+                            modifier = Modifier.wrapContentSize(),
+                            icon = painterResource(Res.drawable.ic_edit),
+                            contentDescription = stringResource(Res.string.edit_code),
+                            onClick = onEditClicked,
+                            style = SCIconButtonDefaults.Style.DARK,
+                            size = SCIconButtonDefaults.Size.MEDIUM,
+                        )
 
                         SCIconButton(
                             modifier = Modifier.wrapContentSize(),
@@ -180,6 +193,7 @@ private fun PreviewCreationDetailScreen() {
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
             onShowCodeClicked = {},
+            onEditClicked = {},
             onDeleteClicked = {},
             onCopyClicked = {},
         )

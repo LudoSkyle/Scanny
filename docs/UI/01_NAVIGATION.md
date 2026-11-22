@@ -15,7 +15,9 @@ intermédiaire.
   dans `ui/main/MainViewModel`, créé par `ScannyApp` : pas dans le ViewModel du scan.
 - La création d'un code s'ouvre par le « + » de la barre du scan (`Route.CreateCode()`), ou par
   « Modifier le code » du détail d'un scan, prérempli avec son contenu
-  (`Route.CreateCode(scannedCodeId)`). Créer remplace l'éditeur par l'écran de la création
+  (`Route.CreateCode(scannedCodeId)`), comme du détail d'une création, avec son contenu et son style
+  (`Route.CreateCode(creationId)`) : dans les deux cas, créer fait un nouveau code. L'entrée traduit
+  la route en `CreationSource` (`New`, `ScannedCode`, `CreatedCode`), seul paramètre du ViewModel. Créer remplace l'éditeur par l'écran de la création
   (`Route.CreationDetail(creationId)`) : le retour depuis elle revient à l'écran qui a ouvert
   l'éditeur.
 - L'éditeur d'un QR code a deux étapes sur la même route : le contenu et son aperçu, puis la
