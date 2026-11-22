@@ -126,7 +126,9 @@ extension XCTestCase {
         XCTAssertTrue(closeButton.waitForNonExistence(timeout: 5))
     }
 
-    /// Types a text in the editor, then closes the keyboard by a touch on the preview, out of the fields.
+    /// Types a text in the editor, then closes the keyboard by a touch out of the fields: on the label of
+    /// the family of the code, at the top. The preview may be under the keyboard, whose key a touch on it
+    /// would type.
     func typeATextAndCloseTheKeyboard(
         _ text: String,
         in app: XCUIApplication,
@@ -136,9 +138,8 @@ extension XCTestCase {
         waitUntilStill(textField)
         textField.tap()
         textField.typeText(text)
-        let preview = app.images["The code"]
-        XCTAssertTrue(preview.waitForExistence(timeout: 5))
-        preview.tap()
+        XCTAssertTrue(app.images["The code"].waitForExistence(timeout: 5))
+        app.staticTexts["Code"].tap()
     }
 
     /// Goes from the content of a QR code being created to its customization, the second step.
