@@ -24,6 +24,9 @@ fun SCScreenStructure(
     style: SCScreenStructureDefaults.Style,
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
+    // Fixed under the content, which scrolls above it: the bar keeps out of the system bars and of the
+    // keyboard itself, as the content then gets no bottom inset
+    bottomBar: @Composable () -> Unit = {},
     snackbarState: SCSnackbarState? = null,
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -32,6 +35,7 @@ fun SCScreenStructure(
     Scaffold(
         modifier = modifier,
         topBar = topBar,
+        bottomBar = bottomBar,
         snackbarHost = {
             if (snackbarState != null) {
                 SCSnackbarHost(state = snackbarState)

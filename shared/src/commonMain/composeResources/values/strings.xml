@@ -147,6 +147,7 @@
     <string name="end_date">End date</string>
     <string name="end_time">End time</string>
     <string name="enhanced_open_only">Wi-Fi Enhanced Open only</string>
+    <string name="enlarge_code">Enlarge the code</string>
     <string name="error_correction">Error correction</string>
     <string name="error_correction_auto">Automatic</string>
     <string name="error_correction_auto_description">The lowest, the highest under a logo</string>

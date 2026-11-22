@@ -11,7 +11,7 @@ palette, la police Lato et l'identité de l'app (icône, ton des textes) servent
 On y trouve :
 
 - le thème : `SCColors`, `SCTypography`, `SCShapes`, `SCTheme` ;
-- les composants génériques : `SCScreenStructure` (fond, insets, barre du haut, messages, couleur
+- les composants génériques : `SCScreenStructure` (fond, insets, barre du haut, barre fixée en bas qui se tient elle-même hors des barres système et du clavier, messages, couleur
   des icônes système), `SCTopAppBar`, `SCIconButton`, `SCIconBadge`, `SCButton`, `SCText`,
   `SCTextWithCode` (un texte dont les parties entre accents graves sont du code), `SCCard`
   et `SCCardStructure` (une carte et son titre), `SCExpandableCardStructure` (une carte repliée

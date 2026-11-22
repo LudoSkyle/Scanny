@@ -15,8 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import fr.skyle.scanny.designsystem.core.button.SCButton
-import fr.skyle.scanny.designsystem.core.button.SCButtonDefaults
 import fr.skyle.scanny.designsystem.core.dropdownfield.SCDropdownField
 import fr.skyle.scanny.designsystem.core.textfield.SCTextFieldDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
@@ -26,16 +24,12 @@ import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.code_family
 import fr.skyle.scanny.resources.content_type
-import fr.skyle.scanny.resources.create
 import fr.skyle.scanny.resources.format
-import fr.skyle.scanny.resources.next
 import fr.skyle.scanny.ui.core.code.mapper.toMatrixEncoder
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.format
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toText
-import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
-import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationFamily
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
@@ -46,23 +40,18 @@ import org.jetbrains.compose.resources.stringResource
 private val matrixFormats = BarcodeFormat.entries.filter { format -> format.toMatrixEncoder() != null }
 
 /**
- * The first step of the editor: the family of the code, what it holds, and the code it makes. A QR
- * code goes on to its customization; another code in two dimensions, or a barcode, is created from
- * here: it stays dark on white.
+ * The first step of the editor: the family of the code and what it holds. The code it makes, and the
+ * button that goes on, are in the bar fixed under it: a QR code goes on to its customization; another
+ * code in two dimensions, or a barcode, is created from here, dark on white.
  */
 @Composable
 fun CreationContentStep(
     form: CreationForm,
-    preview: CodePreview,
-    contentSize: ContentSize?,
     errorCorrectionChoices: List<ErrorCorrectionChoice>,
     style: CodeStyle,
-    isCreating: Boolean,
     contentPadding: PaddingValues,
     onFormChanged: (CreationForm) -> Unit,
     onStyleChanged: (CodeStyle) -> Unit,
-    onNextClicked: () -> Unit,
-    onCreateClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -77,8 +66,9 @@ fun CreationContentStep(
                     focusManager.clearFocus()
                 }
             }
-            .verticalScroll(state = rememberScrollState())
+            // Out of the scroll: a field scrolled to, or focused, stays above the bar under it
             .padding(contentPadding)
+            .verticalScroll(state = rememberScrollState())
             .padding(
                 horizontal = 16.dp,
                 vertical = 8.dp,
@@ -133,17 +123,6 @@ fun CreationContentStep(
             onFormChanged = onFormChanged,
         )
 
-        contentSize?.let { size ->
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ContentSizeCounter(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
-                size = size,
-            )
-        }
-
         // The correction changes how long a content the code holds: chosen with the content
         if (isQrCode) {
             Spacer(modifier = Modifier.height(16.dp))
@@ -155,25 +134,6 @@ fun CreationContentStep(
                 onErrorCorrectionSelected = { errorCorrection -> onStyleChanged(style.copy(errorCorrection = errorCorrection)) },
             )
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        CodePreviewCard(
-            modifier = Modifier.fillMaxWidth(),
-            preview = preview,
-            style = style,
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        SCButton(
-            modifier = Modifier.fillMaxWidth(),
-            text = stringResource(if (isQrCode) Res.string.next else Res.string.create),
-            onClick = if (isQrCode) onNextClicked else onCreateClicked,
-            style = SCButtonDefaults.Style.PRIMARY,
-            size = SCButtonDefaults.Size.MEDIUM,
-            isEnabled = preview is CodePreview.Code && !isCreating,
-        )
     }
 }
 
@@ -186,15 +146,6 @@ private fun PreviewCreationContentStep() {
                 kind = CreationKind.LINK,
                 url = "scanny.app",
             ),
-            preview = CodePreview.Code(
-                rawValue = "https://scanny.app",
-                format = BarcodeFormat.QR_CODE,
-            ),
-            contentSize = ContentSize(
-                used = 18,
-                max = 1273,
-                hasWideCharacters = false,
-            ),
             errorCorrectionChoices = CodeErrorCorrection.entries.map { errorCorrection ->
                 ErrorCorrectionChoice(
                     errorCorrection = errorCorrection,
@@ -202,12 +153,9 @@ private fun PreviewCreationContentStep() {
                 )
             },
             style = CodeStyle(),
-            isCreating = false,
             contentPadding = PaddingValues(),
             onFormChanged = {},
             onStyleChanged = {},
-            onNextClicked = {},
-            onCreateClicked = {},
         )
     }
 }

@@ -6,8 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -39,6 +41,7 @@ import fr.skyle.scanny.resources.error_correction_auto
 import fr.skyle.scanny.resources.error_correction_high
 import fr.skyle.scanny.resources.error_correction_medium
 import fr.skyle.scanny.resources.error_correction_too_high_for_content
+import fr.skyle.scanny.resources.fill_content_to_see_code
 import fr.skyle.scanny.resources.logo_needs_highest_correction
 import fr.skyle.scanny.resources.next
 import fr.skyle.scanny.resources.reset_customization
@@ -78,7 +81,7 @@ internal class CreateCodeScreenTest : ComposeTest() {
         }
 
         // When
-        onNodeWithText(getString(Res.string.next)).performScrollTo().performClick()
+        onNodeWithText(getString(Res.string.next)).performClick()
 
         // Then
         onNodeWithText(getString(Res.string.content)).assertExists()
@@ -103,7 +106,7 @@ internal class CreateCodeScreenTest : ComposeTest() {
         }
 
         // When
-        onNodeWithText(getString(Res.string.create)).performScrollTo().performClick()
+        onNodeWithText(getString(Res.string.create)).performClick()
 
         // Then
         onNodeWithText(getString(Res.string.customization)).assertExists()
@@ -151,11 +154,11 @@ internal class CreateCodeScreenTest : ComposeTest() {
         }
 
         // Then
-        // The format chosen in a dropdown, the others in its menu
-        onNodeWithText(getString(Res.string.data_matrix)).assertExists()
+        // The format chosen in its dropdown, and in the bar by the code; the others in the menu
+        onAllNodesWithText(getString(Res.string.data_matrix)).assertCountEquals(2)
         onNodeWithText(getString(Res.string.aztec)).assertDoesNotExist()
         onNodeWithText("scanny.app").assertExists()
-        onNodeWithText(getString(Res.string.create)).performScrollTo().assertExists()
+        onNodeWithText(getString(Res.string.create)).assertExists()
         onNodeWithText(getString(Res.string.next)).assertDoesNotExist()
     }
 
@@ -218,8 +221,66 @@ internal class CreateCodeScreenTest : ComposeTest() {
         }
 
         // Then
-        onNodeWithText(getString(Res.string.characters_not_held)).performScrollTo().assertExists()
-        onNodeWithText(getString(Res.string.create)).performScrollTo().assertIsNotEnabled()
+        onNodeWithText(getString(Res.string.characters_not_held)).assertExists()
+        onNodeWithText(getString(Res.string.create)).assertIsNotEnabled()
+    }
+
+    @Test
+    fun `the bar under the content says what is missing and has no code to enlarge`() = runComposeUiTest {
+        // When
+        setContent {
+            createCodeScreen(
+                form = CreationForm(),
+                preview = CodePreview.Incomplete,
+                step = CreationStep.CONTENT,
+            )
+        }
+
+        // Then
+        onNodeWithText(getString(Res.string.fill_content_to_see_code)).assertExists()
+        onNodeWithContentDescription(getString(Res.string.the_code)).assertDoesNotExist()
+    }
+
+    @Test
+    fun `the code of the bar is enlarged in a sheet when touched`() = runComposeUiTest {
+        // Given
+        setContent {
+            createCodeScreen(
+                form = CreationForm(text = "Hello"),
+                preview = CodePreview.Code(rawValue = "Hello", format = BarcodeFormat.QR_CODE),
+                step = CreationStep.CONTENT,
+            )
+        }
+
+        // When
+        onNodeWithContentDescription(getString(Res.string.the_code)).performClick()
+
+        // Then
+        // The small code of the bar, and the large one of the sheet
+        onAllNodesWithContentDescription(getString(Res.string.the_code)).assertCountEquals(2)
+    }
+
+    @Test
+    fun `the bar stays on the customization with the button that creates`() = runComposeUiTest {
+        // When
+        setContent {
+            createCodeScreen(
+                form = CreationForm(text = "Hello"),
+                preview = CodePreview.Code(rawValue = "Hello", format = BarcodeFormat.QR_CODE),
+                step = CreationStep.STYLE,
+                contentSize = ContentSize(
+                    used = 5,
+                    max = 2953,
+                    hasWideCharacters = false,
+                ),
+            )
+        }
+
+        // Then
+        // The large code at the top of the customization, and the small one of the bar
+        onAllNodesWithContentDescription(getString(Res.string.the_code)).assertCountEquals(2)
+        onNodeWithText(getString(Res.string.content_size)).assertExists()
+        onNodeWithText(getString(Res.string.create)).assertIsEnabled()
     }
 
     @Test
@@ -234,7 +295,7 @@ internal class CreateCodeScreenTest : ComposeTest() {
         }
 
         // Then
-        onNodeWithText(getString(Res.string.next)).performScrollTo().assertIsNotEnabled()
+        onNodeWithText(getString(Res.string.next)).assertIsNotEnabled()
     }
 
     @Test
@@ -276,11 +337,11 @@ internal class CreateCodeScreenTest : ComposeTest() {
 
         // Then
         onNodeWithText(getString(Res.string.value_not_for_format)).assertExists()
-        onNodeWithText(getString(Res.string.create)).performScrollTo().assertIsNotEnabled()
+        onNodeWithText(getString(Res.string.create)).assertIsNotEnabled()
     }
 
     @Test
-    fun `the size of the whole content is counted under its fields`() = runComposeUiTest {
+    fun `the size of the whole content is counted in the bar under the fields`() = runComposeUiTest {
         // When
         setContent {
             createCodeScreen(

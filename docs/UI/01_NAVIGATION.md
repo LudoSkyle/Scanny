@@ -24,7 +24,11 @@ intermédiaire.
   PDF417, qui tiennent les mêmes contenus qu'un QR code) ou code-barres (une valeur selon son
   format). Celui d'un QR code a deux étapes sur la même route : le contenu et son aperçu, puis la
   personnalisation (le titre de l'étape, « Étape 1 sur 2 » en sous-titre ; un code 2D et un
-  code-barres, sombres sur clair, n'ont que la première). L'étape vit dans le ViewModel : revenir au contenu garde la personnalisation, quitter
+  code-barres, sombres sur clair, n'ont que la première). Une barre fixée sous les deux étapes, au-dessus
+  du clavier, porte le code en miniature (touchée, elle l'ouvre en grand dans une feuille), la taille
+  que le contenu prend du QR code ou ce qui empêche le code, et le bouton Suivant ou Créer ; elle
+  reste pendant que les étapes glissent. La personnalisation garde le code en grand en haut : elle se
+  juge sur ses couleurs et son logo. L'étape vit dans le ViewModel : revenir au contenu garde la personnalisation, quitter
   l'éditeur la perd avec lui. Le retour de la personnalisation, de la barre comme du système (bouton,
   geste), ramène au contenu : un `NavigationBackHandler` (navigationevent) l'intercepte tant qu'elle
   est montrée, sans toucher au back stack.
