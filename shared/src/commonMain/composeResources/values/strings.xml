@@ -205,6 +205,7 @@
     <string name="longitude">Longitude</string>
     <string name="made_by_skyle">Made by Skyle with ❤️ at Openium</string>
     <string name="mail_app_opens_with_message">Your mail app opens with your message, ready to be sent.</string>
+    <string name="mecard" translatable="false">MeCard</string>
     <string name="message">Message</string>
     <string-array name="months">
         <item>January</item>
@@ -220,6 +221,7 @@
         <item>November</item>
         <item>December</item>
     </string-array>
+    <string name="mms" translatable="false">MMS</string>
     <string name="more_count" translatable="false">+%1$d</string>
     <string name="multiple_scan">Multiple scan</string>
     <string name="name">Name</string>
@@ -299,6 +301,7 @@
     <string name="upc_e" translatable="false">UPC-E</string>
     <string name="use_front_camera">Use the front camera</string>
     <string name="value_not_for_format">This value does not suit this format.</string>
+    <string name="vcard" translatable="false">vCard</string>
     <string name="version_and_build">Version %1$s (build %2$s)</string>
     <string name="vibrate_after_scan">Vibrate after a scan</string>
     <string name="website">Website</string>
@@ -313,6 +316,7 @@
     <string name="wifi_security_wpa" translatable="false">WPA/WPA2</string>
     <string name="wifi_security_wpa3" translatable="false">WPA3</string>
     <string name="write_email">Write an e-mail</string>
+    <string name="write_mms">Write an MMS</string>
     <string name="write_sms">Write an SMS</string>
     <string name="yesterday">Yesterday</string>
 </resources>

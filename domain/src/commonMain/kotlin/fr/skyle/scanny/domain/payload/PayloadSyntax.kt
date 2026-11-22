@@ -6,6 +6,8 @@ internal object PayloadSyntax {
     const val MAILTO = "mailto:"
     const val SMSTO = "SMSTO:"
     const val SMS = "sms:"
+    const val MMSTO = "MMSTO:"
+    const val MMS = "mms:"
     const val MECARD = "MECARD:"
     const val VCARD = "BEGIN:VCARD"
     const val TEL = "tel:"

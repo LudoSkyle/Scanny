@@ -113,6 +113,27 @@ final class ScanFlowUITests: XCTestCase {
         XCTAssertEqual(messageField.value as? String, "See you at 10:30 & bring été")
     }
 
+    func testAnMmsIsWrittenInMessagesWithItsSubject() throws {
+        let app = launchScanning(code: "mms:+33600000000?subject=Hello&body=See%20you")
+
+        XCTAssertTrue(app.buttons["Write an MMS"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Hello"].exists)
+        app.buttons["Write an MMS"].tap()
+
+        let messages = XCUIApplication(bundleIdentifier: "com.apple.MobileSMS")
+        XCTAssertTrue(messages.wait(for: .runningForeground, timeout: 10))
+        let sharingIntroduction = messages.staticTexts["Shared with You"]
+        if sharingIntroduction.waitForExistence(timeout: 3) {
+            messages.staticTexts["OK"].tap()
+        }
+        let messageField = messages.textFields["messageBodyField"]
+        XCTAssertTrue(messageField.waitForExistence(timeout: 10))
+        sleep(2)
+        keepScreenshot(named: "mms-messages", of: messages)
+        // iOS has no mms: link: the subject comes on the first line of the message
+        XCTAssertEqual(messageField.value as? String, "Hello\nSee you")
+    }
+
     func testAContactIsAddedToTheContacts() throws {
         let vCard = [
             "BEGIN:VCARD",

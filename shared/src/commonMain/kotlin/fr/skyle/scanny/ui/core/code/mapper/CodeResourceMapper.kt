@@ -66,6 +66,7 @@ import fr.skyle.scanny.resources.ic_currency_bitcoin
 import fr.skyle.scanny.resources.ic_link
 import fr.skyle.scanny.resources.ic_location_on
 import fr.skyle.scanny.resources.ic_mail
+import fr.skyle.scanny.resources.ic_mms
 import fr.skyle.scanny.resources.ic_notes
 import fr.skyle.scanny.resources.ic_password
 import fr.skyle.scanny.resources.ic_person
@@ -78,6 +79,7 @@ import fr.skyle.scanny.resources.join_network
 import fr.skyle.scanny.resources.link
 import fr.skyle.scanny.resources.location
 import fr.skyle.scanny.resources.message
+import fr.skyle.scanny.resources.mms
 import fr.skyle.scanny.resources.name
 import fr.skyle.scanny.resources.network
 import fr.skyle.scanny.resources.open_in_wallet
@@ -103,6 +105,7 @@ import fr.skyle.scanny.resources.upc_e
 import fr.skyle.scanny.resources.website
 import fr.skyle.scanny.resources.wifi
 import fr.skyle.scanny.resources.write_email
+import fr.skyle.scanny.resources.write_mms
 import fr.skyle.scanny.resources.write_sms
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
@@ -116,6 +119,7 @@ internal fun CodeType.toText(): StringResource =
         CodeType.LINK -> Res.string.link
         CodeType.EMAIL -> Res.string.email
         CodeType.SMS -> Res.string.sms
+        CodeType.MMS -> Res.string.mms
         CodeType.WIFI -> Res.string.wifi
         CodeType.CONTACT -> Res.string.contact
         CodeType.PHONE -> Res.string.phone
@@ -131,6 +135,7 @@ internal fun CodeType.toIcon(): DrawableResource =
         CodeType.LINK -> Res.drawable.ic_link
         CodeType.EMAIL -> Res.drawable.ic_mail
         CodeType.SMS -> Res.drawable.ic_sms
+        CodeType.MMS -> Res.drawable.ic_mms
         CodeType.WIFI -> Res.drawable.ic_wifi
         CodeType.CONTACT -> Res.drawable.ic_person
         CodeType.PHONE -> Res.drawable.ic_call
@@ -188,6 +193,7 @@ internal fun CodeAction.toText(): StringResource =
         is CodeAction.OpenLink -> Res.string.open_link
         is CodeAction.WriteEmail -> Res.string.write_email
         is CodeAction.WriteSms -> Res.string.write_sms
+        is CodeAction.WriteMms -> Res.string.write_mms
         is CodeAction.Call -> Res.string.call
         is CodeAction.ShowOnMap -> Res.string.show_on_map
         is CodeAction.AddToAuthenticator -> Res.string.add_to_authenticator

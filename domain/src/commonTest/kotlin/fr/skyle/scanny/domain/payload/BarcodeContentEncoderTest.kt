@@ -1,6 +1,7 @@
 package fr.skyle.scanny.domain.payload
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import kotlin.test.Test
@@ -333,6 +334,47 @@ class BarcodeContentEncoderTest {
     }
 
     @Test
+    fun `an mms is written as an mms link with its subject and its body`() {
+        // Given
+        val content = BarcodeContent.Mms(
+            phoneNumber = "+33600000000",
+            subject = "Hello there",
+            message = "See you",
+        )
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = "mms:+33600000000?subject=Hello%20there&body=See%20you",
+            actual = payload,
+        )
+    }
+
+    @Test
+    fun `a contact read in a mecard is written as a mecard with its escaped fields`() {
+        // Given
+        val content = BarcodeContent.Contact(
+            firstName = "John",
+            lastName = "Doe; Smith",
+            organization = "Scanny",
+            phones = listOf("+33600000000"),
+            emails = listOf("john@doe.fr"),
+            format = ContactFormat.MECARD,
+        )
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = "MECARD:N:Doe\\; Smith,John;ORG:Scanny;TEL:+33600000000;EMAIL:john@doe.fr;;",
+            actual = payload,
+        )
+    }
+
+    @Test
     fun `every written content is read back unchanged`() {
         // Given
         val contents = listOf(
@@ -421,6 +463,27 @@ class BarcodeContentEncoderTest {
                 message = "100% sure",
             ),
             BarcodeContent.Bitcoin(address = "1BoatSLRHtKNngkdXEeobR76b53LETtpyT"),
+            BarcodeContent.Mms(
+                phoneNumber = "+33 6 00 00 00 00",
+                subject = "Hi: there & co",
+                message = "See you; 10% off",
+            ),
+            BarcodeContent.Mms(subject = "Only a subject"),
+            BarcodeContent.Contact(
+                formattedName = "Doe, Jr: the \"second\"; really",
+                organization = "Doe, Smith & Co",
+                phones = listOf("+33 6 00 00 00 00"),
+                emails = listOf("john@doe.fr"),
+                addresses = listOf("12 rue de la Paix, 75002 Paris"),
+                urls = listOf("https://doe.fr"),
+                format = ContactFormat.MECARD,
+            ),
+            BarcodeContent.Contact(
+                firstName = "John",
+                lastName = "Doe, Smith",
+                title = "Lead\\developer",
+                format = ContactFormat.MECARD,
+            ),
         )
 
         // When

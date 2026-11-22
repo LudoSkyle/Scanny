@@ -11,6 +11,7 @@ import fr.skyle.scanny.domain.payload.toOtpauthLink
 import fr.skyle.scanny.domain.payload.toSmsLink
 import fr.skyle.scanny.domain.payload.toTelLink
 import fr.skyle.scanny.platform.link.platformMapsLink
+import fr.skyle.scanny.platform.link.platformMmsLink
 import fr.skyle.scanny.platform.link.platformSmsLink
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
@@ -27,6 +28,7 @@ internal fun BarcodeContent.toCodeType(): CodeType =
         is BarcodeContent.Url -> CodeType.LINK
         is BarcodeContent.Email -> CodeType.EMAIL
         is BarcodeContent.Sms -> CodeType.SMS
+        is BarcodeContent.Mms -> CodeType.MMS
         is BarcodeContent.Wifi -> CodeType.WIFI
         is BarcodeContent.Contact -> CodeType.CONTACT
         is BarcodeContent.Phone -> CodeType.PHONE
@@ -41,6 +43,7 @@ internal fun BarcodeContent.toCodeAction(canJoinWifi: (BarcodeContent.Wifi) -> B
         is BarcodeContent.Url -> CodeAction.OpenLink(link = url)
         is BarcodeContent.Email -> CodeAction.WriteEmail(link = toMailtoLink())
         is BarcodeContent.Sms -> CodeAction.WriteSms(link = platformSmsLink(smsLink = toSmsLink()))
+        is BarcodeContent.Mms -> CodeAction.WriteMms(link = platformMmsLink(mms = this))
         is BarcodeContent.Contact -> CodeAction.AddContact(contact = this)
         is BarcodeContent.Wifi -> CodeAction.JoinWifi(wifi = this).takeIf { canJoinWifi(this) }
         is BarcodeContent.Phone -> CodeAction.Call(link = toTelLink())
@@ -73,6 +76,7 @@ private fun BarcodeContent.toSummary(rawValue: String): String =
         is BarcodeContent.Url -> url
         is BarcodeContent.Email -> address ?: subject ?: body
         is BarcodeContent.Sms -> phoneNumber ?: message
+        is BarcodeContent.Mms -> phoneNumber ?: subject ?: message
         is BarcodeContent.Wifi -> ssid
         is BarcodeContent.Contact -> displayName ?: organization ?: phones.firstOrNull() ?: emails.firstOrNull()
         is BarcodeContent.Phone -> phoneNumber
@@ -122,6 +126,21 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
             codeField(
                 label = CodeFieldLabel.PHONE_NUMBER,
                 value = phoneNumber,
+            ),
+            codeField(
+                label = CodeFieldLabel.MESSAGE,
+                value = message,
+            ),
+        )
+
+        is BarcodeContent.Mms -> listOfNotNull(
+            codeField(
+                label = CodeFieldLabel.PHONE_NUMBER,
+                value = phoneNumber,
+            ),
+            codeField(
+                label = CodeFieldLabel.SUBJECT,
+                value = subject,
             ),
             codeField(
                 label = CodeFieldLabel.MESSAGE,

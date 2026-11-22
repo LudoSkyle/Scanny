@@ -1,6 +1,7 @@
 package fr.skyle.scanny.domain.payload
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import kotlin.random.Random
@@ -272,6 +273,7 @@ class BarcodeContentParserTest {
                 emails = listOf("john@doe.fr"),
                 addresses = listOf("12 rue de la Paix"),
                 urls = listOf("https://doe.fr"),
+                format = ContactFormat.MECARD,
             ),
             actual = content,
         )
@@ -287,7 +289,28 @@ class BarcodeContentParserTest {
 
         // Then
         assertEquals(
-            expected = BarcodeContent.Contact(formattedName = "John Doe"),
+            expected = BarcodeContent.Contact(
+                formattedName = "John Doe",
+                format = ContactFormat.MECARD,
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an escaped comma belongs to the name of a mecard`() {
+        // Given
+        val rawValue = "MECARD:N:Doe\\, Jr;;"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Contact(
+                formattedName = "Doe, Jr",
+                format = ContactFormat.MECARD,
+            ),
             actual = content,
         )
     }
@@ -630,6 +653,58 @@ class BarcodeContentParserTest {
         // Then
         assertEquals(
             expected = BarcodeContent.Sms(phoneNumber = "+33600000000"),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an mmsto payload gives the number and the message`() {
+        // Given
+        val rawValue = "mmsto:+33600000000:See you"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Mms(
+                phoneNumber = "+33600000000",
+                message = "See you",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an mms uri gives the number the subject and the body`() {
+        // Given
+        val rawValue = "MMS:+33600000000?subject=Hello&body=See%20you%20at%2010%3A30"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Mms(
+                phoneNumber = "+33600000000",
+                subject = "Hello",
+                message = "See you at 10:30",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an empty mms uri is shown as text`() {
+        // Given
+        val rawValue = "mms:"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Text(text = "mms:"),
             actual = content,
         )
     }
@@ -1095,6 +1170,11 @@ class BarcodeContentParserTest {
             "SMSTO::",
             "sms:",
             "sms:?body=%E",
+            "MMSTO:",
+            "MMSTO::",
+            "mms:?subject=%",
+            "MECARD:N:\\",
+            "MECARD:N:a\\,b,c\\",
             "http://",
             "tel:%",
             "geo:",

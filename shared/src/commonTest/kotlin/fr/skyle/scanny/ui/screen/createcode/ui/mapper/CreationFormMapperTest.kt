@@ -2,6 +2,7 @@ package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
@@ -161,6 +162,54 @@ class CreationFormMapperTest {
                 phones = listOf("+33600000000"),
             ),
             actual = withName,
+        )
+    }
+
+    @Test
+    fun `an mms needs its phone number and leaves out a blank subject`() {
+        // When
+        val contents = listOf(
+            CreationForm(
+                kind = CreationKind.MMS,
+                mmsSubject = "Hello",
+            ),
+            CreationForm(
+                kind = CreationKind.MMS,
+                smsPhoneNumber = " +33600000000 ",
+                mmsSubject = " ",
+                smsMessage = "See you",
+            ),
+        ).map { form -> form.toBarcodeContent() }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                null,
+                BarcodeContent.Mms(
+                    phoneNumber = "+33600000000",
+                    message = "See you",
+                ),
+            ),
+            actual = contents,
+        )
+    }
+
+    @Test
+    fun `a contact is written in the format chosen`() {
+        // When
+        val content = CreationForm(
+            kind = CreationKind.CONTACT,
+            contactName = "John Doe",
+            contactFormat = ContactFormat.MECARD,
+        ).toBarcodeContent()
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Contact(
+                formattedName = "John Doe",
+                format = ContactFormat.MECARD,
+            ),
+            actual = content,
         )
     }
 

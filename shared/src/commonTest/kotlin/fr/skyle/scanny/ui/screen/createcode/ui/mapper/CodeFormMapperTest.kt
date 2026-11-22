@@ -3,6 +3,7 @@ package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
+import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
@@ -46,6 +47,16 @@ class CodeFormMapperTest {
                 urls = listOf("https://scanny.app"),
             ),
             BarcodeContent.Phone(phoneNumber = "+33 6 00 00 00 00"),
+            BarcodeContent.Mms(
+                phoneNumber = "+33600000000",
+                subject = "Hello",
+                message = "See you",
+            ),
+            BarcodeContent.Contact(
+                formattedName = "John Doe",
+                phones = listOf("+33600000000"),
+                format = ContactFormat.MECARD,
+            ),
             BarcodeContent.Location(
                 latitude = 0.00001,
                 longitude = -122.4194155,

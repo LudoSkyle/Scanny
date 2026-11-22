@@ -1,6 +1,7 @@
 package fr.skyle.scanny.domain.payload
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 
@@ -26,6 +27,8 @@ internal object BarcodeContentParser {
             value.hasPrefix(PayloadSyntax.MAILTO) -> parseMailto(uri = value.drop(PayloadSyntax.MAILTO.length))
             value.hasPrefix(PayloadSyntax.SMSTO) -> parseSmsTo(text = value.drop(PayloadSyntax.SMSTO.length))
             value.hasPrefix(PayloadSyntax.SMS) -> parseSmsUri(uri = value.drop(PayloadSyntax.SMS.length))
+            value.hasPrefix(PayloadSyntax.MMSTO) -> parseMmsTo(text = value.drop(PayloadSyntax.MMSTO.length))
+            value.hasPrefix(PayloadSyntax.MMS) -> parseMmsUri(uri = value.drop(PayloadSyntax.MMS.length))
             value.hasPrefix(PayloadSyntax.MECARD) -> parseMecard(fieldsText = value.drop(PayloadSyntax.MECARD.length))
             value.hasPrefix(PayloadSyntax.VCARD) -> parseVcard(text = value)
             value.hasPrefix(PayloadSyntax.TEL) -> parsePhone(uri = value.drop(PayloadSyntax.TEL.length))
@@ -112,11 +115,36 @@ internal object BarcodeContentParser {
         ).takeUnless { it == BarcodeContent.Sms() }
     }
 
+    // "number:message", as an SMSTO payload: no subject
+    private fun parseMmsTo(text: String): BarcodeContent.Mms? =
+        BarcodeContent.Mms(
+            phoneNumber = text.substringBefore(':').nullIfBlank(),
+            message = text.substringAfter(
+                delimiter = ':',
+                missingDelimiterValue = "",
+            ).nullIfBlank(),
+        ).takeUnless { it == BarcodeContent.Mms() }
+
+    private fun parseMmsUri(uri: String): BarcodeContent.Mms? {
+        if ('?' !in uri) {
+            return parseMmsTo(text = percentDecode(value = uri))
+        }
+
+        val parameters = parseQuery(query = uri.substringAfter('?'))
+
+        return BarcodeContent.Mms(
+            phoneNumber = percentDecode(value = uri.substringBefore('?')).nullIfBlank(),
+            subject = parameters["subject"].nullIfBlank(),
+            message = parameters["body"].nullIfBlank(),
+        ).takeUnless { it == BarcodeContent.Mms() }
+    }
+
     private fun parseMecard(fieldsText: String): BarcodeContent.Contact? {
         val fields = parseFields(text = fieldsText)
-        // N is "last name,first name", or a whole name without comma
-        val name = fields.valueOf(key = "N").nullIfBlank()
-        val nameParts = name?.split(',', limit = 2)
+        // N is "last name,first name", or a whole name without comma: an escaped comma is part of the name
+        val nameField = fields.firstOrNull { it.key == "N" }
+        val name = nameField?.value.nullIfBlank()
+        val nameParts = nameField?.raw?.let { raw -> splitEscaped(text = raw) }
 
         return BarcodeContent.Contact(
             formattedName = name.takeIf { nameParts?.size == 1 },
@@ -128,7 +156,30 @@ internal object BarcodeContentParser {
             emails = fields.valuesOf(key = "EMAIL"),
             addresses = fields.valuesOf(key = "ADR"),
             urls = fields.valuesOf(key = "URL"),
-        ).takeUnless { it == BarcodeContent.Contact() }
+            format = ContactFormat.MECARD,
+        ).takeUnless { it == BarcodeContent.Contact(format = ContactFormat.MECARD) }
+    }
+
+    // Splits at the first comma not escaped, each part unescaped
+    private fun splitEscaped(text: String): List<String> {
+        val parts = mutableListOf(StringBuilder())
+        var index = 0
+        while (index < text.length) {
+            val char = text[index]
+            when {
+                char == '\\' && index + 1 < text.length -> {
+                    parts.last().append(text[index + 1])
+                    index++
+                }
+
+                char == ',' && parts.size == 1 -> parts += StringBuilder()
+
+                else -> parts.last().append(char)
+            }
+            index++
+        }
+
+        return parts.map { part -> part.toString() }
     }
 
     private fun parseVcard(text: String): BarcodeContent.Contact? {
@@ -264,12 +315,15 @@ internal object BarcodeContentParser {
     private class Field(
         val key: String,
         val value: String,
+        // As written, its escapes kept
+        val raw: String,
     )
 
     // "KEY:value;KEY:value;;", where a backslash escapes the next character and a value may be quoted
     private fun parseFields(text: String): List<Field> {
         val fields = mutableListOf<Field>()
         val current = StringBuilder()
+        val raw = StringBuilder()
         var key: String? = null
         var startsWithQuote = false
         var endsWithQuote = false
@@ -285,10 +339,12 @@ internal object BarcodeContentParser {
                     } else {
                         value
                     },
+                    raw = raw.toString(),
                 )
             }
             key = null
             current.clear()
+            raw.clear()
             startsWithQuote = false
             endsWithQuote = false
         }
@@ -299,6 +355,8 @@ internal object BarcodeContentParser {
             when {
                 char == '\\' && index + 1 < text.length -> {
                     current.append(text[index + 1])
+                    raw.append(char)
+                    raw.append(text[index + 1])
                     endsWithQuote = false
                     index++
                 }
@@ -306,6 +364,7 @@ internal object BarcodeContentParser {
                 char == ':' && key == null -> {
                     key = current.toString()
                     current.clear()
+                    raw.clear()
                 }
 
                 char == ';' -> endField()
@@ -315,6 +374,7 @@ internal object BarcodeContentParser {
                         startsWithQuote = true
                     }
                     current.append(char)
+                    raw.append(char)
                     endsWithQuote = char == '"'
                 }
             }

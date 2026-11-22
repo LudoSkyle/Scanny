@@ -15,6 +15,7 @@ import fr.skyle.scanny.designsystem.core.dropdownfield.SCDropdownField
 import fr.skyle.scanny.designsystem.core.textfield.SCTextFieldDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.platform.keyboard.coordinateKeyboardType
 import fr.skyle.scanny.resources.Res
@@ -122,6 +123,29 @@ fun CreationFormFields(
                 )
             }
 
+            CreationKind.MMS -> {
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.smsPhoneNumber,
+                    onValueChange = { phoneNumber -> onFormChanged(form.copy(smsPhoneNumber = phoneNumber)) },
+                    label = stringResource(Res.string.phone_number),
+                    keyboardType = KeyboardType.Phone,
+                )
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.mmsSubject,
+                    onValueChange = { subject -> onFormChanged(form.copy(mmsSubject = subject)) },
+                    label = stringResource(Res.string.subject),
+                )
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.smsMessage,
+                    onValueChange = { message -> onFormChanged(form.copy(smsMessage = message)) },
+                    label = stringResource(Res.string.message),
+                    minLines = 3,
+                )
+            }
+
             CreationKind.PHONE -> CreationTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = form.phoneNumber,
@@ -203,6 +227,15 @@ fun CreationFormFields(
                     onValueChange = { website -> onFormChanged(form.copy(contactWebsite = website)) },
                     label = stringResource(Res.string.website),
                     keyboardType = KeyboardType.Uri,
+                )
+                // A MeCard is shorter, and so a smaller code: its size shows under the fields
+                SegmentedChoice(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = stringResource(Res.string.format),
+                    options = ContactFormat.entries,
+                    selectedOption = form.contactFormat,
+                    optionText = { format -> stringResource(format.toText()) },
+                    onOptionSelected = { format -> onFormChanged(form.copy(contactFormat = format)) },
                 )
             }
 

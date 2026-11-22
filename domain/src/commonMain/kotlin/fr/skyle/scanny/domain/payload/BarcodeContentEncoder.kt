@@ -1,6 +1,7 @@
 package fr.skyle.scanny.domain.payload
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.WifiEncryption
 
 /**
@@ -22,13 +23,28 @@ internal object BarcodeContentEncoder {
             is BarcodeContent.Email -> encodeEmail(email = content)
             is BarcodeContent.Sms -> encodeSms(sms = content)
             is BarcodeContent.Wifi -> encodeWifi(wifi = content)
-            is BarcodeContent.Contact -> encodeContact(contact = content)
+            is BarcodeContent.Contact -> when (content.format) {
+                ContactFormat.VCARD -> encodeContact(contact = content)
+                ContactFormat.MECARD -> encodeMecard(contact = content)
+            }
+            is BarcodeContent.Mms -> encodeMms(mms = content)
             is BarcodeContent.Phone -> encodePhone(phone = content)
             is BarcodeContent.Location -> encodeLocation(location = content)
             is BarcodeContent.Bookmark -> encodeBookmark(bookmark = content)
             is BarcodeContent.Otp -> encodeOtp(otp = content)
             is BarcodeContent.Bitcoin -> encodeBitcoin(bitcoin = content)
         }
+
+    /** The mms: link that opens the messages app on this message, its subject on its first line. */
+    fun mmsLink(mms: BarcodeContent.Mms): String =
+        encodeMms(
+            mms = BarcodeContent.Mms(
+                phoneNumber = mms.phoneNumber,
+                message = listOfNotNull(mms.subject, mms.message)
+                    .joinToString(separator = "\n")
+                    .ifEmpty { null },
+            ),
+        )
 
     /** The geo: link that opens the maps of Android on this place, pinned under its name if any. */
     fun geoLink(location: BarcodeContent.Location): String =
@@ -101,6 +117,28 @@ internal object BarcodeContentEncoder {
                 append(sms.message)
             }
         }
+
+    // The mms: link, as the sms: one of RFC 5724 with a subject: the MMSTO payload has none
+    private fun encodeMms(mms: BarcodeContent.Mms): String {
+        val parameters = listOfNotNull(
+            mms.subject?.let { subject -> "subject=${percentEncode(value = subject, allowed = URI_UNRESERVED)}" },
+            mms.message?.let { message -> "body=${percentEncode(value = message, allowed = URI_UNRESERVED)}" },
+        )
+
+        return buildString {
+            append(PayloadSyntax.MMS)
+            append(
+                percentEncode(
+                    value = mms.phoneNumber.orEmpty(),
+                    allowed = PHONE_NUMBER_ALLOWED,
+                ),
+            )
+            if (parameters.isNotEmpty()) {
+                append('?')
+                append(parameters.joinToString(separator = "&"))
+            }
+        }
+    }
 
     private fun encodeWifi(wifi: BarcodeContent.Wifi): String {
         val type = when (wifi.encryption) {
@@ -241,6 +279,36 @@ internal object BarcodeContentEncoder {
                 )
                 append(')')
             }
+        }
+
+    // N is "last name,first name", or the whole name: a MeCard holds one or the other
+    private fun encodeMecard(contact: BarcodeContent.Contact): String =
+        buildString {
+            append(PayloadSyntax.MECARD)
+            if (contact.lastName != null || contact.firstName != null) {
+                append("N:${escapeField(value = contact.lastName.orEmpty())},${escapeField(value = contact.firstName.orEmpty())};")
+            } else if (contact.formattedName != null) {
+                append("N:${escapeField(value = contact.formattedName)};")
+            }
+            contact.organization?.let { organization ->
+                append("ORG:${escapeField(value = organization)};")
+            }
+            contact.title?.let { title ->
+                append("TITLE:${escapeField(value = title)};")
+            }
+            contact.phones.forEach { phone ->
+                append("TEL:${escapeField(value = phone)};")
+            }
+            contact.emails.forEach { email ->
+                append("EMAIL:${escapeField(value = email)};")
+            }
+            contact.addresses.forEach { address ->
+                append("ADR:${escapeField(value = address)};")
+            }
+            contact.urls.forEach { url ->
+                append("URL:${escapeField(value = url)};")
+            }
+            append(';')
         }
 
     private fun escapeField(value: String): String =

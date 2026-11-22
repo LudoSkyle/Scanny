@@ -194,6 +194,9 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   anciennes. Quand aucune app ne l'ouvre, Android lève une exception : l'échec est journalisé, et
   l'écran le dit. Le `LocalUriHandler` d'iOS, lui, ne signale aucun échec : sans app pour le lien
   (Mail absent), rien ne se passe.
+- Un MMS s'ouvre par `platformMmsLink`, son objet en première ligne du message : les apps de messages
+  laissent de côté l'objet d'un lien (constaté avec Messages de Google). Android ouvre le lien `mms:` ;
+  iOS, qui n'en a pas, un lien `sms:`.
 - Appeler un numéro et voir une position sur la carte passent par le même chemin. Le lien `tel:`
   vient du domaine ; Android ouvre le clavier du téléphone, numéro composé, sans appeler : aucune
   permission n'est demandée. Une position s'ouvre par `platformMapsLink` : le lien `geo:` sur
@@ -326,6 +329,7 @@ livrée ; le tableau est mis à jour dans le même commit.
 | Permission caméra | ✅ (refus, refus définitif, accord) — `RequestPermission` | ✅ demande et description affichées (simulateur) — `AVCaptureDevice.requestAccess` | `expect` composable |
 | Détection dans une image | ✅ (émulateur : code lu, enregistré ; image sans code signalée) — Photo Picker + ML Kit (`InputImage`) | Livré, à vérifier sur un iPhone — `PHPickerViewController` + Vision (`VNDetectBarcodesRequest`) | `expect` composable |
 | Ouvrir un lien, un mail, un SMS | ✅ (émulateur : lien ouvert dans Chrome, SMS prérempli dans Messages) — `LocalUriHandler` | ✅ lien et SMS (simulateur : Safari, message prérempli dans Messages) ; mail à vérifier sur un iPhone (pas de Mail sur le simulateur) — `LocalUriHandler`, `sms:` avec `&body=` | Compose |
+| Écrire un MMS | ✅ (émulateur : Messages, objet puis message) — `mms:` | ✅ (simulateur : Messages, objet puis message) — `sms:` | Compose + `expect` pour le lien (`platformMmsLink`) |
 | Appeler un numéro | ✅ (émulateur : clavier du téléphone, numéro composé) — `tel:` par `LocalUriHandler` | À vérifier sur un iPhone (pas d'app Téléphone sur le simulateur) — `tel:` par `LocalUriHandler` | Compose |
 | Ajouter une clé à usage unique | ✅ (émulateur sans appli d'authentification : « aucune app » dit) — `otpauth://` par `LocalUriHandler` | ✅ (simulateur : Mots de passe ouvert) — `otpauth://` par `LocalUriHandler` | Compose |
 | Ouvrir un paiement Bitcoin | ✅ (émulateur sans portefeuille : « aucune app » dit) — `bitcoin:` par `LocalUriHandler` | À vérifier avec un portefeuille sur un iPhone ; sans portefeuille, rien ne s'ouvre — `bitcoin:` par `LocalUriHandler` | Compose |

@@ -16,6 +16,8 @@ sealed interface CodeAction {
 
     data class WriteSms(override val link: String) : Link
 
+    data class WriteMms(override val link: String) : Link
+
     data class Call(override val link: String) : Link
 
     data class ShowOnMap(override val link: String) : Link
