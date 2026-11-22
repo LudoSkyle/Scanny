@@ -10,6 +10,8 @@
     <string name="all_creations_deleted">Toutes les créations seront supprimées.</string>
     <string name="all_scans_deleted">Tous les scans seront supprimés.</string>
     <string name="allow_camera">Autoriser la caméra</string>
+    <string name="altitude">Altitude</string>
+    <string name="altitude_in_meters">Altitude en mètres</string>
     <string name="amount">Montant</string>
     <string name="amount_in_bitcoins">Montant en BTC</string>
     <string name="app_description">Scanny scanne les QR codes et les codes-barres, avec les dernières technologies et sans publicité, tout en restant légère et fiable.</string>
@@ -19,12 +21,14 @@
     <string name="barcode_value">Valeur</string>
     <string name="barcodes">Codes-barres</string>
     <string name="beep_after_scan">Bip après un scan</string>
+    <string name="blind_carbon_copy">Cci</string>
     <string name="bookmark">Marque-page</string>
     <string name="call">Appeler</string>
     <string name="camera_blocked">La caméra est bloquée pour Scanny. Autorisez-la dans les réglages de votre appareil pour scanner des codes.</string>
     <string name="camera_needed">Scanny a besoin de la caméra pour scanner des codes.</string>
     <string name="camera_unavailable">Aucune caméra n'est disponible sur cet appareil. Vous pouvez toujours scanner un code dans une image.</string>
     <string name="cancel">Annuler</string>
+    <string name="carbon_copy">Cc</string>
     <string name="change_logo">Changer le logo</string>
     <string name="choose">Choisir</string>
     <string name="choose_color">Choisir une couleur</string>
@@ -239,6 +243,7 @@
     <string name="raw_content">Contenu brut</string>
     <string name="raw_content_after_scan">Afficher le contenu brut après un scan</string>
     <string name="recipient">Destinataire</string>
+    <string name="recipients">Destinataires</string>
     <string name="remove_logo">Retirer le logo</string>
     <string name="required_field">%1$s *</string>
     <string name="reset_customization">Réinitialiser la personnalisation</string>
@@ -283,6 +288,8 @@
     <string name="turn_off_torch">Éteindre la lampe</string>
     <string name="turn_on_torch">Allumer la lampe</string>
     <string name="two_dimensional_codes">Codes en deux dimensions</string>
+    <string name="uncertainty">Incertitude</string>
+    <string name="uncertainty_in_meters">Incertitude en mètres</string>
     <string name="undo">Annuler</string>
     <string name="use_front_camera">Utiliser la caméra avant</string>
     <string name="value_not_for_format">Cette valeur ne convient pas à ce format.</string>

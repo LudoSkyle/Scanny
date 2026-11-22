@@ -68,8 +68,8 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
   - [x] MMS, et le format MeCard pour un contact créé
   - [ ] Événement (`VEVENT`), ajouté au calendrier
 - [ ] Chaque champ de la spec de chaque contenu à la création, les obligatoires marqués d'un
-      astérisque : fait pour la clé à usage unique ; à faire pour l'e-mail (copie, copie cachée,
-      plusieurs adresses), la position (altitude, incertitude), le contact (vCard et MeCard
+      astérisque : fait pour la clé à usage unique, l'e-mail (plusieurs destinataires, copie, copie
+      cachée) et la position (altitude, incertitude) ; à faire pour le contact (vCard et MeCard
       complets) et le Wi-Fi (réseaux d'entreprise)
 - [ ] Création de Data Matrix, Aztec et PDF417, l'éditeur partagé entre QR code, code 2D et
       code-barres

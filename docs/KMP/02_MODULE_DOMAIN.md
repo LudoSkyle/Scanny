@@ -49,9 +49,9 @@ domain/src/commonMain/kotlin/fr/skyle/scanny/domain/
 ### Contenu d'un code
 
 `BarcodeContent` est une `sealed interface` dont chaque type porte les champs utiles à l'affichage
-et aux actions : `Text`, `Url`, `Email` (destinataire, sujet, corps), `Sms` (numéro, message),
+et aux actions : `Text`, `Url`, `Email` (destinataires, copies, copies cachées, sujet, corps, de la RFC 6068), `Sms` (numéro, message),
 `Wifi` (SSID, chiffrement `NONE`/`WEP`/`WPA`/`WPA3`, mot de passe, réseau masqué), `Contact`, `Phone`
-(numéro), `Location` (latitude et longitude en degrés décimaux, nom du lieu), `Bookmark` (lien et
+(numéro), `Location` (latitude et longitude en degrés décimaux, altitude et incertitude en mètres, nom du lieu), `Bookmark` (lien et
 titre), `Otp` (clé secrète, type `TOTP`/`HOTP`, émetteur, compte, et algorithme `OtpAlgorithm`, nombre
 de chiffres, période et compteur tels que lus, nuls quand le code les laisse à leur défaut : SHA1, 6
 chiffres, 30 s, les constantes `DEFAULT_…` de `Otp`), `Bitcoin` (adresse,
@@ -75,8 +75,9 @@ parseur, et obtiennent le même résultat.
 - Formats reconnus : `WIFI:`, `MATMSG:`, `mailto:`, `SMSTO:` / `sms:`, `MMSTO:` / `mms:`, `MECARD:`, `BEGIN:VCARD`,
   `tel:`, `geo:`, `MEBKM:`, `otpauth://`, `bitcoin:`, et les URL (`http://`, `https://`). Les préfixes et les clés sont
   insensibles à la casse, les valeurs non.
-- Un `geo:` (RFC 5870) donne sa latitude et sa longitude ; son altitude et ses paramètres (`;u=…`)
-  sont laissés de côté. Android met le lieu dans la requête : `?q=lat,lon(nom)` donne le nom, et
+- Un `geo:` (RFC 5870) donne sa latitude, sa longitude, son altitude et son incertitude (`;u=…`). Un
+  autre système de référence que WGS84 (`;crs=…`) en fait un texte : ses coordonnées ne se placeraient
+  pas sur les cartes. Android met le lieu dans la requête : `?q=lat,lon(nom)` donne le nom, et
   ses coordonnées quand le lien est à `0,0` ; `?q=nom` autour d'une position la nomme. Une recherche
   autour de `0,0` (une adresse) n'a pas de position : c'est un texte, comme des coordonnées hors de
   la carte.
@@ -105,13 +106,13 @@ parseur, et obtiennent le même résultat.
 | Contenu | Texte écrit |
 |---|---|
 | Texte, URL | tel quel |
-| Email | `mailto:adresse?subject=…&body=…`, encodé en `%` (`MATMSG:` n'est que lu) |
+| Email | `mailto:adresse,adresse?cc=…&bcc=…&subject=…&body=…`, encodé en `%`, les adresses séparées par des virgules ; le paramètre `to=` est lu aussi (`MATMSG:`, un seul destinataire, n'est que lu) |
 | SMS | `SMSTO:numéro:message` (`sms:` n'est que lu) |
 | WiFi | `WIFI:T:…;S:…;P:…;H:true;;`, `T:nopass` et pas de `P:` pour un réseau ouvert, `SAE` pour le WPA3, `H:true` seulement pour un réseau masqué |
 | Contact | vCard 3.0 ; seules les propriétés texte (`N`, `FN`, `ORG`, `TITLE`, `ADR`) sont échappées. En MeCard : `MECARD:N:nom,prénom;…;;` (ou le nom affiché seul), champs échappés comme ceux d'un `WIFI:` ; une virgule échappée dans `N` appartient au nom |
 | MMS | `mms:numéro?subject=…&body=…`, encodé en `%` (`MMSTO:numéro:message`, sans objet, n'est que lu) |
 | Téléphone | `tel:numéro`, encodé en `%` |
-| Position | `geo:lat,lon`, et `?q=lat,lon(nom)` s'il a un nom ; coordonnées en décimales, sept au plus (`toCoordinateText()`, jamais en exposant : le texte d'un `Double` diffère entre les plateformes) |
+| Position | `geo:lat,lon[,alt][;u=…]`, et `?q=lat,lon(nom)` s'il a un nom ; coordonnées en décimales, sept au plus (`toCoordinateText()`, jamais en exposant : le texte d'un `Double` diffère entre les plateformes) |
 | Marque-page | `MEBKM:TITLE:…;URL:…;;`, champs échappés comme ceux d'un `WIFI:` |
 | Clé à usage unique | `otpauth://totp/émetteur:compte?secret=…&issuer=…`, puis les seuls paramètres lus ; l'émetteur dans le libellé et dans `issuer`, que les applis lisent l'un ou l'autre ; un émetteur sans compte garde son `:` |
 | Bitcoin | `bitcoin:adresse?amount=…&label=…&message=…`, nom et message encodés en `%` |
@@ -189,7 +190,8 @@ format, son style, sa date.
   le code est plus petit et se lit pareil.
 - Le formulaire de l'éditeur (`CreationFormMapper`, dans `shared`) rend un contenu seulement quand ce
   qu'il exige est là : un texte, un lien (sans schéma, il reçoit `https://`, sans quoi un lecteur le
-  lirait comme un texte), le destinataire d'un e-mail, le numéro d'un SMS, le nom d'un contact, le
+  lirait comme un texte), un champ au moins d'un e-mail (la RFC 6068 n'en exige aucun), une altitude et
+  une incertitude (positive) qui sont des nombres si elles sont données, le numéro d'un SMS, le nom d'un contact, le
   nom d'un réseau et, pour un réseau WPA, un mot de passe de 8 à 63 caractères (ceux qu'Android
   accepte), le compte et la clé d'une clé à usage unique (en base32, 16 caractères au moins, tapée en
   groupes et en minuscules comme les services la montrent), sa période (TOTP) ou son compteur (HOTP). Le format juge ensuite le texte (`canHold`), avec l'encodeur qui le dessine : un

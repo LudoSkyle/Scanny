@@ -10,7 +10,7 @@ class ContentLinksTest {
     fun `an email link is a percent encoded mailto link`() {
         // Given
         val email = BarcodeContent.Email(
-            address = "john@doe.fr",
+            to = listOf("john@doe.fr"),
             subject = "Hello Scanny",
             body = "Line 1\nLine 2",
         )

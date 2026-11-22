@@ -44,7 +44,7 @@ class BarcodeContentEncoderTest {
     fun `an email is written as a percent encoded mailto link`() {
         // Given
         val content = BarcodeContent.Email(
-            address = "john@doe.fr",
+            to = listOf("john@doe.fr"),
             subject = "Hello Scanny",
             body = "Line 1\nLine 2",
         )
@@ -60,9 +60,48 @@ class BarcodeContentEncoderTest {
     }
 
     @Test
+    fun `an email writes its recipients its copies and its blind copies separated by commas`() {
+        // Given
+        val content = BarcodeContent.Email(
+            to = listOf("john@doe.fr", "jane@doe.fr"),
+            cc = listOf("a@doe.fr", "b@doe.fr"),
+            bcc = listOf("c@doe.fr"),
+        )
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = "mailto:john@doe.fr,jane@doe.fr?cc=a@doe.fr,b@doe.fr&bcc=c@doe.fr",
+            actual = payload,
+        )
+    }
+
+    @Test
+    fun `a location writes its altitude and its uncertainty`() {
+        // Given
+        val content = BarcodeContent.Location(
+            latitude = 48.8584,
+            longitude = 2.2945,
+            altitude = 330.5,
+            uncertainty = 35.0,
+        )
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = "geo:48.8584,2.2945,330.5;u=35",
+            actual = payload,
+        )
+    }
+
+    @Test
     fun `an email without subject and body has no query`() {
         // Given
-        val content = BarcodeContent.Email(address = "john@doe.fr")
+        val content = BarcodeContent.Email(to = listOf("john@doe.fr"))
 
         // When
         val payload = encode(content = content)
@@ -382,7 +421,7 @@ class BarcodeContentEncoderTest {
             BarcodeContent.Text(text = "Hello: Scanny; with, special \\ characters\n"),
             BarcodeContent.Url(url = "https://scanny.app/path?query=1&other=été"),
             BarcodeContent.Email(
-                address = "john+scan@doe.fr",
+                to = listOf("john+scan@doe.fr"),
                 subject = "100% sure & certain = yes?",
                 body = "Été\nà bientôt",
             ),
@@ -432,6 +471,20 @@ class BarcodeContentEncoderTest {
                 latitude = -33.8568,
                 longitude = 151.2152967,
             ),
+            BarcodeContent.Location(
+                latitude = 27.988,
+                longitude = 86.925,
+                altitude = -12.5,
+                uncertainty = 0.5,
+                label = "Everest; or not",
+            ),
+            BarcodeContent.Email(
+                to = listOf("john+1@doe.fr", "jane@doe.fr"),
+                cc = listOf("a@doe.fr"),
+                bcc = listOf("b@doe.fr", "c@doe.fr"),
+                subject = "Hi, all & co",
+            ),
+            BarcodeContent.Email(cc = listOf("only@copy.fr")),
             BarcodeContent.Location(
                 latitude = 48.8584,
                 longitude = 2.2945,

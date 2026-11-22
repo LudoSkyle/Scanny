@@ -10,7 +10,7 @@ class ContentRawValueTest {
     fun `the text of a content is the one the parser reads back`() {
         // Given
         val email = BarcodeContent.Email(
-            address = "hello@scanny.app",
+            to = listOf("hello@scanny.app"),
             subject = "Hi there",
         )
 

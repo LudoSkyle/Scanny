@@ -47,7 +47,7 @@ class WatchScannedCodeUseCaseTest {
                 id = 2,
                 scanId = 1,
                 rawValue = "mailto:john@doe.fr",
-                content = BarcodeContent.Email(address = "john@doe.fr"),
+                content = BarcodeContent.Email(to = listOf("john@doe.fr")),
                 format = BarcodeFormat.QR_CODE,
                 scannedAt = SCANNED_AT,
             ),

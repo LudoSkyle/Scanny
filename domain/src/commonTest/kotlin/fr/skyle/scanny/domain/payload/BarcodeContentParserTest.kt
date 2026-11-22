@@ -480,9 +480,29 @@ class BarcodeContentParserTest {
         // Then
         assertEquals(
             expected = BarcodeContent.Email(
-                address = "john@doe.fr",
+                to = listOf("john@doe.fr"),
                 subject = "Hello Scanny",
                 body = "Line 1\nLine 2",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a mailto link gives its recipients its copies and its blind copies`() {
+        // Given
+        val rawValue = "mailto:john@doe.fr,jane%40doe.fr?to=jim@doe.fr&cc=a@doe.fr,%20b@doe.fr&bcc=c@doe.fr&subject=Hello"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Email(
+                to = listOf("john@doe.fr", "jane@doe.fr", "jim@doe.fr"),
+                cc = listOf("a@doe.fr", "b@doe.fr"),
+                bcc = listOf("c@doe.fr"),
+                subject = "Hello",
             ),
             actual = content,
         )
@@ -499,7 +519,7 @@ class BarcodeContentParserTest {
         // Then
         assertEquals(
             expected = BarcodeContent.Email(
-                address = "john+scan@doe.fr",
+                to = listOf("john+scan@doe.fr"),
                 subject = "1+1",
             ),
             actual = content,
@@ -532,7 +552,7 @@ class BarcodeContentParserTest {
         // Then
         assertEquals(
             expected = BarcodeContent.Email(
-                address = "john@doe.fr",
+                to = listOf("john@doe.fr"),
                 subject = "100% sure%2",
                 body = "50%",
             ),
@@ -551,7 +571,7 @@ class BarcodeContentParserTest {
         // Then
         assertEquals(
             expected = BarcodeContent.Email(
-                address = "john@doe.fr",
+                to = listOf("john@doe.fr"),
                 subject = "Été",
             ),
             actual = content,
@@ -568,7 +588,7 @@ class BarcodeContentParserTest {
 
         // Then
         assertEquals(
-            expected = BarcodeContent.Email(address = "john@doe.fr"),
+            expected = BarcodeContent.Email(to = listOf("john@doe.fr")),
             actual = content,
         )
     }
@@ -584,7 +604,7 @@ class BarcodeContentParserTest {
         // Then
         assertEquals(
             expected = BarcodeContent.Email(
-                address = "john@doe.fr",
+                to = listOf("john@doe.fr"),
                 subject = "Hello",
                 body = "See you: soon",
             ),
@@ -849,9 +869,9 @@ class BarcodeContentParserTest {
     }
 
     @Test
-    fun `the altitude and the parameters of a geo link are left out`() {
+    fun `a geo link gives its altitude and its uncertainty`() {
         // Given
-        val rawValue = "GEO:-33.8568,151.2153,40;u=35"
+        val rawValue = "GEO:-33.8568,151.2153,40;crs=WGS84;u=35"
 
         // When
         val content = parse(rawValue = rawValue)
@@ -861,6 +881,8 @@ class BarcodeContentParserTest {
             expected = BarcodeContent.Location(
                 latitude = -33.8568,
                 longitude = 151.2153,
+                altitude = 40.0,
+                uncertainty = 35.0,
             ),
             actual = content,
         )
@@ -934,6 +956,21 @@ class BarcodeContentParserTest {
         // Then
         assertEquals(
             expected = BarcodeContent.Text(text = "geo:0,0?q=1 rue de la Paix, Paris"),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a geo link of another reference system is shown as text`() {
+        // Given
+        val rawValue = "geo:48.8584,2.2945;crs=moon-2011"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Text(text = "geo:48.8584,2.2945;crs=moon-2011"),
             actual = content,
         )
     }
