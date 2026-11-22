@@ -121,3 +121,6 @@ Conventions transverses à tous les modules. Pour l'UI, voir en complément
 - Dans un `strings.xml` de Compose Resources, l'apostrophe s'écrit telle quelle (`L'historique`, et
   non `L\'historique`, dont l'antislash s'afficherait). Les variables restent positionnelles
   (`%1$s`).
+- Une valeur à lire caractère par caractère (un numéro, un code d'exemple) s'écrit entre accents
+  graves dans sa chaîne, dans chaque langue : ``Exemple : `%1$s` ``. `SCTextWithCode` les retire et
+  montre la valeur en police à chasse fixe (voir [UI/03_DESIGN_SYSTEM.md](../UI/03_DESIGN_SYSTEM.md)).
