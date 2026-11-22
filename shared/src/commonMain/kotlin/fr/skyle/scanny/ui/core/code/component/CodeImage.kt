@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
@@ -37,7 +38,7 @@ private const val BARCODE_ASPECT_RATIO = 2.5f
  * in the [style] the user chose for a QR code. A text its format refuses, a barcode with a wrong check
  * digit for instance, is said instead.
  * A barcode is drawn wider than high, a QR code square, any other code in two dimensions in the
- * proportions of its modules.
+ * proportions of its modules. [quietZone] is the blank margin around it, which a scanner needs.
  */
 @Composable
 fun CodeImage(
@@ -46,6 +47,7 @@ fun CodeImage(
     contentDescription: String,
     modifier: Modifier = Modifier,
     style: CodeStyle = CodeStyle(),
+    quietZone: Dp = 16.dp,
 ) {
     val barcodeType = format.toBarcodeType()
     val isQrCode = format == BarcodeFormat.QR_CODE
@@ -99,7 +101,7 @@ fun CodeImage(
     Image(
         modifier = modifier
             .background(color = drawnStyle.backgroundColor())
-            .padding(all = 16.dp)
+            .padding(all = quietZone)
             .aspectRatio(aspectRatio),
         painter = painter,
         contentDescription = contentDescription,

@@ -243,7 +243,7 @@ format, son style, sa date.
   emoji : l'aperçu en dit la raison (`CodeRefusal`) et propose un QR code ou un PDF417, qui le
   tiennent ([ADR-0004](../adr/0004-encodeurs-data-matrix-et-aztec-corriges.md)). qrose encode un QR code
   en le dessinant, sans moyen d'en rattraper l'échec : un texte n'est dessiné qu'une fois accepté.
-- Sous les champs d'un QR code, un compteur (`qrContentSize`) dit ce que le contenu entier prend du
+- Dans la barre fixée sous l'éditeur d'un QR code, un compteur (`qrContentSize`) dit ce que le contenu entier prend du
   code, contre ce que le code tient à cette même correction. qrose écrit tout le texte dans un seul
   mode, compté dans son unité : des chiffres seuls, des majuscules et chiffres (avec ` $%*+-./:`), ou
   sinon les octets de son UTF-8, où un accent ou un emoji en prend plusieurs (le compteur le dit).

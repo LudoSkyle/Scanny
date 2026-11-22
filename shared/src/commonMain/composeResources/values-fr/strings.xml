@@ -136,6 +136,7 @@
     <string name="end_date">Date de fin</string>
     <string name="end_time">Heure de fin</string>
     <string name="enhanced_open_only">Wi-Fi Enhanced Open uniquement</string>
+    <string name="enlarge_code">Agrandir le code</string>
     <string name="error_correction">Correction d'erreur</string>
     <string name="error_correction_auto">Automatique</string>
     <string name="error_correction_auto_description">La plus faible, la maximale sous un logo</string>

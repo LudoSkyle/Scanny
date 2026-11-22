@@ -5,11 +5,20 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import fr.skyle.scanny.designsystem.core.bottomsheet.SCBottomSheet
 import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButton
 import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButtonDefaults
 import fr.skyle.scanny.designsystem.core.screenstructure.SCScreenStructure
@@ -24,12 +33,17 @@ import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.content
+import fr.skyle.scanny.resources.create
 import fr.skyle.scanny.resources.create_code
 import fr.skyle.scanny.resources.customization
 import fr.skyle.scanny.resources.ic_refresh
+import fr.skyle.scanny.resources.next
 import fr.skyle.scanny.resources.reset_customization
 import fr.skyle.scanny.resources.step_of
+import fr.skyle.scanny.resources.the_code
+import fr.skyle.scanny.ui.core.code.component.CodeImage
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
+import fr.skyle.scanny.ui.screen.createcode.ui.component.CreationBottomBar
 import fr.skyle.scanny.ui.screen.createcode.ui.component.CreationContentStep
 import fr.skyle.scanny.ui.screen.createcode.ui.component.CreationStyleStep
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.format
@@ -45,6 +59,9 @@ import org.jetbrains.compose.resources.stringResource
 
 // The steps of a QR code; a barcode has the first only
 private const val STEP_COUNT = 2
+
+// As large as in the detail of a code, for it to be scanned from the screen
+private const val SHOWN_CODE_WIDTH_FRACTION = 0.8f
 
 @Composable
 fun CreateCodeScreen(
@@ -67,6 +84,10 @@ fun CreateCodeScreen(
     onCreateClicked: () -> Unit,
 ) {
     val isQrCode = form.format == BarcodeFormat.QR_CODE
+    // The code seen large, from the small one of the bar
+    var isCodeShown by rememberSaveable { mutableStateOf(false) }
+    // A QR code goes on to its customization, any other code is created from its content
+    val goesOnToStyle = isQrCode && step == CreationStep.CONTENT
 
     SCScreenStructure(
         modifier = Modifier.fillMaxSize(),
@@ -99,6 +120,19 @@ fun CreateCodeScreen(
                 },
             )
         },
+        // Outside of the steps: it stays while they slide, its button only changing
+        bottomBar = {
+            CreationBottomBar(
+                modifier = Modifier.fillMaxWidth(),
+                preview = preview,
+                style = style,
+                contentSize = contentSize,
+                buttonText = stringResource(if (goesOnToStyle) Res.string.next else Res.string.create),
+                isButtonEnabled = preview is CodePreview.Code && !isCreating,
+                onButtonClicked = if (goesOnToStyle) onNextClicked else onCreateClicked,
+                onCodeClicked = { isCodeShown = true },
+            )
+        },
         snackbarState = snackbarState,
     ) { contentPadding ->
         // Forward to the customization, backward to the content, as a screen opened then closed
@@ -115,16 +149,11 @@ fun CreateCodeScreen(
                 CreationStep.CONTENT -> CreationContentStep(
                     modifier = Modifier.fillMaxSize(),
                     form = form,
-                    preview = preview,
-                    contentSize = contentSize,
                     errorCorrectionChoices = errorCorrectionChoices,
                     style = style,
-                    isCreating = isCreating,
                     contentPadding = contentPadding,
                     onFormChanged = onFormChanged,
                     onStyleChanged = onStyleChanged,
-                    onNextClicked = onNextClicked,
-                    onCreateClicked = onCreateClicked,
                 )
 
                 CreationStep.STYLE -> CreationStyleStep(
@@ -132,11 +161,29 @@ fun CreateCodeScreen(
                     preview = preview,
                     style = style,
                     logoBlocker = logoBlocker,
-                    isCreating = isCreating,
                     contentPadding = contentPadding,
                     onStyleChanged = onStyleChanged,
                     onAddLogoClicked = onAddLogoClicked,
-                    onCreateClicked = onCreateClicked,
+                )
+            }
+        }
+    }
+
+    if (isCodeShown && preview is CodePreview.Code) {
+        SCBottomSheet(onDismissRequest = { isCodeShown = false }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 32.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                CodeImage(
+                    modifier = Modifier.fillMaxWidth(fraction = SHOWN_CODE_WIDTH_FRACTION),
+                    rawValue = preview.rawValue,
+                    format = preview.format,
+                    contentDescription = stringResource(Res.string.the_code),
+                    style = style,
                 )
             }
         }
