@@ -2,6 +2,7 @@ package fr.skyle.scanny.domain.payload
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 
@@ -277,6 +278,10 @@ internal object BarcodeContentParser {
         } ?: return null
         val parameters = parseQuery(query = uri.substringAfter(delimiter = '?', missingDelimiterValue = ""))
         val secret = parameters["secret"].nullIfBlank() ?: return null
+        // An unknown hash would give other codes than the ones the key is for: not taken for SHA1
+        val algorithm = parameters["algorithm"].nullIfBlank()?.let { name ->
+            OtpAlgorithm.entries.firstOrNull { algorithm -> algorithm.name.equals(other = name, ignoreCase = true) } ?: return null
+        }
 
         // The colon between the issuer and the account may be percent-encoded too, unlike one in the issuer
         val label = uri.substringAfter(delimiter = '/', missingDelimiterValue = "").substringBefore('?')
@@ -292,7 +297,7 @@ internal object BarcodeContentParser {
             type = type,
             issuer = parameters["issuer"].nullIfBlank() ?: labelIssuer,
             account = labelParts.last().trim().nullIfBlank(),
-            algorithm = parameters["algorithm"].nullIfBlank(),
+            algorithm = algorithm,
             digits = parameters["digits"]?.toIntOrNull(),
             period = parameters["period"]?.toIntOrNull(),
             counter = parameters["counter"]?.toLongOrNull(),

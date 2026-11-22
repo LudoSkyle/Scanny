@@ -6,6 +6,7 @@
     <string name="add_to_authenticator">Add to an authenticator</string>
     <string name="address">Address</string>
     <string name="advanced_options">Advanced options</string>
+    <string name="algorithm">Algorithm</string>
     <string name="all_creations_deleted">Every creation will be deleted.</string>
     <string name="all_scans_deleted">Every scan will be deleted.</string>
     <string name="allow_camera">Allow the camera</string>
@@ -83,6 +84,7 @@
     <string name="corner_color">Color of the corners</string>
     <string name="corner_color_like_dots">Like the dots</string>
     <string name="corner_shape">Shape of the corners</string>
+    <string name="counter">Counter</string>
     <string name="create">Create</string>
     <string name="create_code">Create a code</string>
     <string name="created_codes_appear_here">The codes you create, with the + of the scan, appear here.</string>
@@ -95,6 +97,7 @@
     <string name="delete">Delete</string>
     <string name="delete_code_question">Delete this code?</string>
     <string name="delete_group_question">Delete this group?</string>
+    <string name="digits">Number of digits</string>
     <string name="discard">Discard</string>
     <string name="discard_codes_question">Discard the codes found?</string>
     <string name="dot_color">Color of the dots</string>
@@ -239,9 +242,12 @@
     <string name="organization">Organization</string>
     <string name="other_color">Other color</string>
     <string name="otp">One-time password</string>
+    <string name="otp_type">Key type</string>
     <string name="pass_codes_in_front_of_camera">Pass the codes in front of the camera</string>
     <string name="password">Password</string>
     <string name="pdf417" translatable="false">PDF417</string>
+    <string name="period">Period</string>
+    <string name="period_in_seconds">Period in seconds</string>
     <string name="phone">Phone</string>
     <string name="phone_number">Phone number</string>
     <string name="place">Place</string>
@@ -253,6 +259,7 @@
     <string name="raw_content_after_scan">Show the raw content after a scan</string>
     <string name="recipient">Recipient</string>
     <string name="remove_logo">Remove the logo</string>
+    <string name="required_field">%1$s *</string>
     <string name="reset_customization">Reset the customization</string>
     <string name="retention_forever">Forever</string>
     <string name="retention_one_month">30 days</string>

@@ -11,16 +11,21 @@ import fr.skyle.scanny.designsystem.core.textfield.SCTextFieldDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.link
+import fr.skyle.scanny.resources.required_field
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import org.jetbrains.compose.resources.stringResource
 
-/** A field of the content of a code, on one line unless more are asked for. */
+/**
+ * A field of the content of a code, on one line unless more are asked for. A field the code cannot do
+ * without, [isRequired], has an asterisk after its label.
+ */
 @Composable
 fun CreationTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
+    isRequired: Boolean = false,
     minLines: Int = 1,
     keyboardType: KeyboardType = KeyboardType.Text,
 ) {
@@ -28,7 +33,7 @@ fun CreationTextField(
         modifier = modifier,
         value = value,
         onValueChange = onValueChange,
-        label = label,
+        label = if (isRequired) stringResource(Res.string.required_field, label) else label,
         style = SCTextFieldDefaults.Style.LIGHT,
         minLines = minLines,
         isSingleLine = minLines == 1,

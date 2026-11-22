@@ -2,6 +2,7 @@ package fr.skyle.scanny.ui.core.code.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.Creation
+import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.payload.toBitcoinLink
@@ -21,6 +22,9 @@ import fr.skyle.scanny.ui.core.code.model.CodeType
 
 // The symbol of the bitcoin, the same in every language
 private const val BITCOIN_UNIT = "BTC"
+
+// The symbol of the second, the same in every language
+private const val SECOND_UNIT = "s"
 
 internal fun BarcodeContent.toCodeType(): CodeType =
     when (this) {
@@ -221,7 +225,7 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
             ),
         )
 
-        // The number of digits, the period and the algorithm show in the raw content
+        // A parameter the key leaves to its default shows its default: the code is computed with it
         is BarcodeContent.Otp -> listOfNotNull(
             codeField(
                 label = CodeFieldLabel.ISSUER,
@@ -235,6 +239,29 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
                 label = CodeFieldLabel.SECRET_KEY,
                 value = secret,
             ),
+            CodeField(
+                label = CodeFieldLabel.OTP_TYPE,
+                value = type.name,
+            ),
+            CodeField(
+                label = CodeFieldLabel.ALGORITHM,
+                value = (algorithm ?: BarcodeContent.Otp.DEFAULT_ALGORITHM).name,
+            ),
+            CodeField(
+                label = CodeFieldLabel.DIGITS,
+                value = (digits ?: BarcodeContent.Otp.DEFAULT_DIGITS).toString(),
+            ),
+            when (type) {
+                OtpType.TOTP -> CodeField(
+                    label = CodeFieldLabel.PERIOD,
+                    value = "${period ?: BarcodeContent.Otp.DEFAULT_PERIOD} $SECOND_UNIT",
+                )
+
+                OtpType.HOTP -> codeField(
+                    label = CodeFieldLabel.COUNTER,
+                    value = counter?.toString(),
+                )
+            },
         )
 
         is BarcodeContent.Bitcoin -> listOfNotNull(

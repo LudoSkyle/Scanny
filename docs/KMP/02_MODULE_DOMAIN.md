@@ -52,8 +52,9 @@ domain/src/commonMain/kotlin/fr/skyle/scanny/domain/
 et aux actions : `Text`, `Url`, `Email` (destinataire, sujet, corps), `Sms` (numéro, message),
 `Wifi` (SSID, chiffrement `NONE`/`WEP`/`WPA`/`WPA3`, mot de passe, réseau masqué), `Contact`, `Phone`
 (numéro), `Location` (latitude et longitude en degrés décimaux, nom du lieu), `Bookmark` (lien et
-titre), `Otp` (clé secrète, type `TOTP`/`HOTP`, émetteur, compte, et algorithme, nombre de chiffres,
-période et compteur tels que lus, nuls quand le code les laisse à leur défaut), `Bitcoin` (adresse,
+titre), `Otp` (clé secrète, type `TOTP`/`HOTP`, émetteur, compte, et algorithme `OtpAlgorithm`, nombre
+de chiffres, période et compteur tels que lus, nuls quand le code les laisse à leur défaut : SHA1, 6
+chiffres, 30 s, les constantes `DEFAULT_…` de `Otp`), `Bitcoin` (adresse,
 montant en bitcoins tel qu'écrit, nom du destinataire, message). Le texte brut n'en fait pas partie : il est porté par le `ScannedCode`, et le contenu en est
 relu à chaque lecture de la base : un type nouveau s'applique aussi aux codes déjà enregistrés.
 
@@ -82,7 +83,8 @@ parseur, et obtiennent le même résultat.
 - Un `otpauth://` (le format des applis d'authentification) a besoin de sa clé (`secret`) et d'un type
   connu (`totp`, `hotp`). Son libellé est `émetteur:compte` ou le compte seul : il est coupé au premier
   `:` littéral, sinon à un `:` encodé en `%3A`, que le format autorise aussi entre les deux. Le
-  paramètre `issuer` l'emporte sur l'émetteur du libellé.
+  paramètre `issuer` l'emporte sur l'émetteur du libellé. Un algorithme inconnu fait du code un
+  texte : pris pour du SHA1, il donnerait d'autres codes que ceux de la clé.
 - Un `bitcoin:` (BIP 21) a besoin de son adresse ; un montant qui n'est pas un nombre décimal est
   laissé de côté.
 - Les caractères échappés sont décodés (`\;`, `\,`, `\:`, `\\`, `\"` dans un `WIFI:` ou un
@@ -180,11 +182,17 @@ format, son style, sa date.
   l'utilisateur n'en garde pas des créations, et rend la création relue.
 - `toRawValue` est publique : l'éditeur en tire l'aperçu du code avant tout enregistrement.
 - Pour un code-barres, le contenu est un `Text` de ses chiffres ou de ses caractères.
+- L'éditeur offre **chaque champ de la spec du format** d'un contenu, pas un sous-ensemble : pour une
+  clé à usage unique, le type, l'émetteur, le compte, la clé, l'algorithme, le nombre de chiffres, et
+  la période (TOTP) ou le compteur (HOTP). Un champ sans lequel le code n'existe pas porte un
+  astérisque (`isRequired` de `CreationTextField`). Un paramètre laissé à son défaut n'est pas écrit :
+  le code est plus petit et se lit pareil.
 - Le formulaire de l'éditeur (`CreationFormMapper`, dans `shared`) rend un contenu seulement quand ce
   qu'il exige est là : un texte, un lien (sans schéma, il reçoit `https://`, sans quoi un lecteur le
   lirait comme un texte), le destinataire d'un e-mail, le numéro d'un SMS, le nom d'un contact, le
   nom d'un réseau et, pour un réseau WPA, un mot de passe de 8 à 63 caractères (ceux qu'Android
-  accepte). Le format juge ensuite le texte (`canHold`), avec l'encodeur qui le dessine : un
+  accepte), le compte et la clé d'une clé à usage unique (en base32, 16 caractères au moins, tapée en
+  groupes et en minuscules comme les services la montrent), sa période (TOTP) ou son compteur (HOTP). Le format juge ensuite le texte (`canHold`), avec l'encodeur qui le dessine : un
   code-barres refuse une mauvaise longueur ou un mauvais chiffre de contrôle, un QR code un texte
   trop long pour la correction avec laquelle il sera encodé (`qrErrorCorrection`). qrose encode un QR code
   en le dessinant, sans moyen d'en rattraper l'échec : un texte n'est dessiné qu'une fois accepté.

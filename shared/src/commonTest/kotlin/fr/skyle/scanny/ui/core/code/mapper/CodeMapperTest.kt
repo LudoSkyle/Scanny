@@ -2,6 +2,8 @@ package fr.skyle.scanny.ui.core.code.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.OtpAlgorithm
+import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.platform.link.platformMapsLink
@@ -280,6 +282,22 @@ class CodeMapperTest {
                         label = CodeFieldLabel.SECRET_KEY,
                         value = "JBSWY3DPEHPK3PXP",
                     ),
+                    field(
+                        label = CodeFieldLabel.OTP_TYPE,
+                        value = "TOTP",
+                    ),
+                    field(
+                        label = CodeFieldLabel.ALGORITHM,
+                        value = "SHA1",
+                    ),
+                    field(
+                        label = CodeFieldLabel.DIGITS,
+                        value = "8",
+                    ),
+                    field(
+                        label = CodeFieldLabel.PERIOD,
+                        value = "30 s",
+                    ),
                 ),
                 listOf(
                     field(
@@ -298,6 +316,52 @@ class CodeMapperTest {
                         label = CodeFieldLabel.MESSAGE,
                         value = "Order 42",
                     ),
+                ),
+            ),
+            actual = fields,
+        )
+    }
+
+    @Test
+    fun `a hotp key shows its counter instead of a period`() {
+        // Given
+        val content = BarcodeContent.Otp(
+            secret = "JBSWY3DPEHPK3PXP",
+            type = OtpType.HOTP,
+            account = "john",
+            algorithm = OtpAlgorithm.SHA512,
+            counter = 42,
+        )
+
+        // When
+        val fields = content.toCodeFields()
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                field(
+                    label = CodeFieldLabel.ACCOUNT,
+                    value = "john",
+                ),
+                field(
+                    label = CodeFieldLabel.SECRET_KEY,
+                    value = "JBSWY3DPEHPK3PXP",
+                ),
+                field(
+                    label = CodeFieldLabel.OTP_TYPE,
+                    value = "HOTP",
+                ),
+                field(
+                    label = CodeFieldLabel.ALGORITHM,
+                    value = "SHA512",
+                ),
+                field(
+                    label = CodeFieldLabel.DIGITS,
+                    value = "6",
+                ),
+                field(
+                    label = CodeFieldLabel.COUNTER,
+                    value = "42",
                 ),
             ),
             actual = fields,

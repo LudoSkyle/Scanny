@@ -2,6 +2,7 @@ package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
@@ -127,24 +128,33 @@ private fun String.toCoordinate(): Double? =
         )
         .toDoubleOrNull()
 
-// A key in base32, as the services show it: in groups, in lower case. An issuer or an account to name it
+// What the key URI format asks for: an account, a key in base32 (typed as the services show it, in
+// groups and in lower case), and the counter of a HOTP key. The parameters left to their default are
+// not written: the code is smaller, and reads the same
 private fun CreationForm.toOtp(): BarcodeContent.Otp? {
     val secret = otpSecret.filterNot { char -> char.isWhitespace() || char == '-' }.uppercase()
-    val issuer = otpIssuer.trim().ifEmpty { null }
-    val account = otpAccount.trim().ifEmpty { null }
-    if (!OTP_SECRET.matches(input = secret) || (issuer == null && account == null)) {
+    val account = otpAccount.trim().takeIf { account -> account.isNotEmpty() } ?: return null
+    if (!OTP_SECRET.matches(input = secret)) {
         return null
+    }
+    val period = when (otpType) {
+        OtpType.TOTP -> otpPeriod.trim().toIntOrNull()?.takeIf { period -> period > 0 } ?: return null
+        OtpType.HOTP -> null
+    }
+    val counter = when (otpType) {
+        OtpType.TOTP -> null
+        OtpType.HOTP -> otpCounter.trim().toLongOrNull()?.takeIf { counter -> counter >= 0 } ?: return null
     }
 
     return BarcodeContent.Otp(
         secret = secret,
         type = otpType,
-        issuer = issuer,
+        issuer = otpIssuer.trim().ifEmpty { null },
         account = account,
-        algorithm = otpAlgorithm,
-        digits = otpDigits,
-        period = otpPeriod,
-        counter = otpCounter,
+        algorithm = otpAlgorithm.takeUnless { algorithm -> algorithm == BarcodeContent.Otp.DEFAULT_ALGORITHM },
+        digits = otpDigits.takeUnless { digits -> digits == BarcodeContent.Otp.DEFAULT_DIGITS },
+        period = period?.takeUnless { period -> period == BarcodeContent.Otp.DEFAULT_PERIOD },
+        counter = counter,
     )
 }
 

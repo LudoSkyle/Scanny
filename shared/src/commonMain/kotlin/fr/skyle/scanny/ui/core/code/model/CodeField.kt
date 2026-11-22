@@ -29,5 +29,10 @@ enum class CodeFieldLabel {
     ISSUER,
     ACCOUNT,
     SECRET_KEY,
+    OTP_TYPE,
+    ALGORITHM,
+    DIGITS,
+    PERIOD,
+    COUNTER,
     AMOUNT,
 }

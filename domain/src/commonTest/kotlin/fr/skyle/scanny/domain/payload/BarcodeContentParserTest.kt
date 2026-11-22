@@ -2,6 +2,7 @@ package fr.skyle.scanny.domain.payload
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import kotlin.random.Random
@@ -1018,7 +1019,7 @@ class BarcodeContentParserTest {
                 secret = "JBSWY3DPEHPK3PXP",
                 type = OtpType.HOTP,
                 account = "john",
-                algorithm = "SHA256",
+                algorithm = OtpAlgorithm.SHA256,
                 digits = 8,
                 period = 60,
                 counter = 42,
@@ -1042,6 +1043,21 @@ class BarcodeContentParserTest {
                 issuer = "New name",
                 account = "john",
             ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an otpauth link of an unknown algorithm is shown as text`() {
+        // Given
+        val rawValue = "otpauth://totp/john?secret=JBSWY3DPEHPK3PXP&algorithm=MD5"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Text(text = rawValue),
             actual = content,
         )
     }
