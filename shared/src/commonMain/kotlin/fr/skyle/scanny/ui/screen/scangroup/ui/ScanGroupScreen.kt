@@ -5,10 +5,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import fr.skyle.scanny.designsystem.core.card.SCCard
+import fr.skyle.scanny.designsystem.core.card.SCCardDefaults
+import fr.skyle.scanny.designsystem.core.card.SCCardStructure
+import fr.skyle.scanny.designsystem.core.divider.SCDivider
+import fr.skyle.scanny.designsystem.core.divider.SCDividerDefaults
 import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButton
 import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButtonDefaults
 import fr.skyle.scanny.designsystem.core.screenstructure.SCScreenStructure
@@ -19,6 +23,7 @@ import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBar
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBarDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.codes_of_group
 import fr.skyle.scanny.resources.delete
 import fr.skyle.scanny.resources.group
 import fr.skyle.scanny.resources.ic_delete
@@ -78,6 +83,7 @@ fun ScanGroupScreen(
         snackbarState = snackbarState,
     ) { contentPadding ->
         if (group != null) {
+            // The group in its card, its codes in another under their title: the two stand apart
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = contentPadding,
@@ -86,31 +92,61 @@ fun ScanGroupScreen(
                     key = "header",
                     contentType = "header",
                 ) {
-                    ScanGroupHeader(
+                    SCCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
-                                start = 20.dp,
+                                start = 16.dp,
                                 top = 8.dp,
-                                end = 20.dp,
-                                bottom = 16.dp,
+                                end = 16.dp,
                             ),
-                        codeCount = group.codes.size,
-                        scannedDay = group.scannedDay,
-                        scannedTime = group.scannedTime,
-                    )
+                        style = SCCardDefaults.Style.LIGHT,
+                    ) {
+                        ScanGroupHeader(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(all = 16.dp),
+                            codeCount = group.codes.size,
+                            scannedDay = group.scannedDay,
+                            scannedTime = group.scannedTime,
+                        )
+                    }
                 }
 
-                items(
-                    items = group.codes,
-                    key = { code -> code.codeId },
-                    contentType = { "code" },
-                ) { code ->
-                    CodeRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        item = code,
-                        onClick = { onCodeClicked(code.codeId) },
-                    )
+                item(
+                    key = "codes",
+                    contentType = "codes",
+                ) {
+                    SCCardStructure(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = 16.dp,
+                                top = 24.dp,
+                                end = 16.dp,
+                                bottom = 16.dp,
+                            ),
+                        title = stringResource(Res.string.codes_of_group),
+                        style = SCCardDefaults.Style.LIGHT,
+                    ) {
+                        group.codes.forEachIndexed { index, code ->
+                            if (index > 0) {
+                                // Under the text, past the badge
+                                SCDivider(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 84.dp),
+                                    style = SCDividerDefaults.Style.LIGHT,
+                                )
+                            }
+
+                            CodeRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                item = code,
+                                onClick = { onCodeClicked(code.codeId) },
+                            )
+                        }
+                    }
                 }
             }
         }
