@@ -10,6 +10,7 @@
     <string name="add_to_calendar">Add to the calendar</string>
     <string name="add_website">Add a website</string>
     <string name="address">Address</string>
+    <string name="addresses">Addresses</string>
     <string name="advanced_options">Advanced options</string>
     <string name="algorithm">Algorithm</string>
     <string name="all_creations_deleted">Every creation will be deleted.</string>
@@ -95,6 +96,7 @@
     <string name="color_red">Red</string>
     <string name="color_white">White</string>
     <string name="contact">Contact</string>
+    <string name="contact_details">Contact details</string>
     <string name="content">Content</string>
     <string name="content_size">Content size</string>
     <string name="content_size_count" translatable="false">%1$d / %2$d</string>
@@ -132,6 +134,7 @@
     <string name="delete_group_question">Delete this group?</string>
     <string name="department">Department</string>
     <string name="description">Description</string>
+    <string name="details">Details</string>
     <string name="digits">Number of digits</string>
     <string name="discard">Discard</string>
     <string name="discard_codes_question">Discard the codes found?</string>
@@ -271,6 +274,7 @@
     <string name="job_title">Job title</string>
     <string name="join_network">Join the network</string>
     <string name="keep_history">Keep the history</string>
+    <string name="key">Key</string>
     <string name="last_name">Last name</string>
     <string name="latitude">Latitude</string>
     <string name="link">Link</string>
@@ -310,6 +314,7 @@
     <string name="mms" translatable="false">MMS</string>
     <string name="mobile">Mobile</string>
     <string name="more_count" translatable="false">+%1$d</string>
+    <string name="more_options">More options</string>
     <string name="multiple_scan">Multiple scan</string>
     <string name="name">Name</string>
     <string name="name_prefix">Prefix</string>
@@ -331,12 +336,14 @@
     <string name="openium" translatable="false">Openium</string>
     <string name="organization">Organization</string>
     <string name="organizer">Organizer</string>
+    <string name="other">Other</string>
     <string name="other_color">Other color</string>
     <string name="otp">One-time password</string>
     <string name="otp_type">Key type</string>
     <string name="pass_codes_in_front_of_camera">Pass the codes in front of the camera</string>
     <string name="password">Password</string>
     <string name="password_identifier">Password identifier</string>
+    <string name="payment">Payment</string>
     <string name="pdf417" translatable="false">PDF417</string>
     <string name="period">Period</string>
     <string name="period_in_seconds">Period in seconds</string>
@@ -462,6 +469,7 @@
     <string name="wifi_security_wep" translatable="false">WEP</string>
     <string name="wifi_security_wpa" translatable="false">WPA/WPA2/WPA3</string>
     <string name="wifi_security_wpa_enterprise" translatable="false">WPA2/WPA3-Enterprise</string>
+    <string name="work">Work</string>
     <string name="work_address">Work address</string>
     <string name="work_email">Work e-mail</string>
     <string name="work_phone">Work phone</string>
