@@ -25,6 +25,7 @@ import fr.skyle.scanny.platform.gallery.rememberImageBarcodeScanner
 import fr.skyle.scanny.platform.wifi.WifiNetworkJoiner
 import fr.skyle.scanny.platform.wifi.rememberWifiNetworkJoiner
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.no_app_to_open
 import fr.skyle.scanny.resources.no_code_in_image
 import fr.skyle.scanny.resources.scan_not_saved
 import fr.skyle.scanny.ui.core.code.action.open
@@ -69,10 +70,14 @@ fun ScanRoute(
 
     var isDiscardDialogVisible by rememberSaveable { mutableStateOf(false) }
 
-    // Under the sheet, a message would not be seen: a failure is only logged
     val openCodeAction: (CodeAction) -> Unit = { action ->
         when (action) {
-            is CodeAction.Link -> uriHandler.open(action = action)
+            is CodeAction.Link -> if (!uriHandler.open(action = action)) {
+                coroutineScope.launch {
+                    messages().show(message = getString(Res.string.no_app_to_open))
+                }
+            }
+
             is CodeAction.AddContact -> viewModel.onAddContactClicked(contact = action.contact)
             is CodeAction.JoinWifi -> wifiNetworkJoiner.join(wifi = action.wifi)
         }
@@ -115,6 +120,11 @@ fun ScanRoute(
 
                     ScanViewModel.ScanEvent.ScanNotSaved -> launch {
                         snackbarState.show(message = getString(Res.string.scan_not_saved))
+                    }
+
+                    // On the sheet of the result when it shows one, on the scan otherwise
+                    ScanViewModel.ScanEvent.ContactNotAdded -> launch {
+                        messages().show(message = getString(Res.string.no_app_to_open))
                     }
 
                     is ScanViewModel.ScanEvent.OpenScanDetail -> {

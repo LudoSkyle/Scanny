@@ -499,6 +499,22 @@ class ScanViewModelTest {
     }
 
     @Test
+    fun `a contact that cannot be added is reported`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(contactAdder = FakeContactAdder(error = IllegalStateException("No contacts app")))
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onAddContactClicked(contact = BarcodeContent.Contact(formattedName = "John Doe"))
+
+        // Then
+        assertEquals(
+            expected = listOf(ScanViewModel.ScanEvent.ContactNotAdded),
+            actual = events,
+        )
+    }
+
+    @Test
     fun `dismissing the result resumes the detection`() = runTest(testDispatcher) {
         // Given
         val viewModel = scanViewModel()

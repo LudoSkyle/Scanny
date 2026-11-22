@@ -192,12 +192,12 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   Android l'ouvre tel quel, iOS reçoit `&body=` au lieu de `?body=`. Messages d'iOS 26 lit les deux
   (constaté sur le simulateur) ; `&body=` est gardé, la forme que lisaient les versions plus
   anciennes. Quand aucune app ne l'ouvre, Android lève une exception : l'échec est journalisé, et
-  l'écran du détail le dit. Le `LocalUriHandler` d'iOS, lui, ne signale aucun échec : sans app pour
-  le lien (Mail absent), rien ne se passe.
+  l'écran le dit. Le `LocalUriHandler` d'iOS, lui, ne signale aucun échec : sans app pour le lien
+  (Mail absent), rien ne se passe.
 - La feuille du résultat a ses propres messages (`resultSnackbarState` de la `Route` du scan), au
-  bas de la feuille : ceux de l'écran du scan seraient cachés dessous. Ce qui suit la jonction d'un
-  réseau Wi-Fi va à la feuille quand elle est ouverte, à l'écran sinon (ouverture automatique du
-  contenu).
+  bas de la feuille : ceux de l'écran du scan seraient cachés dessous. Ce qui suit une action, un
+  lien sans app, un contact qui ne s'ajoute pas, un réseau Wi-Fi, va à la feuille quand elle est
+  ouverte, à l'écran sinon (ouverture automatique du contenu).
 - Copier passe par `LocalClipboard` et `textClipEntry(text)`, un `expect` : l'API commune de Compose
   ne sait pas construire l'entrée d'un texte. Depuis Android 13, le système montre lui-même ce qui a
   été copié : l'app ne le redit pas (`isCopyConfirmedBySystem`). Sous la feuille du résultat, où un
