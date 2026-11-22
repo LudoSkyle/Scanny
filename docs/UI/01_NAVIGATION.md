@@ -28,7 +28,8 @@ intermédiaire.
   du clavier, porte le code en miniature (touchée, elle l'ouvre en grand dans une feuille), la taille
   que le contenu prend du QR code ou ce qui empêche le code, et le bouton Suivant ou Créer ; elle
   reste pendant que les étapes glissent. La personnalisation garde le code en grand en haut : elle se
-  juge sur ses couleurs et son logo. L'étape vit dans le ViewModel : revenir au contenu garde la personnalisation, quitter
+  juge sur ses couleurs et son logo. Ses champs vont par cartes titrées, les plus rares repliés (voir
+  [KMP/02_MODULE_DOMAIN.md](../KMP/02_MODULE_DOMAIN.md)). L'étape vit dans le ViewModel : revenir au contenu garde la personnalisation, quitter
   l'éditeur la perd avec lui. Le retour de la personnalisation, de la barre comme du système (bouton,
   geste), ramène au contenu : un `NavigationBackHandler` (navigationevent) l'intercepte tant qu'elle
   est montrée, sans toucher au back stack.
