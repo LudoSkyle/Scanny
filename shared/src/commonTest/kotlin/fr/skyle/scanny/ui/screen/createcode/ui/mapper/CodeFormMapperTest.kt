@@ -4,6 +4,7 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.Creation
+import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.payload.toRawValue
@@ -53,6 +54,22 @@ class CodeFormMapperTest {
             BarcodeContent.Bookmark(
                 url = "https://scanny.app",
                 title = "Scanny",
+            ),
+            BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                type = OtpType.HOTP,
+                issuer = "Scanny",
+                account = "john@scanny.app",
+                algorithm = "SHA512",
+                digits = 8,
+                period = 60,
+                counter = 7,
+            ),
+            BarcodeContent.Bitcoin(
+                address = "1BoatSLRHtKNngkdXEeobR76b53LETtpyT",
+                amount = "0.0015",
+                label = "Scanny",
+                message = "Order 42",
             ),
         )
 

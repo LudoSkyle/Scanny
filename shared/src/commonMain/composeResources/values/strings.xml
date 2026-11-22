@@ -1,12 +1,16 @@
 <resources>
     <string name="about_format">About this format</string>
+    <string name="account">Account</string>
     <string name="add_contact">Add the contact</string>
     <string name="add_logo">Add a logo</string>
+    <string name="add_to_authenticator">Add to an authenticator</string>
     <string name="address">Address</string>
     <string name="advanced_options">Advanced options</string>
     <string name="all_creations_deleted">Every creation will be deleted.</string>
     <string name="all_scans_deleted">Every scan will be deleted.</string>
     <string name="allow_camera">Allow the camera</string>
+    <string name="amount">Amount</string>
+    <string name="amount_in_bitcoins">Amount in BTC</string>
     <string name="app_description">Scanny scans QR codes and barcodes, with the latest technologies and without advertising, while staying light and reliable.</string>
     <string name="app_name" translatable="false">Scanny</string>
     <string name="at_time">%1$s at %2$s</string>
@@ -16,6 +20,7 @@
     <string name="barcode_value">Value</string>
     <string name="barcodes">Barcodes</string>
     <string name="beep_after_scan">Beep after a scan</string>
+    <string name="bitcoin" translatable="false">Bitcoin</string>
     <string name="bookmark">Bookmark</string>
     <string name="call">Call</string>
     <string name="camera_blocked">The camera is blocked for Scanny. Allow it in the settings of your device to scan codes.</string>
@@ -181,6 +186,7 @@
     <string name="image_not_saved">The image could not be saved</string>
     <string name="image_not_shared">The image could not be shared</string>
     <string name="image_saved">Image saved to the photos</string>
+    <string name="issuer">Issuer</string>
     <string name="itf" translatable="false">ITF</string>
     <string name="job_title">Job title</string>
     <string name="join_network">Join the network</string>
@@ -224,11 +230,13 @@
     <string name="no_creation_yet">No creation yet</string>
     <string name="no_scan_yet">No scan yet</string>
     <string name="open_content_after_scan">Open the content after a scan</string>
+    <string name="open_in_wallet">Open in a wallet</string>
     <string name="open_link">Open the link</string>
     <string name="open_settings">Open the settings</string>
     <string name="openium" translatable="false">Openium</string>
     <string name="organization">Organization</string>
     <string name="other_color">Other color</string>
+    <string name="otp">One-time password</string>
     <string name="pass_codes_in_front_of_camera">Pass the codes in front of the camera</string>
     <string name="password">Password</string>
     <string name="pdf417" translatable="false">PDF417</string>
@@ -257,6 +265,7 @@
     <string name="scan_preferences">Scan preferences</string>
     <string name="scanned_codes_appear_here">The codes you scan appear here.</string>
     <string name="scans">Scans</string>
+    <string name="secret_key">Secret key</string>
     <string name="security">Security</string>
     <string name="see">See</string>
     <string name="see_detail">See the detail</string>

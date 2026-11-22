@@ -39,6 +39,29 @@ sealed interface BarcodeContent {
         val title: String? = null,
     ) : BarcodeContent
 
+    /**
+     * The key of a one-time password, as the authenticator apps read it (`otpauth://`). The parameters
+     * stay as read, null when the code leaves them to their default: 6 digits, SHA1, every 30 s.
+     */
+    data class Otp(
+        val secret: String,
+        val type: OtpType = OtpType.TOTP,
+        val issuer: String? = null,
+        val account: String? = null,
+        val algorithm: String? = null,
+        val digits: Int? = null,
+        val period: Int? = null,
+        val counter: Long? = null,
+    ) : BarcodeContent
+
+    /** A Bitcoin payment request of BIP 21, its amount in bitcoins as written. */
+    data class Bitcoin(
+        val address: String,
+        val amount: String? = null,
+        val label: String? = null,
+        val message: String? = null,
+    ) : BarcodeContent
+
     data class Wifi(
         val ssid: String,
         val encryption: WifiEncryption,

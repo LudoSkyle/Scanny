@@ -143,4 +143,30 @@ class ContentLinksTest {
             actual = links,
         )
     }
+
+    @Test
+    fun `an otp link and a bitcoin link are their otpauth and bitcoin payloads`() {
+        // Given
+        val otp = BarcodeContent.Otp(
+            secret = "JBSWY3DPEHPK3PXP",
+            issuer = "Scanny",
+            account = "john",
+        )
+        val bitcoin = BarcodeContent.Bitcoin(
+            address = "1BoatSLRHtKNngkdXEeobR76b53LETtpyT",
+            amount = "0.5",
+        )
+
+        // When
+        val links = listOf(otp.toOtpauthLink(), bitcoin.toBitcoinLink())
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                "otpauth://totp/Scanny:john?secret=JBSWY3DPEHPK3PXP&issuer=Scanny",
+                "bitcoin:1BoatSLRHtKNngkdXEeobR76b53LETtpyT?amount=0.5",
+            ),
+            actual = links,
+        )
+    }
 }

@@ -12,6 +12,15 @@ private val WPA_PASSWORD_LENGTH = 8..63
 private val LATITUDES = -90.0..90.0
 private val LONGITUDES = -180.0..180.0
 
+// Base32, 80 bits at least: the shortest key the authenticator apps take
+private val OTP_SECRET = Regex("""[A-Z2-7]{16,}=*""")
+
+// Loose on purpose: an address of the network or of its tests, legacy or segwit
+private val BITCOIN_ADDRESS = Regex("""[A-Za-z0-9]{25,90}""")
+
+// In bitcoins, to the satoshi
+private val BITCOIN_AMOUNT = Regex("""[0-9]+(\.[0-9]{1,8})?""")
+
 private const val HTTP = "http://"
 private const val HTTPS = "https://"
 
@@ -74,6 +83,10 @@ internal fun CreationForm.toBarcodeContent(): BarcodeContent? =
             )
         }
 
+        CreationKind.OTP -> toOtp()
+
+        CreationKind.BITCOIN -> toBitcoin()
+
         // Whether its format accepts it is told by the drawing of the code
         CreationKind.BARCODE -> barcodeValue.trim().takeIf { value -> value.isNotEmpty() }?.let { value ->
             BarcodeContent.Text(text = value)
@@ -104,6 +117,48 @@ private fun String.toCoordinate(): Double? =
             newChar = '.',
         )
         .toDoubleOrNull()
+
+// A key in base32, as the services show it: in groups, in lower case. An issuer or an account to name it
+private fun CreationForm.toOtp(): BarcodeContent.Otp? {
+    val secret = otpSecret.filterNot { char -> char.isWhitespace() || char == '-' }.uppercase()
+    val issuer = otpIssuer.trim().ifEmpty { null }
+    val account = otpAccount.trim().ifEmpty { null }
+    if (!OTP_SECRET.matches(input = secret) || (issuer == null && account == null)) {
+        return null
+    }
+
+    return BarcodeContent.Otp(
+        secret = secret,
+        type = otpType,
+        issuer = issuer,
+        account = account,
+        algorithm = otpAlgorithm,
+        digits = otpDigits,
+        period = otpPeriod,
+        counter = otpCounter,
+    )
+}
+
+// An address; an amount if any, typed with a decimal comma or point
+private fun CreationForm.toBitcoin(): BarcodeContent.Bitcoin? {
+    val address = bitcoinAddress.trim().takeIf { address -> BITCOIN_ADDRESS.matches(input = address) } ?: return null
+    val amount = bitcoinAmount.trim()
+        .replace(
+            oldChar = ',',
+            newChar = '.',
+        )
+        .ifEmpty { null }
+    if (amount != null && !BITCOIN_AMOUNT.matches(input = amount)) {
+        return null
+    }
+
+    return BarcodeContent.Bitcoin(
+        address = address,
+        amount = amount,
+        label = bitcoinLabel.trim().ifEmpty { null },
+        message = bitcoinMessage.trim().ifEmpty { null },
+    )
+}
 
 // A name; a password for a network that asks for one, of the length WPA needs
 private fun CreationForm.toWifi(): BarcodeContent.Wifi? {

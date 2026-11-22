@@ -26,4 +26,8 @@ enum class CodeFieldLabel {
     COORDINATES,
     TITLE,
     LINK,
+    ISSUER,
+    ACCOUNT,
+    SECRET_KEY,
+    AMOUNT,
 }

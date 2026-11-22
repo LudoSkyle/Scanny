@@ -1,6 +1,7 @@
 package fr.skyle.scanny.domain.payload
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -271,6 +272,67 @@ class BarcodeContentEncoderTest {
     }
 
     @Test
+    fun `an otp key is written as an otpauth link with its issuer in the label and the parameters`() {
+        // Given
+        val content = BarcodeContent.Otp(
+            secret = "JBSWY3DPEHPK3PXP",
+            issuer = "Scanny & co",
+            account = "john@doe.fr",
+        )
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = "otpauth://totp/Scanny%20%26%20co:john%40doe.fr?secret=JBSWY3DPEHPK3PXP&issuer=Scanny%20%26%20co",
+            actual = payload,
+        )
+    }
+
+    @Test
+    fun `an otp key writes only the parameters it was given`() {
+        // Given
+        val content = BarcodeContent.Otp(
+            secret = "JBSWY3DPEHPK3PXP",
+            type = OtpType.HOTP,
+            account = "john",
+            algorithm = "SHA256",
+            digits = 8,
+            counter = 42,
+        )
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = "otpauth://hotp/john?secret=JBSWY3DPEHPK3PXP&algorithm=SHA256&digits=8&counter=42",
+            actual = payload,
+        )
+    }
+
+    @Test
+    fun `a bitcoin payment is written as a bitcoin link of bip 21`() {
+        // Given
+        val content = BarcodeContent.Bitcoin(
+            address = "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq",
+            amount = "0.0015",
+            label = "Scanny shop",
+            message = "Order #42",
+        )
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = "bitcoin:bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq?amount=0.0015&label=Scanny%20shop&message=Order%20%2342",
+            actual = payload,
+        )
+    }
+
+    @Test
     fun `every written content is read back unchanged`() {
         // Given
         val contents = listOf(
@@ -337,6 +399,28 @@ class BarcodeContentEncoderTest {
                 title = "Scanny: \"the\" app, with\\backslash",
             ),
             BarcodeContent.Bookmark(url = "https://scanny.app"),
+            BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                issuer = "Scanny: the app?",
+                account = "john+2fa@doe.fr & co",
+            ),
+            BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                type = OtpType.HOTP,
+                issuer = "Scanny",
+                algorithm = "SHA512",
+                digits = 8,
+                period = 60,
+                counter = 0,
+            ),
+            BarcodeContent.Otp(secret = "JBSWY3DPEHPK3PXP"),
+            BarcodeContent.Bitcoin(
+                address = "1BoatSLRHtKNngkdXEeobR76b53LETtpyT",
+                amount = "12.5",
+                label = "Été & co=1?",
+                message = "100% sure",
+            ),
+            BarcodeContent.Bitcoin(address = "1BoatSLRHtKNngkdXEeobR76b53LETtpyT"),
         )
 
         // When

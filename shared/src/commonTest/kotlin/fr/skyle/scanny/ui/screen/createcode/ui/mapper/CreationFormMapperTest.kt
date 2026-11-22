@@ -2,6 +2,7 @@ package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
@@ -265,6 +266,113 @@ class CreationFormMapperTest {
                     url = "https://scanny.app",
                     title = "Scanny",
                 ),
+            ),
+            actual = contents,
+        )
+    }
+
+    @Test
+    fun `an otp key typed in groups and in lower case is read as base32`() {
+        // When
+        val content = CreationForm(
+            kind = CreationKind.OTP,
+            otpIssuer = " Scanny ",
+            otpSecret = "jbsw y3dp-ehpk 3pxp",
+        ).toBarcodeContent()
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                issuer = "Scanny",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an otp key needs 16 base32 characters and an issuer or an account`() {
+        // When
+        val contents = listOf(
+            "JBSWY3DPEHPK3PX" to "john",
+            "JBSWY3DPEHPK3PX1" to "john",
+            "JBSWY3DPEHPK3PXP" to " ",
+        ).map { (secret, account) ->
+            CreationForm(
+                kind = CreationKind.OTP,
+                otpAccount = account,
+                otpSecret = secret,
+            ).toBarcodeContent()
+        }
+
+        // Then
+        assertEquals(
+            expected = listOf(null, null, null),
+            actual = contents,
+        )
+    }
+
+    @Test
+    fun `an otp key keeps the parameters of the scanned one`() {
+        // When
+        val content = CreationForm(
+            kind = CreationKind.OTP,
+            otpAccount = "john",
+            otpSecret = "JBSWY3DPEHPK3PXP",
+            otpType = OtpType.HOTP,
+            otpAlgorithm = "SHA256",
+            otpDigits = 8,
+            otpPeriod = 60,
+            otpCounter = 3,
+        ).toBarcodeContent()
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                type = OtpType.HOTP,
+                account = "john",
+                algorithm = "SHA256",
+                digits = 8,
+                period = 60,
+                counter = 3,
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a bitcoin payment needs an address and takes an amount with a decimal comma`() {
+        // When
+        val contents = listOf(
+            CreationForm(
+                kind = CreationKind.BITCOIN,
+                bitcoinAddress = " 1BoatSLRHtKNngkdXEeobR76b53LETtpyT ",
+                bitcoinAmount = " 0,0015 ",
+                bitcoinLabel = " Scanny shop ",
+                bitcoinMessage = " ",
+            ),
+            CreationForm(
+                kind = CreationKind.BITCOIN,
+                bitcoinAddress = "1BoatSLRHtKNngkdXEeobR76b53LETtpyT",
+                bitcoinAmount = "0.000000001",
+            ),
+            CreationForm(
+                kind = CreationKind.BITCOIN,
+                bitcoinAddress = "not an address",
+            ),
+        ).map { form -> form.toBarcodeContent() }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                BarcodeContent.Bitcoin(
+                    address = "1BoatSLRHtKNngkdXEeobR76b53LETtpyT",
+                    amount = "0.0015",
+                    label = "Scanny shop",
+                ),
+                null,
+                null,
             ),
             actual = contents,
         )

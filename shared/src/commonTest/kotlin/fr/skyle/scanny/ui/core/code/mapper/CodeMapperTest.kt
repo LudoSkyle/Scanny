@@ -243,6 +243,67 @@ class CodeMapperTest {
     }
 
     @Test
+    fun `an otp key shows its issuer its account and its secret and a bitcoin payment its parts`() {
+        // Given
+        val contents = listOf(
+            BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                issuer = "Scanny",
+                account = "john@doe.fr",
+                digits = 8,
+            ),
+            BarcodeContent.Bitcoin(
+                address = "1BoatSLRHtKNngkdXEeobR76b53LETtpyT",
+                amount = "0.0015",
+                label = "Scanny shop",
+                message = "Order 42",
+            ),
+        )
+
+        // When
+        val fields = contents.map { content -> content.toCodeFields() }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                listOf(
+                    field(
+                        label = CodeFieldLabel.ISSUER,
+                        value = "Scanny",
+                    ),
+                    field(
+                        label = CodeFieldLabel.ACCOUNT,
+                        value = "john@doe.fr",
+                    ),
+                    field(
+                        label = CodeFieldLabel.SECRET_KEY,
+                        value = "JBSWY3DPEHPK3PXP",
+                    ),
+                ),
+                listOf(
+                    field(
+                        label = CodeFieldLabel.ADDRESS,
+                        value = "1BoatSLRHtKNngkdXEeobR76b53LETtpyT",
+                    ),
+                    field(
+                        label = CodeFieldLabel.AMOUNT,
+                        value = "0.0015 BTC",
+                    ),
+                    field(
+                        label = CodeFieldLabel.RECIPIENT,
+                        value = "Scanny shop",
+                    ),
+                    field(
+                        label = CodeFieldLabel.MESSAGE,
+                        value = "Order 42",
+                    ),
+                ),
+            ),
+            actual = fields,
+        )
+    }
+
+    @Test
     fun `the summary of a code is its most telling part`() {
         // Given
         val codes = listOf(
@@ -265,6 +326,18 @@ class CodeMapperTest {
                 ),
             ),
             scannedCode(content = BarcodeContent.Bookmark(url = "https://scanny.app")),
+            scannedCode(
+                content = BarcodeContent.Otp(
+                    secret = "JBSWY3DPEHPK3PXP",
+                    issuer = "Scanny",
+                    account = "john@doe.fr",
+                ),
+            ),
+            scannedCode(
+                content = BarcodeContent.Otp(secret = "JBSWY3DPEHPK3PXP"),
+                rawValue = "otpauth://totp/?secret=JBSWY3DPEHPK3PXP",
+            ),
+            scannedCode(content = BarcodeContent.Bitcoin(address = "1BoatSLRHtKNngkdXEeobR76b53LETtpyT")),
         )
 
         // When
@@ -283,6 +356,9 @@ class CodeMapperTest {
                 "+33100000000",
                 "48.8584, 2.2945",
                 "https://scanny.app",
+                "Scanny: john@doe.fr",
+                "otpauth://totp/?secret=JBSWY3DPEHPK3PXP",
+                "1BoatSLRHtKNngkdXEeobR76b53LETtpyT",
             ),
             actual = summaries,
         )
@@ -361,6 +437,35 @@ class CodeMapperTest {
                 CodeAction.Call(link = "tel:+33600000000"),
                 CodeAction.ShowOnMap(link = platformMapsLink(location = location)),
                 CodeAction.OpenLink(link = "https://scanny.app"),
+            ),
+            actual = actions,
+        )
+    }
+
+    @Test
+    fun `an otp key is added to an authenticator and a payment opened in a wallet`() {
+        // Given
+        val contents = listOf(
+            BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                account = "john",
+            ),
+            BarcodeContent.Bitcoin(
+                address = "1BoatSLRHtKNngkdXEeobR76b53LETtpyT",
+                amount = "0.5",
+            ),
+        )
+
+        // When
+        val actions = contents.map { content ->
+            content.toCodeAction(canJoinWifi = { false })
+        }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                CodeAction.AddToAuthenticator(link = "otpauth://totp/john?secret=JBSWY3DPEHPK3PXP"),
+                CodeAction.OpenWallet(link = "bitcoin:1BoatSLRHtKNngkdXEeobR76b53LETtpyT?amount=0.5"),
             ),
             actual = actions,
         )

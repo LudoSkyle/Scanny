@@ -1,12 +1,16 @@
 <resources>
     <string name="about_format">À propos de ce format</string>
+    <string name="account">Compte</string>
     <string name="add_contact">Ajouter le contact</string>
     <string name="add_logo">Ajouter un logo</string>
+    <string name="add_to_authenticator">Ajouter à l'authentificateur</string>
     <string name="address">Adresse</string>
     <string name="advanced_options">Options avancées</string>
     <string name="all_creations_deleted">Toutes les créations seront supprimées.</string>
     <string name="all_scans_deleted">Tous les scans seront supprimés.</string>
     <string name="allow_camera">Autoriser la caméra</string>
+    <string name="amount">Montant</string>
+    <string name="amount_in_bitcoins">Montant en BTC</string>
     <string name="app_description">Scanny scanne les QR codes et les codes-barres, avec les dernières technologies et sans publicité, tout en restant légère et fiable.</string>
     <string name="at_time">%1$s à %2$s</string>
     <string name="background_color">Couleur du fond</string>
@@ -170,6 +174,7 @@
     <string name="image_not_saved">L'image n'a pas pu être enregistrée</string>
     <string name="image_not_shared">L'image n'a pas pu être partagée</string>
     <string name="image_saved">Image enregistrée dans les photos</string>
+    <string name="issuer">Émetteur</string>
     <string name="job_title">Fonction</string>
     <string name="join_network">Rejoindre le réseau</string>
     <string name="keep_history">Conserver l'historique</string>
@@ -211,10 +216,12 @@
     <string name="no_creation_yet">Aucune création pour l'instant</string>
     <string name="no_scan_yet">Aucun scan pour l'instant</string>
     <string name="open_content_after_scan">Ouvrir le contenu après un scan</string>
+    <string name="open_in_wallet">Ouvrir dans un portefeuille</string>
     <string name="open_link">Ouvrir le lien</string>
     <string name="open_settings">Ouvrir les réglages</string>
     <string name="organization">Organisation</string>
     <string name="other_color">Autre couleur</string>
+    <string name="otp">Code à usage unique</string>
     <string name="pass_codes_in_front_of_camera">Passez les codes devant la caméra</string>
     <string name="password">Mot de passe</string>
     <string name="phone">Téléphone</string>
@@ -241,6 +248,7 @@
     <string name="scan_preferences">Préférences du scan</string>
     <string name="scanned_codes_appear_here">Les codes que vous scannez apparaissent ici.</string>
     <string name="scans">Scans</string>
+    <string name="secret_key">Clé secrète</string>
     <string name="security">Sécurité</string>
     <string name="see">Voir</string>
     <string name="see_detail">Voir le détail</string>

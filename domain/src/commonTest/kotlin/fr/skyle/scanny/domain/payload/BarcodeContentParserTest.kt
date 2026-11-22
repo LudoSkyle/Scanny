@@ -1,6 +1,7 @@
 package fr.skyle.scanny.domain.payload
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import kotlin.random.Random
 import kotlin.test.Test
@@ -910,6 +911,162 @@ class BarcodeContentParserTest {
     }
 
     @Test
+    fun `an otpauth link gives the key its issuer and its account`() {
+        // Given
+        val rawValue = "otpauth://totp/Scanny:john%40doe.fr?secret=JBSWY3DPEHPK3PXP&issuer=Scanny"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                issuer = "Scanny",
+                account = "john@doe.fr",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an otpauth link keeps its parameters as read`() {
+        // Given
+        val rawValue = "OTPAUTH://HOTP/john?secret=JBSWY3DPEHPK3PXP&algorithm=SHA256&digits=8&counter=42&period=60"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                type = OtpType.HOTP,
+                account = "john",
+                algorithm = "SHA256",
+                digits = 8,
+                period = 60,
+                counter = 42,
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `the issuer of the parameters wins over the one of the label`() {
+        // Given
+        val rawValue = "otpauth://totp/Old%20name:%20john?secret=JBSWY3DPEHPK3PXP&issuer=New%20name"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                issuer = "New name",
+                account = "john",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an otpauth link without secret is shown as text`() {
+        // Given
+        val rawValue = "otpauth://totp/Scanny:john?issuer=Scanny"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Text(text = "otpauth://totp/Scanny:john?issuer=Scanny"),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an otpauth link of an unknown type is shown as text`() {
+        // Given
+        val rawValue = "otpauth://motp/john?secret=JBSWY3DPEHPK3PXP"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Text(text = "otpauth://motp/john?secret=JBSWY3DPEHPK3PXP"),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a bitcoin link gives the address the amount the label and the message`() {
+        // Given
+        val rawValue = "bitcoin:bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq?amount=0.0015&label=Scanny%20shop&message=Order%2042"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Bitcoin(
+                address = "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq",
+                amount = "0.0015",
+                label = "Scanny shop",
+                message = "Order 42",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a bitcoin link in capitals for a smaller code is recognized`() {
+        // Given
+        val rawValue = "BITCOIN:BC1QAR0SRRR7XFKVY5L643LYDNW9RE59GTZZWF5MDQ"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Bitcoin(address = "BC1QAR0SRRR7XFKVY5L643LYDNW9RE59GTZZWF5MDQ"),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an amount that is not a number is left out`() {
+        // Given
+        val rawValue = "bitcoin:1BoatSLRHtKNngkdXEeobR76b53LETtpyT?amount=a%20lot"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Bitcoin(address = "1BoatSLRHtKNngkdXEeobR76b53LETtpyT"),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a bitcoin link without address is shown as text`() {
+        // Given
+        val rawValue = "bitcoin:?amount=1"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Text(text = "bitcoin:?amount=1"),
+            actual = content,
+        )
+    }
+
+    @Test
     fun `malformed payloads never throw`() {
         // Given
         val random = Random(seed = 42)
@@ -948,6 +1105,13 @@ class BarcodeContentParserTest {
             "geo:0,0?q=1,2(",
             "MEBKM:",
             "MEBKM:URL:;",
+            "otpauth://",
+            "otpauth://totp",
+            "otpauth://totp/?secret=",
+            "otpauth://totp/%?secret=A&digits=x&counter=99999999999999999999",
+            "bitcoin:",
+            "bitcoin:?",
+            "bitcoin:a?amount=%",
             CharArray(size = 10_000) {
                 random.nextInt(
                     from = 0,

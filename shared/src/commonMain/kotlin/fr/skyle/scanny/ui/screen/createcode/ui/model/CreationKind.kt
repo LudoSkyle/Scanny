@@ -11,5 +11,7 @@ enum class CreationKind {
     CONTACT,
     LOCATION,
     BOOKMARK,
+    OTP,
+    BITCOIN,
     BARCODE,
 }

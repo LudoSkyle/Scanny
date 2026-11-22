@@ -23,3 +23,11 @@ fun BarcodeContent.Location.toGeoLink(): String =
 /** The link of Apple Maps on this place, pinned: iOS opens it in Maps, and has no app for a geo: link. */
 fun BarcodeContent.Location.toAppleMapsLink(): String =
     BarcodeContentEncoder.appleMapsLink(location = this)
+
+/** The otpauth:// link that opens an authenticator app on this key, to add it. */
+fun BarcodeContent.Otp.toOtpauthLink(): String =
+    BarcodeContentEncoder.encode(content = this)
+
+/** The bitcoin: link of BIP 21 that opens a wallet on this payment. */
+fun BarcodeContent.Bitcoin.toBitcoinLink(): String =
+    BarcodeContentEncoder.encode(content = this)

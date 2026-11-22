@@ -1,6 +1,7 @@
 package fr.skyle.scanny.domain.payload
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 
 /**
@@ -13,6 +14,7 @@ internal object BarcodeContentParser {
     // The place in the query of a geo: link, "lat,lon" and its name between parentheses if any
     private val GEO_PLACE = Regex("""\s*([-+]?[0-9.]+)\s*,\s*([-+]?[0-9.]+)\s*(?:\((.*)\))?\s*""")
     private val LATITUDES = -90.0..90.0
+    private val BITCOIN_AMOUNT = Regex("""[0-9]+(\.[0-9]+)?""")
     private val LONGITUDES = -180.0..180.0
 
     fun parse(rawValue: String): BarcodeContent {
@@ -29,6 +31,8 @@ internal object BarcodeContentParser {
             value.hasPrefix(PayloadSyntax.TEL) -> parsePhone(uri = value.drop(PayloadSyntax.TEL.length))
             value.hasPrefix(PayloadSyntax.GEO) -> parseGeo(uri = value.drop(PayloadSyntax.GEO.length))
             value.hasPrefix(PayloadSyntax.MEBKM) -> parseBookmark(fieldsText = value.drop(PayloadSyntax.MEBKM.length))
+            value.hasPrefix(PayloadSyntax.OTPAUTH) -> parseOtp(uri = value.drop(PayloadSyntax.OTPAUTH.length))
+            value.hasPrefix(PayloadSyntax.BITCOIN) -> parseBitcoin(uri = value.drop(PayloadSyntax.BITCOIN.length))
             value.hasPrefix(PayloadSyntax.HTTP) || value.hasPrefix(PayloadSyntax.HTTPS) -> BarcodeContent.Url(url = value)
             else -> null
         }
@@ -209,6 +213,51 @@ internal object BarcodeContentParser {
         return BarcodeContent.Bookmark(
             url = url,
             title = fields.valueOf(key = "TITLE").nullIfBlank(),
+        )
+    }
+
+    // "type/label?parameters" of the key URI format: the label is "issuer:account", or the account alone
+    private fun parseOtp(uri: String): BarcodeContent.Otp? {
+        val type = OtpType.entries.firstOrNull { type ->
+            type.name.equals(
+                other = uri.substringBefore('/'),
+                ignoreCase = true,
+            )
+        } ?: return null
+        val parameters = parseQuery(query = uri.substringAfter(delimiter = '?', missingDelimiterValue = ""))
+        val secret = parameters["secret"].nullIfBlank() ?: return null
+
+        // The colon between the issuer and the account may be percent-encoded too, unlike one in the issuer
+        val label = uri.substringAfter(delimiter = '/', missingDelimiterValue = "").substringBefore('?')
+        val labelParts = if (':' in label) {
+            label.split(':', limit = 2).map { part -> percentDecode(value = part) }
+        } else {
+            percentDecode(value = label).split(':', limit = 2)
+        }
+        val labelIssuer = labelParts.takeIf { parts -> parts.size == 2 }?.first()?.trim().nullIfBlank()
+
+        return BarcodeContent.Otp(
+            secret = secret,
+            type = type,
+            issuer = parameters["issuer"].nullIfBlank() ?: labelIssuer,
+            account = labelParts.last().trim().nullIfBlank(),
+            algorithm = parameters["algorithm"].nullIfBlank(),
+            digits = parameters["digits"]?.toIntOrNull(),
+            period = parameters["period"]?.toIntOrNull(),
+            counter = parameters["counter"]?.toLongOrNull(),
+        )
+    }
+
+    // "address?amount=…&label=…&message=…" of BIP 21, the amount in bitcoins
+    private fun parseBitcoin(uri: String): BarcodeContent.Bitcoin? {
+        val address = uri.substringBefore('?').trim().nullIfBlank() ?: return null
+        val parameters = parseQuery(query = uri.substringAfter(delimiter = '?', missingDelimiterValue = ""))
+
+        return BarcodeContent.Bitcoin(
+            address = address,
+            amount = parameters["amount"]?.takeIf { amount -> BITCOIN_AMOUNT.matches(input = amount) },
+            label = parameters["label"].nullIfBlank(),
+            message = parameters["message"].nullIfBlank(),
         )
     }
 

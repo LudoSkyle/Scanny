@@ -19,7 +19,8 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [x] Écran de permission refusée, avec un accès aux réglages de l'app
 - [x] Vibration après un scan (réglage) *(testée, non observée)*
 - [x] Ouverture automatique du contenu après un scan (réglage) : lien, e-mail, SMS, contact,
-      réseau Wi-Fi, téléphone, position, marque-page *(lien observé sur le simulateur iOS)*
+      réseau Wi-Fi, téléphone, position, marque-page, clé à usage unique, paiement Bitcoin *(lien observé
+      sur le simulateur iOS)*
 - [x] Détection en pause tant qu'un résultat est affiché *(testée)*
 
 ### Détail d'un scan
@@ -31,7 +32,8 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
       WiFi → rejoindre le réseau (Android : l'écran du système à partir d'Android 11, les réglages
       Wi-Fi et le mot de passe copié sinon, avec un message dans tous les cas ; iOS plus tard) ; contact →
       l'ajouter aux contacts ; téléphone → appeler ; position → voir sur la carte ; marque-page →
-      ouvrir le lien
+      ouvrir le lien ; clé à usage unique → l'ajouter à l'authentificateur ; Bitcoin → ouvrir le
+      portefeuille
 
 ### Réglages, Feedback, À propos
 
@@ -61,7 +63,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [ ] Favori et annotation d'une capture, scan simple ou groupe entier *(pas urgent)*
 - Nouveaux types de contenu, chacun lu, affiché avec son action, et créé :
   - [x] Téléphone (`tel:`), position (`geo:`), marque-page (`MEBKM:`)
-  - [ ] Mot de passe à usage unique (`otpauth://`), Bitcoin (`bitcoin:`)
+  - [x] Mot de passe à usage unique (`otpauth://`), Bitcoin (`bitcoin:`)
   - [ ] MMS, et le format MeCard pour un contact créé
   - [ ] Événement (`VEVENT`), ajouté au calendrier
 - [ ] Création de Data Matrix, Aztec et PDF417, l'éditeur partagé entre QR code, code 2D et
