@@ -5,11 +5,14 @@ import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.account
 import fr.skyle.scanny.resources.add_contact
 import fr.skyle.scanny.resources.add_to_authenticator
+import fr.skyle.scanny.resources.add_to_calendar
 import fr.skyle.scanny.resources.address
 import fr.skyle.scanny.resources.algorithm
 import fr.skyle.scanny.resources.altitude
 import fr.skyle.scanny.resources.amount
 import fr.skyle.scanny.resources.anonymous_identity
+import fr.skyle.scanny.resources.attendee
+import fr.skyle.scanny.resources.availability
 import fr.skyle.scanny.resources.aztec
 import fr.skyle.scanny.resources.birthday
 import fr.skyle.scanny.resources.bitcoin
@@ -17,6 +20,8 @@ import fr.skyle.scanny.resources.blind_carbon_copy
 import fr.skyle.scanny.resources.bookmark
 import fr.skyle.scanny.resources.call
 import fr.skyle.scanny.resources.carbon_copy
+import fr.skyle.scanny.resources.categories
+import fr.skyle.scanny.resources.classification
 import fr.skyle.scanny.resources.codabar
 import fr.skyle.scanny.resources.code_128
 import fr.skyle.scanny.resources.code_39
@@ -26,11 +31,14 @@ import fr.skyle.scanny.resources.coordinates
 import fr.skyle.scanny.resources.counter
 import fr.skyle.scanny.resources.data_matrix
 import fr.skyle.scanny.resources.department
+import fr.skyle.scanny.resources.description
 import fr.skyle.scanny.resources.digits
 import fr.skyle.scanny.resources.ean_13
 import fr.skyle.scanny.resources.ean_8
 import fr.skyle.scanny.resources.eap_method
 import fr.skyle.scanny.resources.email
+import fr.skyle.scanny.resources.end
+import fr.skyle.scanny.resources.event
 import fr.skyle.scanny.resources.fax
 import fr.skyle.scanny.resources.format_aztec_example
 import fr.skyle.scanny.resources.format_aztec_structure
@@ -78,6 +86,7 @@ import fr.skyle.scanny.resources.home_website
 import fr.skyle.scanny.resources.ic_bookmark
 import fr.skyle.scanny.resources.ic_call
 import fr.skyle.scanny.resources.ic_currency_bitcoin
+import fr.skyle.scanny.resources.ic_event
 import fr.skyle.scanny.resources.ic_link
 import fr.skyle.scanny.resources.ic_location_on
 import fr.skyle.scanny.resources.ic_mail
@@ -104,6 +113,7 @@ import fr.skyle.scanny.resources.note
 import fr.skyle.scanny.resources.open_in_wallet
 import fr.skyle.scanny.resources.open_link
 import fr.skyle.scanny.resources.organization
+import fr.skyle.scanny.resources.organizer
 import fr.skyle.scanny.resources.otp
 import fr.skyle.scanny.resources.otp_type
 import fr.skyle.scanny.resources.password
@@ -114,13 +124,18 @@ import fr.skyle.scanny.resources.phase2_method
 import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.phone_number
 import fr.skyle.scanny.resources.place
+import fr.skyle.scanny.resources.priority
 import fr.skyle.scanny.resources.qr_code
 import fr.skyle.scanny.resources.recipient
+import fr.skyle.scanny.resources.recurrence
+import fr.skyle.scanny.resources.reminder
 import fr.skyle.scanny.resources.sae_pk_public_key
 import fr.skyle.scanny.resources.secret_key
 import fr.skyle.scanny.resources.security
 import fr.skyle.scanny.resources.show_on_map
 import fr.skyle.scanny.resources.sms
+import fr.skyle.scanny.resources.start
+import fr.skyle.scanny.resources.status
 import fr.skyle.scanny.resources.subject
 import fr.skyle.scanny.resources.text
 import fr.skyle.scanny.resources.title
@@ -156,6 +171,7 @@ internal fun CodeType.toText(): StringResource =
         CodeType.BOOKMARK -> Res.string.bookmark
         CodeType.OTP -> Res.string.otp
         CodeType.BITCOIN -> Res.string.bitcoin
+        CodeType.EVENT -> Res.string.event
     }
 
 internal fun CodeType.toIcon(): DrawableResource =
@@ -172,6 +188,7 @@ internal fun CodeType.toIcon(): DrawableResource =
         CodeType.BOOKMARK -> Res.drawable.ic_bookmark
         CodeType.OTP -> Res.drawable.ic_password
         CodeType.BITCOIN -> Res.drawable.ic_currency_bitcoin
+        CodeType.EVENT -> Res.drawable.ic_event
     }
 
 internal fun BarcodeFormat.toText(): StringResource =
@@ -234,6 +251,18 @@ internal fun CodeFieldLabel.toText(): StringResource =
         CodeFieldLabel.ALTITUDE -> Res.string.altitude
         CodeFieldLabel.UNCERTAINTY -> Res.string.uncertainty
         CodeFieldLabel.TITLE -> Res.string.title
+        CodeFieldLabel.START -> Res.string.start
+        CodeFieldLabel.END -> Res.string.end
+        CodeFieldLabel.DESCRIPTION -> Res.string.description
+        CodeFieldLabel.ORGANIZER -> Res.string.organizer
+        CodeFieldLabel.ATTENDEE -> Res.string.attendee
+        CodeFieldLabel.RECURRENCE -> Res.string.recurrence
+        CodeFieldLabel.REMINDER -> Res.string.reminder
+        CodeFieldLabel.STATUS -> Res.string.status
+        CodeFieldLabel.AVAILABILITY -> Res.string.availability
+        CodeFieldLabel.CLASSIFICATION -> Res.string.classification
+        CodeFieldLabel.PRIORITY -> Res.string.priority
+        CodeFieldLabel.CATEGORIES -> Res.string.categories
         CodeFieldLabel.LINK -> Res.string.link
         CodeFieldLabel.ISSUER -> Res.string.issuer
         CodeFieldLabel.ACCOUNT -> Res.string.account
@@ -257,6 +286,7 @@ internal fun CodeAction.toText(): StringResource =
         is CodeAction.AddToAuthenticator -> Res.string.add_to_authenticator
         is CodeAction.OpenWallet -> Res.string.open_in_wallet
         is CodeAction.AddContact -> Res.string.add_contact
+        is CodeAction.AddEvent -> Res.string.add_to_calendar
         is CodeAction.JoinWifi -> Res.string.join_network
     }
 

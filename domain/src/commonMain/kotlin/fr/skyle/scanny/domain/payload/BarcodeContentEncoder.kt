@@ -5,6 +5,8 @@ import fr.skyle.scanny.domain.model.ContactAddress
 import fr.skyle.scanny.domain.model.ContactEntryType
 import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.ContactPhoneType
+import fr.skyle.scanny.domain.model.EventDateTime
+import fr.skyle.scanny.domain.model.EventRecurrence
 import fr.skyle.scanny.domain.model.WifiEncryption
 
 /**
@@ -31,6 +33,7 @@ internal object BarcodeContentEncoder {
                 ContactFormat.MECARD -> encodeMecard(contact = content)
             }
             is BarcodeContent.Mms -> encodeMms(mms = content)
+            is BarcodeContent.Event -> encodeEvent(event = content)
             is BarcodeContent.Phone -> encodePhone(phone = content)
             is BarcodeContent.Location -> encodeLocation(location = content)
             is BarcodeContent.Bookmark -> encodeBookmark(bookmark = content)
@@ -410,6 +413,79 @@ internal object BarcodeContentEncoder {
                 append(')')
             }
         }
+
+    // A VEVENT in its VCALENDAR, lines ending with CRLF as RFC 5545 asks. Neither UID nor DTSTAMP: a code is
+    // not an object of a calendar to sync, and they would make two codes of the same event differ
+    private fun encodeEvent(event: BarcodeContent.Event): String =
+        buildList {
+            add(PayloadSyntax.VCALENDAR)
+            add("VERSION:2.0")
+            add("PRODID:-//Scanny//Scanny//EN")
+            add(PayloadSyntax.VEVENT)
+            event.summary?.let { summary -> add("SUMMARY:${escapeVcard(value = summary)}") }
+            add("DTSTART${eventDateTime(dateTime = event.start)}")
+            event.end?.let { end -> add("DTEND${eventDateTime(dateTime = end)}") }
+            event.location?.let { location -> add("LOCATION:${escapeVcard(value = location)}") }
+            if (event.latitude != null && event.longitude != null) {
+                add("GEO:${event.latitude.toCoordinateText()};${event.longitude.toCoordinateText()}")
+            }
+            event.description?.let { description -> add("DESCRIPTION:${escapeVcard(value = description)}") }
+            event.url?.let { url -> add("URL:$url") }
+            event.organizer?.let { organizer -> add("ORGANIZER:mailto:$organizer") }
+            event.attendees.forEach { attendee -> add("ATTENDEE:mailto:$attendee") }
+            event.recurrence?.let { recurrence -> add("RRULE:${recurrenceRule(recurrence = recurrence, start = event.start)}") }
+            event.status?.let { status -> add("STATUS:${status.name}") }
+            event.transparency?.let { transparency -> add("TRANSP:${transparency.name}") }
+            event.classification?.let { classification -> add("CLASS:${classification.name}") }
+            event.priority?.let { priority -> add("PRIORITY:$priority") }
+            if (event.categories.isNotEmpty()) {
+                add("CATEGORIES:${event.categories.joinToString(separator = ",") { category -> escapeVcard(value = category) }}")
+            }
+            event.reminderMinutes?.let { minutes ->
+                // A reminder that shows needs a text: the title of the event
+                add("BEGIN:VALARM")
+                add("ACTION:DISPLAY")
+                add("DESCRIPTION:${escapeVcard(value = event.summary ?: "Reminder")}")
+                add("TRIGGER:-PT${minutes}M")
+                add("END:VALARM")
+            }
+            add("END:VEVENT")
+            add("END:VCALENDAR")
+        }.joinToString(separator = "\r\n")
+
+    // ";VALUE=DATE:20261122" for a whole day, ":20261122T150000Z" in UTC, ";TZID=…:20261122T150000" in a zone,
+    // ":20261122T150000" floating
+    private fun eventDateTime(dateTime: EventDateTime): String {
+        val date = dateTime.date.toString().filter { char -> char != '-' }
+        val time = dateTime.time ?: return ";VALUE=DATE:$date"
+        val clock = "T${time.hour.twoDigits()}${time.minute.twoDigits()}${time.second.twoDigits()}"
+        return when (dateTime.timeZone) {
+            null -> ":$date$clock"
+            EventDateTime.UTC -> ":$date${clock}Z"
+            else -> ";TZID=${dateTime.timeZone}:$date$clock"
+        }
+    }
+
+    /** The RRULE of an event that repeats: UNTIL is of the type of its start, in UTC at the end of its day for a time. */
+    fun recurrenceRule(
+        recurrence: EventRecurrence,
+        start: EventDateTime,
+    ): String =
+        listOfNotNull(
+            "FREQ=${recurrence.frequency.name}",
+            recurrence.interval?.let { interval -> "INTERVAL=$interval" },
+            recurrence.count?.let { count -> "COUNT=$count" },
+            recurrence.until?.let { until ->
+                val date = until.toString().filter { char -> char != '-' }
+                if (start.time == null) "UNTIL=$date" else "UNTIL=${date}T235959Z"
+            },
+            recurrence.days.takeIf { days -> days.isNotEmpty() }?.let { days ->
+                "BYDAY=${days.sortedBy { day -> day.ordinal }.joinToString(separator = ",") { day -> day.name.take(2) }}"
+            },
+        ).joinToString(separator = ";")
+
+    private fun Int.twoDigits(): String =
+        toString().padStart(length = 2, padChar = '0')
 
     private fun escapeField(value: String): String =
         buildString {

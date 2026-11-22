@@ -3,6 +3,8 @@ package fr.skyle.scanny.di
 import android.os.Build
 import fr.skyle.scanny.platform.app.AndroidAppVersion
 import fr.skyle.scanny.platform.app.AppVersion
+import fr.skyle.scanny.platform.calendar.AndroidEventAdder
+import fr.skyle.scanny.platform.calendar.EventAdder
 import fr.skyle.scanny.platform.contact.AndroidContactAdder
 import fr.skyle.scanny.platform.contact.ContactAdder
 import fr.skyle.scanny.platform.image.AndroidImageSaver
@@ -32,5 +34,6 @@ internal actual val platformSharedModule: Module = module {
     singleOf(::AndroidAppVersion) bind AppVersion::class
     singleOf(::AndroidScanBeeper) bind ScanBeeper::class
     singleOf(::AndroidContactAdder) bind ContactAdder::class
+    singleOf(::AndroidEventAdder) bind EventAdder::class
     single<WifiNetworkSupport> { AndroidWifiNetworkSupport() }
 }

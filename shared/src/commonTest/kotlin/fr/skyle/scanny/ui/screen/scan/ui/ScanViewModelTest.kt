@@ -3,8 +3,10 @@ package fr.skyle.scanny.ui.screen.scan.ui
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.DetectedBarcode
+import fr.skyle.scanny.domain.model.EventDateTime
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.fake.FakeContactAdder
+import fr.skyle.scanny.fake.FakeEventAdder
 import fr.skyle.scanny.fake.FakeRecordScanUseCase
 import fr.skyle.scanny.fake.FakeScanBeeper
 import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
@@ -33,6 +35,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalDate
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -495,6 +498,33 @@ class ScanViewModelTest {
         assertEquals(
             expected = listOf(contact),
             actual = contactAdder.addedContacts,
+        )
+    }
+
+    @Test
+    fun `an event is added to the calendar or reported when it cannot be`() = runTest(testDispatcher) {
+        // Given
+        val event = BarcodeContent.Event(
+            summary = "Launch",
+            start = EventDateTime(date = LocalDate(2026, 11, 22)),
+        )
+        val eventAdder = FakeEventAdder()
+        val viewModel = scanViewModel(eventAdder = eventAdder)
+        val failingViewModel = scanViewModel(eventAdder = FakeEventAdder(error = IllegalStateException("No calendar")))
+        val events = collectEvents(viewModel = failingViewModel)
+
+        // When
+        viewModel.onAddEventClicked(event = event)
+        failingViewModel.onAddEventClicked(event = event)
+
+        // Then
+        assertEquals(
+            expected = listOf(event),
+            actual = eventAdder.addedEvents,
+        )
+        assertEquals(
+            expected = listOf(ScanViewModel.ScanEvent.EventNotAdded),
+            actual = events,
         )
     }
 
@@ -1126,6 +1156,7 @@ class ScanViewModelTest {
         recordScanUseCase: FakeRecordScanUseCase = FakeRecordScanUseCase(),
         watchScanSettingsUseCase: FakeWatchScanSettingsUseCase = FakeWatchScanSettingsUseCase(),
         contactAdder: FakeContactAdder = FakeContactAdder(),
+        eventAdder: FakeEventAdder = FakeEventAdder(),
         wifiNetworkSupport: FakeWifiNetworkSupport = FakeWifiNetworkSupport(),
         scanBeeper: FakeScanBeeper = FakeScanBeeper(),
     ): ScanViewModel =
@@ -1133,6 +1164,7 @@ class ScanViewModelTest {
             recordScanUseCase = recordScanUseCase,
             watchScanSettingsUseCase = watchScanSettingsUseCase,
             contactAdder = contactAdder,
+            eventAdder = eventAdder,
             wifiNetworkSupport = wifiNetworkSupport,
             scanBeeper = scanBeeper,
             clock = testClock,

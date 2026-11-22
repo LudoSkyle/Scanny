@@ -7,6 +7,7 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.usecase.scan.DeleteScannedCodeUseCase
 import fr.skyle.scanny.domain.usecase.scan.WatchScannedCodeUseCase
+import fr.skyle.scanny.platform.calendar.EventAdder
 import fr.skyle.scanny.platform.contact.ContactAdder
 import fr.skyle.scanny.platform.image.SavedImage
 import fr.skyle.scanny.platform.share.TextSharer
@@ -35,6 +36,7 @@ class ScanDetailViewModel(
     private val textSharer: TextSharer,
     private val codeImageExporter: CodeImageExporter,
     private val contactAdder: ContactAdder,
+    private val eventAdder: EventAdder,
     private val wifiNetworkSupport: WifiNetworkSupport,
     private val clock: Clock,
     private val timeZone: TimeZone,
@@ -133,6 +135,18 @@ class ScanDetailViewModel(
         }
     }
 
+    fun onAddEventClicked(event: BarcodeContent.Event) {
+        try {
+            eventAdder.addEvent(event = event)
+        } catch (exception: Exception) {
+            Logger.e(throwable = exception) { "Failed to open the addition of the scanned event" }
+
+            viewModelScope.launch {
+                _event.send(ScanDetailEvent.EventNotAdded)
+            }
+        }
+    }
+
     fun onDeleteConfirmed() {
         viewModelScope.launch {
             _uiState.update { uiState ->
@@ -167,6 +181,7 @@ class ScanDetailViewModel(
         data object CodeDeleted : ScanDetailEvent
         data object DeleteFailed : ScanDetailEvent
         data object ContactNotAdded : ScanDetailEvent
+        data object EventNotAdded : ScanDetailEvent
         data class ImageSaved(val savedImage: SavedImage) : ScanDetailEvent
         data object ImageNotSaved : ScanDetailEvent
         data object ImageNotShared : ScanDetailEvent

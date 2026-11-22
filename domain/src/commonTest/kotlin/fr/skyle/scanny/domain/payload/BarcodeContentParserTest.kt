@@ -8,10 +8,19 @@ import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.ContactPhone
 import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.ContactWebsite
+import fr.skyle.scanny.domain.model.EventClassification
+import fr.skyle.scanny.domain.model.EventDateTime
+import fr.skyle.scanny.domain.model.EventFrequency
+import fr.skyle.scanny.domain.model.EventRecurrence
+import fr.skyle.scanny.domain.model.EventStatus
+import fr.skyle.scanny.domain.model.EventTransparency
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.model.WifiTransitionMode
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -886,6 +895,126 @@ class BarcodeContentParserTest {
     }
 
     @Test
+    fun `a vevent in its vcalendar gives every one of its properties`() {
+        // Given
+        val rawValue = listOf(
+            "BEGIN:VCALENDAR",
+            "VERSION:2.0",
+            "BEGIN:VEVENT",
+            "SUMMARY:Scanny launch\\, at last",
+            "DTSTART;TZID=Europe/Paris:20261122T150000",
+            "DTEND;TZID=Europe/Paris:20261122T163000",
+            "LOCATION:Opéra\\; Paris",
+            "GEO:48.8719;2.3316",
+            "DESCRIPTION:Line 1\\nLine 2",
+            "URL:https://scanny.app",
+            "ORGANIZER;CN=John:mailto:john@scanny.app",
+            "ATTENDEE;CN=Jane:mailto:jane@scanny.app",
+            "ATTENDEE:MAILTO:jim@scanny.app",
+            "RRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=10;BYDAY=MO,WE,1FR",
+            "STATUS:CONFIRMED",
+            "TRANSP:TRANSPARENT",
+            "CLASS:PRIVATE",
+            "PRIORITY:1",
+            "CATEGORIES:Work,Launch\\, party",
+            "BEGIN:VALARM",
+            "ACTION:DISPLAY",
+            "TRIGGER:-PT15M",
+            "END:VALARM",
+            "END:VEVENT",
+            "END:VCALENDAR",
+        ).joinToString(separator = "\r\n")
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Event(
+                summary = "Scanny launch, at last",
+                start = EventDateTime(date = LocalDate(2026, 11, 22), time = LocalTime(15, 0), timeZone = "Europe/Paris"),
+                end = EventDateTime(date = LocalDate(2026, 11, 22), time = LocalTime(16, 30), timeZone = "Europe/Paris"),
+                location = "Opéra; Paris",
+                latitude = 48.8719,
+                longitude = 2.3316,
+                description = "Line 1\nLine 2",
+                url = "https://scanny.app",
+                organizer = "john@scanny.app",
+                attendees = listOf("jane@scanny.app", "jim@scanny.app"),
+                recurrence = EventRecurrence(
+                    frequency = EventFrequency.WEEKLY,
+                    interval = 2,
+                    count = 10,
+                    days = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY),
+                ),
+                reminderMinutes = 15,
+                status = EventStatus.CONFIRMED,
+                transparency = EventTransparency.TRANSPARENT,
+                classification = EventClassification.PRIVATE,
+                priority = 1,
+                categories = listOf("Work", "Launch, party"),
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a bare vevent gives its start in utc and its end from its duration`() {
+        // Given
+        val rawValue = "BEGIN:VEVENT\nSUMMARY:Call\nDTSTART:20261122T233000Z\nDURATION:PT1H\nEND:VEVENT"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Event(
+                summary = "Call",
+                start = EventDateTime(date = LocalDate(2026, 11, 22), time = LocalTime(23, 30), timeZone = EventDateTime.UTC),
+                end = EventDateTime(date = LocalDate(2026, 11, 23), time = LocalTime(0, 30), timeZone = EventDateTime.UTC),
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an event of whole days has no time and a floating one no zone`() {
+        // Given
+        val rawValue = "BEGIN:VEVENT\nDTSTART;VALUE=DATE:20261224\nDTEND:20261226\nRRULE:FREQ=YEARLY;UNTIL=20301224\nEND:VEVENT"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Event(
+                start = EventDateTime(date = LocalDate(2026, 12, 24)),
+                end = EventDateTime(date = LocalDate(2026, 12, 26)),
+                recurrence = EventRecurrence(
+                    frequency = EventFrequency.YEARLY,
+                    until = LocalDate(2030, 12, 24),
+                ),
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an event without start or with a day that does not exist is shown as text`() {
+        // Given
+        val rawValue = "BEGIN:VEVENT\nSUMMARY:Never\nDTSTART:20260230T100000\nEND:VEVENT"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Text(text = "BEGIN:VEVENT\nSUMMARY:Never\nDTSTART:20260230T100000\nEND:VEVENT"),
+            actual = content,
+        )
+    }
+
+    @Test
     fun `an https link is an url`() {
         // Given
         val rawValue = "https://scanny.app/path?query=1"
@@ -1381,6 +1510,11 @@ class BarcodeContentParserTest {
             "sms:",
             "sms:?body=%E",
             "MMSTO:",
+            "BEGIN:VEVENT",
+            "BEGIN:VEVENT\nDTSTART:2026",
+            "BEGIN:VEVENT\nDTSTART:20261322T999999\nDURATION:P99999999999W\nRRULE:FREQ=\nEND:VEVENT",
+            "BEGIN:VEVENT\nDTSTART:20261122\nDURATION:P9999999W\nBEGIN:VALARM\nTRIGGER:-P\nEND:VEVENT",
+            "BEGIN:VCALENDAR\nEND:VCALENDAR",
             "MMSTO::",
             "mms:?subject=%",
             "MECARD:N:\\",

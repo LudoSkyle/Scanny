@@ -38,3 +38,7 @@ fun BarcodeContent.Otp.toOtpauthLink(): String =
 /** The bitcoin: link of BIP 21 that opens a wallet on this payment. */
 fun BarcodeContent.Bitcoin.toBitcoinLink(): String =
     BarcodeContentEncoder.encode(content = this)
+
+/** The RRULE of iCalendar this event repeats with, as the calendar of Android takes it, or null. */
+fun BarcodeContent.Event.toRecurrenceRule(): String? =
+    recurrence?.let { recurrence -> BarcodeContentEncoder.recurrenceRule(recurrence = recurrence, start = start) }

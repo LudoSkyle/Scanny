@@ -39,6 +39,7 @@ import fr.skyle.scanny.resources.error_correction_quartile
 import fr.skyle.scanny.resources.error_correction_quartile_description
 import fr.skyle.scanny.resources.error_correction_too_high_for_content
 import fr.skyle.scanny.resources.error_correction_too_low_for_logo
+import fr.skyle.scanny.resources.event
 import fr.skyle.scanny.resources.fax
 import fr.skyle.scanny.resources.gradient_linear
 import fr.skyle.scanny.resources.gradient_none
@@ -89,6 +90,7 @@ internal fun CreationKind.toText(): StringResource =
         CreationKind.BOOKMARK -> Res.string.bookmark
         CreationKind.OTP -> Res.string.otp
         CreationKind.BITCOIN -> Res.string.bitcoin
+        CreationKind.EVENT -> Res.string.event
         CreationKind.BARCODE -> Res.string.barcode
     }
 

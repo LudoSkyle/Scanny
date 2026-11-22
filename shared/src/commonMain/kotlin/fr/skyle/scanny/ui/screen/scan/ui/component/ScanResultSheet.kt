@@ -28,6 +28,7 @@ import fr.skyle.scanny.resources.see_detail
 import fr.skyle.scanny.ui.core.code.component.CodeActionButton
 import fr.skyle.scanny.ui.core.code.component.CodeFieldText
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
+import fr.skyle.scanny.ui.core.code.component.codeFieldValueText
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
@@ -93,7 +94,7 @@ fun ScanResultSheet(
                 CodeFieldText(
                     modifier = Modifier.fillMaxWidth(),
                     label = field.label?.let { label -> stringResource(label.toText()) },
-                    value = field.value,
+                    value = codeFieldValueText(field = field),
                     maxLines = FIELD_MAX_LINES,
                 )
             }

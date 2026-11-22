@@ -29,4 +29,7 @@ internal fun Instant.toCalendarDay(
     }
 
 internal fun Instant.toTimeText(timeZone: TimeZone): String =
-    toLocalDateTime(timeZone).time.format(TIME_FORMAT)
+    toLocalDateTime(timeZone).time.toTimeText()
+
+internal fun LocalTime.toTimeText(): String =
+    format(TIME_FORMAT)

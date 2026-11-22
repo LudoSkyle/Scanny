@@ -14,4 +14,5 @@ enum class CodeType {
     BOOKMARK,
     OTP,
     BITCOIN,
+    EVENT,
 }

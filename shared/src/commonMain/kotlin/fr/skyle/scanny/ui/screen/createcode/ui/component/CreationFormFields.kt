@@ -358,6 +358,12 @@ fun CreationFormFields(
                 )
             }
 
+            CreationKind.EVENT -> EventFormFields(
+                modifier = Modifier.fillMaxWidth(),
+                form = form,
+                onFormChanged = onFormChanged,
+            )
+
             CreationKind.BARCODE -> {
                 SCDropdownField(
                     modifier = Modifier.fillMaxWidth(),

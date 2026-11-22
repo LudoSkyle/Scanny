@@ -21,6 +21,7 @@ import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toCreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationSource
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ErrorCorrectionChoice
@@ -35,15 +36,18 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
 
 class CreateCodeViewModel(
     private val source: CreationSource,
     private val watchScannedCodeUseCase: WatchScannedCodeUseCase,
     private val watchCreationUseCase: WatchCreationUseCase,
     private val recordCreationUseCase: RecordCreationUseCase,
+    private val timeZone: TimeZone,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CreateCodeUIState().withDerivedState())
+    // A new event is in the zone of the device
+    private val _uiState = MutableStateFlow(CreateCodeUIState(form = CreationForm(eventTimeZone = timeZone.id)).withDerivedState())
     val uiState: StateFlow<CreateCodeUIState> = _uiState.asStateFlow()
 
     private val _event = Channel<CreateCodeEvent>(Channel.BUFFERED)
@@ -73,15 +77,19 @@ class CreateCodeViewModel(
             CreationSource.New -> Unit
 
             is CreationSource.ScannedCode -> watchScannedCodeUseCase(codeId = source.codeId).first()?.let { scannedCode ->
-                onFormChanged(form = scannedCode.toCreationForm())
+                onFormChanged(form = scannedCode.toCreationForm().withDeviceZone())
             }
 
             is CreationSource.CreatedCode -> watchCreationUseCase(creationId = source.creationId).first()?.let { creation ->
-                onFormChanged(form = creation.toCreationForm())
+                onFormChanged(form = creation.toCreationForm().withDeviceZone())
                 onStyleChanged(style = creation.style)
             }
         }
     }
+
+    // An event switched to from another content is in the zone of the device; a scanned one keeps its own
+    private fun CreationForm.withDeviceZone(): CreationForm =
+        if (kind == CreationKind.EVENT) this else copy(eventTimeZone = timeZone.id)
 
     fun onFormChanged(form: CreationForm) {
         _uiState.update { uiState ->

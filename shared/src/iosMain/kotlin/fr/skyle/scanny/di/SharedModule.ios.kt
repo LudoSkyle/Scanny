@@ -2,6 +2,8 @@ package fr.skyle.scanny.di
 
 import fr.skyle.scanny.platform.app.AppVersion
 import fr.skyle.scanny.platform.app.IosAppVersion
+import fr.skyle.scanny.platform.calendar.EventAdder
+import fr.skyle.scanny.platform.calendar.IosEventAdder
 import fr.skyle.scanny.platform.contact.ContactAdder
 import fr.skyle.scanny.platform.contact.IosContactAdder
 import fr.skyle.scanny.platform.image.ImageSaver
@@ -26,5 +28,6 @@ internal actual val platformSharedModule: Module = module {
     singleOf(::IosAppVersion) bind AppVersion::class
     singleOf(::IosScanBeeper) bind ScanBeeper::class
     singleOf(::IosContactAdder) bind ContactAdder::class
+    singleOf(::IosEventAdder) bind EventAdder::class
     singleOf(::IosWifiNetworkSupport) bind WifiNetworkSupport::class
 }

@@ -11,6 +11,12 @@ import fr.skyle.scanny.domain.model.ContactPhone
 import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.ContactWebsite
 import fr.skyle.scanny.domain.model.Creation
+import fr.skyle.scanny.domain.model.EventClassification
+import fr.skyle.scanny.domain.model.EventDateTime
+import fr.skyle.scanny.domain.model.EventFrequency
+import fr.skyle.scanny.domain.model.EventRecurrence
+import fr.skyle.scanny.domain.model.EventStatus
+import fr.skyle.scanny.domain.model.EventTransparency
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
@@ -20,6 +26,9 @@ import fr.skyle.scanny.domain.payload.toRawValue
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Instant
@@ -108,6 +117,35 @@ class CodeFormMapperTest {
                 lastName = "Doe",
             ),
             BarcodeContent.Phone(phoneNumber = "+33 6 00 00 00 00"),
+            BarcodeContent.Event(
+                summary = "Scanny launch",
+                start = EventDateTime(date = LocalDate(2026, 11, 22), time = LocalTime(15, 0), timeZone = "Europe/Paris"),
+                end = EventDateTime(date = LocalDate(2026, 11, 22), time = LocalTime(16, 30), timeZone = "Europe/Paris"),
+                location = "Opéra",
+                latitude = 48.8719,
+                longitude = 2.3316,
+                description = "Come along",
+                url = "https://scanny.app",
+                organizer = "john@scanny.app",
+                attendees = listOf("jane@scanny.app", "jim@scanny.app"),
+                recurrence = EventRecurrence(frequency = EventFrequency.WEEKLY, interval = 2, count = 10, days = setOf(DayOfWeek.MONDAY)),
+                reminderMinutes = 15,
+                status = EventStatus.CONFIRMED,
+                transparency = EventTransparency.TRANSPARENT,
+                classification = EventClassification.PRIVATE,
+                priority = 1,
+                categories = listOf("Work", "Launch"),
+            ),
+            BarcodeContent.Event(
+                summary = "Holidays",
+                start = EventDateTime(date = LocalDate(2026, 12, 24)),
+                end = EventDateTime(date = LocalDate(2026, 12, 26)),
+                recurrence = EventRecurrence(frequency = EventFrequency.YEARLY, until = LocalDate(2030, 12, 24)),
+            ),
+            BarcodeContent.Event(
+                summary = "Floating",
+                start = EventDateTime(date = LocalDate(2026, 1, 5), time = LocalTime(9, 0)),
+            ),
             BarcodeContent.Mms(
                 phoneNumber = "+33600000000",
                 subject = "Hello",

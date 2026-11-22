@@ -7,11 +7,13 @@
     <string name="add_logo">Ajouter un logo</string>
     <string name="add_phone">Ajouter un téléphone</string>
     <string name="add_to_authenticator">Ajouter à l'authentificateur</string>
+    <string name="add_to_calendar">Ajouter au calendrier</string>
     <string name="add_website">Ajouter un site</string>
     <string name="address">Adresse</string>
     <string name="advanced_options">Options avancées</string>
     <string name="algorithm">Algorithme</string>
     <string name="all_creations_deleted">Toutes les créations seront supprimées.</string>
+    <string name="all_day">Toute la journée</string>
     <string name="all_scans_deleted">Tous les scans seront supprimés.</string>
     <string name="allow_camera">Autoriser la caméra</string>
     <string name="altitude">Altitude</string>
@@ -20,7 +22,11 @@
     <string name="amount_in_bitcoins">Montant en BTC</string>
     <string name="anonymous_identity">Identité anonyme</string>
     <string name="app_description">Scanny scanne les QR codes et les codes-barres, avec les dernières technologies et sans publicité, tout en restant légère et fiable.</string>
+    <string name="at_start">Au début</string>
     <string name="at_time">%1$s à %2$s</string>
+    <string name="attendee">Participant</string>
+    <string name="attendees">Participants</string>
+    <string name="availability">Disponibilité</string>
     <string name="background_color">Couleur du fond</string>
     <string name="barcode">Code-barres</string>
     <string name="barcode_value">Valeur</string>
@@ -29,17 +35,23 @@
     <string name="birthday">Anniversaire</string>
     <string name="blind_carbon_copy">Cci</string>
     <string name="bookmark">Marque-page</string>
+    <string name="busy">Occupé</string>
     <string name="call">Appeler</string>
     <string name="camera_blocked">La caméra est bloquée pour Scanny. Autorisez-la dans les réglages de votre appareil pour scanner des codes.</string>
     <string name="camera_needed">Scanny a besoin de la caméra pour scanner des codes.</string>
     <string name="camera_unavailable">Aucune caméra n'est disponible sur cet appareil. Vous pouvez toujours scanner un code dans une image.</string>
     <string name="cancel">Annuler</string>
     <string name="carbon_copy">Cc</string>
+    <string name="categories">Catégories</string>
     <string name="change_logo">Changer le logo</string>
     <string name="choose">Choisir</string>
     <string name="choose_color">Choisir une couleur</string>
     <string name="choose_subject">Choisissez un sujet</string>
     <string name="city">Ville</string>
+    <string name="class_confidential">Confidentiel</string>
+    <string name="class_private">Privé</string>
+    <string name="class_public">Public</string>
+    <string name="classification">Visibilité</string>
     <string name="clear">Effacer</string>
     <string name="clear_history">Effacer l'historique</string>
     <string name="clear_history_question">Effacer l'historique ?</string>
@@ -96,11 +108,17 @@
     <string name="creations">Créations</string>
     <string name="customization">Personnalisation</string>
     <string name="customization_reset">Personnalisation réinitialisée</string>
+    <string name="date_at_time">%1$s à %2$s</string>
     <string name="day_date">%1$d %2$s %3$d</string>
+    <plurals name="days_before">
+        <item quantity="one">%1$d jour avant</item>
+        <item quantity="other">%1$d jours avant</item>
+    </plurals>
     <string name="delete">Supprimer</string>
     <string name="delete_code_question">Supprimer ce code ?</string>
     <string name="delete_group_question">Supprimer ce groupe ?</string>
     <string name="department">Service</string>
+    <string name="description">Description</string>
     <string name="digits">Nombre de chiffres</string>
     <string name="discard">Abandonner</string>
     <string name="discard_codes_question">Abandonner les codes trouvés ?</string>
@@ -110,6 +128,9 @@
     <string name="eap_method">Méthode EAP</string>
     <string name="edit_code">Modifier le code</string>
     <string name="email">E-mail</string>
+    <string name="end">Fin</string>
+    <string name="end_date">Date de fin</string>
+    <string name="end_time">Heure de fin</string>
     <string name="enhanced_open_only">Wi-Fi Enhanced Open uniquement</string>
     <string name="error_correction">Correction d'erreur</string>
     <string name="error_correction_auto">Automatique</string>
@@ -125,6 +146,23 @@
     <string name="error_correction_quartile_description">Environ 25 % du code</string>
     <string name="error_correction_too_high_for_content">Trop forte pour ce contenu</string>
     <string name="error_correction_too_low_for_logo">Trop faible pour le logo</string>
+    <string name="event">Événement</string>
+    <plurals name="every_days">
+        <item quantity="one">Tous les jours</item>
+        <item quantity="other">Tous les %1$d jours</item>
+    </plurals>
+    <plurals name="every_months">
+        <item quantity="one">Tous les mois</item>
+        <item quantity="other">Tous les %1$d mois</item>
+    </plurals>
+    <plurals name="every_weeks">
+        <item quantity="one">Toutes les semaines</item>
+        <item quantity="other">Toutes les %1$d semaines</item>
+    </plurals>
+    <plurals name="every_years">
+        <item quantity="one">Tous les ans</item>
+        <item quantity="other">Tous les %1$d ans</item>
+    </plurals>
     <string name="extended_address">Appartement, bâtiment</string>
     <string name="fax">Fax</string>
     <string name="feedback">Votre avis</string>
@@ -134,6 +172,7 @@
     <string name="fill_content_to_see_code">Remplissez le contenu pour voir le code.</string>
     <string name="finish">Terminer</string>
     <string name="first_name">Prénom</string>
+    <string name="floating_time">Heure locale, où que l'on soit</string>
     <string name="format">Format</string>
     <string name="format_aztec_example">Un billet de train tient sa réservation, son trajet et son voyageur dans un code Aztec de quelques centaines de caractères.</string>
     <string name="format_aztec_structure">Une cible de carrés en son centre, qui permet au lecteur de le trouver, entourée de couches de modules, de 15 × 15 à 151 × 151. Il n'a besoin d'aucune marge blanche autour de lui.</string>
@@ -180,6 +219,12 @@
     <string name="format_upc_e_use">Les petits produits vendus en Amérique du Nord.</string>
     <string name="format_use">Son usage</string>
     <string name="formats_intro">Scanny lit tous les formats ci-dessous. Il crée les QR codes et les codes-barres.</string>
+    <string name="free">Disponible</string>
+    <string name="frequency">Fréquence</string>
+    <string name="frequency_daily">Tous les jours</string>
+    <string name="frequency_monthly">Tous les mois</string>
+    <string name="frequency_weekly">Toutes les semaines</string>
+    <string name="frequency_yearly">Tous les ans</string>
     <string name="give_feedback">Donner votre avis</string>
     <string name="gradient">Dégradé</string>
     <string name="gradient_color">Seconde couleur du dégradé</string>
@@ -197,6 +242,10 @@
     <string name="home_email">E-mail personnel</string>
     <string name="home_phone">Téléphone domicile</string>
     <string name="home_website">Site personnel</string>
+    <plurals name="hours_before">
+        <item quantity="one">%1$d heure avant</item>
+        <item quantity="other">%1$d heures avant</item>
+    </plurals>
     <string name="identity">Identité</string>
     <string name="image_not_saved">L'image n'a pas pu être enregistrée</string>
     <string name="image_not_shared">L'image n'a pas pu être partagée</string>
@@ -221,6 +270,10 @@
     <string name="made_by_skyle">Fait par Skyle avec ❤️ chez Openium</string>
     <string name="mail_app_opens_with_message">Votre app de mail s'ouvre avec votre message, prêt à être envoyé.</string>
     <string name="message">Message</string>
+    <plurals name="minutes_before">
+        <item quantity="one">%1$d minute avant</item>
+        <item quantity="other">%1$d minutes avant</item>
+    </plurals>
     <string-array name="months">
         <item>janvier</item>
         <item>février</item>
@@ -248,12 +301,15 @@
     <string name="no_code_in_image">Aucun code trouvé dans cette image</string>
     <string name="no_creation_yet">Aucune création pour l'instant</string>
     <string name="no_scan_yet">Aucun scan pour l'instant</string>
+    <string name="not_set">Non précisé</string>
     <string name="note">Note</string>
+    <string name="occurrences">Nombre de fois</string>
     <string name="open_content_after_scan">Ouvrir le contenu après un scan</string>
     <string name="open_in_wallet">Ouvrir dans un portefeuille</string>
     <string name="open_link">Ouvrir le lien</string>
     <string name="open_settings">Ouvrir les réglages</string>
     <string name="organization">Organisation</string>
+    <string name="organizer">Organisateur</string>
     <string name="other_color">Autre couleur</string>
     <string name="otp">Code à usage unique</string>
     <string name="otp_type">Type de clé</string>
@@ -269,15 +325,25 @@
     <string name="place_code_in_frame">Placez un code dans le cadre</string>
     <string name="po_box">Boîte postale</string>
     <string name="postal_code">Code postal</string>
+    <string name="priority">Priorité</string>
     <string name="privacy_policy">Politique de confidentialité</string>
     <string name="rate_app">Noter l'app</string>
     <string name="raw_content">Contenu brut</string>
     <string name="raw_content_after_scan">Afficher le contenu brut après un scan</string>
     <string name="recipient">Destinataire</string>
     <string name="recipients">Destinataires</string>
+    <string name="recurrence">Répétition</string>
+    <string name="recurrence_after">Après</string>
+    <string name="recurrence_end">Se termine</string>
+    <string name="recurrence_never">Jamais</string>
+    <string name="recurrence_on">Le</string>
+    <string name="recurrence_with">%1$s : %2$s</string>
     <string name="region">Région</string>
+    <string name="reminder">Rappel</string>
     <string name="remove">Retirer</string>
     <string name="remove_logo">Retirer le logo</string>
+    <string name="repeat_interval">Tous les combien</string>
+    <string name="repeats_on">Les</string>
     <string name="required_field">%1$s *</string>
     <string name="reset_customization">Réinitialiser la personnalisation</string>
     <string name="retention_forever">Toujours</string>
@@ -311,6 +377,13 @@
     <string name="show_on_map">Voir sur la carte</string>
     <string name="skip_consecutive_duplicates">Ignorer un code scanné de nouveau aussitôt</string>
     <string name="star_project">Mettre une étoile au projet sur GitHub</string>
+    <string name="start">Début</string>
+    <string name="start_date">Date de début</string>
+    <string name="start_time">Heure de début</string>
+    <string name="status">Statut</string>
+    <string name="status_cancelled">Annulé</string>
+    <string name="status_confirmed">Confirmé</string>
+    <string name="status_tentative">Provisoire</string>
     <string name="step_of">Étape %1$d sur %2$d</string>
     <string name="street">Rue</string>
     <string name="subject">Objet</string>
@@ -318,6 +391,12 @@
     <string name="text">Texte</string>
     <string name="the_code">Le code</string>
     <string name="the_logo">Le logo</string>
+    <string name="time_in_zone">%1$s (%2$s)</string>
+    <string name="time_zone">Fuseau horaire</string>
+    <plurals name="times_count">
+        <item quantity="one">%1$d fois</item>
+        <item quantity="other">%1$d fois</item>
+    </plurals>
     <string name="title">Titre</string>
     <string name="today">Aujourd'hui</string>
     <string name="turn_off_torch">Éteindre la lampe</string>
@@ -329,11 +408,22 @@
     <string name="uncertainty">Incertitude</string>
     <string name="uncertainty_in_meters">Incertitude en mètres</string>
     <string name="undo">Annuler</string>
+    <string name="until_date">Dernier jour</string>
+    <string name="until_day">jusqu'au %1$s</string>
     <string name="use_front_camera">Utiliser la caméra avant</string>
     <string name="value_not_for_format">Cette valeur ne convient pas à ce format.</string>
     <string name="version_and_build">Version %1$s (build %2$s)</string>
     <string name="vibrate_after_scan">Vibrer après un scan</string>
     <string name="website">Site web</string>
+    <string-array name="week_days">
+        <item>lundi</item>
+        <item>mardi</item>
+        <item>mercredi</item>
+        <item>jeudi</item>
+        <item>vendredi</item>
+        <item>samedi</item>
+        <item>dimanche</item>
+    </string-array>
     <string name="wifi_already_saved">« %1$s » est déjà enregistré sur cet appareil.</string>
     <string name="wifi_choose_in_settings">Choisissez « %1$s » dans la liste.</string>
     <string name="wifi_not_saved">« %1$s » n'a pas pu être enregistré.</string>

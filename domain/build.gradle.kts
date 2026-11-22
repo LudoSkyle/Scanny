@@ -17,6 +17,8 @@ kotlin {
 
             // Kotlinx
             implementation(libs.kotlinx.coroutines.core)
+            // The days and times of an event are in the public contents
+            api(libs.kotlinx.datetime)
 
             // Koin
             implementation(libs.koin.core)

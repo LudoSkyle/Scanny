@@ -9,11 +9,17 @@ import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.ContactPhone
 import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.ContactWebsite
+import fr.skyle.scanny.domain.model.EventDateTime
+import fr.skyle.scanny.domain.model.EventFrequency
+import fr.skyle.scanny.domain.model.EventRecurrence
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.model.WifiTransitionMode
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
+import fr.skyle.scanny.ui.screen.createcode.ui.model.RecurrenceEnd
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.plus
 
 // The length of a password Android accepts for a WPA network, which iOS accepts too
 private val WPA_PASSWORD_LENGTH = 8..63
@@ -95,6 +101,8 @@ internal fun CreationForm.toBarcodeContent(): BarcodeContent? =
         CreationKind.OTP -> toOtp()
 
         CreationKind.BITCOIN -> toBitcoin()
+
+        CreationKind.EVENT -> toEvent()
 
         // Whether its format accepts it is told by the drawing of the code
         CreationKind.BARCODE -> barcodeValue.trim().takeIf { value -> value.isNotEmpty() }?.let { value ->
@@ -206,6 +214,75 @@ private fun String.toCoordinate(): Double? =
             newChar = '.',
         )
         .toDoubleOrNull()
+
+// A title and a start; an end after it, a time for each day of an event at a time. The last day of an
+// event of whole days is the day before the end iCalendar writes. A recurrence ends after a number of times
+// or on a last day, as chosen
+private fun CreationForm.toEvent(): BarcodeContent.Event? {
+    val summary = eventSummary.trim().takeIf { summary -> summary.isNotEmpty() } ?: return null
+    val startDate = eventStartDate ?: return null
+    val timeZone = eventTimeZone.takeUnless { isEventAllDay }
+    val start = if (isEventAllDay) {
+        EventDateTime(date = startDate)
+    } else {
+        EventDateTime(date = startDate, time = eventStartTime ?: return null, timeZone = timeZone)
+    }
+    val end = when {
+        isEventAllDay -> eventEndDate?.let { lastDay -> EventDateTime(date = lastDay.plus(1, DateTimeUnit.DAY)) }
+        eventEndTime != null -> EventDateTime(date = eventEndDate ?: startDate, time = eventEndTime, timeZone = timeZone)
+        eventEndDate != null -> return null
+        else -> null
+    }
+    if (end != null && end.sortKey() < start.sortKey()) {
+        return null
+    }
+
+    val latitude = eventLatitude.ifBlank { null }?.let { latitude -> latitude.toCoordinate()?.takeIf { it in LATITUDES } ?: return null }
+    val longitude = eventLongitude.ifBlank { null }?.let { longitude -> longitude.toCoordinate()?.takeIf { it in LONGITUDES } ?: return null }
+    if ((latitude == null) != (longitude == null)) {
+        return null
+    }
+
+    val recurrence = eventFrequency?.let { frequency ->
+        EventRecurrence(
+            frequency = frequency,
+            interval = eventInterval.ifBlank { null }?.let { interval -> interval.trim().toIntOrNull()?.takeIf { it > 0 } ?: return null }?.takeIf { it > 1 },
+            count = when (eventRecurrenceEnd) {
+                RecurrenceEnd.COUNT -> eventCount.trim().toIntOrNull()?.takeIf { it > 0 } ?: return null
+                RecurrenceEnd.NEVER, RecurrenceEnd.UNTIL -> null
+            },
+            until = when (eventRecurrenceEnd) {
+                RecurrenceEnd.UNTIL -> eventUntil?.takeIf { until -> until >= startDate } ?: return null
+                RecurrenceEnd.NEVER, RecurrenceEnd.COUNT -> null
+            },
+            days = eventDays.takeIf { frequency == EventFrequency.WEEKLY }.orEmpty(),
+        )
+    }
+
+    return BarcodeContent.Event(
+        summary = summary,
+        start = start,
+        end = end,
+        location = eventLocation.trim().ifEmpty { null },
+        latitude = latitude,
+        longitude = longitude,
+        description = eventDescription.ifBlank { null },
+        url = eventUrl.trim().ifEmpty { null }?.withScheme(),
+        organizer = eventOrganizer.trim().ifEmpty { null },
+        attendees = eventAttendees.toAddresses(),
+        recurrence = recurrence,
+        reminderMinutes = eventReminderMinutes,
+        status = eventStatus,
+        transparency = eventTransparency,
+        classification = eventClassification,
+        priority = eventPriority,
+        categories = eventCategories.split(',').map { category -> category.trim() }.filter { category -> category.isNotEmpty() },
+    )
+}
+
+// The start and the end of an event share their zone: their days and times compare as they are
+private fun EventDateTime.sortKey(): String =
+    "$date ${time ?: ""}"
 
 // What the key URI format asks for: an account, a key in base32 (typed as the services show it, in
 // groups and in lower case), and the counter of a HOTP key. The parameters left to their default are

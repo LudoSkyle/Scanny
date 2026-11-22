@@ -5,6 +5,8 @@ data class CodeField(
     // Null for the content itself, a text or a link, which needs no name
     val label: CodeFieldLabel?,
     val value: String,
+    // How to show the value in the language of the device when it is not a text: a date, a recurrence…
+    val display: CodeFieldDisplay? = null,
 )
 
 enum class CodeFieldLabel {
@@ -49,6 +51,18 @@ enum class CodeFieldLabel {
     ALTITUDE,
     UNCERTAINTY,
     TITLE,
+    START,
+    END,
+    DESCRIPTION,
+    ORGANIZER,
+    ATTENDEE,
+    RECURRENCE,
+    REMINDER,
+    STATUS,
+    AVAILABILITY,
+    CLASSIFICATION,
+    PRIORITY,
+    CATEGORIES,
     LINK,
     ISSUER,
     ACCOUNT,

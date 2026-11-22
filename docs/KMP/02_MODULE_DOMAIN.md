@@ -72,6 +72,14 @@ il était écrit.
 
 `Mms` est un SMS qui a un objet : numéro, objet, message.
 
+`Event` est un VEVENT d'iCalendar (RFC 5545) : titre, début et fin (`EventDateTime` : un jour, une
+heure sauf pour une journée entière, un fuseau `UTC`, un `TZID`, ou nul pour une heure flottante), lieu
+et coordonnées, description, lien, organisateur, participants, récurrence (`EventRecurrence` :
+fréquence quotidienne, hebdomadaire, mensuelle ou annuelle, les quatre que créent les calendriers
+d'Android et d'iOS, intervalle, nombre de fois ou dernier jour, jours de la semaine), rappel en
+minutes avant le début, statut, disponibilité, visibilité, priorité de 1 à 9, catégories. Le domaine
+dépend de kotlinx-datetime (`api`) : ses jours et ses heures sont dans les contenus publics.
+
 Le parseur est **le cœur de la parité entre les plateformes**. ML Kit sait typer un code sur
 Android, mais AVFoundation et Vision ne rendent qu'un texte brut sur iOS. Scanny n'utilise donc
 jamais les types structurés de ML Kit : les deux plateformes passent le texte brut au même
@@ -80,8 +88,14 @@ parseur, et obtiennent le même résultat.
 - Une vCard donne le type d'une entrée par ses paramètres (`TYPE=CELL,VOICE`, `TYPE="cell,voice"` de
   la 4.0, `CELL` seul de la 2.1) : un fax est un fax avant d'être du travail. Un anniversaire est
   ramené à `AAAA-MM-JJ` (`19900512`, `1990-05-12T08:30:00Z`) ; un autre format est laissé de côté.
+- Un `BEGIN:VCALENDAR` ou un `BEGIN:VEVENT` donne son premier VEVENT, son rappel venant de son
+  VALARM (un `TRIGGER` avant le début ; après, ou à une heure donnée, il est laissé de côté). Il lui faut
+  un `DTSTART` ; `DTEND`, ou à défaut `DURATION`, donne la fin. Un jour qui n'existe pas (le 30 février)
+  en fait un texte, sans exception : le jour est vérifié avant d'être construit. Une partie de `RRULE`
+  qu'aucun calendrier ne crée (un jour à sa place dans le mois, `1FR`, une fréquence horaire) est laissée
+  de côté. Une durée de plus d'un siècle n'est pas prise.
 - Formats reconnus : `WIFI:`, `MATMSG:`, `mailto:`, `SMSTO:` / `sms:`, `MMSTO:` / `mms:`, `MECARD:`, `BEGIN:VCARD`,
-  `tel:`, `geo:`, `MEBKM:`, `otpauth://`, `bitcoin:`, et les URL (`http://`, `https://`). Les préfixes et les clés sont
+  `tel:`, `geo:`, `MEBKM:`, `otpauth://`, `bitcoin:`, `BEGIN:VCALENDAR` / `BEGIN:VEVENT`, et les URL (`http://`, `https://`). Les préfixes et les clés sont
   insensibles à la casse, les valeurs non.
 - Un `geo:` (RFC 5870) donne sa latitude, sa longitude, son altitude et son incertitude (`;u=…`). Un
   autre système de référence que WGS84 (`;crs=…`) en fait un texte : ses coordonnées ne se placeraient
@@ -127,6 +141,7 @@ parseur, et obtiennent le même résultat.
 | SMS | `SMSTO:numéro:message` (`sms:` n'est que lu) |
 | WiFi | dans l'ordre de la spécification WPA3 : `WIFI:T:…;R:…;S:…;H:true;I:…;P:…;K:…;`, puis `E:…;A:…;PH2:…;` d'un réseau d'entreprise (`T:WPA2-EAP`) et `;` ; `T:nopass` et pas de `P:` pour un réseau ouvert, le WPA3 seul en `T:WPA;R:1`, `R:` et `H:true` seulement quand ils servent |
 | Contact | vCard 3.0 : `N` en cinq parties, `FN`, `NICKNAME`, `ORG` (organisation;service), `TITLE`, `TEL`, `EMAIL`, `ADR` (sept parties), `URL` avec `;TYPE=` (aucun pour « autre »), `BDAY`, `NOTE` ; seules les propriétés texte sont échappées. En MeCard : `MECARD:N:nom,prénom;…;;` (ou le nom affiché seul), `NICKNAME`, `TEL`, `EMAIL`, `ADR` (ses parties séparées par des virgules, une rue seule écrite seule), `URL`, `BDAY` (AAAAMMJJ), `NOTE`, et `ORG`, `TITLE` hors du format mais lus par les lecteurs ; champs échappés comme ceux d'un `WIFI:`, une virgule échappée dans `N` ou `ADR` appartient à la partie. Un MeCard n'a ni les autres parties du nom, ni service, ni types |
+| Événement | `BEGIN:VCALENDAR`, `VERSION:2.0`, `PRODID`, puis le VEVENT, lignes en CRLF : `DTSTART;VALUE=DATE:` pour une journée entière, `…Z` en UTC, `;TZID=…:` dans un fuseau, rien pour une heure flottante ; `RRULE` avec un `UNTIL` du type du début (en UTC à la fin de son jour pour une heure) ; le rappel en VALARM `DISPLAY` ; ni `UID` ni `DTSTAMP`, qu'un code n'a pas à porter et qui rendraient deux codes du même événement différents |
 | MMS | `mms:numéro?subject=…&body=…`, encodé en `%` (`MMSTO:numéro:message`, sans objet, n'est que lu) |
 | Téléphone | `tel:numéro`, encodé en `%` |
 | Position | `geo:lat,lon[,alt][;u=…]`, et `?q=lat,lon(nom)` s'il a un nom ; coordonnées en décimales, sept au plus (`toCoordinateText()`, jamais en exposant : le texte d'un `Double` diffère entre les plateformes) |
@@ -135,7 +150,8 @@ parseur, et obtiennent le même résultat.
 | Bitcoin | `bitcoin:adresse?amount=…&label=…&message=…`, nom et message encodés en `%` |
 - Le parseur et l'encodeur sont `internal` : `shared` les utilise à travers les UseCases. Seuls sont
   publics les liens qui ouvrent l'app d'un contenu (`toMailtoLink()`, `toSmsLink()`, `toMmsLink()`, `toTelLink()`,
-  `toGeoLink()`, `toAppleMapsLink()`, `toOtpauthLink()`, `toBitcoinLink()`, dans `ContentLinks.kt`) et l'écriture d'une coordonnée
+  `toGeoLink()`, `toAppleMapsLink()`, `toOtpauthLink()`, `toBitcoinLink()`, et la `RRULE` d'un événement,
+  `toRecurrenceRule()`, dans `ContentLinks.kt`) et l'écriture d'une coordonnée
   (`toCoordinateText()`) : `shared` les ouvre et les affiche tels quels, et leur encodage `%` est celui
   de l'encodeur. Le lien `geo:` d'une position y porte toujours son lieu (`?q=lat,lon`) : sans lui,
   Maps centre la carte sans l'épingler.
@@ -210,7 +226,10 @@ format, son style, sa date.
   lirait comme un texte), un champ au moins d'un e-mail (la RFC 6068 n'en exige aucun), une altitude et
   une incertitude (positive) qui sont des nombres si elles sont données, le numéro d'un SMS, pour un contact en vCard un nom à montrer (tapé, fait de ses parties ou de son
   organisation) et en MeCard un prénom ou un nom (les champs qu'un MeCard ne tient pas restent dans le
-  formulaire, cachés, mais ne sont pas écrits), le
+  formulaire, cachés, mais ne sont pas écrits), pour un événement un titre, un début (une heure sauf
+  en journée entière), une fin après lui (une heure pour un jour de fin, le dernier jour d'une journée
+  entière comptant comme l'utilisateur le compte, iCalendar finissant au jour suivant), des
+  coordonnées ensemble et une récurrence qui finit comme choisie, le
   nom d'un réseau et, pour un réseau WPA, un mot de passe de 8 à 63 caractères (ceux qu'Android
   accepte) s'il peut se replier sur le WPA2, d'une longueur quelconque en WPA3 seul (une clé publique
   SAE-PK le rend SAE-PK seul, donc WPA3 seul), pour un réseau d'entreprise une identité et le mot de
