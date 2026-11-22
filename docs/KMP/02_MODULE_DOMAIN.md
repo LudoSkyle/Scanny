@@ -176,6 +176,11 @@ format, son style, sa date.
   forme par `ShapedLogoPainter`. Sans marge, il est posé sur les points. L'avertissement de
   lisibilité juge les coins et la seconde couleur comme les points : plus sombres que le fond, et
   d'un contraste d'au moins 4,5:1 avec lui.
+- Une couleur libre se choisit sur la palette des teintes, ou se saisit en hexadécimal (six chiffres,
+  avec ou sans `#`) ou en rouge, vert et bleu de 0 à 255 (`hexToArgb`, `rgbToArgb`). Les champs et la
+  palette se suivent ; une saisie ne change la couleur qu'une fois complète et valide. La couleur
+  saisie est gardée exactement : repassée par la teinte, la saturation et la luminosité, elle pourrait
+  s'écarter d'une unité.
 - La correction se choisit dans les options avancées de la première étape, repliées sous le
   compteur, puisqu'elle change ce que le code tient (`errorCorrectionChoices`). Une correction trop
   forte pour le contenu, ou trop faible pour le logo posé, le dit et ne se choisit pas. Le logo, à la

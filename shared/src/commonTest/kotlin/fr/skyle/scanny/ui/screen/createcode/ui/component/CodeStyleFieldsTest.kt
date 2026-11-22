@@ -126,7 +126,7 @@ internal class CodeStyleFieldsTest : ComposeTest() {
         // When
         // The first "Other color" is the one of the dots
         onAllNodesWithContentDescription(getString(Res.string.other_color))[0].assertIsSelected().performClick()
-        onNodeWithText(getString(Res.string.choose)).performClick()
+        onNodeWithText(getString(Res.string.choose)).performScrollTo().performClick()
 
         // Then
         assertEquals(

@@ -254,7 +254,7 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] Les options avancées de la personnalisation : la couleur des coins
     - [x] Un dégradé, dans les options avancées de la personnalisation
     - [x] La forme et la marge du logo, dans les options avancées de la personnalisation
-    - [ ] Une couleur saisie en hexadécimal ou en RVB
+    - [x] Une couleur saisie en hexadécimal ou en RVB
     - [ ] La snackbar « Voir » après l'enregistrement d'une image
     - [ ] Le contenu brut plus visible replié, et son réglage pour la feuille d'un scan
     - [ ] La ligne d'un groupe dans l'historique, et la séparation dans son détail

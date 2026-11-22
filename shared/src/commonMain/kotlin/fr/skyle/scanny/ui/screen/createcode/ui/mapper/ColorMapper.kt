@@ -38,3 +38,40 @@ internal fun HsvColor.toArgb(): Long =
         saturation = saturation.coerceIn(0f, 1f),
         value = value.coerceIn(0f, 1f),
     ).toArgb().toLong() and 0xFFFFFFFF
+
+private const val HEX_DIGITS = "0123456789ABCDEFabcdef"
+private const val MAX_COMPONENT = 255
+
+/** The opaque ARGB of six hexadecimal digits, with or without a # before them, null otherwise. */
+internal fun String.hexToArgb(): Long? {
+    val digits = trim().removePrefix("#")
+    if (digits.length != 6 || digits.any { digit -> digit !in HEX_DIGITS }) {
+        return null
+    }
+    return 0xFF000000 or digits.toLong(radix = 16)
+}
+
+/** The six hexadecimal digits of the color, in capitals, without its alpha. */
+internal fun Long.toHex(): String =
+    (this and 0xFFFFFF).toString(radix = 16).uppercase().padStart(length = 6, padChar = '0')
+
+/** The opaque ARGB of three components from 0 to 255, null when one is out of them. */
+internal fun rgbToArgb(
+    red: Int,
+    green: Int,
+    blue: Int,
+): Long? {
+    if (listOf(red, green, blue).any { component -> component !in 0..MAX_COMPONENT }) {
+        return null
+    }
+    return 0xFF000000 or (red.toLong() shl 16) or (green.toLong() shl 8) or blue.toLong()
+}
+
+internal val Long.red: Int
+    get() = ((this shr 16) and 0xFF).toInt()
+
+internal val Long.green: Int
+    get() = ((this shr 8) and 0xFF).toInt()
+
+internal val Long.blue: Int
+    get() = (this and 0xFF).toInt()

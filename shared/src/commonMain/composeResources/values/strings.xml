@@ -42,8 +42,12 @@
     <string name="codes_not_saved">They will not be saved.</string>
     <string name="color_black">Black</string>
     <string name="color_brown">Brown</string>
+    <string name="color_component_blue">Blue</string>
+    <string name="color_component_green">Green</string>
+    <string name="color_component_red">Red</string>
     <string name="color_cream">Cream</string>
     <string name="color_green">Green</string>
+    <string name="color_hex">Hex</string>
     <string name="color_indigo">Indigo</string>
     <string name="color_lavender">Lavender</string>
     <string name="color_light_blue">Light blue</string>
