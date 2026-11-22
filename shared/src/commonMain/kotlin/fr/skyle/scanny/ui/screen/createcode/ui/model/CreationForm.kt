@@ -16,6 +16,7 @@ data class CreationForm(
     val emailBody: String = "",
     val smsPhoneNumber: String = "",
     val smsMessage: String = "",
+    val phoneNumber: String = "",
     val wifiSsid: String = "",
     val wifiEncryption: WifiEncryption = WifiEncryption.WPA,
     val wifiPassword: String = "",
@@ -26,6 +27,12 @@ data class CreationForm(
     val contactOrganization: String = "",
     val contactAddress: String = "",
     val contactWebsite: String = "",
+    // As typed: a decimal comma or point
+    val locationLatitude: String = "",
+    val locationLongitude: String = "",
+    val locationLabel: String = "",
+    val bookmarkUrl: String = "",
+    val bookmarkTitle: String = "",
     val barcodeFormat: BarcodeFormat = BarcodeFormat.EAN_13,
     val barcodeValue: String = "",
 )

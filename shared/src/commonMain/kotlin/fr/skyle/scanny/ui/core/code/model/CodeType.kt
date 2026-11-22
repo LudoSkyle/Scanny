@@ -8,4 +8,7 @@ enum class CodeType {
     SMS,
     WIFI,
     CONTACT,
+    PHONE,
+    LOCATION,
+    BOOKMARK,
 }

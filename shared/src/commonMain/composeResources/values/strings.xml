@@ -16,6 +16,8 @@
     <string name="barcode_value">Value</string>
     <string name="barcodes">Barcodes</string>
     <string name="beep_after_scan">Beep after a scan</string>
+    <string name="bookmark">Bookmark</string>
+    <string name="call">Call</string>
     <string name="camera_blocked">The camera is blocked for Scanny. Allow it in the settings of your device to scan codes.</string>
     <string name="camera_needed">Scanny needs the camera to scan codes.</string>
     <string name="camera_unavailable">No camera is available on this device. You can still scan a code in an image.</string>
@@ -68,6 +70,7 @@
     <string name="content_too_long">This content is too long for a QR code.</string>
     <string name="content_too_long_for_logo">This content is too long for a logo, which needs the highest correction.</string>
     <string name="content_type">Type</string>
+    <string name="coordinates">Coordinates</string>
     <string name="copied">Copied</string>
     <string name="copied_to_clipboard">Copied to the clipboard</string>
     <string name="copy">Copy</string>
@@ -182,7 +185,9 @@
     <string name="job_title">Job title</string>
     <string name="join_network">Join the network</string>
     <string name="keep_history">Keep the history</string>
+    <string name="latitude">Latitude</string>
     <string name="link">Link</string>
+    <string name="location">Location</string>
     <string name="logo">Logo</string>
     <string name="logo_margin">Margin around the logo</string>
     <string name="logo_margin_large">Large</string>
@@ -191,6 +196,7 @@
     <string name="logo_needs_highest_correction">A logo needs the automatic or the highest correction, in the advanced options of the content.</string>
     <string name="logo_not_read">The image could not be read</string>
     <string name="logo_shape">Shape of the logo</string>
+    <string name="longitude">Longitude</string>
     <string name="made_by_skyle">Made by Skyle with ❤️ at Openium</string>
     <string name="mail_app_opens_with_message">Your mail app opens with your message, ready to be sent.</string>
     <string name="message">Message</string>
@@ -228,6 +234,7 @@
     <string name="pdf417" translatable="false">PDF417</string>
     <string name="phone">Phone</string>
     <string name="phone_number">Phone number</string>
+    <string name="place">Place</string>
     <string name="place_code_in_frame">Place a code in the frame</string>
     <string name="privacy_policy">Privacy policy</string>
     <string name="qr_code" translatable="false">QR Code</string>
@@ -263,6 +270,7 @@
     <string name="share">Share</string>
     <string name="share_image">Share the image</string>
     <string name="show_code">Show the code</string>
+    <string name="show_on_map">Show on the map</string>
     <string name="skip_consecutive_duplicates">Skip a code scanned again right away</string>
     <string name="sms" translatable="false">SMS</string>
     <string name="star_project">Star the project on GitHub</string>
@@ -272,6 +280,7 @@
     <string name="text">Text</string>
     <string name="the_code">The code</string>
     <string name="the_logo">The logo</string>
+    <string name="title">Title</string>
     <string name="today">Today</string>
     <string name="turn_off_torch">Turn off the torch</string>
     <string name="turn_on_torch">Turn on the torch</string>

@@ -22,6 +22,23 @@ sealed interface BarcodeContent {
         val message: String? = null,
     ) : BarcodeContent
 
+    data class Phone(
+        val phoneNumber: String,
+    ) : BarcodeContent
+
+    /** A place on the map, in decimal degrees, with the name the code gives it if any. */
+    data class Location(
+        val latitude: Double,
+        val longitude: Double,
+        val label: String? = null,
+    ) : BarcodeContent
+
+    /** A link saved with its title, as a bookmark of a browser. */
+    data class Bookmark(
+        val url: String,
+        val title: String? = null,
+    ) : BarcodeContent
+
     data class Wifi(
         val ssid: String,
         val encryption: WifiEncryption,

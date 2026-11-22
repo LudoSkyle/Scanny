@@ -44,6 +44,16 @@ class CodeFormMapperTest {
                 addresses = listOf("1 rue de Scanny"),
                 urls = listOf("https://scanny.app"),
             ),
+            BarcodeContent.Phone(phoneNumber = "+33 6 00 00 00 00"),
+            BarcodeContent.Location(
+                latitude = 0.00001,
+                longitude = -122.4194155,
+                label = "Scanny",
+            ),
+            BarcodeContent.Bookmark(
+                url = "https://scanny.app",
+                title = "Scanny",
+            ),
         )
 
         // When

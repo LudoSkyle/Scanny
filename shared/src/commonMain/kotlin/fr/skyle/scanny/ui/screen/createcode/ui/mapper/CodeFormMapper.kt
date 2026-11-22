@@ -4,6 +4,7 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.ScannedCode
+import fr.skyle.scanny.domain.payload.toCoordinateText
 import fr.skyle.scanny.ui.core.code.mapper.toBarcodeType
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
@@ -80,6 +81,24 @@ private fun BarcodeContent.toCreationForm(
             contactOrganization = content.organization.orEmpty(),
             contactAddress = content.addresses.firstOrNull().orEmpty(),
             contactWebsite = content.urls.firstOrNull().orEmpty(),
+        )
+
+        is BarcodeContent.Phone -> CreationForm(
+            kind = CreationKind.PHONE,
+            phoneNumber = content.phoneNumber,
+        )
+
+        is BarcodeContent.Location -> CreationForm(
+            kind = CreationKind.LOCATION,
+            locationLatitude = content.latitude.toCoordinateText(),
+            locationLongitude = content.longitude.toCoordinateText(),
+            locationLabel = content.label.orEmpty(),
+        )
+
+        is BarcodeContent.Bookmark -> CreationForm(
+            kind = CreationKind.BOOKMARK,
+            bookmarkUrl = content.url,
+            bookmarkTitle = content.title.orEmpty(),
         )
     }
 }

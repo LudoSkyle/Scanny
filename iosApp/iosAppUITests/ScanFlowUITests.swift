@@ -25,6 +25,22 @@ final class ScanFlowUITests: XCTestCase {
         keepScreenshot(named: "link-safari", of: safari)
     }
 
+    func testALocationOpensInMaps() throws {
+        let app = launchScanning(code: "geo:48.8584,2.2945?q=48.8584,2.2945(Tour%20Eiffel)")
+
+        XCTAssertTrue(app.buttons["Show on the map"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Tour Eiffel"].exists)
+        XCTAssertTrue(app.staticTexts["48.8584, 2.2945"].exists)
+        keepScreenshot(named: "location-sheet", of: app)
+
+        app.buttons["Show on the map"].tap()
+
+        // iOS has no app for a geo: link: the place opens in Maps by its own link
+        let maps = XCUIApplication(bundleIdentifier: "com.apple.Maps")
+        XCTAssertTrue(maps.wait(for: .runningForeground, timeout: 10))
+        keepScreenshot(named: "location-maps", of: maps)
+    }
+
     func testTheDetailCopiesSharesAndDeletesTheCode() throws {
         let app = launchScanning(code: "https://scanny.app/detail")
 

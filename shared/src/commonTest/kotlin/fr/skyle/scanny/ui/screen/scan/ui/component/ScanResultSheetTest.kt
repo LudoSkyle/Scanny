@@ -16,8 +16,10 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.platform.wifi.WifiJoinResult
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.call
 import fr.skyle.scanny.resources.copied
 import fr.skyle.scanny.resources.copy
+import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.see_detail
 import fr.skyle.scanny.resources.upc_a
 import fr.skyle.scanny.resources.wifi
@@ -57,6 +59,29 @@ internal class ScanResultSheetTest : ComposeTest() {
         onNodeWithText("See you at 10:30 & bring été").assertExists()
         assertEquals(
             expected = listOf(SMS.action),
+            actual = actions,
+        )
+    }
+
+    @Test
+    fun `a phone shows its number and is called by its button`() = runComposeUiTest {
+        // Given
+        val actions = mutableListOf<CodeAction>()
+        setContent {
+            scanResultSheet(
+                result = PHONE,
+                onActionClicked = { action -> actions += action },
+            )
+        }
+
+        // When
+        onNodeWithText(getString(Res.string.call)).performClick()
+
+        // Then
+        onNodeWithText(getString(Res.string.phone)).assertExists()
+        onNodeWithText("+33600000000").assertExists()
+        assertEquals(
+            expected = listOf(PHONE.action),
             actual = actions,
         )
     }
@@ -233,6 +258,20 @@ internal class ScanResultSheetTest : ComposeTest() {
             ),
             rawValue = "SMSTO:+33600000000:See you at 10:30 & bring été",
             action = CodeAction.WriteSms(link = "sms:+33600000000"),
+        )
+
+        val PHONE = ScanResultItem(
+            codeId = 4,
+            type = CodeType.PHONE,
+            format = BarcodeFormat.QR_CODE,
+            fields = listOf(
+                CodeField(
+                    label = CodeFieldLabel.PHONE_NUMBER,
+                    value = "+33600000000",
+                ),
+            ),
+            rawValue = "tel:+33600000000",
+            action = CodeAction.Call(link = "tel:+33600000000"),
         )
 
         val WIFI_NETWORK = BarcodeContent.Wifi(

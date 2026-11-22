@@ -2,6 +2,7 @@ package fr.skyle.scanny.ui.screen.createcode.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -15,12 +16,15 @@ import fr.skyle.scanny.designsystem.core.textfield.SCTextFieldDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.platform.keyboard.coordinateKeyboardType
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.address
 import fr.skyle.scanny.resources.barcode_value
 import fr.skyle.scanny.resources.email
 import fr.skyle.scanny.resources.format
+import fr.skyle.scanny.resources.latitude
 import fr.skyle.scanny.resources.link
+import fr.skyle.scanny.resources.longitude
 import fr.skyle.scanny.resources.message
 import fr.skyle.scanny.resources.name
 import fr.skyle.scanny.resources.network
@@ -28,10 +32,12 @@ import fr.skyle.scanny.resources.organization
 import fr.skyle.scanny.resources.password
 import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.phone_number
+import fr.skyle.scanny.resources.place
 import fr.skyle.scanny.resources.recipient
 import fr.skyle.scanny.resources.security
 import fr.skyle.scanny.resources.subject
 import fr.skyle.scanny.resources.text
+import fr.skyle.scanny.resources.title
 import fr.skyle.scanny.resources.website
 import fr.skyle.scanny.ui.core.code.mapper.toBarcodeType
 import fr.skyle.scanny.ui.core.code.mapper.toText
@@ -112,6 +118,14 @@ fun CreationFormFields(
                 )
             }
 
+            CreationKind.PHONE -> CreationTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = form.phoneNumber,
+                onValueChange = { phoneNumber -> onFormChanged(form.copy(phoneNumber = phoneNumber)) },
+                label = stringResource(Res.string.phone_number),
+                keyboardType = KeyboardType.Phone,
+            )
+
             CreationKind.WIFI -> {
                 CreationTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -184,6 +198,50 @@ fun CreationFormFields(
                     value = form.contactWebsite,
                     onValueChange = { website -> onFormChanged(form.copy(contactWebsite = website)) },
                     label = stringResource(Res.string.website),
+                    keyboardType = KeyboardType.Uri,
+                )
+            }
+
+            CreationKind.LOCATION -> {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
+                ) {
+                    CreationTextField(
+                        modifier = Modifier.weight(1f),
+                        value = form.locationLatitude,
+                        onValueChange = { latitude -> onFormChanged(form.copy(locationLatitude = latitude)) },
+                        label = stringResource(Res.string.latitude),
+                        keyboardType = coordinateKeyboardType,
+                    )
+                    CreationTextField(
+                        modifier = Modifier.weight(1f),
+                        value = form.locationLongitude,
+                        onValueChange = { longitude -> onFormChanged(form.copy(locationLongitude = longitude)) },
+                        label = stringResource(Res.string.longitude),
+                        keyboardType = coordinateKeyboardType,
+                    )
+                }
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.locationLabel,
+                    onValueChange = { label -> onFormChanged(form.copy(locationLabel = label)) },
+                    label = stringResource(Res.string.place),
+                )
+            }
+
+            CreationKind.BOOKMARK -> {
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.bookmarkTitle,
+                    onValueChange = { title -> onFormChanged(form.copy(bookmarkTitle = title)) },
+                    label = stringResource(Res.string.title),
+                )
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.bookmarkUrl,
+                    onValueChange = { url -> onFormChanged(form.copy(bookmarkUrl = url)) },
+                    label = stringResource(Res.string.link),
                     keyboardType = KeyboardType.Uri,
                 )
             }

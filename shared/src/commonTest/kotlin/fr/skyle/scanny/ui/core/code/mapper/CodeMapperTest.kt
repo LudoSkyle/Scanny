@@ -4,6 +4,7 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.platform.link.platformMapsLink
 import fr.skyle.scanny.platform.link.platformSmsLink
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
@@ -179,6 +180,69 @@ class CodeMapperTest {
     }
 
     @Test
+    fun `a location shows its place and its coordinates and a bookmark its title and its link`() {
+        // Given
+        val contents = listOf(
+            BarcodeContent.Location(
+                latitude = 48.8584,
+                longitude = 2.2945,
+                label = "Tour Eiffel",
+            ),
+            BarcodeContent.Location(
+                latitude = -33.8568,
+                longitude = 151.2153,
+            ),
+            BarcodeContent.Bookmark(
+                url = "https://scanny.app",
+                title = "Scanny",
+            ),
+            BarcodeContent.Phone(phoneNumber = "+33600000000"),
+        )
+
+        // When
+        val fields = contents.map { content -> content.toCodeFields() }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                listOf(
+                    field(
+                        label = CodeFieldLabel.PLACE,
+                        value = "Tour Eiffel",
+                    ),
+                    field(
+                        label = CodeFieldLabel.COORDINATES,
+                        value = "48.8584, 2.2945",
+                    ),
+                ),
+                listOf(
+                    field(
+                        label = CodeFieldLabel.COORDINATES,
+                        value = "-33.8568, 151.2153",
+                    ),
+                ),
+                listOf(
+                    field(
+                        label = CodeFieldLabel.TITLE,
+                        value = "Scanny",
+                    ),
+                    field(
+                        label = CodeFieldLabel.LINK,
+                        value = "https://scanny.app",
+                    ),
+                ),
+                listOf(
+                    field(
+                        label = CodeFieldLabel.PHONE_NUMBER,
+                        value = "+33600000000",
+                    ),
+                ),
+            ),
+            actual = fields,
+        )
+    }
+
+    @Test
     fun `the summary of a code is its most telling part`() {
         // Given
         val codes = listOf(
@@ -193,6 +257,14 @@ class CodeMapperTest {
             scannedCode(content = BarcodeContent.Sms(phoneNumber = "+33600000000")),
             scannedCode(content = BarcodeContent.Contact(formattedName = "John Doe")),
             scannedCode(content = BarcodeContent.Contact(organization = "Doe & Co")),
+            scannedCode(content = BarcodeContent.Phone(phoneNumber = "+33100000000")),
+            scannedCode(
+                content = BarcodeContent.Location(
+                    latitude = 48.8584,
+                    longitude = 2.2945,
+                ),
+            ),
+            scannedCode(content = BarcodeContent.Bookmark(url = "https://scanny.app")),
         )
 
         // When
@@ -208,6 +280,9 @@ class CodeMapperTest {
                 "+33600000000",
                 "John Doe",
                 "Doe & Co",
+                "+33100000000",
+                "48.8584, 2.2945",
+                "https://scanny.app",
             ),
             actual = summaries,
         )
@@ -254,6 +329,38 @@ class CodeMapperTest {
                 CodeAction.OpenLink(link = "https://scanny.app"),
                 CodeAction.WriteEmail(link = "mailto:john@doe.fr"),
                 CodeAction.WriteSms(link = platformSmsLink(smsLink = "sms:+33600000000?body=Hello")),
+            ),
+            actual = actions,
+        )
+    }
+
+    @Test
+    fun `a phone is called a place shown on the map and a bookmark opened`() {
+        // Given
+        val location = BarcodeContent.Location(
+            latitude = 48.8584,
+            longitude = 2.2945,
+        )
+        val contents = listOf(
+            BarcodeContent.Phone(phoneNumber = "+33600000000"),
+            location,
+            BarcodeContent.Bookmark(
+                url = "https://scanny.app",
+                title = "Scanny",
+            ),
+        )
+
+        // When
+        val actions = contents.map { content ->
+            content.toCodeAction(canJoinWifi = { false })
+        }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                CodeAction.Call(link = "tel:+33600000000"),
+                CodeAction.ShowOnMap(link = platformMapsLink(location = location)),
+                CodeAction.OpenLink(link = "https://scanny.app"),
             ),
             actual = actions,
         )

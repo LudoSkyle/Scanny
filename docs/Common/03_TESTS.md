@@ -225,7 +225,7 @@ internal class ScanDetailScreenTest : ComposeTest() {
 
 La cible `iosAppUITests` du projet Xcode (XCUITest, en Swift) lance l'app sur le simulateur. Elle
 est réservée à ce que seule l'app entière montre : l'ouverture d'un lien dans Safari, d'un SMS dans
-Messages, l'ajout d'un contact dans Contacts, la copie (relue par un collage), la feuille de partage,
+Messages, d'une position dans Plans, l'ajout d'un contact dans Contacts, la copie (relue par un collage), la feuille de partage,
 l'enregistrement dans Photos, le sélecteur de photos, le geste de retour depuis le bord, un scan
 simple et un scan multiple de bout en bout (base, navigation, historique, suppression), la
 modification d'un code en nouvelle création, les réglages qui agissent après un scan (copie,

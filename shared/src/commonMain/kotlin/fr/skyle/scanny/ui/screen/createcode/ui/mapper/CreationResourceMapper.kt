@@ -7,6 +7,7 @@ import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.barcode
+import fr.skyle.scanny.resources.bookmark
 import fr.skyle.scanny.resources.color_black
 import fr.skyle.scanny.resources.color_brown
 import fr.skyle.scanny.resources.color_cream
@@ -38,10 +39,12 @@ import fr.skyle.scanny.resources.gradient_linear
 import fr.skyle.scanny.resources.gradient_none
 import fr.skyle.scanny.resources.gradient_radial
 import fr.skyle.scanny.resources.link
+import fr.skyle.scanny.resources.location
 import fr.skyle.scanny.resources.logo_margin_large
 import fr.skyle.scanny.resources.logo_margin_none
 import fr.skyle.scanny.resources.logo_margin_normal
 import fr.skyle.scanny.resources.logo_needs_highest_correction
+import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.shape_circle
 import fr.skyle.scanny.resources.shape_rounded
 import fr.skyle.scanny.resources.shape_square
@@ -65,8 +68,11 @@ internal fun CreationKind.toText(): StringResource =
         CreationKind.LINK -> Res.string.link
         CreationKind.EMAIL -> Res.string.email
         CreationKind.SMS -> Res.string.sms
+        CreationKind.PHONE -> Res.string.phone
         CreationKind.WIFI -> Res.string.wifi
         CreationKind.CONTACT -> Res.string.contact
+        CreationKind.LOCATION -> Res.string.location
+        CreationKind.BOOKMARK -> Res.string.bookmark
         CreationKind.BARCODE -> Res.string.barcode
     }
 

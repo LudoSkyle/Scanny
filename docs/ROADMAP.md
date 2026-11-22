@@ -19,7 +19,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [x] Écran de permission refusée, avec un accès aux réglages de l'app
 - [x] Vibration après un scan (réglage) *(testée, non observée)*
 - [x] Ouverture automatique du contenu après un scan (réglage) : lien, e-mail, SMS, contact,
-      réseau Wi-Fi *(lien observé sur le simulateur iOS)*
+      réseau Wi-Fi, téléphone, position, marque-page *(lien observé sur le simulateur iOS)*
 - [x] Détection en pause tant qu'un résultat est affiché *(testée)*
 
 ### Détail d'un scan
@@ -30,7 +30,8 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [x] Action selon le type : URL → ouvrir ; email → écrire le mail ; SMS → écrire le SMS ;
       WiFi → rejoindre le réseau (Android : l'écran du système à partir d'Android 11, les réglages
       Wi-Fi et le mot de passe copié sinon, avec un message dans tous les cas ; iOS plus tard) ; contact →
-      l'ajouter aux contacts
+      l'ajouter aux contacts ; téléphone → appeler ; position → voir sur la carte ; marque-page →
+      ouvrir le lien
 
 ### Réglages, Feedback, À propos
 
@@ -58,8 +59,14 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [x] Partager et enregistrer un QR code créé *(enregistrer : Android 10 et plus)*
 - [x] Historique des créations
 - [ ] Favori et annotation d'une capture, scan simple ou groupe entier *(pas urgent)*
-- Pistes, non engagées : contact parmi les types créés, affichage des types téléphone, position et
-  événement, avis et mise à jour depuis l'app.
+- Nouveaux types de contenu, chacun lu, affiché avec son action, et créé :
+  - [x] Téléphone (`tel:`), position (`geo:`), marque-page (`MEBKM:`)
+  - [ ] Mot de passe à usage unique (`otpauth://`), Bitcoin (`bitcoin:`)
+  - [ ] MMS, et le format MeCard pour un contact créé
+  - [ ] Événement (`VEVENT`), ajouté au calendrier
+- [ ] Création de Data Matrix, Aztec et PDF417, l'éditeur partagé entre QR code, code 2D et
+      code-barres
+- Pistes, non engagées : avis et mise à jour depuis l'app.
 
 ## Lots techniques
 

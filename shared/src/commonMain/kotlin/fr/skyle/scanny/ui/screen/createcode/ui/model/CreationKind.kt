@@ -6,7 +6,10 @@ enum class CreationKind {
     LINK,
     EMAIL,
     SMS,
+    PHONE,
     WIFI,
     CONTACT,
+    LOCATION,
+    BOOKMARK,
     BARCODE,
 }

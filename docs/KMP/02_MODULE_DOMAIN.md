@@ -50,9 +50,10 @@ domain/src/commonMain/kotlin/fr/skyle/scanny/domain/
 
 `BarcodeContent` est une `sealed interface` dont chaque type porte les champs utiles à l'affichage
 et aux actions : `Text`, `Url`, `Email` (destinataire, sujet, corps), `Sms` (numéro, message),
-`Wifi` (SSID, chiffrement `NONE`/`WEP`/`WPA`/`WPA3`, mot de passe, réseau masqué), `Contact`. D'autres
-types (téléphone, position, événement) s'ajoutent avec l'écran qui les affiche. Le texte brut n'en
-fait pas partie : il est porté par le `ScannedCode`.
+`Wifi` (SSID, chiffrement `NONE`/`WEP`/`WPA`/`WPA3`, mot de passe, réseau masqué), `Contact`, `Phone`
+(numéro), `Location` (latitude et longitude en degrés décimaux, nom du lieu), `Bookmark` (lien et
+titre). Le texte brut n'en fait pas partie : il est porté par le `ScannedCode`, et le contenu en est
+relu à chaque lecture de la base : un type nouveau s'applique aussi aux codes déjà enregistrés.
 
 `Contact` porte un nom affiché (`formattedName`) **et** un prénom et un nom séparés : l'ajout d'un
 contact sur Android prend un nom affiché, iOS (`CNMutableContact`) veut le prénom et le nom.
@@ -66,8 +67,13 @@ jamais les types structurés de ML Kit : les deux plateformes passent le texte b
 parseur, et obtiennent le même résultat.
 
 - Formats reconnus : `WIFI:`, `MATMSG:`, `mailto:`, `SMSTO:` / `sms:`, `MECARD:`, `BEGIN:VCARD`,
-  et les URL (`http://`, `https://`). Les préfixes et les clés sont insensibles à la casse, les
-  valeurs non.
+  `tel:`, `geo:`, `MEBKM:`, et les URL (`http://`, `https://`). Les préfixes et les clés sont
+  insensibles à la casse, les valeurs non.
+- Un `geo:` (RFC 5870) donne sa latitude et sa longitude ; son altitude et ses paramètres (`;u=…`)
+  sont laissés de côté. Android met le lieu dans la requête : `?q=lat,lon(nom)` donne le nom, et
+  ses coordonnées quand le lien est à `0,0` ; `?q=nom` autour d'une position la nomme. Une recherche
+  autour de `0,0` (une adresse) n'a pas de position : c'est un texte, comme des coordonnées hors de
+  la carte.
 - Les caractères échappés sont décodés (`\;`, `\,`, `\:`, `\\`, `\"` dans un `WIFI:` ou un
   `MECARD:`, et une valeur entre guillemets non échappés perd ses guillemets), les lignes repliées
   d'une vCard sont dépliées (CRLF ou LF), ses groupes (`item1.`) et paramètres (`;TYPE=…`) ignorés,
@@ -90,9 +96,15 @@ parseur, et obtiennent le même résultat.
 | SMS | `SMSTO:numéro:message` (`sms:` n'est que lu) |
 | WiFi | `WIFI:T:…;S:…;P:…;H:true;;`, `T:nopass` et pas de `P:` pour un réseau ouvert, `SAE` pour le WPA3, `H:true` seulement pour un réseau masqué |
 | Contact | vCard 3.0 ; seules les propriétés texte (`N`, `FN`, `ORG`, `TITLE`, `ADR`) sont échappées |
+| Téléphone | `tel:numéro`, encodé en `%` |
+| Position | `geo:lat,lon`, et `?q=lat,lon(nom)` s'il a un nom ; coordonnées en décimales, sept au plus (`toCoordinateText()`, jamais en exposant : le texte d'un `Double` diffère entre les plateformes) |
+| Marque-page | `MEBKM:TITLE:…;URL:…;;`, champs échappés comme ceux d'un `WIFI:` |
 - Le parseur et l'encodeur sont `internal` : `shared` les utilise à travers les UseCases. Seuls sont
-  publics les liens qui ouvrent l'app d'un contenu (`toMailtoLink()`, `toSmsLink()`, dans
-  `ContentLinks.kt`) : `shared` les ouvre tels quels, et leur encodage `%` est celui de l'encodeur.
+  publics les liens qui ouvrent l'app d'un contenu (`toMailtoLink()`, `toSmsLink()`, `toTelLink()`,
+  `toGeoLink()`, `toAppleMapsLink()`, dans `ContentLinks.kt`) et l'écriture d'une coordonnée
+  (`toCoordinateText()`) : `shared` les ouvre et les affiche tels quels, et leur encodage `%` est celui
+  de l'encodeur. Le lien `geo:` d'une position y porte toujours son lieu (`?q=lat,lon`) : sans lui,
+  Maps centre la carte sans l'épingler.
   Le lien `sms:` suit la RFC 5724 (`sms:numéro?body=…`) ; ce qu'en fait chaque plateforme est dit dans
   [KMP/03_CODE_PLATEFORME.md](./03_CODE_PLATEFORME.md).
 - Chaque format a ses tests, dans `commonTest` (voir [Common/03_TESTS.md](../Common/03_TESTS.md)).
