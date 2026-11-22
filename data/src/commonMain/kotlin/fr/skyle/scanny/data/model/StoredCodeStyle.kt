@@ -5,6 +5,8 @@ data class StoredCodeStyle(
     // ARGB
     val darkColor: Long,
     val lightColor: Long,
+    // ARGB, null for the color of the dots
+    val cornerColor: Long?,
     // The names of CodeShape values of domain
     val dotShape: String,
     val cornerShape: String,
@@ -19,6 +21,7 @@ data class StoredCodeStyle(
         other is StoredCodeStyle &&
             darkColor == other.darkColor &&
             lightColor == other.lightColor &&
+            cornerColor == other.cornerColor &&
             dotShape == other.dotShape &&
             cornerShape == other.cornerShape &&
             logo.contentEquals(other.logo) &&
@@ -27,6 +30,7 @@ data class StoredCodeStyle(
     override fun hashCode(): Int {
         var result = darkColor.hashCode()
         result = 31 * result + lightColor.hashCode()
+        result = 31 * result + cornerColor.hashCode()
         result = 31 * result + dotShape.hashCode()
         result = 31 * result + cornerShape.hashCode()
         result = 31 * result + logo.contentHashCode()

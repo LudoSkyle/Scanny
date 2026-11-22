@@ -111,6 +111,27 @@ class CodeImageReadabilityTest {
     }
 
     @Test
+    fun `a qr code is read back with its corners in every color of the palette`() = runTest {
+        // Given
+        // On the background of the palette that stands out the least
+        val styles = CodeDotColor.entries.map { color ->
+            CodeStyle(
+                lightColor = CodeBackgroundColor.LAVENDER.argb,
+                cornerColor = color.argb,
+            )
+        }
+
+        // When
+        val unreadStyles = styles.filterNot { style -> renderQrCode(style = style).readQrCode() == TEXT }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = unreadStyles,
+        )
+    }
+
+    @Test
     fun `a qr code is read back at every correction`() = runTest {
         // Given
         val styles = CodeErrorCorrection.entries.map { errorCorrection ->

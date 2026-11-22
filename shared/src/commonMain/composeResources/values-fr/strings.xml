@@ -24,8 +24,8 @@
     <string name="clear_history">Effacer l'historique</string>
     <string name="clear_history_question">Effacer l'historique ?</string>
     <string name="code_count">%1$d codes</string>
-    <string name="code_inverted">Ses points sont plus clairs que son fond : beaucoup de lecteurs lisent mal un tel code.</string>
-    <string name="code_low_contrast">Ses points et son fond ressortent trop peu : certains lecteurs pourraient ne pas lire ce code.</string>
+    <string name="code_inverted">Ses couleurs sont plus claires que son fond : beaucoup de lecteurs lisent mal un tel code.</string>
+    <string name="code_low_contrast">Ses couleurs et son fond ressortent trop peu : certains lecteurs pourraient ne pas lire ce code.</string>
     <string name="code_not_deleted">Le code n'a pas pu être supprimé</string>
     <string name="code_not_drawable">Ce code ne peut pas être redessiné</string>
     <string name="code_removed_from_history">Il sera retiré de l'historique.</string>
@@ -57,6 +57,8 @@
     <string name="copied_to_clipboard">Copié dans le presse-papiers</string>
     <string name="copy">Copier</string>
     <string name="copy_after_scan">Copier le code après un scan</string>
+    <string name="corner_color">Couleur des coins</string>
+    <string name="corner_color_like_dots">Comme les points</string>
     <string name="corner_shape">Forme des coins</string>
     <string name="create">Créer</string>
     <string name="create_code">Créer un code</string>

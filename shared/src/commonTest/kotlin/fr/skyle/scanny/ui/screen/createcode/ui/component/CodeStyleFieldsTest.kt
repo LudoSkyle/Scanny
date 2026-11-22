@@ -1,6 +1,10 @@
 package fr.skyle.scanny.ui.screen.createcode.ui.component
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
@@ -8,15 +12,19 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.v2.runComposeUiTest
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.advanced_options
 import fr.skyle.scanny.resources.choose
 import fr.skyle.scanny.resources.code_low_contrast
 import fr.skyle.scanny.resources.color_black
 import fr.skyle.scanny.resources.color_cream
 import fr.skyle.scanny.resources.color_indigo
+import fr.skyle.scanny.resources.color_red
+import fr.skyle.scanny.resources.corner_color_like_dots
 import fr.skyle.scanny.resources.other_color
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeBackgroundColor
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeDotColor
@@ -113,18 +121,45 @@ internal class CodeStyleFieldsTest : ComposeTest() {
         )
     }
 
+    @Test
+    fun `the corners are like the dots until a color is chosen for them in the advanced options`() = runComposeUiTest {
+        // Given
+        val styles = mutableListOf<CodeStyle>()
+        setContent {
+            codeStyleFields(
+                style = CodeStyle(),
+                onStyleChanged = { style -> styles += style },
+            )
+        }
+
+        // When
+        onNodeWithText(getString(Res.string.advanced_options)).performScrollTo().performClick()
+        onNodeWithContentDescription(getString(Res.string.corner_color_like_dots)).performScrollTo().assertIsSelected()
+        // The second "Red": the first is the one of the dots
+        onAllNodesWithContentDescription(getString(Res.string.color_red))[1].performScrollTo().performClick()
+
+        // Then
+        assertEquals(
+            expected = listOf(CodeStyle(cornerColor = CodeDotColor.RED.argb)),
+            actual = styles,
+        )
+    }
+
     @Composable
     private fun codeStyleFields(
         style: CodeStyle,
         onStyleChanged: (CodeStyle) -> Unit = {},
     ) {
         SCTheme {
-            CodeStyleFields(
-                style = style,
-                logoBlocker = null,
-                onStyleChanged = onStyleChanged,
-                onAddLogoClicked = {},
-            )
+            // In a column that scrolls, as in the editor
+            Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+                CodeStyleFields(
+                    style = style,
+                    logoBlocker = null,
+                    onStyleChanged = onStyleChanged,
+                    onAddLogoClicked = {},
+                )
+            }
         }
     }
 }

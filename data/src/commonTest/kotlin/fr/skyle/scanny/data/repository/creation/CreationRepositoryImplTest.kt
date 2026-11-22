@@ -21,6 +21,7 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
         val style = StoredCodeStyle(
             darkColor = 0xFF1A237E,
             lightColor = 0xFFFFF8E1,
+            cornerColor = 0xFFB71C1C,
             dotShape = "CIRCLE",
             cornerShape = "ROUNDED",
             logo = byteArrayOf(1, 2, 3),
@@ -130,6 +131,7 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
             style = StoredCodeStyle(
                 darkColor = 0xFF000000,
                 lightColor = 0xFFFFFFFF,
+                cornerColor = null,
                 dotShape = "SQUARE",
                 cornerShape = "SQUARE",
                 logo = null,
