@@ -6,4 +6,5 @@ enum class ScanSetting {
     COPY_AFTER_SCAN,
     OPEN_CONTENT_AFTER_SCAN,
     FRONT_CAMERA,
+    RAW_CONTENT_SHOWN,
 }

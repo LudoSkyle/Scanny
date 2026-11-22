@@ -31,6 +31,7 @@ class SettingsRepositoryImplTest {
                 false,
                 false,
                 false,
+                false,
             ),
             actual = settings,
         )
@@ -47,11 +48,13 @@ class SettingsRepositoryImplTest {
         settingsRepository.setBeepAfterScanEnabled(isEnabled = true)
         settingsRepository.setCopyAfterScanEnabled(isEnabled = true)
         settingsRepository.setFrontCameraUsed(isUsed = true)
+        settingsRepository.setRawContentShown(isShown = true)
 
         // Then
         assertEquals(
             expected = listOf(
                 false,
+                true,
                 true,
                 true,
                 true,
@@ -73,12 +76,14 @@ class SettingsRepositoryImplTest {
         settingsRepository.setBeepAfterScanEnabled(isEnabled = true)
         settingsRepository.setCopyAfterScanEnabled(isEnabled = false)
         settingsRepository.setFrontCameraUsed(isUsed = true)
+        settingsRepository.setRawContentShown(isShown = true)
 
         // Then
         assertEquals(
             expected = mapOf(
                 "KEY_IS_VIBRATION_AFTER_SCAN_ENABLED" to false,
                 "KEY_OPEN_LINK_AFTER_SCAN" to true,
+                "KEY_IS_RAW_CONTENT_SHOWN" to true,
                 "KEY_IS_BEEP_AFTER_SCAN_ENABLED" to true,
                 "KEY_IS_COPY_AFTER_SCAN_ENABLED" to false,
                 "KEY_IS_FRONT_CAMERA_USED" to true,
@@ -143,6 +148,7 @@ class SettingsRepositoryImplTest {
             watchIsBeepAfterScanEnabled().first(),
             watchIsCopyAfterScanEnabled().first(),
             watchIsFrontCameraUsed().first(),
+            watchIsRawContentShown().first(),
         )
 
     // A file system in memory, new for each test: a DataStore refuses two instances on the same file

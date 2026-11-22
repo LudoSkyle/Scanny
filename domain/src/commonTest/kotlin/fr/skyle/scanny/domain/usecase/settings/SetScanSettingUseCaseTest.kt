@@ -32,6 +32,7 @@ class SetScanSettingUseCaseTest {
                 false,
                 false,
                 false,
+                false,
             ),
             actual = currentSettings(),
         )
@@ -50,6 +51,7 @@ class SetScanSettingUseCaseTest {
             expected = listOf(
                 true,
                 true,
+                false,
                 false,
                 false,
                 false,
@@ -74,6 +76,7 @@ class SetScanSettingUseCaseTest {
                 true,
                 false,
                 false,
+                false,
             ),
             actual = currentSettings(),
         )
@@ -94,6 +97,7 @@ class SetScanSettingUseCaseTest {
                 false,
                 false,
                 true,
+                false,
                 false,
             ),
             actual = currentSettings(),
@@ -116,6 +120,29 @@ class SetScanSettingUseCaseTest {
                 false,
                 false,
                 true,
+                false,
+            ),
+            actual = currentSettings(),
+        )
+    }
+
+    @Test
+    fun `the raw content in the sheet of a scan changes alone`() = runTest {
+        // When
+        setScanSettingUseCase(
+            setting = ScanSetting.RAW_CONTENT_SHOWN,
+            isEnabled = true,
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                true,
+                false,
+                false,
+                false,
+                false,
+                true,
             ),
             actual = currentSettings(),
         )
@@ -129,5 +156,6 @@ class SetScanSettingUseCaseTest {
             settingsRepository.isBeepAfterScanEnabled.value,
             settingsRepository.isCopyAfterScanEnabled.value,
             settingsRepository.isFrontCameraUsed.value,
+            settingsRepository.isRawContentShown.value,
         )
 }

@@ -22,6 +22,7 @@ internal class WatchScanSettingsUseCaseImpl(
             settingsRepository.watchIsCopyAfterScanEnabled(),
             settingsRepository.watchIsOpenContentAfterScanEnabled(),
             settingsRepository.watchIsFrontCameraUsed(),
+            settingsRepository.watchIsRawContentShown(),
         ) { values ->
             ScanSettings(
                 isVibrationAfterScanEnabled = values[0],
@@ -29,6 +30,7 @@ internal class WatchScanSettingsUseCaseImpl(
                 isCopyAfterScanEnabled = values[2],
                 isOpenContentAfterScanEnabled = values[3],
                 isFrontCameraUsed = values[4],
+                isRawContentShown = values[5],
             )
         }
 }

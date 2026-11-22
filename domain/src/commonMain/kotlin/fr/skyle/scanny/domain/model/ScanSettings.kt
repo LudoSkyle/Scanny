@@ -6,4 +6,6 @@ data class ScanSettings(
     val isCopyAfterScanEnabled: Boolean,
     val isOpenContentAfterScanEnabled: Boolean,
     val isFrontCameraUsed: Boolean,
+    // The sheet of a scan shows the text of the code rather than its fields
+    val isRawContentShown: Boolean,
 )

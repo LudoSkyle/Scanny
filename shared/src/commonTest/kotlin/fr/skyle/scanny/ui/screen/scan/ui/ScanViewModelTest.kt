@@ -132,6 +132,41 @@ class ScanViewModelTest {
     }
 
     @Test
+    fun `the sheet of a scan shows the text of the code when the setting asks and keeps its action`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(
+            recordScanUseCase = FakeRecordScanUseCase(
+                content = {
+                    BarcodeContent.Sms(
+                        phoneNumber = "+33600000000",
+                        message = "See you at eight",
+                    )
+                },
+            ),
+            watchScanSettingsUseCase = FakeWatchScanSettingsUseCase(isRawContentShown = true),
+        )
+
+        // When
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "SMSTO:+33600000000:See you at eight"))
+
+        // Then
+        val item = (viewModel.uiState.value.result as? ScanResult.Code)?.item
+        assertEquals(
+            expected = listOf(
+                CodeField(
+                    label = null,
+                    value = "SMSTO:+33600000000:See you at eight",
+                ),
+            ),
+            actual = item?.fields,
+        )
+        assertEquals(
+            expected = true,
+            actual = item?.action is CodeAction.WriteSms,
+        )
+    }
+
+    @Test
     fun `a code detected while one is being recorded is ignored`() = runTest(testDispatcher) {
         // Given
         val recording = CompletableDeferred<Unit>()

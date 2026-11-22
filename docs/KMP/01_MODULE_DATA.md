@@ -213,8 +213,9 @@ trouvés pendant un scan multiple. Deux tables :
   mise à jour : fichier `sc_datastore.preferences_pb` dans le dossier `datastore` des fichiers de
   l'app, clés `KEY_IS_VIBRATION_AFTER_SCAN_ENABLED` (défaut `true`), `KEY_OPEN_LINK_AFTER_SCAN`
   (défaut `false` ; le réglage ouvre désormais tout contenu, la clé garde son nom de la v1).
-  `KEY_IS_RAW_CONTENT_SHOWN` n'est plus lue : le contenu brut est toujours dans le détail, replié ;
-  la clé reste dans le fichier d'un utilisateur de la v1, sans effet. Les réglages venus avec la v2
+  `KEY_IS_RAW_CONTENT_SHOWN` (défaut `false`) dit désormais si la feuille d'un scan montre le texte du
+  code plutôt que ses champs : là où la v1 montrait le contenu brut, la v2 le montre dans cette
+  feuille ; dans le détail, il est toujours là, replié. Les réglages venus avec la v2
   suivent la même forme : `KEY_IS_BEEP_AFTER_SCAN_ENABLED` et `KEY_IS_COPY_AFTER_SCAN_ENABLED`
   (défaut `false`), `KEY_IS_FRONT_CAMERA_USED` (défaut `false`), `KEY_IS_SCAN_HISTORY_ENABLED`,
   `KEY_IS_CREATION_HISTORY_ENABLED` et `KEY_IS_CONSECUTIVE_DUPLICATE_SKIPPED` (défaut

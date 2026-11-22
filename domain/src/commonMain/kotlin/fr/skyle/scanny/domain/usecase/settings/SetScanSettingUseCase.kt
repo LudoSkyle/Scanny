@@ -25,6 +25,7 @@ internal class SetScanSettingUseCaseImpl(
             ScanSetting.COPY_AFTER_SCAN -> settingsRepository.setCopyAfterScanEnabled(isEnabled = isEnabled)
             ScanSetting.OPEN_CONTENT_AFTER_SCAN -> settingsRepository.setOpenContentAfterScanEnabled(isEnabled = isEnabled)
             ScanSetting.FRONT_CAMERA -> settingsRepository.setFrontCameraUsed(isUsed = isEnabled)
+            ScanSetting.RAW_CONTENT_SHOWN -> settingsRepository.setRawContentShown(isShown = isEnabled)
         }
     }
 }

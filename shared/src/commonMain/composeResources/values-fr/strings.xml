@@ -167,6 +167,7 @@
     <string name="privacy_policy">Politique de confidentialité</string>
     <string name="rate_app">Noter l'app</string>
     <string name="raw_content">Contenu brut</string>
+    <string name="raw_content_after_scan">Afficher le contenu brut après un scan</string>
     <string name="recipient">Destinataire</string>
     <string name="remove_logo">Retirer le logo</string>
     <string name="retention_forever">Toujours</string>
