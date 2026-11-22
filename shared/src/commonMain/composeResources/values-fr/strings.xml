@@ -30,6 +30,7 @@
     <string name="background_color">Couleur du fond</string>
     <string name="barcode">Code-barres</string>
     <string name="barcode_value">Valeur</string>
+    <string name="barcode_value_example">Exemple : `%1$s`</string>
     <string name="barcodes">Codes-barres</string>
     <string name="beep_after_scan">Bip après un scan</string>
     <string name="birthday">Anniversaire</string>

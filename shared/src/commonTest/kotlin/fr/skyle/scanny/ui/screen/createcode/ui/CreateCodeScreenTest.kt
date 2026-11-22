@@ -24,6 +24,7 @@ import fr.skyle.scanny.resources.add_logo
 import fr.skyle.scanny.resources.advanced_options
 import fr.skyle.scanny.resources.aztec
 import fr.skyle.scanny.resources.barcode_value
+import fr.skyle.scanny.resources.barcode_value_example
 import fr.skyle.scanny.resources.characters_not_held
 import fr.skyle.scanny.resources.content
 import fr.skyle.scanny.resources.content_size
@@ -182,7 +183,7 @@ internal class CreateCodeScreenTest : ComposeTest() {
     }
 
     @Test
-    fun `a barcode has a format and a value but no content type`() = runComposeUiTest {
+    fun `a barcode has a format and a value with an example but no content type`() = runComposeUiTest {
         // When
         setContent {
             createCodeScreen(
@@ -193,8 +194,9 @@ internal class CreateCodeScreenTest : ComposeTest() {
         }
 
         // Then
-        // Marked as required
+        // Marked as required, with an example of the format under it
         onNodeWithText(getString(Res.string.barcode_value), substring = true).assertExists()
+        onNodeWithText(getString(Res.string.barcode_value_example, "4006381333931").replace("`", "")).assertExists()
         onAllNodesWithText(getString(Res.string.content_type)).assertCountEquals(0)
     }
 
