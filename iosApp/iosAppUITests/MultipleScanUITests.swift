@@ -26,7 +26,7 @@ final class MultipleScanUITests: XCTestCase {
         // The link read twice counts once
         XCTAssertTrue(app.staticTexts["3 codes found"].waitForExistence(timeout: 15))
         keepScreenshot(named: "multiple-scan-session", of: app)
-        app.buttons["Finish"].tap()
+        finishTheMultipleScan(in: app)
 
         XCTAssertTrue(app.buttons["See the group"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["3 codes"].exists)
@@ -69,7 +69,7 @@ final class MultipleScanUITests: XCTestCase {
         )
         app.buttons["Multiple scan"].tap()
         XCTAssertTrue(app.staticTexts["2 codes found"].waitForExistence(timeout: 15))
-        app.buttons["Finish"].tap()
+        finishTheMultipleScan(in: app)
         XCTAssertTrue(app.buttons["See the group"].waitForExistence(timeout: 5))
 
         element(labelled: "Second of two", in: app).tap()
@@ -87,7 +87,7 @@ final class MultipleScanUITests: XCTestCase {
         )
         app.buttons["Multiple scan"].tap()
         XCTAssertTrue(app.staticTexts["2 codes found"].waitForExistence(timeout: 15))
-        app.buttons["Finish"].tap()
+        finishTheMultipleScan(in: app)
         XCTAssertTrue(app.buttons["See the group"].waitForExistence(timeout: 5))
         app.buttons["See the group"].tap()
         XCTAssertTrue(app.buttons["Delete"].waitForExistence(timeout: 5))
@@ -133,11 +133,23 @@ final class MultipleScanUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Passez les codes devant la caméra"].waitForExistence(timeout: 2))
         XCTAssertTrue(app.staticTexts["2 codes trouvés"].waitForExistence(timeout: 15))
         keepScreenshot(named: "french-multiple-scan-session", of: app)
-        app.buttons["Terminer"].tap()
+        finishTheMultipleScan(in: app, labelled: "Terminer")
 
         XCTAssertTrue(app.buttons["Voir le groupe"].waitForExistence(timeout: 5))
         app.buttons["Voir le groupe"].tap()
         XCTAssertTrue(app.staticTexts["Groupe"].waitForExistence(timeout: 5))
         keepScreenshot(named: "french-group", of: app)
+    }
+
+    // Touched once enabled and still: a touch as it turns on, while the bar settles, is lost
+    private func finishTheMultipleScan(
+        in app: XCUIApplication,
+        labelled label: String = "Finish",
+    ) {
+        let finishButton = app.buttons[label]
+        let enabled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true"), object: finishButton)
+        XCTAssertEqual(XCTWaiter.wait(for: [enabled], timeout: 5), .completed)
+        waitUntilStill(finishButton)
+        finishButton.tap()
     }
 }
