@@ -117,7 +117,8 @@ final class ScanFlowUITests: XCTestCase {
         let app = launchScanning(code: "mms:+33600000000?subject=Hello&body=See%20you")
 
         XCTAssertTrue(app.buttons["Write an MMS"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["Hello"].exists)
+        // The sheet may still be rising
+        XCTAssertTrue(app.staticTexts["Hello"].waitForExistence(timeout: 5))
         app.buttons["Write an MMS"].tap()
 
         let messages = XCUIApplication(bundleIdentifier: "com.apple.MobileSMS")
