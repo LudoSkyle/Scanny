@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,14 +51,19 @@ fun CustomColorSheet(
 ) {
     // In hue, saturation and brightness while it is picked: a grey keeps its hue when it is lightened
     var color by remember(initialArgb) { mutableStateOf(initialArgb.toHsvColor()) }
+    // Exactly as typed: back from hue, saturation and brightness, a color could be off by a unit
+    var argb by remember(initialArgb) { mutableStateOf(initialArgb) }
 
     SCBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
     ) {
+        // Above the keyboard, and scrolled to the button once a code is typed
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .imePadding()
+                .verticalScroll(state = rememberScrollState())
                 .padding(horizontal = 24.dp)
                 .padding(bottom = 32.dp),
         ) {
@@ -81,7 +89,7 @@ fun CustomColorSheet(
                             shape = CircleShape,
                         )
                         .background(
-                            color = Color(color = color.toArgb()),
+                            color = Color(color = argb),
                             shape = CircleShape,
                         ),
                 )
@@ -100,8 +108,20 @@ fun CustomColorSheet(
                         saturation = saturation,
                         value = value,
                     )
+                    argb = color.toArgb()
                 },
                 size = SCColorPickerDefaults.Size.MEDIUM,
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ColorCodeFields(
+                modifier = Modifier.fillMaxWidth(),
+                argb = argb,
+                onArgbChanged = { typedArgb ->
+                    argb = typedArgb
+                    color = typedArgb.toHsvColor()
+                },
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -109,7 +129,7 @@ fun CustomColorSheet(
             SCButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(Res.string.choose),
-                onClick = { onColorChosen(color.toArgb()) },
+                onClick = { onColorChosen(argb) },
                 style = SCButtonDefaults.Style.PRIMARY,
                 size = SCButtonDefaults.Size.MEDIUM,
             )
