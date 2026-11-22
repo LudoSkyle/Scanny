@@ -1,5 +1,6 @@
 package fr.skyle.scanny.ui.core.code.mapper
 
+import androidx.compose.ui.graphics.Color
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.ui.core.code.model.CodeReadability
@@ -77,6 +78,49 @@ class CodeStyleMapperTest {
         assertEquals(
             expected = QrErrorCorrectionLevel.High to QrErrorCorrection.H,
             actual = options.errorCorrectionLevel to style.qrErrorCorrection(),
+        )
+    }
+
+    @Test
+    fun `the corners are drawn in their own color or in the one of the dots`() {
+        // When
+        val colors = listOf(
+            CodeStyle(darkColor = 0xFF3B43BE),
+            CodeStyle(darkColor = 0xFF3B43BE, cornerColor = 0xFFB71C1C),
+        ).map { style -> style.cornerColor() }
+
+        // Then
+        assertEquals(
+            expected = listOf(Color(0xFF3B43BE), Color(0xFFB71C1C)),
+            actual = colors,
+        )
+    }
+
+    @Test
+    fun `corners that stand out too little from the background are told`() {
+        // When
+        val readability = CodeStyle(cornerColor = 0xFFDDDDDD).readability()
+
+        // Then
+        assertEquals(
+            expected = CodeReadability.LOW_CONTRAST,
+            actual = readability,
+        )
+    }
+
+    @Test
+    fun `corners lighter than the background are told as inverted`() {
+        // When
+        val readability = CodeStyle(
+            lightColor = 0xFF3E2723,
+            darkColor = 0xFF000000,
+            cornerColor = 0xFFFFFFFF,
+        ).readability()
+
+        // Then
+        assertEquals(
+            expected = CodeReadability.INVERTED,
+            actual = readability,
         )
     }
 

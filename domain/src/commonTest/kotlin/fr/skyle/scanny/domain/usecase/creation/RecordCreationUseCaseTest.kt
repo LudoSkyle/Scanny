@@ -37,6 +37,7 @@ class RecordCreationUseCaseTest {
             style = CodeStyle(
                 darkColor = 0xFF1A237E,
                 lightColor = 0xFFFFF8E1,
+                cornerColor = 0xFFB71C1C,
                 dotShape = CodeShape.CIRCLE,
                 cornerShape = CodeShape.ROUNDED,
                 logo = byteArrayOf(1, 2, 3),
@@ -54,6 +55,7 @@ class RecordCreationUseCaseTest {
                     style = StoredCodeStyle(
                         darkColor = 0xFF1A237E,
                         lightColor = 0xFFFFF8E1,
+                        cornerColor = 0xFFB71C1C,
                         dotShape = "CIRCLE",
                         cornerShape = "ROUNDED",
                         logo = byteArrayOf(1, 2, 3),

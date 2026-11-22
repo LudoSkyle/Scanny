@@ -31,6 +31,9 @@ internal data class CreationEntity(
     // ARGB, white by default
     @ColumnInfo(name = "light_color", defaultValue = "4294967295")
     val lightColor: Long,
+    // ARGB, null for the color of the dots, as before the version 7
+    @ColumnInfo(name = "corner_color")
+    val cornerColor: Long?,
     // The names of CodeShape values of domain
     @ColumnInfo(name = "dot_shape", defaultValue = "SQUARE")
     val dotShape: String,
@@ -56,6 +59,7 @@ internal data class CreationEntity(
             format == other.format &&
             darkColor == other.darkColor &&
             lightColor == other.lightColor &&
+            cornerColor == other.cornerColor &&
             dotShape == other.dotShape &&
             cornerShape == other.cornerShape &&
             logo.contentEquals(other.logo) &&
@@ -69,6 +73,7 @@ internal data class CreationEntity(
         result = 31 * result + format.hashCode()
         result = 31 * result + darkColor.hashCode()
         result = 31 * result + lightColor.hashCode()
+        result = 31 * result + cornerColor.hashCode()
         result = 31 * result + dotShape.hashCode()
         result = 31 * result + cornerShape.hashCode()
         result = 31 * result + logo.contentHashCode()

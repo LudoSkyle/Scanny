@@ -52,6 +52,33 @@ internal class CodeImageTest : ComposeTest() {
     }
 
     @Test
+    fun `the corners of a qr code are drawn in their own color`() = runComposeUiTest {
+        // When
+        setContent {
+            SCTheme {
+                Box(modifier = Modifier.testTag(TAG)) {
+                    CodeImage(
+                        modifier = Modifier.width(240.dp),
+                        rawValue = "https://scanny.app",
+                        format = BarcodeFormat.QR_CODE,
+                        contentDescription = "QR code",
+                        style = CodeStyle(
+                            darkColor = INDIGO,
+                            lightColor = CREAM,
+                            cornerColor = RED,
+                        ),
+                    )
+                }
+            }
+        }
+
+        // Then
+        val pixels = onNodeWithTag(TAG).captureToImage().toPixelMap()
+        val corner = with(density) { (16.dp.toPx() + 2).toInt() }
+        assertTrue(pixels[corner, corner].isCloseTo(Color(RED)), "The corner is ${pixels[corner, corner]}")
+    }
+
+    @Test
     fun `a barcode stays dark on white whatever the style`() = runComposeUiTest {
         // When
         setContent {
@@ -84,6 +111,7 @@ internal class CodeImageTest : ComposeTest() {
         const val TAG = "code"
         const val INDIGO = 0xFF3B43BE
         const val CREAM = 0xFFFFF8E1
+        const val RED = 0xFFB71C1C
         const val TOLERANCE = 0.03f
     }
 }

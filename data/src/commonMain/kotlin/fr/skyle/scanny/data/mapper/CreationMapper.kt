@@ -13,6 +13,7 @@ internal fun CreationEntity.toStoredCreation(): StoredCreation =
         style = StoredCodeStyle(
             darkColor = darkColor,
             lightColor = lightColor,
+            cornerColor = cornerColor,
             dotShape = dotShape,
             cornerShape = cornerShape,
             logo = logo,

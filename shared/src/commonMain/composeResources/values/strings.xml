@@ -30,8 +30,8 @@
     <string name="code_39" translatable="false">Code 39</string>
     <string name="code_93" translatable="false">Code 93</string>
     <string name="code_count">%1$d codes</string>
-    <string name="code_inverted">Its dots are lighter than its background: many scanners read such a code poorly.</string>
-    <string name="code_low_contrast">Its dots and its background stand out too little: some scanners may not read this code.</string>
+    <string name="code_inverted">Its colors are lighter than its background: many scanners read such a code poorly.</string>
+    <string name="code_low_contrast">Its colors and its background stand out too little: some scanners may not read this code.</string>
     <string name="code_not_deleted">The code could not be deleted</string>
     <string name="code_not_drawable">This code cannot be drawn again</string>
     <string name="code_removed_from_history">It will be removed from the history.</string>
@@ -64,6 +64,8 @@
     <string name="copied_to_clipboard">Copied to the clipboard</string>
     <string name="copy">Copy</string>
     <string name="copy_after_scan">Copy the code after a scan</string>
+    <string name="corner_color">Color of the corners</string>
+    <string name="corner_color_like_dots">Like the dots</string>
     <string name="corner_shape">Shape of the corners</string>
     <string name="create">Create</string>
     <string name="create_code">Create a code</string>

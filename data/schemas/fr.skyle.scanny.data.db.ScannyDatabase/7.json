@@ -1,0 +1,238 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 7,
+    "identityHash": "5b2c5976d24a4d41529ce5a839b693ab",
+    "entities": [
+      {
+        "tableName": "scan",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `scanned_at` INTEGER NOT NULL, `is_in_history` INTEGER NOT NULL DEFAULT 1)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scannedAt",
+            "columnName": "scanned_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isInHistory",
+            "columnName": "is_in_history",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_scan_scanned_at",
+            "unique": false,
+            "columnNames": [
+              "scanned_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_scan_scanned_at` ON `${TABLE_NAME}` (`scanned_at`)"
+          },
+          {
+            "name": "index_scan_is_in_history",
+            "unique": false,
+            "columnNames": [
+              "is_in_history"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_scan_is_in_history` ON `${TABLE_NAME}` (`is_in_history`)"
+          }
+        ]
+      },
+      {
+        "tableName": "scanned_code",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `scan_id` INTEGER NOT NULL, `position` INTEGER NOT NULL, `raw_value` TEXT NOT NULL, `format` TEXT NOT NULL, FOREIGN KEY(`scan_id`) REFERENCES `scan`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scanId",
+            "columnName": "scan_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rawValue",
+            "columnName": "raw_value",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "format",
+            "columnName": "format",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_scanned_code_scan_id",
+            "unique": false,
+            "columnNames": [
+              "scan_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_scanned_code_scan_id` ON `${TABLE_NAME}` (`scan_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "scan",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "scan_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "creation",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `created_at` INTEGER NOT NULL, `raw_value` TEXT NOT NULL, `format` TEXT NOT NULL, `dark_color` INTEGER NOT NULL DEFAULT 4278190080, `light_color` INTEGER NOT NULL DEFAULT 4294967295, `corner_color` INTEGER, `dot_shape` TEXT NOT NULL DEFAULT 'SQUARE', `corner_shape` TEXT NOT NULL DEFAULT 'SQUARE', `logo` BLOB, `error_correction` TEXT NOT NULL DEFAULT 'AUTO', `is_in_history` INTEGER NOT NULL DEFAULT 1)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rawValue",
+            "columnName": "raw_value",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "format",
+            "columnName": "format",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "darkColor",
+            "columnName": "dark_color",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "4278190080"
+          },
+          {
+            "fieldPath": "lightColor",
+            "columnName": "light_color",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "4294967295"
+          },
+          {
+            "fieldPath": "cornerColor",
+            "columnName": "corner_color",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "dotShape",
+            "columnName": "dot_shape",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'SQUARE'"
+          },
+          {
+            "fieldPath": "cornerShape",
+            "columnName": "corner_shape",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'SQUARE'"
+          },
+          {
+            "fieldPath": "logo",
+            "columnName": "logo",
+            "affinity": "BLOB"
+          },
+          {
+            "fieldPath": "errorCorrection",
+            "columnName": "error_correction",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'AUTO'"
+          },
+          {
+            "fieldPath": "isInHistory",
+            "columnName": "is_in_history",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_creation_created_at",
+            "unique": false,
+            "columnNames": [
+              "created_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_creation_created_at` ON `${TABLE_NAME}` (`created_at`)"
+          },
+          {
+            "name": "index_creation_is_in_history",
+            "unique": false,
+            "columnNames": [
+              "is_in_history"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_creation_is_in_history` ON `${TABLE_NAME}` (`is_in_history`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5b2c5976d24a4d41529ce5a839b693ab')"
+    ]
+  }
+}

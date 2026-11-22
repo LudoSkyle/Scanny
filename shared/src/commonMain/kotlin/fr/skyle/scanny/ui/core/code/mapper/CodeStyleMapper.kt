@@ -47,7 +47,12 @@ internal fun CodeStyle.toQrOptions(): QrOptions =
             ball = cornerShape.toBallShape(),
             frame = cornerShape.toFrameShape(),
         ),
-        colors = QrColors(dark = QrBrush.solid(color = dotColor())),
+        colors = QrColors(
+            dark = QrBrush.solid(color = dotColor()),
+            // The color of the dots, unless the corners have their own
+            ball = QrBrush.solid(color = cornerColor()),
+            frame = QrBrush.solid(color = cornerColor()),
+        ),
         logo = toQrLogo(),
         // Set, not left to qrose: it keeps the lowest correction for a logo drawn with no blank around
         errorCorrectionLevel = qrErrorCorrection().toQrErrorCorrectionLevel(),
@@ -80,18 +85,27 @@ internal val CodeErrorCorrection.allowsLogo: Boolean
 internal fun CodeStyle.dotColor(): Color =
     Color(color = darkColor)
 
+/** The color of the three corners of a code in this style: their own, or the one of the dots. */
+internal fun CodeStyle.cornerColor(): Color =
+    Color(color = cornerColor ?: darkColor)
+
 /** The color of the background of a code in this style, around it too: its quiet zone. */
 internal fun CodeStyle.backgroundColor(): Color =
     Color(color = lightColor)
 
 // The dots under the logo and around it cleared, for the background to show there
-/** How well a scanner reads a code in this style: its dots darker than its background, and enough apart. */
-internal fun CodeStyle.readability(): CodeReadability =
-    when {
-        relativeLuminance(darkColor) > relativeLuminance(lightColor) -> CodeReadability.INVERTED
-        contrastRatio(darkColor, lightColor) < MIN_CONTRAST_RATIO -> CodeReadability.LOW_CONTRAST
+/**
+ * How well a scanner reads a code in this style: its dots and its corners darker than its background,
+ * and enough apart from it.
+ */
+internal fun CodeStyle.readability(): CodeReadability {
+    val colors = listOfNotNull(darkColor, cornerColor)
+    return when {
+        colors.any { argb -> relativeLuminance(argb) > relativeLuminance(lightColor) } -> CodeReadability.INVERTED
+        colors.any { argb -> contrastRatio(argb, lightColor) < MIN_CONTRAST_RATIO } -> CodeReadability.LOW_CONTRAST
         else -> CodeReadability.GOOD
     }
+}
 
 /** The contrast ratio of the WCAG between two ARGB colors, from 1 for the same color to 21 for black and white. */
 internal fun contrastRatio(

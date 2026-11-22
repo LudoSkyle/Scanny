@@ -119,6 +119,15 @@ fun CodeStyleFields(
             onAddLogoClicked = onAddLogoClicked,
             onRemoveLogoClicked = { onStyleChanged(style.copy(logo = null)) },
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        AdvancedStyleOptions(
+            modifier = Modifier.fillMaxWidth(),
+            style = style,
+            onStyleChanged = onStyleChanged,
+            onCustomCornerColorClicked = { customColorTarget = CustomColorTarget.CORNERS },
+        )
     }
 
     customColorTarget?.let { target ->
@@ -126,6 +135,7 @@ fun CodeStyleFields(
             initialArgb = when (target) {
                 CustomColorTarget.DOTS -> style.darkColor
                 CustomColorTarget.BACKGROUND -> style.lightColor
+                CustomColorTarget.CORNERS -> style.cornerColor ?: style.darkColor
             },
             onColorChosen = { argb ->
                 customColorTarget = null
@@ -133,6 +143,7 @@ fun CodeStyleFields(
                     when (target) {
                         CustomColorTarget.DOTS -> style.copy(darkColor = argb)
                         CustomColorTarget.BACKGROUND -> style.copy(lightColor = argb)
+                        CustomColorTarget.CORNERS -> style.copy(cornerColor = argb)
                     },
                 )
             },
@@ -144,6 +155,7 @@ fun CodeStyleFields(
 private enum class CustomColorTarget {
     DOTS,
     BACKGROUND,
+    CORNERS,
 }
 
 @AppPreviewWithBackground

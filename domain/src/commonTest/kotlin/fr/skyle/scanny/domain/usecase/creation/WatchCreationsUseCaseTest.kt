@@ -27,6 +27,7 @@ class WatchCreationsUseCaseTest {
                 style = StoredCodeStyle(
                     darkColor = 0xFF1A237E,
                     lightColor = 0xFFFFF8E1,
+                    cornerColor = 0xFFB71C1C,
                     dotShape = "CIRCLE",
                     cornerShape = "ROUNDED",
                     logo = byteArrayOf(1, 2, 3),
@@ -53,6 +54,7 @@ class WatchCreationsUseCaseTest {
                     style = CodeStyle(
                         darkColor = 0xFF1A237E,
                         lightColor = 0xFFFFF8E1,
+                        cornerColor = 0xFFB71C1C,
                         dotShape = CodeShape.CIRCLE,
                         cornerShape = CodeShape.ROUNDED,
                         logo = byteArrayOf(1, 2, 3),
@@ -77,6 +79,7 @@ class WatchCreationsUseCaseTest {
                     style = StoredCodeStyle(
                         darkColor = 0xFF000000,
                         lightColor = 0xFFFFFFFF,
+                        cornerColor = null,
                         dotShape = "STAR",
                         cornerShape = "HEART",
                         logo = null,

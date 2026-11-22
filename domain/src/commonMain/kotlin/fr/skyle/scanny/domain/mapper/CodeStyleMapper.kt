@@ -9,6 +9,7 @@ internal fun CodeStyle.toStoredCodeStyle(): StoredCodeStyle =
     StoredCodeStyle(
         darkColor = darkColor,
         lightColor = lightColor,
+        cornerColor = cornerColor,
         dotShape = dotShape.name,
         cornerShape = cornerShape.name,
         logo = logo,
@@ -21,6 +22,7 @@ internal fun StoredCodeStyle.toCodeStyle(): CodeStyle =
     CodeStyle(
         darkColor = darkColor,
         lightColor = lightColor,
+        cornerColor = cornerColor,
         dotShape = dotShape.toCodeShape(),
         cornerShape = cornerShape.toCodeShape(),
         logo = logo,
