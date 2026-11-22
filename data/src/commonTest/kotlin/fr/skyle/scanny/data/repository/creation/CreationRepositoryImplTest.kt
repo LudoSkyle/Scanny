@@ -27,6 +27,8 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
             dotShape = "CIRCLE",
             cornerShape = "ROUNDED",
             logo = byteArrayOf(1, 2, 3),
+            logoShape = "CIRCLE",
+            logoMargin = "LARGE",
             errorCorrection = "HIGH",
         )
 
@@ -139,6 +141,8 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
                 dotShape = "SQUARE",
                 cornerShape = "SQUARE",
                 logo = null,
+                logoShape = "SQUARE",
+                logoMargin = "NORMAL",
                 errorCorrection = "AUTO",
             ),
             createdAt = Instant.fromEpochMilliseconds(createdAtMillis),

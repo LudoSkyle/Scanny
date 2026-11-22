@@ -16,8 +16,10 @@ import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeGradient
+import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.ui.test.ComposeTest
+import fr.skyle.scanny.ui.test.RED_PNG
 import kotlin.math.abs
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -143,6 +145,60 @@ internal class CodeImageTest : ComposeTest() {
         }
 
     @Test
+    fun `a square logo fills its square`() = runComposeUiTest {
+        // When
+        setContent {
+            logoCode(shape = CodeShape.SQUARE)
+        }
+
+        // Then
+        val pixels = onNodeWithTag(TAG).captureToImage().toPixelMap()
+        val (center, corner) = logoPositions()
+        assertTrue(pixels[center, center].isCloseTo(Color(RED)), "The center of the logo is ${pixels[center, center]}")
+        assertTrue(pixels[corner, corner].isCloseTo(Color(RED)), "The corner of the logo is ${pixels[corner, corner]}")
+    }
+
+    @Test
+    fun `a round logo is cut to its shape`() = runComposeUiTest {
+        // When
+        setContent {
+            logoCode(shape = CodeShape.CIRCLE)
+        }
+
+        // Then
+        val pixels = onNodeWithTag(TAG).captureToImage().toPixelMap()
+        val (center, corner) = logoPositions()
+        assertTrue(pixels[center, center].isCloseTo(Color(RED)), "The center of the logo is ${pixels[center, center]}")
+        assertTrue(!pixels[corner, corner].isCloseTo(Color(RED)), "The corner of the logo is ${pixels[corner, corner]}")
+    }
+
+    @Composable
+    private fun logoCode(shape: CodeShape) {
+        SCTheme {
+            Box(modifier = Modifier.testTag(TAG)) {
+                CodeImage(
+                    modifier = Modifier.width(240.dp),
+                    rawValue = "https://scanny.app",
+                    format = BarcodeFormat.QR_CODE,
+                    contentDescription = "QR code",
+                    style = CodeStyle(
+                        logo = RED_PNG,
+                        logoShape = shape,
+                    ),
+                )
+            }
+        }
+    }
+
+    // The center of the logo, then just inside its corner: a fifth of the code of 208 dp, centered in
+    // its image of 240 dp
+    private fun ComposeUiTest.logoPositions(): Pair<Int, Int> =
+        with(density) {
+            val center = 120.dp.toPx()
+            center.toInt() to (center - 208.dp.toPx() * 0.2f / 2 + 3).toInt()
+        }
+
+    @Test
     fun `a barcode stays dark on white whatever the style`() = runComposeUiTest {
         // When
         setContent {
@@ -180,6 +236,7 @@ internal class CodeImageTest : ComposeTest() {
         const val CREAM = 0xFFFFF8E1
         const val RED = 0xFFB71C1C
         const val BLACK = 0xFF000000
+
         const val TOLERANCE = 0.03f
     }
 }

@@ -9,6 +9,7 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeGradient
+import fr.skyle.scanny.domain.model.CodeLogoMargin
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.Creation
@@ -44,6 +45,8 @@ class RecordCreationUseCaseTest {
                 dotShape = CodeShape.CIRCLE,
                 cornerShape = CodeShape.ROUNDED,
                 logo = byteArrayOf(1, 2, 3),
+                logoShape = CodeShape.CIRCLE,
+                logoMargin = CodeLogoMargin.LARGE,
                 errorCorrection = CodeErrorCorrection.HIGH,
             ),
         )
@@ -64,6 +67,8 @@ class RecordCreationUseCaseTest {
                         dotShape = "CIRCLE",
                         cornerShape = "ROUNDED",
                         logo = byteArrayOf(1, 2, 3),
+                        logoShape = "CIRCLE",
+                        logoMargin = "LARGE",
                         errorCorrection = "HIGH",
                     ),
                     createdAt = NOW,

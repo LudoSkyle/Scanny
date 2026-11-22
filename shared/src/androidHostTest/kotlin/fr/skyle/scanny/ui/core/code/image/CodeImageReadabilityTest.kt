@@ -11,6 +11,7 @@ import com.google.zxing.qrcode.QRCodeReader
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeGradient
+import fr.skyle.scanny.domain.model.CodeLogoMargin
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.platform.gallery.LOGO_MAX_SIDE
@@ -129,6 +130,34 @@ class CodeImageReadabilityTest {
         assertEquals(
             expected = emptyList(),
             actual = unreadStyles,
+        )
+    }
+
+    @Test
+    fun `a qr code is read back with its logo in every shape and every margin`() = runTest {
+        // Given
+        // In the dots that cover the code the least, the colors that stand out the least
+        val logo = logoPng()
+        val styles = CodeShape.entries.flatMap { logoShape ->
+            CodeLogoMargin.entries.map { logoMargin ->
+                CodeStyle(
+                    darkColor = CodeDotColor.RED.argb,
+                    lightColor = CodeBackgroundColor.LAVENDER.argb,
+                    dotShape = CodeShape.CIRCLE,
+                    logo = logo,
+                    logoShape = logoShape,
+                    logoMargin = logoMargin,
+                )
+            }
+        }
+
+        // When
+        val unreadStyles = styles.filterNot { style -> renderQrCode(style = style).readQrCode() == TEXT }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = unreadStyles.map { style -> style.logoShape to style.logoMargin },
         )
     }
 
