@@ -53,6 +53,8 @@ firebaseBom = "34.14.1"
 junit = "4.13.2"
 robolectric = "4.18.1"
 androidxTestCore = "1.7.0"
+# The androidx.compose.ui under Compose Multiplatform 1.12.2 on Android
+androidxComposeUi = "1.12.1"
 zxing = "3.5.4"
 
 # Plugins
@@ -129,6 +131,9 @@ test-okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", v
 test-junit = { module = "junit:junit", version.ref = "junit" }
 test-robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 test-androidx-core = { module = "androidx.test:core-ktx", version.ref = "androidxTestCore" }
+test-composeMultiplatform-ui = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "composeMultiplatform" }
+# The activity runComposeUiTest starts on Android, declared in the manifest of the host tests
+test-androidx-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidxComposeUi" }
 test-zxing = { module = "com.google.zxing:core", version.ref = "zxing" }
 
 # Gradle plugins, put on the build classpath by buildSrc

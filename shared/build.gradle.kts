@@ -65,6 +65,8 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.test.kotlin)
             implementation(libs.test.kotlinx.coroutines)
+            // The screens drawn in the test itself, with no app to launch
+            implementation(libs.test.composeMultiplatform.ui)
         }
 
         androidMain.dependencies {
@@ -84,6 +86,7 @@ kotlin {
         getByName("androidHostTest").dependencies {
             implementation(libs.test.junit)
             implementation(libs.test.robolectric)
+            implementation(libs.test.androidx.compose.ui.manifest)
             // A second reader, which Scanny did not write, for the codes it draws
             implementation(libs.test.zxing)
         }
