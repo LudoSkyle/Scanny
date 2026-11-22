@@ -10,6 +10,7 @@
     <string name="add_to_calendar">Ajouter au calendrier</string>
     <string name="add_website">Ajouter un site</string>
     <string name="address">Adresse</string>
+    <string name="addresses">Adresses</string>
     <string name="advanced_options">Options avancées</string>
     <string name="algorithm">Algorithme</string>
     <string name="all_creations_deleted">Toutes les créations seront supprimées.</string>
@@ -88,6 +89,7 @@
     <string name="color_red">Rouge</string>
     <string name="color_white">Blanc</string>
     <string name="contact">Contact</string>
+    <string name="contact_details">Coordonnées</string>
     <string name="content">Contenu</string>
     <string name="content_size">Taille du contenu</string>
     <string name="content_size_wide_characters">Un accent ou un emoji compte pour plusieurs.</string>
@@ -123,6 +125,7 @@
     <string name="delete_group_question">Supprimer ce groupe ?</string>
     <string name="department">Service</string>
     <string name="description">Description</string>
+    <string name="details">Détails</string>
     <string name="digits">Nombre de chiffres</string>
     <string name="discard">Abandonner</string>
     <string name="discard_codes_question">Abandonner les codes trouvés ?</string>
@@ -258,6 +261,7 @@
     <string name="job_title">Fonction</string>
     <string name="join_network">Rejoindre le réseau</string>
     <string name="keep_history">Conserver l'historique</string>
+    <string name="key">Clé</string>
     <string name="last_name">Nom</string>
     <string name="latitude">Latitude</string>
     <string name="link">Lien</string>
@@ -294,6 +298,7 @@
     </string-array>
     <string name="middle_name">Deuxième prénom</string>
     <string name="mobile">Mobile</string>
+    <string name="more_options">Plus d'options</string>
     <string name="multiple_scan">Scan multiple</string>
     <string name="name">Nom</string>
     <string name="name_prefix">Civilité</string>
@@ -314,12 +319,14 @@
     <string name="open_settings">Ouvrir les réglages</string>
     <string name="organization">Organisation</string>
     <string name="organizer">Organisateur</string>
+    <string name="other">Autres</string>
     <string name="other_color">Autre couleur</string>
     <string name="otp">Code à usage unique</string>
     <string name="otp_type">Type de clé</string>
     <string name="pass_codes_in_front_of_camera">Passez les codes devant la caméra</string>
     <string name="password">Mot de passe</string>
     <string name="password_identifier">Identifiant du mot de passe</string>
+    <string name="payment">Paiement</string>
     <string name="period">Période</string>
     <string name="period_in_seconds">Période en secondes</string>
     <string name="phase2_method">Authentification de phase 2</string>
@@ -435,6 +442,7 @@
     <string name="wifi_password_copied">Mot de passe copié : choisissez « %1$s » dans la liste.</string>
     <string name="wifi_saved">« %1$s » enregistré : l'appareil s'y connecte à portée.</string>
     <string name="wifi_security_none">Aucune</string>
+    <string name="work">Travail</string>
     <string name="work_address">Adresse professionnelle</string>
     <string name="work_email">E-mail professionnel</string>
     <string name="work_phone">Téléphone travail</string>

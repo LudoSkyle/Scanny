@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithContentDescription
@@ -40,6 +41,7 @@ import fr.skyle.scanny.resources.link
 import fr.skyle.scanny.resources.longitude
 import fr.skyle.scanny.resources.mecard
 import fr.skyle.scanny.resources.mobile
+import fr.skyle.scanny.resources.more_options
 import fr.skyle.scanny.resources.name_prefix
 import fr.skyle.scanny.resources.password
 import fr.skyle.scanny.resources.period_in_seconds
@@ -231,6 +233,8 @@ internal class CreationFormFieldsTest : ComposeTest() {
 
         // When
         onNodeWithText("HOTP").performClick()
+        // The algorithm and the digits, folded under more options
+        onNodeWithText(getString(Res.string.more_options)).performScrollTo().performClick()
         onNodeWithText("SHA256").performScrollTo().performClick()
         onNodeWithText("8").performScrollTo().performClick()
         onNode(hasSetTextAction() and hasText(required(Res.string.counter))).performScrollTo().performTextInput("5")
@@ -251,6 +255,48 @@ internal class CreationFormFieldsTest : ComposeTest() {
     }
 
     @Test
+    fun `the options few need are folded until asked for`() = runComposeUiTest {
+        // Given
+        setContent {
+            SCTheme {
+                CreationFormFields(
+                    form = CreationForm(kind = CreationKind.EMAIL),
+                    onFormChanged = {},
+                )
+            }
+        }
+        onNode(hasSetTextAction() and hasText(getString(Res.string.carbon_copy))).assertDoesNotExist()
+
+        // When
+        onNodeWithText(getString(Res.string.more_options)).performClick()
+
+        // Then
+        onNode(hasSetTextAction() and hasText(getString(Res.string.carbon_copy))).assertExists()
+    }
+
+    @Test
+    fun `a folded option holding a value shows unfolded`() = runComposeUiTest {
+        // When
+        // As read from a scanned key
+        setContent {
+            SCTheme {
+                Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+                    CreationFormFields(
+                        form = CreationForm(
+                            kind = CreationKind.OTP,
+                            otpAlgorithm = OtpAlgorithm.SHA256,
+                        ),
+                        onFormChanged = {},
+                    )
+                }
+            }
+        }
+
+        // Then
+        onNodeWithText("SHA256").performScrollTo().assertIsSelected()
+    }
+
+    @Test
     fun `the fields of an e-mail take several addresses for its recipients and its copies`() = runComposeUiTest {
         // Given
         var form by mutableStateOf(CreationForm(kind = CreationKind.EMAIL))
@@ -267,6 +313,8 @@ internal class CreationFormFieldsTest : ComposeTest() {
 
         // When
         onNode(hasSetTextAction() and hasText(getString(Res.string.recipients))).performTextInput("a@doe.fr, b@doe.fr")
+        // The copies, folded under more options
+        onNodeWithText(getString(Res.string.more_options)).performClick()
         onNode(hasSetTextAction() and hasText(getString(Res.string.carbon_copy))).performTextInput("c@doe.fr")
         onNode(hasSetTextAction() and hasText(getString(Res.string.blind_carbon_copy))).performTextInput("d@doe.fr")
 

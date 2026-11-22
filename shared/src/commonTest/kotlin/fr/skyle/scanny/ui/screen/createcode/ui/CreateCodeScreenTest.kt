@@ -84,7 +84,8 @@ internal class CreateCodeScreenTest : ComposeTest() {
         onNodeWithText(getString(Res.string.next)).performClick()
 
         // Then
-        onNodeWithText(getString(Res.string.content)).assertExists()
+        // The title of the step, and the section of the text
+        onAllNodesWithText(getString(Res.string.content)).assertCountEquals(2)
         onNodeWithText(getString(Res.string.step_of, 1, 2)).assertExists()
         assertEquals(
             expected = 1,

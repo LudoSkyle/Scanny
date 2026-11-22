@@ -14,27 +14,29 @@ import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 
-/** A choice among a few options, side by side under its [label]. */
+/** A choice among a few options, side by side under its [label], or alone when its section names it. */
 @Composable
 fun <T> SegmentedChoice(
-    label: String,
     options: List<T>,
     selectedOption: T,
     optionText: @Composable (T) -> String,
     onOptionSelected: (T) -> Unit,
     modifier: Modifier = Modifier,
+    label: String? = null,
 ) {
     Column(modifier = modifier) {
-        SCText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp),
-            text = label,
-            style = SCTheme.typography.body2,
-            color = SCTheme.colors.text,
-        )
+        if (label != null) {
+            SCText(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                text = label,
+                style = SCTheme.typography.body2,
+                color = SCTheme.colors.text,
+            )
 
-        Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
+        }
 
         SCSegmentedControl(
             modifier = Modifier.fillMaxWidth(),
