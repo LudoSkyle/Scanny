@@ -46,32 +46,44 @@ fun AdvancedContentOptions(
         onExpandedChange = { expanded -> isExpanded = expanded },
         style = SCCardDefaults.Style.LIGHT,
     ) {
-        SCText(
-            modifier = Modifier.fillMaxWidth(),
-            text = stringResource(Res.string.error_correction),
-            style = SCTheme.typography.body1,
-            color = SCTheme.colors.textDark,
-        )
+        // The margins of the card, which brings none
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    top = 12.dp,
+                    end = 16.dp,
+                    bottom = 16.dp,
+                ),
+        ) {
+            SCText(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(Res.string.error_correction),
+                style = SCTheme.typography.body1,
+                color = SCTheme.colors.textDark,
+            )
 
-        Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-        SCText(
-            modifier = Modifier.fillMaxWidth(),
-            text = stringResource(Res.string.error_correction_explanation),
-            style = SCTheme.typography.caption,
-            color = SCTheme.colors.text,
-        )
+            SCText(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(Res.string.error_correction_explanation),
+                style = SCTheme.typography.caption,
+                color = SCTheme.colors.text,
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Column(modifier = Modifier.selectableGroup()) {
-            errorCorrectionChoices.forEach { choice ->
-                ErrorCorrectionRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    choice = choice,
-                    isSelected = choice.errorCorrection == selectedErrorCorrection,
-                    onClick = { onErrorCorrectionSelected(choice.errorCorrection) },
-                )
+            Column(modifier = Modifier.selectableGroup()) {
+                errorCorrectionChoices.forEach { choice ->
+                    ErrorCorrectionRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        choice = choice,
+                        isSelected = choice.errorCorrection == selectedErrorCorrection,
+                        onClick = { onErrorCorrectionSelected(choice.errorCorrection) },
+                    )
+                }
             }
         }
     }

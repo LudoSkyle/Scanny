@@ -1,5 +1,6 @@
 package fr.skyle.scanny.ui.screen.createcode.ui.component
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -62,87 +63,99 @@ fun AdvancedStyleOptions(
         onExpandedChange = { expanded -> isExpanded = expanded },
         style = SCCardDefaults.Style.LIGHT,
     ) {
-        ColorChoiceRow(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.corner_color),
-            options = cornerColorOptions,
-            selectedOption = when (cornerColor) {
-                null -> CornerColorOption.LikeDots
-                else -> CodeDotColor.entries.firstOrNull { color -> color.argb == cornerColor }?.let(CornerColorOption::Palette)
-            },
-            optionColor = { option ->
-                when (option) {
-                    CornerColorOption.LikeDots -> Color(color = style.darkColor)
-                    is CornerColorOption.Palette -> Color(color = option.color.argb)
-                }
-            },
-            optionName = { option ->
-                when (option) {
-                    CornerColorOption.LikeDots -> stringResource(Res.string.corner_color_like_dots)
-                    is CornerColorOption.Palette -> stringResource(option.color.toText())
-                }
-            },
-            onOptionSelected = { option ->
-                onStyleChanged(
-                    style.copy(
-                        cornerColor = when (option) {
-                            CornerColorOption.LikeDots -> null
-                            is CornerColorOption.Palette -> option.color.argb
-                        },
-                    ),
-                )
-            },
-            customColor = customCornerColor?.let { argb -> Color(color = argb) },
-            onCustomColorClicked = onCustomCornerColorClicked,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        SegmentedChoice(
-            label = stringResource(Res.string.gradient),
-            options = CodeGradient.entries,
-            selectedOption = style.gradient,
-            optionText = { gradient -> stringResource(gradient.toText()) },
-            onOptionSelected = { gradient -> onStyleChanged(style.copy(gradient = gradient)) },
-        )
-
-        // The color the dots go to, from their own
-        if (style.gradient != CodeGradient.NONE) {
-            Spacer(modifier = Modifier.height(16.dp))
-
+        // The margins of the card, which brings none
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    top = 12.dp,
+                    end = 16.dp,
+                    bottom = 16.dp,
+                ),
+        ) {
             ColorChoiceRow(
                 modifier = Modifier.fillMaxWidth(),
-                label = stringResource(Res.string.gradient_color),
-                options = CodeDotColor.entries,
-                selectedOption = CodeDotColor.entries.firstOrNull { color -> color.argb == style.gradientColor },
-                optionColor = { color -> Color(color = color.argb) },
-                optionName = { color -> stringResource(color.toText()) },
-                onOptionSelected = { color -> onStyleChanged(style.copy(gradientColor = color.argb)) },
-                customColor = customGradientColor?.let { argb -> Color(color = argb) },
-                onCustomColorClicked = onCustomGradientColorClicked,
+                label = stringResource(Res.string.corner_color),
+                options = cornerColorOptions,
+                selectedOption = when (cornerColor) {
+                    null -> CornerColorOption.LikeDots
+                    else -> CodeDotColor.entries.firstOrNull { color -> color.argb == cornerColor }?.let(CornerColorOption::Palette)
+                },
+                optionColor = { option ->
+                    when (option) {
+                        CornerColorOption.LikeDots -> Color(color = style.darkColor)
+                        is CornerColorOption.Palette -> Color(color = option.color.argb)
+                    }
+                },
+                optionName = { option ->
+                    when (option) {
+                        CornerColorOption.LikeDots -> stringResource(Res.string.corner_color_like_dots)
+                        is CornerColorOption.Palette -> stringResource(option.color.toText())
+                    }
+                },
+                onOptionSelected = { option ->
+                    onStyleChanged(
+                        style.copy(
+                            cornerColor = when (option) {
+                                CornerColorOption.LikeDots -> null
+                                is CornerColorOption.Palette -> option.color.argb
+                            },
+                        ),
+                    )
+                },
+                customColor = customCornerColor?.let { argb -> Color(color = argb) },
+                onCustomColorClicked = onCustomCornerColorClicked,
             )
-        }
 
-        if (style.logo != null) {
             Spacer(modifier = Modifier.height(16.dp))
 
             SegmentedChoice(
-                label = stringResource(Res.string.logo_shape),
-                options = CodeShape.entries,
-                selectedOption = style.logoShape,
-                optionText = { shape -> stringResource(shape.toText()) },
-                onOptionSelected = { shape -> onStyleChanged(style.copy(logoShape = shape)) },
+                label = stringResource(Res.string.gradient),
+                options = CodeGradient.entries,
+                selectedOption = style.gradient,
+                optionText = { gradient -> stringResource(gradient.toText()) },
+                onOptionSelected = { gradient -> onStyleChanged(style.copy(gradient = gradient)) },
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // The color the dots go to, from their own
+            if (style.gradient != CodeGradient.NONE) {
+                Spacer(modifier = Modifier.height(16.dp))
 
-            SegmentedChoice(
-                label = stringResource(Res.string.logo_margin),
-                options = CodeLogoMargin.entries,
-                selectedOption = style.logoMargin,
-                optionText = { margin -> stringResource(margin.toText()) },
-                onOptionSelected = { margin -> onStyleChanged(style.copy(logoMargin = margin)) },
-            )
+                ColorChoiceRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = stringResource(Res.string.gradient_color),
+                    options = CodeDotColor.entries,
+                    selectedOption = CodeDotColor.entries.firstOrNull { color -> color.argb == style.gradientColor },
+                    optionColor = { color -> Color(color = color.argb) },
+                    optionName = { color -> stringResource(color.toText()) },
+                    onOptionSelected = { color -> onStyleChanged(style.copy(gradientColor = color.argb)) },
+                    customColor = customGradientColor?.let { argb -> Color(color = argb) },
+                    onCustomColorClicked = onCustomGradientColorClicked,
+                )
+            }
+
+            if (style.logo != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                SegmentedChoice(
+                    label = stringResource(Res.string.logo_shape),
+                    options = CodeShape.entries,
+                    selectedOption = style.logoShape,
+                    optionText = { shape -> stringResource(shape.toText()) },
+                    onOptionSelected = { shape -> onStyleChanged(style.copy(logoShape = shape)) },
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                SegmentedChoice(
+                    label = stringResource(Res.string.logo_margin),
+                    options = CodeLogoMargin.entries,
+                    selectedOption = style.logoMargin,
+                    optionText = { margin -> stringResource(margin.toText()) },
+                    onOptionSelected = { margin -> onStyleChanged(style.copy(logoMargin = margin)) },
+                )
+            }
         }
     }
 }

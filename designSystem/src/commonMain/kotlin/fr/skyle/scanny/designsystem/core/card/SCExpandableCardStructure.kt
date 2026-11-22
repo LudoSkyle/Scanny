@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -16,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
@@ -25,6 +25,8 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import fr.skyle.scanny.designsystem.core.divider.SCDivider
+import fr.skyle.scanny.designsystem.core.divider.SCDividerDefaults
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.resources.Res
 import fr.skyle.scanny.designsystem.resources.collapsed
@@ -39,8 +41,9 @@ private const val COLLAPSED_ROTATION = 90f
 private const val EXPANDED_ROTATION = 270f
 
 /**
- * A titled block of a screen folded under its title, for a content not everyone needs: a touch on the
- * title unfolds its [SCCard], another folds it.
+ * A card folded under its title, for a content not everyone needs: the title and its chevron are in the
+ * card, which reads as one to touch even folded. A touch unfolds the content under the title, another
+ * folds it. The content brings its own margins, as in an [SCCard].
  */
 @Composable
 fun SCExpandableCardStructure(
@@ -54,11 +57,13 @@ fun SCExpandableCardStructure(
     val chevronRotation by animateFloatAsState(if (isExpanded) EXPANDED_ROTATION else COLLAPSED_ROTATION)
     val state = stringResource(if (isExpanded) Res.string.expanded else Res.string.collapsed)
 
-    Column(modifier = modifier) {
+    SCCard(
+        modifier = modifier,
+        style = style,
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(SCTheme.shapes.medium)
                 .clickable(
                     role = Role.Button,
                     onClick = { onExpandedChange(!isExpanded) },
@@ -67,9 +72,10 @@ fun SCExpandableCardStructure(
                     heading()
                     stateDescription = state
                 }
+                .heightIn(min = 48.dp)
                 .padding(
-                    horizontal = 4.dp,
-                    vertical = 4.dp,
+                    horizontal = 16.dp,
+                    vertical = 12.dp,
                 ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -77,7 +83,7 @@ fun SCExpandableCardStructure(
                 modifier = Modifier.weight(1f),
                 text = title,
                 style = SCTheme.typography.subtitle1,
-                color = SCTheme.colors.text,
+                color = SCTheme.colors.textDark,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -89,19 +95,18 @@ fun SCExpandableCardStructure(
                 painter = painterResource(Res.drawable.ic_chevron_right),
                 // Said by the state of the row
                 contentDescription = null,
-                tint = SCTheme.colors.text,
+                tint = SCTheme.colors.textDark,
             )
         }
 
         AnimatedVisibility(visible = isExpanded) {
-            Column {
-                Spacer(modifier = Modifier.height(8.dp))
-
-                SCCard(
+            Column(modifier = Modifier.fillMaxWidth()) {
+                SCDivider(
                     modifier = Modifier.fillMaxWidth(),
-                    style = style,
-                    content = content,
+                    style = SCDividerDefaults.Style.LIGHT,
                 )
+
+                content()
             }
         }
     }

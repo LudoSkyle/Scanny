@@ -13,8 +13,8 @@ On y trouve :
 - le thème : `SCColors`, `SCTypography`, `SCShapes`, `SCTheme` ;
 - les composants génériques : `SCScreenStructure` (fond, insets, barre du haut, messages, couleur
   des icônes système), `SCTopAppBar`, `SCIconButton`, `SCIconBadge`, `SCButton`, `SCText`, `SCCard`
-  et `SCCardStructure` (une carte et son titre), `SCExpandableCardStructure` (la même, repliée sous
-  son titre jusqu'à un toucher), `SCDialog`, `SCBottomSheet`, `SCSnackbarState`,
+  et `SCCardStructure` (une carte et son titre), `SCExpandableCardStructure` (une carte repliée
+  sous son titre, titre compris dans la carte pour qu'elle se lise touchable, jusqu'à un toucher), `SCDialog`, `SCBottomSheet`, `SCSnackbarState`,
   `SCSwitch`, `SCTextField`, `SCDropdownField` (un choix dans un menu qui se déplie sous le champ),
   `SCDropdownMenu` (le menu seul, sous l'élément où il est placé), `SCDivider` (une ligne entre deux
   rangées d'une carte), `SCSegmentedControl` (un choix entre quelques options côte à côte, chacune
@@ -45,7 +45,7 @@ designSystem/src/commonMain/
 │       │   ├── SCButton.kt
 │       │   └── SCButtonDefaults.kt
 │       ├── colorpicker/       (SCColorPicker : n'importe quelle couleur, teinte puis saturation et luminosité)
-│       ├── card/              (SCCard : un bloc de contenu détaché du fond ; SCCardStructure : son titre au-dessus ; SCExpandableCardStructure : repliée sous son titre)
+│       ├── card/              (SCCard : un bloc de contenu détaché du fond ; SCCardStructure : son titre au-dessus ; SCExpandableCardStructure : repliée sous son titre, dans la carte)
 │       ├── dialog/            (SCDialog : une question avant une action)
 │       ├── divider/           (SCDivider : une ligne fine entre deux rangées, de la couleur du fond)
 │       ├── dropdownfield/     (SCDropdownField : un choix dans un menu, aux styles de SCTextField)
