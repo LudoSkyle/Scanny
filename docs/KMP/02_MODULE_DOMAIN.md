@@ -135,11 +135,13 @@ Une `Creation` est un code créé par l'utilisateur : son contenu, le texte mis 
 format, son style, sa date.
 
 - Le style (`CodeStyle`) dit comment dessiner un QR code : la couleur des points et celle du fond
-  (ARGB, noir sur blanc par défaut), celle des trois coins (celle des points par défaut), la forme des points et celle des trois coins (`CodeShape` :
+  (ARGB, noir sur blanc par défaut), un dégradé des points vers une seconde couleur (`CodeGradient` :
+  aucun, linéaire d'un coin à l'autre, radial du centre aux bords), celle des trois coins (celle des
+  points, dégradé compris, par défaut), la forme des points et celle des trois coins (`CodeShape` :
   carré, arrondi, rond), le logo posé en son centre (un PNG, ou aucun), et sa correction d'erreur
   (`CodeErrorCorrection` : automatique, faible, moyenne, élevée, maximale). Un code-barres garde le
-  style par défaut. Une forme inconnue, écrite par une version plus récente, se lit carrée, et une
-  correction inconnue se lit automatique.
+  style par défaut. Une forme inconnue, écrite par une version plus récente, se lit carrée, un
+  dégradé inconnu se lit sans dégradé, et une correction inconnue se lit automatique.
 - La correction automatique est la plus faible, et la plus forte sous un logo. Un logo est toujours
   encodé à la plus forte, quelle que soit la correction gardée : l'éditeur ne permet un logo qu'en
   correction automatique ou maximale, et ne propose plus que celles-là quand un logo est posé.
@@ -166,8 +168,10 @@ format, son style, sa date.
   chaque correction (`ContentSizeMapperTest`) : le compteur passe au rouge exactement quand l'aperçu
   refuse le contenu.
 - Les options avancées de la seconde étape, repliées sous le logo, donnent aux coins une couleur à
-  eux, de la palette des points ou libre. L'avertissement de lisibilité juge les coins comme les
-  points : plus sombres que le fond, et d'un contraste d'au moins 4,5:1 avec lui.
+  eux, de la palette des points ou libre (la couleur des points n'y est offerte qu'une fois, comme la
+  leur), et aux points un dégradé vers une seconde couleur. L'avertissement de lisibilité juge les
+  coins et la seconde couleur comme les points : plus sombres que le fond, et d'un contraste d'au
+  moins 4,5:1 avec lui.
 - La correction se choisit dans les options avancées de la première étape, repliées sous le
   compteur, puisqu'elle change ce que le code tient (`errorCorrectionChoices`). Une correction trop
   forte pour le contenu, ou trop faible pour le logo posé, le dit et ne se choisit pas. Le logo, à la

@@ -34,6 +34,12 @@ internal data class CreationEntity(
     // ARGB, null for the color of the dots, as before the version 7
     @ColumnInfo(name = "corner_color")
     val cornerColor: Long?,
+    // The name of a CodeGradient value of domain, none by default as before the version 8
+    @ColumnInfo(name = "gradient", defaultValue = "NONE")
+    val gradient: String,
+    // ARGB, the color of Scanny by default
+    @ColumnInfo(name = "gradient_color", defaultValue = "4282074046")
+    val gradientColor: Long,
     // The names of CodeShape values of domain
     @ColumnInfo(name = "dot_shape", defaultValue = "SQUARE")
     val dotShape: String,
@@ -60,6 +66,8 @@ internal data class CreationEntity(
             darkColor == other.darkColor &&
             lightColor == other.lightColor &&
             cornerColor == other.cornerColor &&
+            gradient == other.gradient &&
+            gradientColor == other.gradientColor &&
             dotShape == other.dotShape &&
             cornerShape == other.cornerShape &&
             logo.contentEquals(other.logo) &&
@@ -74,6 +82,8 @@ internal data class CreationEntity(
         result = 31 * result + darkColor.hashCode()
         result = 31 * result + lightColor.hashCode()
         result = 31 * result + cornerColor.hashCode()
+        result = 31 * result + gradient.hashCode()
+        result = 31 * result + gradientColor.hashCode()
         result = 31 * result + dotShape.hashCode()
         result = 31 * result + cornerShape.hashCode()
         result = 31 * result + logo.contentHashCode()

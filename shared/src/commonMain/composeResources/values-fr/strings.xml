@@ -98,6 +98,11 @@
     <string name="finish">Terminer</string>
     <string name="format">Format</string>
     <string name="give_feedback">Donner votre avis</string>
+    <string name="gradient">Dégradé</string>
+    <string name="gradient_color">Seconde couleur du dégradé</string>
+    <string name="gradient_linear">Linéaire</string>
+    <string name="gradient_none">Aucun</string>
+    <string name="gradient_radial">Radial</string>
     <string name="group">Groupe</string>
     <string name="group_codes_removed_from_history">Ses codes seront retirés de l'historique.</string>
     <string name="group_not_deleted">Le groupe n'a pas pu être supprimé</string>

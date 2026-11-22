@@ -10,6 +10,7 @@ import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.qrcode.QRCodeReader
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
+import fr.skyle.scanny.domain.model.CodeGradient
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.platform.gallery.LOGO_MAX_SIDE
@@ -119,6 +120,29 @@ class CodeImageReadabilityTest {
                 lightColor = CodeBackgroundColor.LAVENDER.argb,
                 cornerColor = color.argb,
             )
+        }
+
+        // When
+        val unreadStyles = styles.filterNot { style -> renderQrCode(style = style).readQrCode() == TEXT }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = unreadStyles,
+        )
+    }
+
+    @Test
+    fun `a qr code is read back in every gradient to every color of the palette`() = runTest {
+        // Given
+        val styles = listOf(CodeGradient.LINEAR, CodeGradient.RADIAL).flatMap { gradient ->
+            CodeDotColor.entries.map { color ->
+                CodeStyle(
+                    lightColor = CodeBackgroundColor.LAVENDER.argb,
+                    gradient = gradient,
+                    gradientColor = color.argb,
+                )
+            }
         }
 
         // When

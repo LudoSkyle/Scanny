@@ -1,9 +1,12 @@
 package fr.skyle.scanny.ui.core.code.mapper
 
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
+import fr.skyle.scanny.domain.model.CodeGradient
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.ui.core.code.model.CodeReadability
@@ -18,6 +21,7 @@ import io.github.alexzhirkevich.qrose.options.QrLogoPadding
 import io.github.alexzhirkevich.qrose.options.QrOptions
 import io.github.alexzhirkevich.qrose.options.QrPixelShape
 import io.github.alexzhirkevich.qrose.options.QrShapes
+import io.github.alexzhirkevich.qrose.options.brush
 import io.github.alexzhirkevich.qrose.options.circle
 import io.github.alexzhirkevich.qrose.options.roundCorners
 import io.github.alexzhirkevich.qrose.options.solid
@@ -30,6 +34,9 @@ private const val MIN_CONTRAST_RATIO = 4.5
 
 // Of the side of a corner: rounded, still far from a circle
 private const val CORNER_RADIUS = 0.25f
+
+// Half the diagonal of a square of side 1: a radial gradient reaches its second color in the corners
+private const val HALF_DIAGONAL = 0.7071f
 
 // Of the side of the code: the logo and the blank around it hide less than the highest correction
 // makes up for
@@ -48,10 +55,10 @@ internal fun CodeStyle.toQrOptions(): QrOptions =
             frame = cornerShape.toFrameShape(),
         ),
         colors = QrColors(
-            dark = QrBrush.solid(color = dotColor()),
-            // The color of the dots, unless the corners have their own
-            ball = QrBrush.solid(color = cornerColor()),
-            frame = QrBrush.solid(color = cornerColor()),
+            dark = dotBrush(),
+            // Left unspecified, the corners are painted with the dots, their gradient included
+            ball = cornerBrush(),
+            frame = cornerBrush(),
         ),
         logo = toQrLogo(),
         // Set, not left to qrose: it keeps the lowest correction for a logo drawn with no blank around
@@ -99,7 +106,11 @@ internal fun CodeStyle.backgroundColor(): Color =
  * and enough apart from it.
  */
 internal fun CodeStyle.readability(): CodeReadability {
-    val colors = listOfNotNull(darkColor, cornerColor)
+    val colors = listOfNotNull(
+        darkColor,
+        cornerColor,
+        gradientColor.takeIf { gradient != CodeGradient.NONE },
+    )
     return when {
         colors.any { argb -> relativeLuminance(argb) > relativeLuminance(lightColor) } -> CodeReadability.INVERTED
         colors.any { argb -> contrastRatio(argb, lightColor) < MIN_CONTRAST_RATIO } -> CodeReadability.LOW_CONTRAST
@@ -125,6 +136,32 @@ private fun relativeLuminance(argb: Long): Double {
     }
     return 0.2126 * channel(shift = 16) + 0.7152 * channel(shift = 8) + 0.0722 * channel(shift = 0)
 }
+
+private fun CodeStyle.dotBrush(): QrBrush {
+    val colors = listOf(Color(color = darkColor), Color(color = gradientColor))
+    return when (gradient) {
+        CodeGradient.NONE -> QrBrush.solid(color = dotColor())
+
+        CodeGradient.LINEAR -> QrBrush.brush { size ->
+            Brush.linearGradient(
+                colors = colors,
+                start = Offset.Zero,
+                end = Offset(x = size, y = size),
+            )
+        }
+
+        CodeGradient.RADIAL -> QrBrush.brush { size ->
+            Brush.radialGradient(
+                colors = colors,
+                center = Offset(x = size / 2, y = size / 2),
+                radius = size * HALF_DIAGONAL,
+            )
+        }
+    }
+}
+
+private fun CodeStyle.cornerBrush(): QrBrush =
+    cornerColor?.let { argb -> QrBrush.solid(color = Color(color = argb)) } ?: QrBrush.Unspecified
 
 private fun CodeStyle.toQrLogo(): QrLogo {
     val png = logo ?: return QrLogo()

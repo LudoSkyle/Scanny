@@ -1,6 +1,7 @@
 package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
+import fr.skyle.scanny.domain.model.CodeGradient
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.resources.Res
@@ -32,6 +33,9 @@ import fr.skyle.scanny.resources.error_correction_quartile
 import fr.skyle.scanny.resources.error_correction_quartile_description
 import fr.skyle.scanny.resources.error_correction_too_high_for_content
 import fr.skyle.scanny.resources.error_correction_too_low_for_logo
+import fr.skyle.scanny.resources.gradient_linear
+import fr.skyle.scanny.resources.gradient_none
+import fr.skyle.scanny.resources.gradient_radial
 import fr.skyle.scanny.resources.link
 import fr.skyle.scanny.resources.logo_needs_highest_correction
 import fr.skyle.scanny.resources.shape_circle
@@ -125,4 +129,11 @@ internal fun LogoBlocker.toText(): StringResource =
     when (this) {
         LogoBlocker.CORRECTION_TOO_LOW -> Res.string.logo_needs_highest_correction
         LogoBlocker.CONTENT_TOO_LONG -> Res.string.content_too_long_for_logo
+    }
+
+internal fun CodeGradient.toText(): StringResource =
+    when (this) {
+        CodeGradient.NONE -> Res.string.gradient_none
+        CodeGradient.LINEAR -> Res.string.gradient_linear
+        CodeGradient.RADIAL -> Res.string.gradient_radial
     }

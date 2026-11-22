@@ -4,8 +4,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.onAllNodesWithContentDescription
@@ -15,6 +19,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.v2.runComposeUiTest
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.CodeGradient
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.advanced_options
@@ -22,9 +27,12 @@ import fr.skyle.scanny.resources.choose
 import fr.skyle.scanny.resources.code_low_contrast
 import fr.skyle.scanny.resources.color_black
 import fr.skyle.scanny.resources.color_cream
+import fr.skyle.scanny.resources.color_green
 import fr.skyle.scanny.resources.color_indigo
 import fr.skyle.scanny.resources.color_red
 import fr.skyle.scanny.resources.corner_color_like_dots
+import fr.skyle.scanny.resources.gradient_color
+import fr.skyle.scanny.resources.gradient_radial
 import fr.skyle.scanny.resources.other_color
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeBackgroundColor
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeDotColor
@@ -143,6 +151,48 @@ internal class CodeStyleFieldsTest : ComposeTest() {
             expected = listOf(CodeStyle(cornerColor = CodeDotColor.RED.argb)),
             actual = styles,
         )
+    }
+
+    @Test
+    fun `a gradient is chosen in the advanced options and then its second color`() = runComposeUiTest {
+        // Given
+        var style by mutableStateOf(CodeStyle())
+        setContent {
+            codeStyleFields(
+                style = style,
+                onStyleChanged = { changed -> style = changed },
+            )
+        }
+        onNodeWithText(getString(Res.string.advanced_options)).performScrollTo().performClick()
+        onNodeWithText(getString(Res.string.gradient_color)).assertDoesNotExist()
+
+        // When
+        onNodeWithText(getString(Res.string.gradient_radial)).performScrollTo().performClick()
+        // The third "Green": the dots, the corners, then the gradient
+        onAllNodesWithContentDescription(getString(Res.string.color_green))[2].performScrollTo().performClick()
+
+        // Then
+        assertEquals(
+            expected = CodeStyle(
+                gradient = CodeGradient.RADIAL,
+                gradientColor = CodeDotColor.GREEN.argb,
+            ),
+            actual = style,
+        )
+    }
+
+    @Test
+    fun `the color of the dots is offered once for the corners as theirs`() = runComposeUiTest {
+        // When
+        setContent {
+            codeStyleFields(style = CodeStyle(darkColor = CodeDotColor.INDIGO.argb))
+        }
+        onNodeWithText(getString(Res.string.advanced_options)).performScrollTo().performClick()
+
+        // Then
+        // The indigo of the dots, not again in the corners
+        onAllNodesWithContentDescription(getString(Res.string.color_indigo)).assertCountEquals(1)
+        onNodeWithContentDescription(getString(Res.string.corner_color_like_dots)).performScrollTo().assertIsSelected()
     }
 
     @Composable

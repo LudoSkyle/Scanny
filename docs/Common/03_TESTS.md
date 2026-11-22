@@ -324,6 +324,7 @@ dessine l'image d'un QR code pour de vrai, par le rendu natif de Robolectric, et
 un lecteur que l'app n'a pas écrit et plus strict que ceux des téléphones. Il couvre chaque forme
 dans les couleurs de la palette qui ressortent le moins, et chaque paire de couleurs avec les formes
 qui couvrent le moins le code, chaque forme avec un logo, des coins de chaque couleur de la palette,
+chaque dégradé vers chaque couleur de la palette,
 chaque correction d'erreur, et le contenu
 le plus long qu'un QR code tient, dans le code le plus dense. Chaque paire de la palette se lit
 aussi bien par la règle de l'avertissement (`readability` : des points plus sombres que le fond, et

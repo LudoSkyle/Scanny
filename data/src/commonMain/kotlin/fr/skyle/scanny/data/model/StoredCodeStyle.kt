@@ -7,6 +7,10 @@ data class StoredCodeStyle(
     val lightColor: Long,
     // ARGB, null for the color of the dots
     val cornerColor: Long?,
+    // The name of a CodeGradient value of domain
+    val gradient: String,
+    // ARGB
+    val gradientColor: Long,
     // The names of CodeShape values of domain
     val dotShape: String,
     val cornerShape: String,
@@ -22,6 +26,8 @@ data class StoredCodeStyle(
             darkColor == other.darkColor &&
             lightColor == other.lightColor &&
             cornerColor == other.cornerColor &&
+            gradient == other.gradient &&
+            gradientColor == other.gradientColor &&
             dotShape == other.dotShape &&
             cornerShape == other.cornerShape &&
             logo.contentEquals(other.logo) &&
@@ -31,6 +37,8 @@ data class StoredCodeStyle(
         var result = darkColor.hashCode()
         result = 31 * result + lightColor.hashCode()
         result = 31 * result + cornerColor.hashCode()
+        result = 31 * result + gradient.hashCode()
+        result = 31 * result + gradientColor.hashCode()
         result = 31 * result + dotShape.hashCode()
         result = 31 * result + cornerShape.hashCode()
         result = 31 * result + logo.contentHashCode()
