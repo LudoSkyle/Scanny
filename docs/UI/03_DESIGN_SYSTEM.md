@@ -198,7 +198,9 @@ object SCTheme {
 - Un composant qui affiche une icône la reçoit en **`Painter`** (`icon: Painter`), lu par l'appelant
   avec `painterResource(Res.drawable.x)`.
 - Un interrupteur se pose dans une ligne qui porte le geste et le libellé (`toggleable`) : il reçoit
-  alors `onCheckedChange` à `null`, et toute la ligne se lit comme un seul interrupteur.
+  alors `onCheckedChange` à `null`, et toute la ligne se lit comme un seul interrupteur. Un bouton
+  radio de même (`SCRadioButton`, `onClick` à `null`), dans une ligne `selectable` : leur groupe est
+  un `selectableGroup`.
 - Un bouton qui n'affiche qu'une icône prend un `contentDescription` **obligatoire** et non nullable.
 - Les previews d'un composant parcourent **toutes** ses combinaisons `Style` × `Size`, avec un
   `PreviewParameterProvider`. Elles n'utilisent que des ressources du module, et l'annotation
