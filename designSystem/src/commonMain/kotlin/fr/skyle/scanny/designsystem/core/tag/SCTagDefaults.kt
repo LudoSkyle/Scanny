@@ -10,22 +10,18 @@ import fr.skyle.scanny.designsystem.theme.SCTheme
 object SCTagDefaults {
 
     enum class Style {
-        LIGHT,
-        // Stands out among LIGHT ones
-        FILLED;
+        LIGHT;
 
         val containerColor: Color
             @Composable
             get() = when (this) {
                 LIGHT -> SCTheme.colors.backgroundIcon
-                FILLED -> SCTheme.colors.primary
             }
 
         val contentColor: Color
             @Composable
             get() = when (this) {
                 LIGHT -> SCTheme.colors.textPrimary
-                FILLED -> SCTheme.colors.textLight
             }
     }
 
