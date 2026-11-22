@@ -57,7 +57,7 @@ fun CreationDetailScreen(
     snackbarState: SCSnackbarState,
     onBackClicked: () -> Unit,
     onShowCodeClicked: () -> Unit,
-    onInfoClicked: () -> Unit,
+    onFormatInfoClicked: () -> Unit,
     onEditClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
     onCopyClicked: (text: String) -> Unit,
@@ -126,7 +126,7 @@ fun CreationDetailScreen(
                         .padding(horizontal = 4.dp),
                     type = creation.type,
                     format = creation.format,
-                    onInfoClicked = onInfoClicked,
+                    onFormatInfoClicked = onFormatInfoClicked,
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -195,7 +195,7 @@ private fun PreviewCreationDetailScreen() {
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
             onShowCodeClicked = {},
-            onInfoClicked = {},
+            onFormatInfoClicked = {},
             onEditClicked = {},
             onDeleteClicked = {},
             onCopyClicked = {},

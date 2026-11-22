@@ -104,7 +104,7 @@ fun CreationDetailRoute(
         onShowCodeClicked = {
             isCodeSheetVisible = true
         },
-        onInfoClicked = {
+        onFormatInfoClicked = {
             isInfoSheetVisible = true
         },
         onEditClicked = navigateToCreateCode,
@@ -139,11 +139,10 @@ fun CreationDetailRoute(
         )
     }
 
-    val infoItem = uiState.creation
-    if (isInfoSheetVisible && infoItem != null) {
+    val infoFormat = uiState.creation?.format
+    if (isInfoSheetVisible && infoFormat != null) {
         CodeInfoSheet(
-            type = infoItem.type,
-            format = infoItem.format,
+            format = infoFormat,
             onDismissRequest = {
                 isInfoSheetVisible = false
             },

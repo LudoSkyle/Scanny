@@ -50,7 +50,7 @@ internal class CreationDetailScreenTest : ComposeTest() {
                     snackbarState = rememberSCSnackbarState(),
                     onBackClicked = {},
                     onShowCodeClicked = { clicks += "show" },
-                    onInfoClicked = {},
+                    onFormatInfoClicked = {},
                     onEditClicked = { clicks += "edit" },
                     onDeleteClicked = {},
                     onCopyClicked = {},

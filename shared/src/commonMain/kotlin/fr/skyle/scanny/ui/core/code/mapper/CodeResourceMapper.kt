@@ -14,19 +14,45 @@ import fr.skyle.scanny.resources.data_matrix
 import fr.skyle.scanny.resources.ean_13
 import fr.skyle.scanny.resources.ean_8
 import fr.skyle.scanny.resources.email
-import fr.skyle.scanny.resources.format_aztec_info
-import fr.skyle.scanny.resources.format_codabar_info
-import fr.skyle.scanny.resources.format_code_128_info
-import fr.skyle.scanny.resources.format_code_39_info
-import fr.skyle.scanny.resources.format_code_93_info
-import fr.skyle.scanny.resources.format_data_matrix_info
-import fr.skyle.scanny.resources.format_ean_13_info
-import fr.skyle.scanny.resources.format_ean_8_info
-import fr.skyle.scanny.resources.format_itf_info
-import fr.skyle.scanny.resources.format_pdf417_info
-import fr.skyle.scanny.resources.format_qr_code_info
-import fr.skyle.scanny.resources.format_upc_a_info
-import fr.skyle.scanny.resources.format_upc_e_info
+import fr.skyle.scanny.resources.format_aztec_example
+import fr.skyle.scanny.resources.format_aztec_structure
+import fr.skyle.scanny.resources.format_aztec_use
+import fr.skyle.scanny.resources.format_codabar_example
+import fr.skyle.scanny.resources.format_codabar_structure
+import fr.skyle.scanny.resources.format_codabar_use
+import fr.skyle.scanny.resources.format_code_128_example
+import fr.skyle.scanny.resources.format_code_128_structure
+import fr.skyle.scanny.resources.format_code_128_use
+import fr.skyle.scanny.resources.format_code_39_example
+import fr.skyle.scanny.resources.format_code_39_structure
+import fr.skyle.scanny.resources.format_code_39_use
+import fr.skyle.scanny.resources.format_code_93_example
+import fr.skyle.scanny.resources.format_code_93_structure
+import fr.skyle.scanny.resources.format_code_93_use
+import fr.skyle.scanny.resources.format_data_matrix_example
+import fr.skyle.scanny.resources.format_data_matrix_structure
+import fr.skyle.scanny.resources.format_data_matrix_use
+import fr.skyle.scanny.resources.format_ean_13_example
+import fr.skyle.scanny.resources.format_ean_13_structure
+import fr.skyle.scanny.resources.format_ean_13_use
+import fr.skyle.scanny.resources.format_ean_8_example
+import fr.skyle.scanny.resources.format_ean_8_structure
+import fr.skyle.scanny.resources.format_ean_8_use
+import fr.skyle.scanny.resources.format_itf_example
+import fr.skyle.scanny.resources.format_itf_structure
+import fr.skyle.scanny.resources.format_itf_use
+import fr.skyle.scanny.resources.format_pdf417_example
+import fr.skyle.scanny.resources.format_pdf417_structure
+import fr.skyle.scanny.resources.format_pdf417_use
+import fr.skyle.scanny.resources.format_qr_code_example
+import fr.skyle.scanny.resources.format_qr_code_structure
+import fr.skyle.scanny.resources.format_qr_code_use
+import fr.skyle.scanny.resources.format_upc_a_example
+import fr.skyle.scanny.resources.format_upc_a_structure
+import fr.skyle.scanny.resources.format_upc_a_use
+import fr.skyle.scanny.resources.format_upc_e_example
+import fr.skyle.scanny.resources.format_upc_e_structure
+import fr.skyle.scanny.resources.format_upc_e_use
 import fr.skyle.scanny.resources.ic_link
 import fr.skyle.scanny.resources.ic_mail
 import fr.skyle.scanny.resources.ic_notes
@@ -52,12 +78,6 @@ import fr.skyle.scanny.resources.security
 import fr.skyle.scanny.resources.sms
 import fr.skyle.scanny.resources.subject
 import fr.skyle.scanny.resources.text
-import fr.skyle.scanny.resources.type_contact_info
-import fr.skyle.scanny.resources.type_email_info
-import fr.skyle.scanny.resources.type_link_info
-import fr.skyle.scanny.resources.type_sms_info
-import fr.skyle.scanny.resources.type_text_info
-import fr.skyle.scanny.resources.type_wifi_info
 import fr.skyle.scanny.resources.upc_a
 import fr.skyle.scanny.resources.upc_e
 import fr.skyle.scanny.resources.website
@@ -133,31 +153,57 @@ internal fun CodeAction.toText(): StringResource =
         is CodeAction.AddContact -> Res.string.add_contact
         is CodeAction.JoinWifi -> Res.string.join_network
     }
-/** What a code of this type holds, and what Scanny does with it. */
-internal fun CodeType.toInfo(): StringResource =
+
+/** Where a code of this format is found. */
+internal fun BarcodeFormat.toUse(): StringResource =
     when (this) {
-        CodeType.TEXT -> Res.string.type_text_info
-        CodeType.LINK -> Res.string.type_link_info
-        CodeType.EMAIL -> Res.string.type_email_info
-        CodeType.SMS -> Res.string.type_sms_info
-        CodeType.WIFI -> Res.string.type_wifi_info
-        CodeType.CONTACT -> Res.string.type_contact_info
+        BarcodeFormat.QR_CODE -> Res.string.format_qr_code_use
+        BarcodeFormat.DATA_MATRIX -> Res.string.format_data_matrix_use
+        BarcodeFormat.AZTEC -> Res.string.format_aztec_use
+        BarcodeFormat.PDF417 -> Res.string.format_pdf417_use
+        BarcodeFormat.EAN_13 -> Res.string.format_ean_13_use
+        BarcodeFormat.EAN_8 -> Res.string.format_ean_8_use
+        BarcodeFormat.UPC_A -> Res.string.format_upc_a_use
+        BarcodeFormat.UPC_E -> Res.string.format_upc_e_use
+        BarcodeFormat.CODE_39 -> Res.string.format_code_39_use
+        BarcodeFormat.CODE_93 -> Res.string.format_code_93_use
+        BarcodeFormat.CODE_128 -> Res.string.format_code_128_use
+        BarcodeFormat.ITF -> Res.string.format_itf_use
+        BarcodeFormat.CODABAR -> Res.string.format_codabar_use
     }
 
-/** What a code of this format looks like, what it holds, and where it is found. */
-internal fun BarcodeFormat.toInfo(): StringResource =
+/** How a code of this format is made. */
+internal fun BarcodeFormat.toStructure(): StringResource =
     when (this) {
-        BarcodeFormat.QR_CODE -> Res.string.format_qr_code_info
-        BarcodeFormat.DATA_MATRIX -> Res.string.format_data_matrix_info
-        BarcodeFormat.AZTEC -> Res.string.format_aztec_info
-        BarcodeFormat.PDF417 -> Res.string.format_pdf417_info
-        BarcodeFormat.EAN_13 -> Res.string.format_ean_13_info
-        BarcodeFormat.EAN_8 -> Res.string.format_ean_8_info
-        BarcodeFormat.UPC_A -> Res.string.format_upc_a_info
-        BarcodeFormat.UPC_E -> Res.string.format_upc_e_info
-        BarcodeFormat.CODE_39 -> Res.string.format_code_39_info
-        BarcodeFormat.CODE_93 -> Res.string.format_code_93_info
-        BarcodeFormat.CODE_128 -> Res.string.format_code_128_info
-        BarcodeFormat.ITF -> Res.string.format_itf_info
-        BarcodeFormat.CODABAR -> Res.string.format_codabar_info
+        BarcodeFormat.QR_CODE -> Res.string.format_qr_code_structure
+        BarcodeFormat.DATA_MATRIX -> Res.string.format_data_matrix_structure
+        BarcodeFormat.AZTEC -> Res.string.format_aztec_structure
+        BarcodeFormat.PDF417 -> Res.string.format_pdf417_structure
+        BarcodeFormat.EAN_13 -> Res.string.format_ean_13_structure
+        BarcodeFormat.EAN_8 -> Res.string.format_ean_8_structure
+        BarcodeFormat.UPC_A -> Res.string.format_upc_a_structure
+        BarcodeFormat.UPC_E -> Res.string.format_upc_e_structure
+        BarcodeFormat.CODE_39 -> Res.string.format_code_39_structure
+        BarcodeFormat.CODE_93 -> Res.string.format_code_93_structure
+        BarcodeFormat.CODE_128 -> Res.string.format_code_128_structure
+        BarcodeFormat.ITF -> Res.string.format_itf_structure
+        BarcodeFormat.CODABAR -> Res.string.format_codabar_structure
+    }
+
+/** A code of this format, taken apart. */
+internal fun BarcodeFormat.toExample(): StringResource =
+    when (this) {
+        BarcodeFormat.QR_CODE -> Res.string.format_qr_code_example
+        BarcodeFormat.DATA_MATRIX -> Res.string.format_data_matrix_example
+        BarcodeFormat.AZTEC -> Res.string.format_aztec_example
+        BarcodeFormat.PDF417 -> Res.string.format_pdf417_example
+        BarcodeFormat.EAN_13 -> Res.string.format_ean_13_example
+        BarcodeFormat.EAN_8 -> Res.string.format_ean_8_example
+        BarcodeFormat.UPC_A -> Res.string.format_upc_a_example
+        BarcodeFormat.UPC_E -> Res.string.format_upc_e_example
+        BarcodeFormat.CODE_39 -> Res.string.format_code_39_example
+        BarcodeFormat.CODE_93 -> Res.string.format_code_93_example
+        BarcodeFormat.CODE_128 -> Res.string.format_code_128_example
+        BarcodeFormat.ITF -> Res.string.format_itf_example
+        BarcodeFormat.CODABAR -> Res.string.format_codabar_example
     }

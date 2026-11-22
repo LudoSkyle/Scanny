@@ -258,8 +258,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] La snackbar « Voir » après l'enregistrement d'une image
     - [x] Le contenu brut plus visible replié, et son réglage pour la feuille d'un scan
     - [x] La ligne d'un groupe dans l'historique, et la séparation dans son détail
-    - [x] Les fiches « i » du type et du format : ce que le code contient et ce que Scanny en fait,
-          puis à quoi son format ressemble et où on le trouve
+    - [x] Les fiches « i » du format, juste à côté de lui : son usage, comment il est formé, et un
+          exemple décortiqué
     - [x] Réinitialiser la personnalisation depuis sa barre du haut, avec une annulation
     - [x] L'avertissement de lisibilité calé sur ce que ZXing lit, plutôt que sur le contraste d'un
           texte
