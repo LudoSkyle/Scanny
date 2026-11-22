@@ -11,7 +11,10 @@ import fr.skyle.scanny.domain.usecase.creation.WatchCreationUseCase
 import fr.skyle.scanny.domain.usecase.scan.WatchScannedCodeUseCase
 import fr.skyle.scanny.platform.gallery.LogoPickResult
 import fr.skyle.scanny.ui.core.code.mapper.canHold
+import fr.skyle.scanny.ui.core.code.mapper.qrErrorCorrection
+import fr.skyle.scanny.ui.screen.createcode.ui.mapper.errorCorrectionChoices
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.format
+import fr.skyle.scanny.ui.screen.createcode.ui.mapper.logoBlocker
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.qrContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toBarcodeContent
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toCreationForm
@@ -20,6 +23,8 @@ import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationSource
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ErrorCorrectionChoice
+import fr.skyle.scanny.ui.screen.createcode.ui.model.LogoBlocker
 import io.github.alexzhirkevich.qrose.matrix.qr.QrErrorCorrection
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
@@ -38,7 +43,7 @@ class CreateCodeViewModel(
     private val recordCreationUseCase: RecordCreationUseCase,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CreateCodeUIState())
+    private val _uiState = MutableStateFlow(CreateCodeUIState().withDerivedState())
     val uiState: StateFlow<CreateCodeUIState> = _uiState.asStateFlow()
 
     private val _event = Channel<CreateCodeEvent>(Channel.BUFFERED)
@@ -76,13 +81,8 @@ class CreateCodeViewModel(
     }
 
     fun onFormChanged(form: CreationForm) {
-        val rawValue = form.toBarcodeContent()?.toRawValue()
         _uiState.update { uiState ->
-            uiState.copy(
-                form = form,
-                preview = form.toCodePreview(rawValue = rawValue),
-                contentSize = form.toContentSize(rawValue = rawValue),
-            )
+            uiState.copy(form = form).withDerivedState()
         }
     }
 
@@ -103,16 +103,17 @@ class CreateCodeViewModel(
         }
     }
 
+    // The correction and the logo change what the code holds
     fun onStyleChanged(style: CodeStyle) {
         _uiState.update { uiState ->
-            uiState.copy(style = style)
+            uiState.copy(style = style).withDerivedState()
         }
     }
 
     fun onLogoPicked(result: LogoPickResult) {
         when (result) {
             is LogoPickResult.Picked -> _uiState.update { uiState ->
-                uiState.copy(style = uiState.style.copy(logo = result.png))
+                uiState.copy(style = uiState.style.copy(logo = result.png)).withDerivedState()
             }
 
             LogoPickResult.Unreadable -> _event.trySend(CreateCodeEvent.LogoNotRead)
@@ -153,14 +154,47 @@ class CreateCodeViewModel(
         }
     }
 
-    // A QR code is tried with the highest correction, the one a logo can ask for
-    private fun CreationForm.toCodePreview(rawValue: String?): CodePreview {
+    // What the form and the style make: the code, how much of it the content takes, and what can be chosen
+    private fun CreateCodeUIState.withDerivedState(): CreateCodeUIState {
+        val rawValue = form.toBarcodeContent()?.toRawValue()
+        val isQrCode = form.format == BarcodeFormat.QR_CODE
+        val errorCorrection = style.qrErrorCorrection()
+        return copy(
+            preview = form.toCodePreview(
+                rawValue = rawValue,
+                errorCorrection = errorCorrection,
+            ),
+            // Counted for a QR code only: a barcode has a length
+            contentSize = if (isQrCode) {
+                qrContentSize(
+                    rawValue = rawValue.orEmpty(),
+                    errorCorrection = errorCorrection,
+                )
+            } else {
+                null
+            },
+            errorCorrectionChoices = errorCorrectionChoices(
+                rawValue = rawValue,
+                style = style,
+            ),
+            logoBlocker = logoBlocker(
+                rawValue = rawValue,
+                style = style,
+            ),
+        )
+    }
+
+    // A QR code is tried with the correction it will be encoded with
+    private fun CreationForm.toCodePreview(
+        rawValue: String?,
+        errorCorrection: QrErrorCorrection,
+    ): CodePreview {
         if (rawValue == null) {
             return CodePreview.Incomplete
         }
         val isHeld = format.canHold(
             rawValue = rawValue,
-            errorCorrection = QrErrorCorrection.H,
+            errorCorrection = errorCorrection,
         )
         return if (isHeld) {
             CodePreview.Code(
@@ -172,25 +206,14 @@ class CreateCodeViewModel(
         }
     }
 
-    // Counted against the same correction as the preview, for a QR code only: a barcode has a length
-    private fun CreationForm.toContentSize(rawValue: String?): ContentSize? =
-        if (format == BarcodeFormat.QR_CODE) {
-            qrContentSize(
-                rawValue = rawValue.orEmpty(),
-                errorCorrection = QrErrorCorrection.H,
-            )
-        } else {
-            null
-        }
-
     data class CreateCodeUIState(
         val form: CreationForm = CreationForm(),
         val preview: CodePreview = CodePreview.Incomplete,
         // Null for a barcode
-        val contentSize: ContentSize? = qrContentSize(
-            rawValue = "",
-            errorCorrection = QrErrorCorrection.H,
-        ),
+        val contentSize: ContentSize? = null,
+        val errorCorrectionChoices: List<ErrorCorrectionChoice> = emptyList(),
+        // Null when a logo can be added
+        val logoBlocker: LogoBlocker? = null,
         val style: CodeStyle = CodeStyle(),
         val step: CreationStep = CreationStep.CONTENT,
         val isCreating: Boolean = false,

@@ -1,5 +1,6 @@
 package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 
+import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.resources.Res
@@ -17,8 +18,22 @@ import fr.skyle.scanny.resources.color_purple
 import fr.skyle.scanny.resources.color_red
 import fr.skyle.scanny.resources.color_white
 import fr.skyle.scanny.resources.contact
+import fr.skyle.scanny.resources.content_too_long_for_logo
 import fr.skyle.scanny.resources.email
+import fr.skyle.scanny.resources.error_correction_auto
+import fr.skyle.scanny.resources.error_correction_auto_description
+import fr.skyle.scanny.resources.error_correction_high
+import fr.skyle.scanny.resources.error_correction_high_description
+import fr.skyle.scanny.resources.error_correction_low
+import fr.skyle.scanny.resources.error_correction_low_description
+import fr.skyle.scanny.resources.error_correction_medium
+import fr.skyle.scanny.resources.error_correction_medium_description
+import fr.skyle.scanny.resources.error_correction_quartile
+import fr.skyle.scanny.resources.error_correction_quartile_description
+import fr.skyle.scanny.resources.error_correction_too_high_for_content
+import fr.skyle.scanny.resources.error_correction_too_low_for_logo
 import fr.skyle.scanny.resources.link
+import fr.skyle.scanny.resources.logo_needs_highest_correction
 import fr.skyle.scanny.resources.shape_circle
 import fr.skyle.scanny.resources.shape_rounded
 import fr.skyle.scanny.resources.shape_square
@@ -32,6 +47,8 @@ import fr.skyle.scanny.resources.wifi_security_wpa3
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeBackgroundColor
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeDotColor
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ErrorCorrectionBlocker
+import fr.skyle.scanny.ui.screen.createcode.ui.model.LogoBlocker
 import org.jetbrains.compose.resources.StringResource
 
 internal fun CreationKind.toText(): StringResource =
@@ -78,4 +95,34 @@ internal fun CodeBackgroundColor.toText(): StringResource =
         CodeBackgroundColor.LIGHT_GREEN -> Res.string.color_light_green
         CodeBackgroundColor.PINK -> Res.string.color_pink
         CodeBackgroundColor.LAVENDER -> Res.string.color_lavender
+    }
+
+internal fun CodeErrorCorrection.toText(): StringResource =
+    when (this) {
+        CodeErrorCorrection.AUTO -> Res.string.error_correction_auto
+        CodeErrorCorrection.LOW -> Res.string.error_correction_low
+        CodeErrorCorrection.MEDIUM -> Res.string.error_correction_medium
+        CodeErrorCorrection.QUARTILE -> Res.string.error_correction_quartile
+        CodeErrorCorrection.HIGH -> Res.string.error_correction_high
+    }
+
+internal fun CodeErrorCorrection.toDescription(): StringResource =
+    when (this) {
+        CodeErrorCorrection.AUTO -> Res.string.error_correction_auto_description
+        CodeErrorCorrection.LOW -> Res.string.error_correction_low_description
+        CodeErrorCorrection.MEDIUM -> Res.string.error_correction_medium_description
+        CodeErrorCorrection.QUARTILE -> Res.string.error_correction_quartile_description
+        CodeErrorCorrection.HIGH -> Res.string.error_correction_high_description
+    }
+
+internal fun ErrorCorrectionBlocker.toText(): StringResource =
+    when (this) {
+        ErrorCorrectionBlocker.TOO_HIGH_FOR_CONTENT -> Res.string.error_correction_too_high_for_content
+        ErrorCorrectionBlocker.TOO_LOW_FOR_LOGO -> Res.string.error_correction_too_low_for_logo
+    }
+
+internal fun LogoBlocker.toText(): StringResource =
+    when (this) {
+        LogoBlocker.CORRECTION_TOO_LOW -> Res.string.logo_needs_highest_correction
+        LogoBlocker.CONTENT_TOO_LONG -> Res.string.content_too_long_for_logo
     }

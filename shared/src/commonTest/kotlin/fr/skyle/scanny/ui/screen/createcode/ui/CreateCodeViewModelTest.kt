@@ -2,6 +2,7 @@ package fr.skyle.scanny.ui.screen.createcode.ui
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.Creation
@@ -16,6 +17,8 @@ import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationSource
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ErrorCorrectionBlocker
+import fr.skyle.scanny.ui.screen.createcode.ui.model.LogoBlocker
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -108,7 +111,7 @@ class CreateCodeViewModelTest {
     }
 
     @Test
-    fun `the content of a qr code is counted against the most the code holds`() = runTest(testDispatcher) {
+    fun `the content of a qr code left to scanny is counted against the most the lowest correction holds`() = runTest(testDispatcher) {
         // Given
         val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
 
@@ -125,7 +128,7 @@ class CreateCodeViewModelTest {
         assertEquals(
             expected = ContentSize(
                 used = 18,
-                max = 1273,
+                max = 2953,
                 hasWideCharacters = false,
             ),
             actual = viewModel.uiState.value.contentSize,
@@ -138,7 +141,7 @@ class CreateCodeViewModelTest {
         val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
 
         // When
-        viewModel.onFormChanged(form = CreationForm(text = "a".repeat(1274)))
+        viewModel.onFormChanged(form = CreationForm(text = "a".repeat(2954)))
 
         // Then
         assertEquals(
@@ -148,6 +151,89 @@ class CreateCodeViewModelTest {
         assertEquals(
             expected = CodePreview.Refused(format = BarcodeFormat.QR_CODE),
             actual = viewModel.uiState.value.preview,
+        )
+    }
+
+    @Test
+    fun `the limit follows the correction chosen`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+        viewModel.onFormChanged(form = CreationForm(text = "a".repeat(2000)))
+
+        // When
+        viewModel.onStyleChanged(style = CodeStyle(errorCorrection = CodeErrorCorrection.QUARTILE))
+
+        // Then
+        assertEquals(
+            expected = ContentSize(
+                used = 2000,
+                max = 1663,
+                hasWideCharacters = false,
+            ),
+            actual = viewModel.uiState.value.contentSize,
+        )
+        assertEquals(
+            expected = CodePreview.Refused(format = BarcodeFormat.QR_CODE),
+            actual = viewModel.uiState.value.preview,
+        )
+    }
+
+    @Test
+    fun `a logo raises the correction to the highest and lowers the limit with it`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+        viewModel.onFormChanged(form = CreationForm(text = "Hello"))
+
+        // When
+        viewModel.onLogoPicked(result = LogoPickResult.Picked(png = byteArrayOf(1, 2, 3)))
+
+        // Then
+        assertEquals(
+            expected = 1273,
+            actual = viewModel.uiState.value.contentSize?.max,
+        )
+        assertEquals(
+            expected = ErrorCorrectionBlocker.TOO_LOW_FOR_LOGO,
+            actual = viewModel.uiState.value.errorCorrectionChoices
+                .single { choice -> choice.errorCorrection == CodeErrorCorrection.LOW }
+                .blocker,
+        )
+    }
+
+    @Test
+    fun `a content too long for a logo keeps the logo out`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+
+        // When
+        viewModel.onFormChanged(form = CreationForm(text = "a".repeat(2000)))
+
+        // Then
+        assertEquals(
+            expected = CodePreview.Code(rawValue = "a".repeat(2000), format = BarcodeFormat.QR_CODE),
+            actual = viewModel.uiState.value.preview,
+        )
+        assertEquals(
+            expected = LogoBlocker.CONTENT_TOO_LONG,
+            actual = viewModel.uiState.value.logoBlocker,
+        )
+    }
+
+    @Test
+    fun `a qr code is created with the correction chosen`() = runTest(testDispatcher) {
+        // Given
+        val recordCreationUseCase = FakeRecordCreationUseCase()
+        val viewModel = createCodeViewModel(recordCreationUseCase = recordCreationUseCase)
+        viewModel.onFormChanged(form = CreationForm(text = "Hello"))
+
+        // When
+        viewModel.onStyleChanged(style = CodeStyle(errorCorrection = CodeErrorCorrection.MEDIUM))
+        viewModel.onCreateClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(CodeStyle(errorCorrection = CodeErrorCorrection.MEDIUM)),
+            actual = recordCreationUseCase.recordedCreations.map(FakeRecordCreationUseCase.RecordedCreation::style),
         )
     }
 

@@ -2,7 +2,8 @@ package fr.skyle.scanny.domain.model
 
 /**
  * How a created QR code is drawn: the colors of its dots and of its background, the shapes of its dots
- * and of its three corners, and the logo at its center. A barcode keeps the default one, dark on white.
+ * and of its three corners, the logo at its center, and its error correction. A barcode keeps the
+ * default one, dark on white.
  */
 data class CodeStyle(
     // ARGB
@@ -12,6 +13,7 @@ data class CodeStyle(
     val cornerShape: CodeShape = CodeShape.SQUARE,
     // A PNG, null for none
     val logo: ByteArray? = null,
+    val errorCorrection: CodeErrorCorrection = CodeErrorCorrection.AUTO,
 ) {
 
     // The logo compared by its bytes, not by its array
@@ -21,7 +23,8 @@ data class CodeStyle(
             lightColor == other.lightColor &&
             dotShape == other.dotShape &&
             cornerShape == other.cornerShape &&
-            logo.contentEquals(other.logo)
+            logo.contentEquals(other.logo) &&
+            errorCorrection == other.errorCorrection
 
     override fun hashCode(): Int {
         var result = darkColor.hashCode()
@@ -29,6 +32,7 @@ data class CodeStyle(
         result = 31 * result + dotShape.hashCode()
         result = 31 * result + cornerShape.hashCode()
         result = 31 * result + logo.contentHashCode()
+        result = 31 * result + errorCorrection.hashCode()
         return result
     }
 

@@ -5,6 +5,7 @@ import fr.skyle.scanny.data.model.StoredCreation
 import fr.skyle.scanny.domain.fake.FakeCreationRepository
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.Creation
@@ -29,6 +30,7 @@ class WatchCreationsUseCaseTest {
                     dotShape = "CIRCLE",
                     cornerShape = "ROUNDED",
                     logo = byteArrayOf(1, 2, 3),
+                    errorCorrection = "QUARTILE",
                 ),
                 createdAt = CREATED_AT,
             ),
@@ -54,6 +56,7 @@ class WatchCreationsUseCaseTest {
                         dotShape = CodeShape.CIRCLE,
                         cornerShape = CodeShape.ROUNDED,
                         logo = byteArrayOf(1, 2, 3),
+                        errorCorrection = CodeErrorCorrection.QUARTILE,
                     ),
                     createdAt = CREATED_AT,
                 ),
@@ -63,7 +66,7 @@ class WatchCreationsUseCaseTest {
     }
 
     @Test
-    fun `a shape this version does not know is drawn square`() = runTest {
+    fun `a shape or a correction this version does not know is drawn square and left to scanny`() = runTest {
         // Given
         val creationRepository = FakeCreationRepository(
             storedCreations = listOf(
@@ -77,6 +80,7 @@ class WatchCreationsUseCaseTest {
                         dotShape = "STAR",
                         cornerShape = "HEART",
                         logo = null,
+                        errorCorrection = "EXTREME",
                     ),
                     createdAt = CREATED_AT,
                 ),

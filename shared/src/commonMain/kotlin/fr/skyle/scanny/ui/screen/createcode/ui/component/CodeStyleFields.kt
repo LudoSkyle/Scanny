@@ -28,12 +28,14 @@ import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toText
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeBackgroundColor
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeDotColor
+import fr.skyle.scanny.ui.screen.createcode.ui.model.LogoBlocker
 import org.jetbrains.compose.resources.stringResource
 
 /** The colors and the shapes of a QR code, the palette or any color, and its logo. */
 @Composable
 fun CodeStyleFields(
     style: CodeStyle,
+    logoBlocker: LogoBlocker?,
     onStyleChanged: (CodeStyle) -> Unit,
     onAddLogoClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -113,6 +115,7 @@ fun CodeStyleFields(
         LogoRow(
             modifier = Modifier.fillMaxWidth(),
             logo = style.logo,
+            blocker = logoBlocker,
             onAddLogoClicked = onAddLogoClicked,
             onRemoveLogoClicked = { onStyleChanged(style.copy(logo = null)) },
         )
@@ -155,6 +158,7 @@ private fun PreviewCodeStyleFields() {
                 darkColor = CodeDotColor.INDIGO.argb,
                 dotShape = CodeShape.ROUNDED,
             ),
+            logoBlocker = null,
             onStyleChanged = {},
             onAddLogoClicked = {},
         )

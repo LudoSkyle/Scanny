@@ -323,7 +323,8 @@ La lisibilité des codes que l'app dessine se teste donc sur la JVM : `CodeImage
 dessine l'image d'un QR code pour de vrai, par le rendu natif de Robolectric, et la relit avec ZXing,
 un lecteur que l'app n'a pas écrit et plus strict que ceux des téléphones. Il couvre chaque forme
 dans les couleurs de la palette qui ressortent le moins, et chaque paire de couleurs avec les formes
-qui couvrent le moins le code, et chaque forme avec un logo. Chaque paire de la palette se lit
+qui couvrent le moins le code, chaque forme avec un logo, chaque correction d'erreur, et le contenu
+le plus long qu'un QR code tient, dans le code le plus dense. Chaque paire de la palette se lit
 aussi bien par la règle de l'avertissement (`readability` : des points plus sombres que le fond, et
 un contraste d'au moins 4,5:1, celui que les règles d'accessibilité demandent d'un texte). Une
 couleur libre n'est pas relue par ZXing : l'avertissement, qui n'empêche pas de créer, est sa seule

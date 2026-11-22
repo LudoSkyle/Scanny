@@ -2,6 +2,7 @@
     <string name="add_contact">Add the contact</string>
     <string name="add_logo">Add a logo</string>
     <string name="address">Address</string>
+    <string name="advanced_options">Advanced options</string>
     <string name="all_creations_deleted">Every creation will be deleted.</string>
     <string name="all_scans_deleted">Every scan will be deleted.</string>
     <string name="allow_camera">Allow the camera</string>
@@ -57,6 +58,7 @@
     <string name="content_size_count" translatable="false">%1$d / %2$d</string>
     <string name="content_size_wide_characters">An accent or an emoji counts for several.</string>
     <string name="content_too_long">This content is too long for a QR code.</string>
+    <string name="content_too_long_for_logo">This content is too long for a logo, which needs the highest correction.</string>
     <string name="content_type">Type</string>
     <string name="copied">Copied</string>
     <string name="copied_to_clipboard">Copied to the clipboard</string>
@@ -82,6 +84,20 @@
     <string name="ean_8" translatable="false">EAN-8</string>
     <string name="edit_code">Edit the code</string>
     <string name="email">E-mail</string>
+    <string name="error_correction">Error correction</string>
+    <string name="error_correction_auto">Automatic</string>
+    <string name="error_correction_auto_description">The lowest, the highest under a logo</string>
+    <string name="error_correction_explanation">How much of the code can be damaged or hidden and still be read. The lower, the longer the content it holds, in a less dense code.</string>
+    <string name="error_correction_high">Highest</string>
+    <string name="error_correction_high_description">About 30% of the code, what a logo needs</string>
+    <string name="error_correction_low">Low</string>
+    <string name="error_correction_low_description">About 7% of the code</string>
+    <string name="error_correction_medium">Medium</string>
+    <string name="error_correction_medium_description">About 15% of the code</string>
+    <string name="error_correction_quartile">High</string>
+    <string name="error_correction_quartile_description">About 25% of the code</string>
+    <string name="error_correction_too_high_for_content">Too high for this content</string>
+    <string name="error_correction_too_low_for_logo">Too low for the logo</string>
     <string name="feedback">Feedback</string>
     <string name="feedback_about_other">Something else</string>
     <string name="feedback_about_scan">The scan</string>
@@ -106,6 +122,7 @@
     <string name="keep_history">Keep the history</string>
     <string name="link">Link</string>
     <string name="logo">Logo</string>
+    <string name="logo_needs_highest_correction">A logo needs the automatic or the highest correction, in the advanced options of the content.</string>
     <string name="logo_not_read">The image could not be read</string>
     <string name="made_by_skyle">Made by Skyle with ❤️ at Openium</string>
     <string name="mail_app_opens_with_message">Your mail app opens with your message, ready to be sent.</string>

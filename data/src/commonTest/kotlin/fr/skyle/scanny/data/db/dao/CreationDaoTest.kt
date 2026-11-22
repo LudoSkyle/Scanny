@@ -23,6 +23,7 @@ internal class CreationDaoTest : DatabaseTest() {
                 dotShape = "CIRCLE",
                 cornerShape = "ROUNDED",
                 logo = byteArrayOf(1, 2, 3),
+                errorCorrection = "HIGH",
             ),
         )
 
@@ -38,6 +39,7 @@ internal class CreationDaoTest : DatabaseTest() {
                 dotShape = "CIRCLE",
                 cornerShape = "ROUNDED",
                 logo = byteArrayOf(1, 2, 3),
+                errorCorrection = "HIGH",
             ),
             actual = creationDao.watchById(id = creationId).first(),
         )
@@ -127,6 +129,7 @@ internal class CreationDaoTest : DatabaseTest() {
                 dotShape = "SQUARE",
                 cornerShape = "SQUARE",
                 logo = null,
+                errorCorrection = "AUTO",
                 isInHistory = isInHistory,
             ),
         )

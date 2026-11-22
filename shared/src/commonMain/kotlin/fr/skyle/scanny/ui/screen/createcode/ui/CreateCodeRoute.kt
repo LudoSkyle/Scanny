@@ -68,6 +68,8 @@ fun CreateCodeRoute(
         form = uiState.form,
         preview = uiState.preview,
         contentSize = uiState.contentSize,
+        errorCorrectionChoices = uiState.errorCorrectionChoices,
+        logoBlocker = uiState.logoBlocker,
         style = uiState.style,
         step = uiState.step,
         isCreating = uiState.isCreating,

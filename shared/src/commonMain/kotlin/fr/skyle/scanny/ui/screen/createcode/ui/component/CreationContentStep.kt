@@ -21,6 +21,7 @@ import fr.skyle.scanny.designsystem.core.dropdownfield.SCDropdownField
 import fr.skyle.scanny.designsystem.core.textfield.SCTextFieldDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.content_type
@@ -33,6 +34,7 @@ import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ErrorCorrectionChoice
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -44,10 +46,12 @@ fun CreationContentStep(
     form: CreationForm,
     preview: CodePreview,
     contentSize: ContentSize?,
+    errorCorrectionChoices: List<ErrorCorrectionChoice>,
     style: CodeStyle,
     isCreating: Boolean,
     contentPadding: PaddingValues,
     onFormChanged: (CreationForm) -> Unit,
+    onStyleChanged: (CodeStyle) -> Unit,
     onNextClicked: () -> Unit,
     onCreateClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -101,6 +105,18 @@ fun CreationContentStep(
             )
         }
 
+        // The correction changes how long a content the code holds: chosen with the content
+        if (isQrCode) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            AdvancedContentOptions(
+                modifier = Modifier.fillMaxWidth(),
+                errorCorrectionChoices = errorCorrectionChoices,
+                selectedErrorCorrection = style.errorCorrection,
+                onErrorCorrectionSelected = { errorCorrection -> onStyleChanged(style.copy(errorCorrection = errorCorrection)) },
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         CodePreviewCard(
@@ -140,10 +156,17 @@ private fun PreviewCreationContentStep() {
                 max = 1273,
                 hasWideCharacters = false,
             ),
+            errorCorrectionChoices = CodeErrorCorrection.entries.map { errorCorrection ->
+                ErrorCorrectionChoice(
+                    errorCorrection = errorCorrection,
+                    blocker = null,
+                )
+            },
             style = CodeStyle(),
             isCreating = false,
             contentPadding = PaddingValues(),
             onFormChanged = {},
+            onStyleChanged = {},
             onNextClicked = {},
             onCreateClicked = {},
         )

@@ -220,8 +220,8 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   `presentImagePicker`) sert aussi au scan d'une image. Une image illisible est dite par un message.
 - qrose dessine le logo au centre et efface les points sous lui et autour, pour que le fond y
   paraisse. Un code avec logo est encodé à la correction la plus forte, fixée par Scanny : qrose
-  garderait la plus faible pour un logo posé sans marge. Le texte est jugé à cette même correction
-  avant d'être dessiné (`qrErrorCorrection`).
+  garderait la plus faible pour un logo posé sans marge. Sans logo, il l'est à la correction
+  choisie. Le texte est jugé à cette même correction avant d'être dessiné (`qrErrorCorrection`).
 - La partager passe par `ImageSharer`. Android écrit le PNG dans le cache (`shared_images/`), que le
   `FileProvider` de l'app (`${applicationId}.files`, déclaré dans le manifeste de `shared`) prête à
   l'app choisie dans la feuille de partage. iOS partage une `UIImage` plutôt qu'un fichier : la

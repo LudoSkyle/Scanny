@@ -3,13 +3,14 @@ package fr.skyle.scanny.ui.core.code.mapper
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import co.touchlab.kermit.Logger
+import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.ui.core.code.model.CodeReadability
+import io.github.alexzhirkevich.qrose.matrix.qr.QrErrorCorrection
 import io.github.alexzhirkevich.qrose.options.QrBallShape
 import io.github.alexzhirkevich.qrose.options.QrBrush
 import io.github.alexzhirkevich.qrose.options.QrColors
-import io.github.alexzhirkevich.qrose.matrix.qr.QrErrorCorrection
 import io.github.alexzhirkevich.qrose.options.QrErrorCorrectionLevel
 import io.github.alexzhirkevich.qrose.options.QrFrameShape
 import io.github.alexzhirkevich.qrose.options.QrLogo
@@ -49,12 +50,31 @@ internal fun CodeStyle.toQrOptions(): QrOptions =
         colors = QrColors(dark = QrBrush.solid(color = dotColor())),
         logo = toQrLogo(),
         // Set, not left to qrose: it keeps the lowest correction for a logo drawn with no blank around
-        errorCorrectionLevel = if (logo != null) QrErrorCorrectionLevel.High else QrErrorCorrectionLevel.Auto,
+        errorCorrectionLevel = qrErrorCorrection().toQrErrorCorrectionLevel(),
     )
 
-/** The correction a QR code in this style is encoded with: the highest under a logo, which hides a part of it. */
+/**
+ * The correction a QR code in this style is encoded with: the one chosen, the lowest when left to
+ * Scanny, and always the highest under a logo, which hides a part of it.
+ */
 internal fun CodeStyle.qrErrorCorrection(): QrErrorCorrection =
-    if (logo != null) QrErrorCorrection.H else QrErrorCorrection.L
+    if (logo != null) {
+        QrErrorCorrection.H
+    } else {
+        when (errorCorrection) {
+            CodeErrorCorrection.AUTO,
+            CodeErrorCorrection.LOW,
+            -> QrErrorCorrection.L
+
+            CodeErrorCorrection.MEDIUM -> QrErrorCorrection.M
+            CodeErrorCorrection.QUARTILE -> QrErrorCorrection.Q
+            CodeErrorCorrection.HIGH -> QrErrorCorrection.H
+        }
+    }
+
+/** Whether a logo can go on a code with this correction: it needs the highest, chosen or left to Scanny. */
+internal val CodeErrorCorrection.allowsLogo: Boolean
+    get() = this == CodeErrorCorrection.AUTO || this == CodeErrorCorrection.HIGH
 
 /** The color of the dots of a code in this style. */
 internal fun CodeStyle.dotColor(): Color =
@@ -107,6 +127,14 @@ private fun CodeStyle.toQrLogo(): QrLogo {
         padding = QrLogoPadding.Accurate(size = LOGO_PADDING),
     )
 }
+
+private fun QrErrorCorrection.toQrErrorCorrectionLevel(): QrErrorCorrectionLevel =
+    when (this) {
+        QrErrorCorrection.L -> QrErrorCorrectionLevel.Low
+        QrErrorCorrection.M -> QrErrorCorrectionLevel.Medium
+        QrErrorCorrection.Q -> QrErrorCorrectionLevel.MediumHigh
+        QrErrorCorrection.H -> QrErrorCorrectionLevel.High
+    }
 
 private fun CodeShape.toPixelShape(): QrPixelShape =
     when (this) {
