@@ -10,6 +10,8 @@ internal object PayloadSyntax {
     const val MMS = "mms:"
     const val MECARD = "MECARD:"
     const val VCARD = "BEGIN:VCARD"
+    const val VCALENDAR = "BEGIN:VCALENDAR"
+    const val VEVENT = "BEGIN:VEVENT"
     const val TEL = "tel:"
     const val GEO = "geo:"
     const val MEBKM = "MEBKM:"

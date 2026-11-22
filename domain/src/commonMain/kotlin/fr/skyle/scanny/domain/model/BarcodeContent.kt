@@ -41,6 +41,32 @@ sealed interface BarcodeContent {
         val label: String? = null,
     ) : BarcodeContent
 
+    /**
+     * An event of iCalendar (VEVENT of RFC 5545): its title, when it starts and ends, where, what for, who
+     * organizes and attends it, how it repeats, when it is reminded, and how a calendar files it. The
+     * priority goes from 1, the highest, to 9.
+     */
+    data class Event(
+        val summary: String? = null,
+        val start: EventDateTime,
+        val end: EventDateTime? = null,
+        val location: String? = null,
+        val latitude: Double? = null,
+        val longitude: Double? = null,
+        val description: String? = null,
+        val url: String? = null,
+        val organizer: String? = null,
+        val attendees: List<String> = emptyList(),
+        val recurrence: EventRecurrence? = null,
+        // Minutes before the start
+        val reminderMinutes: Int? = null,
+        val status: EventStatus? = null,
+        val transparency: EventTransparency? = null,
+        val classification: EventClassification? = null,
+        val priority: Int? = null,
+        val categories: List<String> = emptyList(),
+    ) : BarcodeContent
+
     /** A link saved with its title, as a bookmark of a browser. */
     data class Bookmark(
         val url: String,

@@ -56,6 +56,12 @@ Ces conventions s'appliquent à `shared` et `designSystem`, en complément de
 - kotlinx-datetime ne traduit pas les mois : le nom d'un jour s'écrit avec `calendarDayText(day)`,
   qui prend les mois du `string-array` `months` et l'ordre du jour, du mois et de l'année de
   `day_date` (« November 2, 2026 », « 2 novembre 2026 »).
+- Un champ d'un code qui n'est pas un texte (un jour, une heure dans son fuseau, une récurrence, un
+  rappel, un statut) porte sa valeur brute et sa forme, `CodeFieldDisplay`, que l'écran écrit dans la
+  langue de l'appareil avec `codeFieldValueText(field)` : « November 22, 2026 at 15:00
+  (Europe/Paris) », « Every 2 weeks: Monday, 10 times ». La copie prend ce qui s'affiche.
+- Un jour et une heure se choisissent avec `SCDateField` et `SCTimeField` ; le premier rend minuit UTC
+  en millisecondes, que l'écran ramène au jour (`toLocalDateTime(TimeZone.UTC).date`).
 
 ### État et recomposition
 

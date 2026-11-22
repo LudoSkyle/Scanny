@@ -8,10 +8,19 @@ import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.ContactPhone
 import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.ContactWebsite
+import fr.skyle.scanny.domain.model.EventClassification
+import fr.skyle.scanny.domain.model.EventDateTime
+import fr.skyle.scanny.domain.model.EventFrequency
+import fr.skyle.scanny.domain.model.EventRecurrence
+import fr.skyle.scanny.domain.model.EventStatus
+import fr.skyle.scanny.domain.model.EventTransparency
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.model.WifiTransitionMode
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -477,6 +486,49 @@ class BarcodeContentEncoderTest {
     }
 
     @Test
+    fun `an event is written as a vevent in its vcalendar with crlf`() {
+        // Given
+        val content = BarcodeContent.Event(
+            summary = "Launch, at last",
+            start = EventDateTime(date = LocalDate(2026, 11, 22), time = LocalTime(15, 0), timeZone = "Europe/Paris"),
+            end = EventDateTime(date = LocalDate(2026, 11, 22), time = LocalTime(16, 30), timeZone = "Europe/Paris"),
+            attendees = listOf("jane@scanny.app"),
+            recurrence = EventRecurrence(
+                frequency = EventFrequency.WEEKLY,
+                until = LocalDate(2026, 12, 31),
+                days = setOf(DayOfWeek.WEDNESDAY, DayOfWeek.MONDAY),
+            ),
+            reminderMinutes = 15,
+        )
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                "BEGIN:VCALENDAR",
+                "VERSION:2.0",
+                "PRODID:-//Scanny//Scanny//EN",
+                "BEGIN:VEVENT",
+                "SUMMARY:Launch\\, at last",
+                "DTSTART;TZID=Europe/Paris:20261122T150000",
+                "DTEND;TZID=Europe/Paris:20261122T163000",
+                "ATTENDEE:mailto:jane@scanny.app",
+                "RRULE:FREQ=WEEKLY;UNTIL=20261231T235959Z;BYDAY=MO,WE",
+                "BEGIN:VALARM",
+                "ACTION:DISPLAY",
+                "DESCRIPTION:Launch\\, at last",
+                "TRIGGER:-PT15M",
+                "END:VALARM",
+                "END:VEVENT",
+                "END:VCALENDAR",
+            ).joinToString(separator = "\r\n"),
+            actual = payload,
+        )
+    }
+
+    @Test
     fun `every written content is read back unchanged`() {
         // Given
         val contents = listOf(
@@ -587,6 +639,41 @@ class BarcodeContentEncoderTest {
                 subject = "Hi, all & co",
             ),
             BarcodeContent.Email(cc = listOf("only@copy.fr")),
+            BarcodeContent.Event(
+                summary = "Launch; at last, really\nin two lines",
+                start = EventDateTime(date = LocalDate(2026, 11, 22), time = LocalTime(15, 0, 30), timeZone = EventDateTime.UTC),
+                end = EventDateTime(date = LocalDate(2026, 11, 23), time = LocalTime(1, 0), timeZone = EventDateTime.UTC),
+                location = "Opéra, Paris",
+                latitude = 48.8719,
+                longitude = 2.3316,
+                description = "With \\ and ;",
+                url = "https://scanny.app",
+                organizer = "john@scanny.app",
+                attendees = listOf("jane@scanny.app", "jim@scanny.app"),
+                recurrence = EventRecurrence(
+                    frequency = EventFrequency.MONTHLY,
+                    interval = 3,
+                    count = 4,
+                ),
+                reminderMinutes = 1440,
+                status = EventStatus.TENTATIVE,
+                transparency = EventTransparency.OPAQUE,
+                classification = EventClassification.CONFIDENTIAL,
+                priority = 9,
+                categories = listOf("Work", "Launch, party"),
+            ),
+            BarcodeContent.Event(
+                start = EventDateTime(date = LocalDate(2026, 12, 24)),
+                end = EventDateTime(date = LocalDate(2026, 12, 26)),
+                recurrence = EventRecurrence(
+                    frequency = EventFrequency.YEARLY,
+                    until = LocalDate(2030, 12, 24),
+                ),
+            ),
+            BarcodeContent.Event(
+                summary = "Floating",
+                start = EventDateTime(date = LocalDate(2026, 1, 5), time = LocalTime(9, 0)),
+            ),
             BarcodeContent.Location(
                 latitude = 48.8584,
                 longitude = 2.2945,

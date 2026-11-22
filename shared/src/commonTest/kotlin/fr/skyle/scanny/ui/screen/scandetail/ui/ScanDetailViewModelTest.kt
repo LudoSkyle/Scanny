@@ -3,11 +3,13 @@ package fr.skyle.scanny.ui.screen.scandetail.ui
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
+import fr.skyle.scanny.domain.model.EventDateTime
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.fake.FakeCodeImageRenderer
 import fr.skyle.scanny.fake.FakeContactAdder
 import fr.skyle.scanny.fake.FakeDeleteScannedCodeUseCase
+import fr.skyle.scanny.fake.FakeEventAdder
 import fr.skyle.scanny.fake.FakeImageSaver
 import fr.skyle.scanny.fake.FakeImageSharer
 import fr.skyle.scanny.fake.FakeTextSharer
@@ -31,6 +33,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -124,6 +127,33 @@ class ScanDetailViewModelTest {
         assertEquals(
             expected = listOf(contact),
             actual = contactAdder.addedContacts,
+        )
+    }
+
+    @Test
+    fun `an event is added to the calendar or reported when it cannot be`() = runTest(testDispatcher) {
+        // Given
+        val event = BarcodeContent.Event(
+            summary = "Launch",
+            start = EventDateTime(date = LocalDate(2026, 11, 22)),
+        )
+        val eventAdder = FakeEventAdder()
+        val viewModel = scanDetailViewModel(eventAdder = eventAdder)
+        val failingViewModel = scanDetailViewModel(eventAdder = FakeEventAdder(error = IllegalStateException("No calendar")))
+        val events = collectEvents(viewModel = failingViewModel)
+
+        // When
+        viewModel.onAddEventClicked(event = event)
+        failingViewModel.onAddEventClicked(event = event)
+
+        // Then
+        assertEquals(
+            expected = listOf(event),
+            actual = eventAdder.addedEvents,
+        )
+        assertEquals(
+            expected = listOf(ScanDetailViewModel.ScanDetailEvent.EventNotAdded),
+            actual = events,
         )
     }
 
@@ -316,6 +346,7 @@ class ScanDetailViewModelTest {
         imageSharer: FakeImageSharer = FakeImageSharer(),
         imageSaver: FakeImageSaver = FakeImageSaver(),
         contactAdder: FakeContactAdder = FakeContactAdder(),
+        eventAdder: FakeEventAdder = FakeEventAdder(),
         wifiNetworkSupport: FakeWifiNetworkSupport = FakeWifiNetworkSupport(),
     ): ScanDetailViewModel =
         ScanDetailViewModel(
@@ -329,6 +360,7 @@ class ScanDetailViewModelTest {
                 imageSaver = imageSaver,
             ),
             contactAdder = contactAdder,
+            eventAdder = eventAdder,
             wifiNetworkSupport = wifiNetworkSupport,
             // Scanned at the very moment of the test, in UTC
             clock = FixedClock(instant = Instant.fromEpochMilliseconds(0)),

@@ -12,6 +12,7 @@ import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -21,12 +22,14 @@ import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.ContactPhoneType
+import fr.skyle.scanny.domain.model.EventFrequency
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.account
 import fr.skyle.scanny.resources.add_phone
+import fr.skyle.scanny.resources.all_day
 import fr.skyle.scanny.resources.blind_carbon_copy
 import fr.skyle.scanny.resources.carbon_copy
 import fr.skyle.scanny.resources.counter
@@ -47,15 +50,19 @@ import fr.skyle.scanny.resources.recipients
 import fr.skyle.scanny.resources.remove
 import fr.skyle.scanny.resources.required_field
 import fr.skyle.scanny.resources.secret_key
+import fr.skyle.scanny.resources.start_time
 import fr.skyle.scanny.resources.title
 import fr.skyle.scanny.resources.type_work
+import fr.skyle.scanny.resources.week_days
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toBarcodeContent
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.test.ComposeTest
+import kotlinx.datetime.DayOfWeek
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.getStringArray
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -311,6 +318,39 @@ internal class CreationFormFieldsTest : ComposeTest() {
                 identity = "john@corp",
             ),
             actual = form.toBarcodeContent(),
+        )
+    }
+
+    @Test
+    fun `an event of whole days has no times and a weekly one asks for its days`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(
+            CreationForm(
+                kind = CreationKind.EVENT,
+                eventFrequency = EventFrequency.WEEKLY,
+            ),
+        )
+        setContent {
+            SCTheme {
+                Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+                    CreationFormFields(
+                        form = form,
+                        onFormChanged = { changedForm -> form = changedForm },
+                    )
+                }
+            }
+        }
+        onNodeWithContentDescription(required(Res.string.start_time)).assertExists()
+
+        // When
+        onNodeWithText(getString(Res.string.all_day)).performClick()
+        onNodeWithContentDescription(getStringArray(Res.array.week_days)[2]).performScrollTo().performClick()
+
+        // Then
+        onNodeWithContentDescription(required(Res.string.start_time)).assertDoesNotExist()
+        assertEquals(
+            expected = true to setOf(DayOfWeek.WEDNESDAY),
+            actual = form.isEventAllDay to form.eventDays,
         )
     }
 

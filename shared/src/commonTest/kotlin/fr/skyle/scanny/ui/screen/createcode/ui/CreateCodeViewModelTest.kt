@@ -29,6 +29,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.TimeZone
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -610,6 +611,7 @@ class CreateCodeViewModelTest {
         assertEquals(
             expected = listOf(4L) to CreationForm(
                 kind = CreationKind.LINK,
+                eventTimeZone = DEVICE_ZONE,
                 url = "https://scanny.app",
             ),
             actual = watchScannedCodeUseCase.watchedCodeIds to viewModel.uiState.value.form,
@@ -630,7 +632,7 @@ class CreateCodeViewModelTest {
 
         // Then
         assertEquals(
-            expected = CreationForm(),
+            expected = CreationForm(eventTimeZone = DEVICE_ZONE),
             actual = viewModel.uiState.value.form,
         )
     }
@@ -657,7 +659,7 @@ class CreateCodeViewModelTest {
 
         // Then
         assertEquals(
-            expected = CreationForm(text = "Hello") to STYLE,
+            expected = CreationForm(text = "Hello", eventTimeZone = DEVICE_ZONE) to STYLE,
             actual = viewModel.uiState.value.form to viewModel.uiState.value.style,
         )
     }
@@ -698,6 +700,21 @@ class CreateCodeViewModelTest {
         )
     }
 
+    @Test
+    fun `a new event is in the zone of the device`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel()
+
+        // When
+        viewModel.onFormChanged(form = viewModel.uiState.value.form.copy(kind = CreationKind.EVENT))
+
+        // Then
+        assertEquals(
+            expected = DEVICE_ZONE,
+            actual = viewModel.uiState.value.form.eventTimeZone,
+        )
+    }
+
     private fun createCodeViewModel(
         recordCreationUseCase: FakeRecordCreationUseCase = FakeRecordCreationUseCase(),
         source: CreationSource = CreationSource.New,
@@ -709,6 +726,7 @@ class CreateCodeViewModelTest {
             watchScannedCodeUseCase = watchScannedCodeUseCase,
             watchCreationUseCase = watchCreationUseCase,
             recordCreationUseCase = recordCreationUseCase,
+            timeZone = TimeZone.of(DEVICE_ZONE),
         )
 
     private fun TestScope.collectEvents(viewModel: CreateCodeViewModel): List<CreateCodeViewModel.CreateCodeEvent> {
@@ -720,6 +738,9 @@ class CreateCodeViewModelTest {
     }
 
     private companion object {
+        // The zone of the device, an event created is in
+        const val DEVICE_ZONE = "Europe/Paris"
+
         // Every part of the customization changed, and the correction chosen with the content
         val CUSTOMIZED_STYLE = CodeStyle(
             darkColor = 0xFF3B43BE,

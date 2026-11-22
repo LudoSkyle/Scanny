@@ -8,6 +8,12 @@ import fr.skyle.scanny.domain.model.ContactEntryType
 import fr.skyle.scanny.domain.model.ContactPhone
 import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.ContactWebsite
+import fr.skyle.scanny.domain.model.EventClassification
+import fr.skyle.scanny.domain.model.EventDateTime
+import fr.skyle.scanny.domain.model.EventFrequency
+import fr.skyle.scanny.domain.model.EventRecurrence
+import fr.skyle.scanny.domain.model.EventStatus
+import fr.skyle.scanny.domain.model.EventTransparency
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
@@ -18,7 +24,11 @@ import fr.skyle.scanny.platform.link.platformMmsLink
 import fr.skyle.scanny.platform.link.platformSmsLink
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
+import fr.skyle.scanny.ui.core.code.model.CodeFieldDisplay
 import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -302,9 +312,10 @@ class CodeMapperTest {
                     label = CodeFieldLabel.WEBSITE,
                     value = "https://doe.fr",
                 ),
-                field(
+                CodeField(
                     label = CodeFieldLabel.BIRTHDAY,
                     value = "1990-05-12",
+                    display = CodeFieldDisplay.Day(date = LocalDate(1990, 5, 12)),
                 ),
                 field(
                     label = CodeFieldLabel.NOTE,
@@ -530,6 +541,81 @@ class CodeMapperTest {
                 ),
             ),
             actual = fields,
+        )
+    }
+
+    @Test
+    fun `an event shows each of its properties its dates and filing to be written in the language of the device`() {
+        // Given
+        val content = BarcodeContent.Event(
+            summary = "Scanny launch",
+            start = EventDateTime(date = LocalDate(2026, 11, 22), time = LocalTime(15, 0), timeZone = "Europe/Paris"),
+            end = EventDateTime(date = LocalDate(2026, 11, 22), time = LocalTime(16, 30), timeZone = "Europe/Paris"),
+            location = "Opéra",
+            latitude = 48.8719,
+            longitude = 2.3316,
+            description = "Come along",
+            url = "https://scanny.app",
+            organizer = "john@scanny.app",
+            attendees = listOf("jane@scanny.app", "jim@scanny.app"),
+            recurrence = EventRecurrence(frequency = EventFrequency.WEEKLY, interval = 2, count = 10, days = setOf(DayOfWeek.MONDAY)),
+            reminderMinutes = 15,
+            status = EventStatus.CONFIRMED,
+            transparency = EventTransparency.TRANSPARENT,
+            classification = EventClassification.PRIVATE,
+            priority = 1,
+            categories = listOf("Work", "Launch"),
+        )
+
+        // When
+        val fields = content.toCodeFields()
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                field(label = CodeFieldLabel.TITLE, value = "Scanny launch"),
+                CodeField(
+                    label = CodeFieldLabel.START,
+                    value = "2026-11-22 15:00 Europe/Paris",
+                    display = CodeFieldDisplay.DateTime(date = LocalDate(2026, 11, 22), time = LocalTime(15, 0), timeZone = "Europe/Paris"),
+                ),
+                CodeField(
+                    label = CodeFieldLabel.END,
+                    value = "2026-11-22 16:30 Europe/Paris",
+                    display = CodeFieldDisplay.DateTime(date = LocalDate(2026, 11, 22), time = LocalTime(16, 30), timeZone = "Europe/Paris"),
+                ),
+                field(label = CodeFieldLabel.PLACE, value = "Opéra"),
+                field(label = CodeFieldLabel.COORDINATES, value = "48.8719, 2.3316"),
+                field(label = CodeFieldLabel.DESCRIPTION, value = "Come along"),
+                field(label = CodeFieldLabel.LINK, value = "https://scanny.app"),
+                field(label = CodeFieldLabel.ORGANIZER, value = "john@scanny.app"),
+                field(label = CodeFieldLabel.ATTENDEE, value = "jane@scanny.app"),
+                field(label = CodeFieldLabel.ATTENDEE, value = "jim@scanny.app"),
+                CodeField(
+                    label = CodeFieldLabel.RECURRENCE,
+                    value = "WEEKLY",
+                    display = CodeFieldDisplay.Recurrence(recurrence = content.recurrence!!),
+                ),
+                CodeField(label = CodeFieldLabel.REMINDER, value = "15", display = CodeFieldDisplay.Reminder(minutes = 15)),
+                CodeField(label = CodeFieldLabel.STATUS, value = "CONFIRMED", display = CodeFieldDisplay.Status(status = EventStatus.CONFIRMED)),
+                CodeField(
+                    label = CodeFieldLabel.AVAILABILITY,
+                    value = "TRANSPARENT",
+                    display = CodeFieldDisplay.Availability(transparency = EventTransparency.TRANSPARENT),
+                ),
+                CodeField(
+                    label = CodeFieldLabel.CLASSIFICATION,
+                    value = "PRIVATE",
+                    display = CodeFieldDisplay.Classification(classification = EventClassification.PRIVATE),
+                ),
+                field(label = CodeFieldLabel.PRIORITY, value = "1"),
+                field(label = CodeFieldLabel.CATEGORIES, value = "Work, Launch"),
+            ),
+            actual = fields,
+        )
+        assertEquals(
+            expected = CodeAction.AddEvent(event = content),
+            actual = content.toCodeAction(canJoinWifi = { false }),
         )
     }
 

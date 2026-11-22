@@ -28,5 +28,7 @@ sealed interface CodeAction {
 
     data class AddContact(val contact: BarcodeContent.Contact) : CodeAction
 
+    data class AddEvent(val event: BarcodeContent.Event) : CodeAction
+
     data class JoinWifi(val wifi: BarcodeContent.Wifi) : CodeAction
 }

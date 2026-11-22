@@ -275,6 +275,19 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   retient pas. Cet écran ne demande aucune autorisation d'accès aux contacts, c'est lui qui
   enregistre (constaté sur le simulateur : contact enregistré avec tous ses champs, sans
   `NSContactsUsageDescription`).
+- Ajouter un événement passe par `EventAdder`, une interface appelée par le ViewModel comme
+  `ContactAdder`. Les instants viennent de `EventInstants.kt` : une heure dans son fuseau, ou dans celui
+  de l'appareil si elle est flottante ou que son `TZID` n'est pas un fuseau de l'IANA ; une fin absente
+  est une heure après le début, le lendemain d'une journée entière. Android ouvre l'écran d'ajout du
+  calendrier (`ACTION_INSERT` sur `Events.CONTENT_URI`), une journée entière à minuit UTC comme il
+  le veut ; ses extras portent titre, description (où le lien la rejoint), lieu, début, fin, journée
+  entière, fuseau, `RRULE`, disponibilité, visibilité, statut et participants (`EXTRA_EMAIL`), mais ni
+  organisateur, ni rappel, ni coordonnées, ni priorité, ni catégories. iOS présente
+  `EKEventEditViewController`, qui depuis iOS 17 ajoute un événement sans l'accès aux calendriers : son
+  `EKEvent` reçoit titre, lieu, coordonnées (`EKStructuredLocation`), notes, lien, début, fin, journée
+  entière (à minuit local), fuseau (aucun pour une heure flottante), disponibilité, récurrence et
+  rappel, mais Calendrier ne laisse pas une app donner les participants, l'organisateur, le statut, la
+  visibilité, la priorité ni les catégories. Sans app de calendrier, le message « aucune app » suit.
 - Rejoindre un WiFi est en deux morceaux. `WifiNetworkSupport` (interface, ViewModel) dit si
   l'appareil peut rejoindre le réseau ; l'action n'est proposée que dans ce cas : toujours sur
   Android, jamais sur iOS tant qu'il manque l'entitlement *Hotspot Configuration*.
@@ -345,6 +358,7 @@ livrée ; le tableau est mis à jour dans le même commit.
 | Appeler un numéro | ✅ (émulateur : clavier du téléphone, numéro composé) — `tel:` par `LocalUriHandler` | À vérifier sur un iPhone (pas d'app Téléphone sur le simulateur) — `tel:` par `LocalUriHandler` | Compose |
 | Ajouter une clé à usage unique | ✅ (émulateur sans appli d'authentification : « aucune app » dit) — `otpauth://` par `LocalUriHandler` | ✅ (simulateur : Mots de passe ouvert) — `otpauth://` par `LocalUriHandler` | Compose |
 | Ouvrir un paiement Bitcoin | ✅ (émulateur sans portefeuille : « aucune app » dit) — `bitcoin:` par `LocalUriHandler` | À vérifier avec un portefeuille sur un iPhone ; sans portefeuille, rien ne s'ouvre — `bitcoin:` par `LocalUriHandler` | Compose |
+| Ajouter un événement au calendrier | Intent vérifié par Robolectric ; l'écran de Google Agenda demande un compte, absent de l'émulateur — `ACTION_INSERT` | Compilé, à revoir sur le simulateur (tests d'interface suspendus) — `EKEventEditViewController` | interface |
 | Voir une position sur la carte | ✅ (émulateur : Google Maps, lieu épinglé sous son nom) — `geo:…?q=lat,lon(nom)` | ✅ (simulateur : Plans ouvert) — `https://maps.apple.com/?ll=…&q=…` | Compose + `expect` pour le lien (`platformMapsLink`) |
 | Vibration | `LocalHapticFeedback` (`Confirm`) | `LocalHapticFeedback` (`Confirm`) | Compose |
 | Bip après un scan | Livré, à écouter sur un appareil (l'émulateur tourne sans son) — `ToneGenerator` (`TONE_PROP_BEEP`, flux des notifications) | Livré, à écouter sur un iPhone — `AudioServicesPlaySystemSound` (son système 1057) | interface (`ScanBeeper`) |

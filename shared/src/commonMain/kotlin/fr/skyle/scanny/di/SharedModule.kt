@@ -7,10 +7,10 @@ import fr.skyle.scanny.ui.core.code.image.QroseCodeImageRenderer
 import fr.skyle.scanny.ui.main.MainViewModel
 import fr.skyle.scanny.ui.screen.createcode.ui.CreateCodeViewModel
 import fr.skyle.scanny.ui.screen.creationdetail.ui.CreationDetailViewModel
+import fr.skyle.scanny.ui.screen.history.ui.HistoryViewModel
 import fr.skyle.scanny.ui.screen.scan.ui.ScanViewModel
 import fr.skyle.scanny.ui.screen.scandetail.ui.ScanDetailViewModel
 import fr.skyle.scanny.ui.screen.scangroup.ui.ScanGroupViewModel
-import fr.skyle.scanny.ui.screen.history.ui.HistoryViewModel
 import fr.skyle.scanny.ui.screen.settings.ui.SettingsViewModel
 import kotlinx.datetime.TimeZone
 import org.koin.core.module.Module
@@ -44,6 +44,7 @@ val sharedModule = module {
             watchScannedCodeUseCase = get(),
             watchCreationUseCase = get(),
             recordCreationUseCase = get(),
+            timeZone = get(),
         )
     }
     viewModelOf(::CreationDetailViewModel)

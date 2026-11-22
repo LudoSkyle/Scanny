@@ -3,9 +3,16 @@ package fr.skyle.scanny.ui.screen.createcode.ui.model
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.EventClassification
+import fr.skyle.scanny.domain.model.EventFrequency
+import fr.skyle.scanny.domain.model.EventStatus
+import fr.skyle.scanny.domain.model.EventTransparency
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 
 /**
  * What the user typed in the editor, the fields of every kind together: switching to another kind
@@ -83,6 +90,38 @@ data class CreationForm(
     val bitcoinAmount: String = "",
     val bitcoinLabel: String = "",
     val bitcoinMessage: String = "",
+    val eventSummary: String = "",
+    val isEventAllDay: Boolean = false,
+    val eventStartDate: LocalDate? = null,
+    val eventStartTime: LocalTime? = null,
+    // The last day of an event of whole days, as the user counts it: iCalendar ends it the day after
+    val eventEndDate: LocalDate? = null,
+    val eventEndTime: LocalTime? = null,
+    // The zone of the times, null for the time wherever one is: the zone of the device for a new event
+    val eventTimeZone: String? = null,
+    val eventLocation: String = "",
+    // As typed: a decimal comma or point
+    val eventLatitude: String = "",
+    val eventLongitude: String = "",
+    val eventDescription: String = "",
+    val eventUrl: String = "",
+    val eventOrganizer: String = "",
+    // As typed: addresses separated by commas
+    val eventAttendees: String = "",
+    val eventFrequency: EventFrequency? = null,
+    // As typed: every how many periods, 1 when empty
+    val eventInterval: String = "",
+    val eventDays: Set<DayOfWeek> = emptySet(),
+    val eventRecurrenceEnd: RecurrenceEnd = RecurrenceEnd.NEVER,
+    val eventCount: String = "",
+    val eventUntil: LocalDate? = null,
+    val eventReminderMinutes: Int? = null,
+    val eventStatus: EventStatus? = null,
+    val eventTransparency: EventTransparency? = null,
+    val eventClassification: EventClassification? = null,
+    val eventPriority: Int? = null,
+    // As typed: categories separated by commas
+    val eventCategories: String = "",
     val barcodeFormat: BarcodeFormat = BarcodeFormat.EAN_13,
     val barcodeValue: String = "",
 )

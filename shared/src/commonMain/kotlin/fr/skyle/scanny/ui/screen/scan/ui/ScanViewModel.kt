@@ -8,6 +8,7 @@ import fr.skyle.scanny.domain.model.DetectedBarcode
 import fr.skyle.scanny.domain.model.ScanSettings
 import fr.skyle.scanny.domain.usecase.scan.RecordScanUseCase
 import fr.skyle.scanny.domain.usecase.settings.WatchScanSettingsUseCase
+import fr.skyle.scanny.platform.calendar.EventAdder
 import fr.skyle.scanny.platform.camera.CameraCapabilities
 import fr.skyle.scanny.platform.camera.CameraLens
 import fr.skyle.scanny.platform.contact.ContactAdder
@@ -39,6 +40,7 @@ class ScanViewModel(
     private val recordScanUseCase: RecordScanUseCase,
     private val watchScanSettingsUseCase: WatchScanSettingsUseCase,
     private val contactAdder: ContactAdder,
+    private val eventAdder: EventAdder,
     private val wifiNetworkSupport: WifiNetworkSupport,
     private val scanBeeper: ScanBeeper,
     private val clock: Clock,
@@ -315,6 +317,18 @@ class ScanViewModel(
         }
     }
 
+    fun onAddEventClicked(event: BarcodeContent.Event) {
+        try {
+            eventAdder.addEvent(event = event)
+        } catch (exception: Exception) {
+            Logger.e(throwable = exception) { "Failed to open the addition of a scanned event" }
+
+            viewModelScope.launch {
+                _event.send(ScanEvent.EventNotAdded)
+            }
+        }
+    }
+
     fun onSeeDetailClicked() {
         val result = _uiState.value.result as? ScanResult.Code ?: return
         leaveScan(event = ScanEvent.OpenScanDetail(codeId = result.item.codeId))
@@ -398,6 +412,7 @@ class ScanViewModel(
         data object NoCodeInImage : ScanEvent
         data object ScanNotSaved : ScanEvent
         data object ContactNotAdded : ScanEvent
+        data object EventNotAdded : ScanEvent
         data class OpenScanDetail(val codeId: Long) : ScanEvent
         data class OpenScanGroup(val scanId: Long) : ScanEvent
         data object ConfirmCodesDiscard : ScanEvent

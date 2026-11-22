@@ -40,6 +40,7 @@ import fr.skyle.scanny.ui.core.code.component.CodeActionButton
 import fr.skyle.scanny.ui.core.code.component.CodeFieldRow
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
 import fr.skyle.scanny.ui.core.code.component.RawContentCard
+import fr.skyle.scanny.ui.core.code.component.codeFieldValueText
 import fr.skyle.scanny.ui.core.code.mapper.isDrawable
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeAction
@@ -161,11 +162,13 @@ fun ScanDetailScreen(
                     style = SCCardDefaults.Style.LIGHT,
                 ) {
                     code.fields.forEach { field ->
+                        // What shows is what is copied: a date in the language of the device
+                        val value = codeFieldValueText(field = field)
                         CodeFieldRow(
                             modifier = Modifier.fillMaxWidth(),
                             label = field.label?.let { label -> stringResource(label.toText()) },
-                            value = field.value,
-                            onCopyClicked = { onCopyClicked(field.value) },
+                            value = value,
+                            onCopyClicked = { onCopyClicked(value) },
                         )
                     }
                 }

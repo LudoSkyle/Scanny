@@ -7,11 +7,13 @@
     <string name="add_logo">Add a logo</string>
     <string name="add_phone">Add a phone</string>
     <string name="add_to_authenticator">Add to an authenticator</string>
+    <string name="add_to_calendar">Add to the calendar</string>
     <string name="add_website">Add a website</string>
     <string name="address">Address</string>
     <string name="advanced_options">Advanced options</string>
     <string name="algorithm">Algorithm</string>
     <string name="all_creations_deleted">Every creation will be deleted.</string>
+    <string name="all_day">All day</string>
     <string name="all_scans_deleted">Every scan will be deleted.</string>
     <string name="allow_camera">Allow the camera</string>
     <string name="altitude">Altitude</string>
@@ -21,7 +23,11 @@
     <string name="anonymous_identity">Anonymous identity</string>
     <string name="app_description">Scanny scans QR codes and barcodes, with the latest technologies and without advertising, while staying light and reliable.</string>
     <string name="app_name" translatable="false">Scanny</string>
+    <string name="at_start">At the start</string>
     <string name="at_time">%1$s at %2$s</string>
+    <string name="attendee">Attendee</string>
+    <string name="attendees">Attendees</string>
+    <string name="availability">Shows as</string>
     <string name="aztec" translatable="false">Aztec</string>
     <string name="background_color">Color of the background</string>
     <string name="barcode">Barcode</string>
@@ -32,17 +38,23 @@
     <string name="bitcoin" translatable="false">Bitcoin</string>
     <string name="blind_carbon_copy">Bcc</string>
     <string name="bookmark">Bookmark</string>
+    <string name="busy">Busy</string>
     <string name="call">Call</string>
     <string name="camera_blocked">The camera is blocked for Scanny. Allow it in the settings of your device to scan codes.</string>
     <string name="camera_needed">Scanny needs the camera to scan codes.</string>
     <string name="camera_unavailable">No camera is available on this device. You can still scan a code in an image.</string>
     <string name="cancel">Cancel</string>
     <string name="carbon_copy">Cc</string>
+    <string name="categories">Categories</string>
     <string name="change_logo">Change the logo</string>
     <string name="choose">Choose</string>
     <string name="choose_color">Choose a color</string>
     <string name="choose_subject">Choose a subject</string>
     <string name="city">City</string>
+    <string name="class_confidential">Confidential</string>
+    <string name="class_private">Private</string>
+    <string name="class_public">Public</string>
+    <string name="classification">Visibility</string>
     <string name="clear">Clear</string>
     <string name="clear_history">Clear the history</string>
     <string name="clear_history_question">Clear the history?</string>
@@ -105,11 +117,17 @@
     <string name="customization">Customization</string>
     <string name="customization_reset">Customization reset</string>
     <string name="data_matrix" translatable="false">Data Matrix</string>
+    <string name="date_at_time">%1$s at %2$s</string>
     <string name="day_date">%2$s %1$d, %3$d</string>
+    <plurals name="days_before">
+        <item quantity="one">%1$d day before</item>
+        <item quantity="other">%1$d days before</item>
+    </plurals>
     <string name="delete">Delete</string>
     <string name="delete_code_question">Delete this code?</string>
     <string name="delete_group_question">Delete this group?</string>
     <string name="department">Department</string>
+    <string name="description">Description</string>
     <string name="digits">Number of digits</string>
     <string name="discard">Discard</string>
     <string name="discard_codes_question">Discard the codes found?</string>
@@ -121,6 +139,9 @@
     <string name="eap_method">EAP method</string>
     <string name="edit_code">Edit the code</string>
     <string name="email">E-mail</string>
+    <string name="end">End</string>
+    <string name="end_date">End date</string>
+    <string name="end_time">End time</string>
     <string name="enhanced_open_only">Wi-Fi Enhanced Open only</string>
     <string name="error_correction">Error correction</string>
     <string name="error_correction_auto">Automatic</string>
@@ -136,6 +157,23 @@
     <string name="error_correction_quartile_description">About 25% of the code</string>
     <string name="error_correction_too_high_for_content">Too high for this content</string>
     <string name="error_correction_too_low_for_logo">Too low for the logo</string>
+    <string name="event">Event</string>
+    <plurals name="every_days">
+        <item quantity="one">Every day</item>
+        <item quantity="other">Every %1$d days</item>
+    </plurals>
+    <plurals name="every_months">
+        <item quantity="one">Every month</item>
+        <item quantity="other">Every %1$d months</item>
+    </plurals>
+    <plurals name="every_weeks">
+        <item quantity="one">Every week</item>
+        <item quantity="other">Every %1$d weeks</item>
+    </plurals>
+    <plurals name="every_years">
+        <item quantity="one">Every year</item>
+        <item quantity="other">Every %1$d years</item>
+    </plurals>
     <string name="extended_address">Apartment, building</string>
     <string name="faq" translatable="false">FAQ</string>
     <string name="fax">Fax</string>
@@ -146,6 +184,7 @@
     <string name="fill_content_to_see_code">Fill in the content to see the code.</string>
     <string name="finish">Finish</string>
     <string name="first_name">First name</string>
+    <string name="floating_time">Local time, wherever one is</string>
     <string name="format">Format</string>
     <string name="format_aztec_example">A train ticket holds its booking, its journey and its passenger in an Aztec code of a few hundred characters.</string>
     <string name="format_aztec_structure">A target of squares at its center, which lets a scanner find it, wrapped in layers of modules, from 15 × 15 to 151 × 151. It needs no blank margin around it.</string>
@@ -192,6 +231,12 @@
     <string name="format_upc_e_use">The small products sold in North America.</string>
     <string name="format_use">Its use</string>
     <string name="formats_intro">Scanny reads every format below. It creates QR codes and barcodes.</string>
+    <string name="free">Free</string>
+    <string name="frequency">Frequency</string>
+    <string name="frequency_daily">Daily</string>
+    <string name="frequency_monthly">Monthly</string>
+    <string name="frequency_weekly">Weekly</string>
+    <string name="frequency_yearly">Yearly</string>
     <string name="give_feedback">Give your feedback</string>
     <string name="gradient">Gradient</string>
     <string name="gradient_color">Second color of the gradient</string>
@@ -209,6 +254,10 @@
     <string name="home_email">Personal e-mail</string>
     <string name="home_phone">Home phone</string>
     <string name="home_website">Personal website</string>
+    <plurals name="hours_before">
+        <item quantity="one">%1$d hour before</item>
+        <item quantity="other">%1$d hours before</item>
+    </plurals>
     <string name="identity">Identity</string>
     <string name="image_not_saved">The image could not be saved</string>
     <string name="image_not_shared">The image could not be shared</string>
@@ -235,6 +284,10 @@
     <string name="mail_app_opens_with_message">Your mail app opens with your message, ready to be sent.</string>
     <string name="mecard" translatable="false">MeCard</string>
     <string name="message">Message</string>
+    <plurals name="minutes_before">
+        <item quantity="one">%1$d minute before</item>
+        <item quantity="other">%1$d minutes before</item>
+    </plurals>
     <string-array name="months">
         <item>January</item>
         <item>February</item>
@@ -264,13 +317,16 @@
     <string name="no_code_in_image">No code found in this image</string>
     <string name="no_creation_yet">No creation yet</string>
     <string name="no_scan_yet">No scan yet</string>
+    <string name="not_set">Not set</string>
     <string name="note">Note</string>
+    <string name="occurrences">Number of times</string>
     <string name="open_content_after_scan">Open the content after a scan</string>
     <string name="open_in_wallet">Open in a wallet</string>
     <string name="open_link">Open the link</string>
     <string name="open_settings">Open the settings</string>
     <string name="openium" translatable="false">Openium</string>
     <string name="organization">Organization</string>
+    <string name="organizer">Organizer</string>
     <string name="other_color">Other color</string>
     <string name="otp">One-time password</string>
     <string name="otp_type">Key type</string>
@@ -287,6 +343,7 @@
     <string name="place_code_in_frame">Place a code in the frame</string>
     <string name="po_box">PO box</string>
     <string name="postal_code">Postal code</string>
+    <string name="priority">Priority</string>
     <string name="privacy_policy">Privacy policy</string>
     <string name="qr_code" translatable="false">QR Code</string>
     <string name="rate_app">Rate the app</string>
@@ -294,9 +351,18 @@
     <string name="raw_content_after_scan">Show the raw content after a scan</string>
     <string name="recipient">Recipient</string>
     <string name="recipients">Recipients</string>
+    <string name="recurrence">Repeats</string>
+    <string name="recurrence_after">After</string>
+    <string name="recurrence_end">Ends</string>
+    <string name="recurrence_never">Never</string>
+    <string name="recurrence_on">On</string>
+    <string name="recurrence_with">%1$s: %2$s</string>
     <string name="region">Region</string>
+    <string name="reminder">Reminder</string>
     <string name="remove">Remove</string>
     <string name="remove_logo">Remove the logo</string>
+    <string name="repeat_interval">Every how many</string>
+    <string name="repeats_on">On</string>
     <string name="required_field">%1$s *</string>
     <string name="reset_customization">Reset the customization</string>
     <string name="retention_forever">Forever</string>
@@ -331,6 +397,13 @@
     <string name="skip_consecutive_duplicates">Skip a code scanned again right away</string>
     <string name="sms" translatable="false">SMS</string>
     <string name="star_project">Star the project on GitHub</string>
+    <string name="start">Start</string>
+    <string name="start_date">Start date</string>
+    <string name="start_time">Start time</string>
+    <string name="status">Status</string>
+    <string name="status_cancelled">Cancelled</string>
+    <string name="status_confirmed">Confirmed</string>
+    <string name="status_tentative">Tentative</string>
     <string name="step_of">Step %1$d of %2$d</string>
     <string name="street">Street</string>
     <string name="subject">Subject</string>
@@ -338,6 +411,12 @@
     <string name="text">Text</string>
     <string name="the_code">The code</string>
     <string name="the_logo">The logo</string>
+    <string name="time_in_zone">%1$s (%2$s)</string>
+    <string name="time_zone">Time zone</string>
+    <plurals name="times_count">
+        <item quantity="one">%1$d time</item>
+        <item quantity="other">%1$d times</item>
+    </plurals>
     <string name="title">Title</string>
     <string name="today">Today</string>
     <string name="turn_off_torch">Turn off the torch</string>
@@ -349,6 +428,8 @@
     <string name="uncertainty">Uncertainty</string>
     <string name="uncertainty_in_meters">Uncertainty in meters</string>
     <string name="undo">Undo</string>
+    <string name="until_date">Last day</string>
+    <string name="until_day">until %1$s</string>
     <string name="upc_a" translatable="false">UPC-A</string>
     <string name="upc_e" translatable="false">UPC-E</string>
     <string name="use_front_camera">Use the front camera</string>
@@ -357,6 +438,15 @@
     <string name="version_and_build">Version %1$s (build %2$s)</string>
     <string name="vibrate_after_scan">Vibrate after a scan</string>
     <string name="website">Website</string>
+    <string-array name="week_days">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
     <string name="wifi" translatable="false">Wi-Fi</string>
     <string name="wifi_already_saved">“%1$s” is already saved on this device.</string>
     <string name="wifi_choose_in_settings">Choose “%1$s” in the list.</string>

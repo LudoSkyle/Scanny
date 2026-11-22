@@ -79,6 +79,7 @@ fun ScanRoute(
             }
 
             is CodeAction.AddContact -> viewModel.onAddContactClicked(contact = action.contact)
+            is CodeAction.AddEvent -> viewModel.onAddEventClicked(event = action.event)
             is CodeAction.JoinWifi -> wifiNetworkJoiner.join(wifi = action.wifi)
         }
     }
@@ -123,7 +124,9 @@ fun ScanRoute(
                     }
 
                     // On the sheet of the result when it shows one, on the scan otherwise
-                    ScanViewModel.ScanEvent.ContactNotAdded -> launch {
+                    ScanViewModel.ScanEvent.ContactNotAdded,
+                    ScanViewModel.ScanEvent.EventNotAdded,
+                    -> launch {
                         messages().show(message = getString(Res.string.no_app_to_open))
                     }
 

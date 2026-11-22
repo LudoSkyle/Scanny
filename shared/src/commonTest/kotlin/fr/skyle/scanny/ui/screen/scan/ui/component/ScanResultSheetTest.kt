@@ -13,27 +13,48 @@ import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.EventDateTime
+import fr.skyle.scanny.domain.model.EventFrequency
+import fr.skyle.scanny.domain.model.EventRecurrence
+import fr.skyle.scanny.domain.model.EventStatus
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.platform.wifi.WifiJoinResult
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.add_to_calendar
 import fr.skyle.scanny.resources.call
 import fr.skyle.scanny.resources.copied
 import fr.skyle.scanny.resources.copy
+import fr.skyle.scanny.resources.date_at_time
+import fr.skyle.scanny.resources.day_date
+import fr.skyle.scanny.resources.every_weeks
+import fr.skyle.scanny.resources.minutes_before
+import fr.skyle.scanny.resources.months
 import fr.skyle.scanny.resources.phone
+import fr.skyle.scanny.resources.recurrence_with
 import fr.skyle.scanny.resources.see_detail
+import fr.skyle.scanny.resources.status_confirmed
+import fr.skyle.scanny.resources.time_in_zone
+import fr.skyle.scanny.resources.times_count
 import fr.skyle.scanny.resources.upc_a
+import fr.skyle.scanny.resources.week_days
 import fr.skyle.scanny.resources.wifi
 import fr.skyle.scanny.resources.wifi_already_saved
 import fr.skyle.scanny.resources.wifi_saved
 import fr.skyle.scanny.resources.write_sms
 import fr.skyle.scanny.ui.core.code.mapper.showWifiJoinResult
+import fr.skyle.scanny.ui.core.code.mapper.toCodeFields
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
 import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultItem
 import fr.skyle.scanny.ui.test.ComposeTest
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.getStringArray
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -84,6 +105,42 @@ internal class ScanResultSheetTest : ComposeTest() {
             expected = listOf(PHONE.action),
             actual = actions,
         )
+    }
+
+    @Test
+    fun `an event writes its dates its recurrence and its reminder in the language of the device`() = runComposeUiTest {
+        // Given
+        val event = BarcodeContent.Event(
+            summary = "Launch",
+            start = EventDateTime(date = LocalDate(2026, 11, 22), time = LocalTime(15, 0), timeZone = "Europe/Paris"),
+            recurrence = EventRecurrence(frequency = EventFrequency.WEEKLY, interval = 2, count = 10, days = setOf(DayOfWeek.MONDAY)),
+            reminderMinutes = 15,
+            status = EventStatus.CONFIRMED,
+        )
+
+        // When
+        setContent {
+            scanResultSheet(
+                result = ScanResultItem(
+                    codeId = 5,
+                    type = CodeType.EVENT,
+                    format = BarcodeFormat.QR_CODE,
+                    fields = event.toCodeFields(),
+                    rawValue = "BEGIN:VEVENT",
+                    action = CodeAction.AddEvent(event = event),
+                ),
+            )
+        }
+
+        // Then
+        val day = getString(Res.string.day_date, 22, getStringArray(Res.array.months)[10], 2026)
+        val start = getString(Res.string.time_in_zone, getString(Res.string.date_at_time, day, "15:00"), "Europe/Paris")
+        val every = getString(Res.string.recurrence_with, getPluralString(Res.plurals.every_weeks, 2, 2), getStringArray(Res.array.week_days)[0])
+        onNodeWithText(start).assertExists()
+        onNodeWithText("$every, ${getPluralString(Res.plurals.times_count, 10, 10)}").assertExists()
+        onNodeWithText(getPluralString(Res.plurals.minutes_before, 15, 15)).assertExists()
+        onNodeWithText(getString(Res.string.status_confirmed)).assertExists()
+        onNodeWithText(getString(Res.string.add_to_calendar)).assertExists()
     }
 
     @Test

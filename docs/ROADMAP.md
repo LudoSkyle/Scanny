@@ -33,7 +33,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
       Wi-Fi et le mot de passe copié sinon, avec un message dans tous les cas ; iOS plus tard) ; contact →
       l'ajouter aux contacts ; téléphone → appeler ; position → voir sur la carte ; marque-page →
       ouvrir le lien ; clé à usage unique → l'ajouter à l'authentificateur ; Bitcoin → ouvrir le
-      portefeuille
+      portefeuille ; événement → l'ajouter au calendrier
 
 ### Réglages, Feedback, À propos
 
@@ -66,7 +66,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
   - [x] Mot de passe à usage unique (`otpauth://`, chacun de ses paramètres à la création), Bitcoin
         (`bitcoin:`)
   - [x] MMS, et le format MeCard pour un contact créé
-  - [ ] Événement (`VEVENT`), ajouté au calendrier
+  - [x] Événement (`VEVENT`), ajouté au calendrier
 - [x] Chaque champ de la spec de chaque contenu à la création, les obligatoires marqués d'un
       astérisque : la clé à usage unique, l'e-mail (plusieurs destinataires, copie, copie cachée), la
       position (altitude, incertitude), le contact (vCard et MeCard complets) et le Wi-Fi (modes sans

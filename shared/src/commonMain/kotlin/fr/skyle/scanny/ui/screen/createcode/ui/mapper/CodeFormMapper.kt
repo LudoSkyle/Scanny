@@ -14,6 +14,9 @@ import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactEntryField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
+import fr.skyle.scanny.ui.screen.createcode.ui.model.RecurrenceEnd
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.minus
 
 /** The form a scanned code fills, to be changed and created as a new code. */
 internal fun ScannedCode.toCreationForm(): CreationForm =
@@ -171,6 +174,44 @@ private fun BarcodeContent.toCreationForm(
             otpPeriod = (content.period ?: BarcodeContent.Otp.DEFAULT_PERIOD).toString(),
             otpCounter = content.counter?.toString().orEmpty(),
         )
+
+        is BarcodeContent.Event -> {
+            val recurrence = content.recurrence
+            CreationForm(
+                kind = CreationKind.EVENT,
+                eventSummary = content.summary.orEmpty(),
+                isEventAllDay = content.start.time == null,
+                eventStartDate = content.start.date,
+                eventStartTime = content.start.time,
+                // The last day of an event of whole days, the day before the end iCalendar writes
+                eventEndDate = if (content.start.time == null) content.end?.date?.minus(1, DateTimeUnit.DAY) else content.end?.date,
+                eventEndTime = content.end?.time,
+                eventTimeZone = content.start.timeZone,
+                eventLocation = content.location.orEmpty(),
+                eventLatitude = content.latitude?.toCoordinateText().orEmpty(),
+                eventLongitude = content.longitude?.toCoordinateText().orEmpty(),
+                eventDescription = content.description.orEmpty(),
+                eventUrl = content.url.orEmpty(),
+                eventOrganizer = content.organizer.orEmpty(),
+                eventAttendees = content.attendees.joinToString(separator = ", "),
+                eventFrequency = recurrence?.frequency,
+                eventInterval = recurrence?.interval?.toString().orEmpty(),
+                eventDays = recurrence?.days.orEmpty(),
+                eventRecurrenceEnd = when {
+                    recurrence?.count != null -> RecurrenceEnd.COUNT
+                    recurrence?.until != null -> RecurrenceEnd.UNTIL
+                    else -> RecurrenceEnd.NEVER
+                },
+                eventCount = recurrence?.count?.toString().orEmpty(),
+                eventUntil = recurrence?.until,
+                eventReminderMinutes = content.reminderMinutes,
+                eventStatus = content.status,
+                eventTransparency = content.transparency,
+                eventClassification = content.classification,
+                eventPriority = content.priority,
+                eventCategories = content.categories.joinToString(separator = ", "),
+            )
+        }
 
         is BarcodeContent.Bitcoin -> CreationForm(
             kind = CreationKind.BITCOIN,

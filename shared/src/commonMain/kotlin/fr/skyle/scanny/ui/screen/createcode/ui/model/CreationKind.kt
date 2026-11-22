@@ -14,5 +14,6 @@ enum class CreationKind {
     BOOKMARK,
     OTP,
     BITCOIN,
+    EVENT,
     BARCODE,
 }

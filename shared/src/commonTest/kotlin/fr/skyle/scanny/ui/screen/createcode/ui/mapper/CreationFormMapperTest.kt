@@ -8,6 +8,10 @@ import fr.skyle.scanny.domain.model.ContactEntryType
 import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.ContactPhone
 import fr.skyle.scanny.domain.model.ContactPhoneType
+import fr.skyle.scanny.domain.model.EventDateTime
+import fr.skyle.scanny.domain.model.EventFrequency
+import fr.skyle.scanny.domain.model.EventRecurrence
+import fr.skyle.scanny.domain.model.EventStatus
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
@@ -17,6 +21,10 @@ import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactEntryField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
+import fr.skyle.scanny.ui.screen.createcode.ui.model.RecurrenceEnd
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -753,6 +761,114 @@ class CreationFormMapperTest {
                 null,
                 null,
             ),
+            actual = contents,
+        )
+    }
+
+    @Test
+    fun `an event needs its title and its start and keeps every property filled in`() {
+        // When
+        val contents = listOf(
+            CreationForm(kind = CreationKind.EVENT, eventStartDate = LocalDate(2026, 11, 22), eventStartTime = LocalTime(15, 0)),
+            CreationForm(kind = CreationKind.EVENT, eventSummary = "Launch", eventStartDate = LocalDate(2026, 11, 22)),
+            CreationForm(
+                kind = CreationKind.EVENT,
+                eventSummary = " Launch ",
+                eventStartDate = LocalDate(2026, 11, 22),
+                eventStartTime = LocalTime(15, 0),
+                eventEndTime = LocalTime(16, 30),
+                eventTimeZone = "Europe/Paris",
+                eventLocation = " Opéra ",
+                eventLatitude = "48,8719",
+                eventLongitude = "2.3316",
+                eventUrl = "scanny.app",
+                eventOrganizer = " john@scanny.app ",
+                eventAttendees = "jane@scanny.app, jim@scanny.app",
+                eventFrequency = EventFrequency.WEEKLY,
+                eventInterval = "2",
+                eventDays = setOf(DayOfWeek.MONDAY),
+                eventRecurrenceEnd = RecurrenceEnd.COUNT,
+                eventCount = "10",
+                eventReminderMinutes = 15,
+                eventStatus = EventStatus.CONFIRMED,
+                eventPriority = 1,
+                eventCategories = "Work, , Launch",
+            ),
+        ).map { form -> form.toBarcodeContent() }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                null,
+                null,
+                BarcodeContent.Event(
+                    summary = "Launch",
+                    start = EventDateTime(date = LocalDate(2026, 11, 22), time = LocalTime(15, 0), timeZone = "Europe/Paris"),
+                    end = EventDateTime(date = LocalDate(2026, 11, 22), time = LocalTime(16, 30), timeZone = "Europe/Paris"),
+                    location = "Opéra",
+                    latitude = 48.8719,
+                    longitude = 2.3316,
+                    url = "https://scanny.app",
+                    organizer = "john@scanny.app",
+                    attendees = listOf("jane@scanny.app", "jim@scanny.app"),
+                    recurrence = EventRecurrence(frequency = EventFrequency.WEEKLY, interval = 2, count = 10, days = setOf(DayOfWeek.MONDAY)),
+                    reminderMinutes = 15,
+                    status = EventStatus.CONFIRMED,
+                    priority = 1,
+                    categories = listOf("Work", "Launch"),
+                ),
+            ),
+            actual = contents,
+        )
+    }
+
+    @Test
+    fun `an event of whole days ends the day after its last day and has no zone`() {
+        // When
+        val content = CreationForm(
+            kind = CreationKind.EVENT,
+            eventSummary = "Holidays",
+            isEventAllDay = true,
+            eventStartDate = LocalDate(2026, 12, 24),
+            eventStartTime = LocalTime(15, 0),
+            eventEndDate = LocalDate(2026, 12, 25),
+            eventTimeZone = "Europe/Paris",
+        ).toBarcodeContent()
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Event(
+                summary = "Holidays",
+                start = EventDateTime(date = LocalDate(2026, 12, 24)),
+                end = EventDateTime(date = LocalDate(2026, 12, 26)),
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an event needs an end after its start a time for its end day and a recurrence that ends as chosen`() {
+        // Given
+        val form = CreationForm(
+            kind = CreationKind.EVENT,
+            eventSummary = "Launch",
+            eventStartDate = LocalDate(2026, 11, 22),
+            eventStartTime = LocalTime(15, 0),
+        )
+
+        // When
+        val contents = listOf(
+            form.copy(eventEndTime = LocalTime(14, 0)),
+            form.copy(eventEndDate = LocalDate(2026, 11, 23)),
+            form.copy(eventLatitude = "48.8719"),
+            form.copy(eventFrequency = EventFrequency.DAILY, eventRecurrenceEnd = RecurrenceEnd.COUNT, eventCount = "0"),
+            form.copy(eventFrequency = EventFrequency.DAILY, eventRecurrenceEnd = RecurrenceEnd.UNTIL, eventUntil = LocalDate(2026, 11, 21)),
+            form.copy(eventFrequency = EventFrequency.DAILY, eventInterval = "x"),
+        ).map { changedForm -> changedForm.toBarcodeContent() }
+
+        // Then
+        assertEquals(
+            expected = listOf(null, null, null, null, null, null),
             actual = contents,
         )
     }

@@ -5,6 +5,7 @@ import fr.skyle.scanny.domain.model.ContactAddress
 import fr.skyle.scanny.domain.model.ContactEntryType
 import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.Creation
+import fr.skyle.scanny.domain.model.EventDateTime
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
@@ -20,9 +21,11 @@ import fr.skyle.scanny.platform.link.platformMmsLink
 import fr.skyle.scanny.platform.link.platformSmsLink
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
+import fr.skyle.scanny.ui.core.code.model.CodeFieldDisplay
 import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
 import fr.skyle.scanny.ui.core.code.model.CodeRowItem
 import fr.skyle.scanny.ui.core.code.model.CodeType
+import kotlinx.datetime.LocalDate
 
 // The symbol of the bitcoin, the same in every language
 private const val BITCOIN_UNIT = "BTC"
@@ -45,6 +48,7 @@ internal fun BarcodeContent.toCodeType(): CodeType =
         is BarcodeContent.Bookmark -> CodeType.BOOKMARK
         is BarcodeContent.Otp -> CodeType.OTP
         is BarcodeContent.Bitcoin -> CodeType.BITCOIN
+        is BarcodeContent.Event -> CodeType.EVENT
     }
 
 internal fun BarcodeContent.toCodeAction(canJoinWifi: (BarcodeContent.Wifi) -> Boolean): CodeAction? =
@@ -60,6 +64,7 @@ internal fun BarcodeContent.toCodeAction(canJoinWifi: (BarcodeContent.Wifi) -> B
         is BarcodeContent.Bookmark -> CodeAction.OpenLink(link = url)
         is BarcodeContent.Otp -> CodeAction.AddToAuthenticator(link = toOtpauthLink())
         is BarcodeContent.Bitcoin -> CodeAction.OpenWallet(link = toBitcoinLink())
+        is BarcodeContent.Event -> CodeAction.AddEvent(event = this)
         // Nothing to open for a text
         is BarcodeContent.Text -> null
     }
@@ -94,6 +99,7 @@ private fun BarcodeContent.toSummary(rawValue: String): String =
         // "Scanny: john@doe.fr", as the authenticator apps name a key
         is BarcodeContent.Otp -> listOfNotNull(issuer, account).joinToString(separator = ": ").ifEmpty { null }
         is BarcodeContent.Bitcoin -> label ?: address
+        is BarcodeContent.Event -> summary ?: location
     } ?: rawValue
 
 /** Whether the raw text of a code says more than its content: a text or a link is its own raw text. */
@@ -257,10 +263,13 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
                 value = website.url,
             )
         } + listOfNotNull(
-            codeField(
-                label = CodeFieldLabel.BIRTHDAY,
-                value = birthday,
-            ),
+            birthday?.let { birthday ->
+                CodeField(
+                    label = CodeFieldLabel.BIRTHDAY,
+                    value = birthday,
+                    display = CodeFieldDisplay.Day(date = LocalDate.parse(birthday)),
+                )
+            },
             codeField(
                 label = CodeFieldLabel.NOTE,
                 value = note,
@@ -343,6 +352,84 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
             },
         )
 
+        // Each date in the language of the device; its ISO text is what the raw content and the copy of a
+        // test read
+        is BarcodeContent.Event -> listOfNotNull(
+            codeField(
+                label = CodeFieldLabel.TITLE,
+                value = summary,
+            ),
+            start.toCodeField(label = CodeFieldLabel.START),
+            end?.toCodeField(label = CodeFieldLabel.END),
+            codeField(
+                label = CodeFieldLabel.PLACE,
+                value = location,
+            ),
+            codeField(
+                label = CodeFieldLabel.COORDINATES,
+                value = coordinates(),
+            ),
+            codeField(
+                label = CodeFieldLabel.DESCRIPTION,
+                value = description,
+            ),
+            codeField(
+                label = CodeFieldLabel.LINK,
+                value = url,
+            ),
+            codeField(
+                label = CodeFieldLabel.ORGANIZER,
+                value = organizer,
+            ),
+        ) + codeFields(
+            label = CodeFieldLabel.ATTENDEE,
+            values = attendees,
+        ) + listOfNotNull(
+            recurrence?.let { recurrence ->
+                CodeField(
+                    label = CodeFieldLabel.RECURRENCE,
+                    value = recurrence.frequency.name,
+                    display = CodeFieldDisplay.Recurrence(recurrence = recurrence),
+                )
+            },
+            reminderMinutes?.let { minutes ->
+                CodeField(
+                    label = CodeFieldLabel.REMINDER,
+                    value = minutes.toString(),
+                    display = CodeFieldDisplay.Reminder(minutes = minutes),
+                )
+            },
+            status?.let { status ->
+                CodeField(
+                    label = CodeFieldLabel.STATUS,
+                    value = status.name,
+                    display = CodeFieldDisplay.Status(status = status),
+                )
+            },
+            transparency?.let { transparency ->
+                CodeField(
+                    label = CodeFieldLabel.AVAILABILITY,
+                    value = transparency.name,
+                    display = CodeFieldDisplay.Availability(transparency = transparency),
+                )
+            },
+            classification?.let { classification ->
+                CodeField(
+                    label = CodeFieldLabel.CLASSIFICATION,
+                    value = classification.name,
+                    display = CodeFieldDisplay.Classification(classification = classification),
+                )
+            },
+            codeField(
+                label = CodeFieldLabel.PRIORITY,
+                value = priority?.toString(),
+            ),
+            codeField(
+                label = CodeFieldLabel.CATEGORIES,
+                value = categories.joinToString(separator = ", ").ifEmpty { null },
+            ),
+        )
+
         is BarcodeContent.Bitcoin -> listOfNotNull(
             CodeField(
                 label = CodeFieldLabel.ADDRESS,
@@ -375,6 +462,26 @@ private fun BarcodeContent.Wifi.securityText(): String? =
         }
         WifiEncryption.WPA_ENTERPRISE -> if (WifiTransitionMode.WPA3_ENTERPRISE in transitionDisable) "WPA3-Enterprise" else "WPA2/WPA3-Enterprise"
     }
+
+private fun BarcodeContent.Event.coordinates(): String? {
+    val latitude = latitude ?: return null
+    val longitude = longitude ?: return null
+    return "${latitude.toCoordinateText()}, ${longitude.toCoordinateText()}"
+}
+
+// A day, or a day and its time in its zone
+private fun EventDateTime.toCodeField(label: CodeFieldLabel): CodeField {
+    val time = time
+    return CodeField(
+        label = label,
+        value = listOfNotNull(date.toString(), time?.toString(), timeZone).joinToString(separator = " "),
+        display = if (time == null) {
+            CodeFieldDisplay.Day(date = date)
+        } else {
+            CodeFieldDisplay.DateTime(date = date, time = time, timeZone = timeZone)
+        },
+    )
+}
 
 private fun ContactPhoneType.toCodeFieldLabel(): CodeFieldLabel =
     when (this) {

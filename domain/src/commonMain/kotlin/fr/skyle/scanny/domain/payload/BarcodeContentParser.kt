@@ -8,10 +8,29 @@ import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.ContactPhone
 import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.ContactWebsite
+import fr.skyle.scanny.domain.model.EventClassification
+import fr.skyle.scanny.domain.model.EventDateTime
+import fr.skyle.scanny.domain.model.EventFrequency
+import fr.skyle.scanny.domain.model.EventRecurrence
+import fr.skyle.scanny.domain.model.EventStatus
+import fr.skyle.scanny.domain.model.EventTransparency
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.model.WifiTransitionMode
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Interprets the raw text of a code. Both platforms go through it, and never through the typed
@@ -23,6 +42,17 @@ internal object BarcodeContentParser {
     // The place in the query of a geo: link, "lat,lon" and its name between parentheses if any
     private val GEO_PLACE = Regex("""\s*([-+]?[0-9.]+)\s*,\s*([-+]?[0-9.]+)\s*(?:\((.*)\))?\s*""")
     private val LATITUDES = -90.0..90.0
+    private const val MAX_EVENT_DAYS = 36_500L
+    private val ISO_DURATION = Regex("""P(?:([0-9]+)W)?(?:([0-9]+)D)?(?:T(?:([0-9]+)H)?(?:([0-9]+)M)?(?:([0-9]+)S)?)?""")
+    private val WEEK_DAYS = mapOf(
+        "MO" to DayOfWeek.MONDAY,
+        "TU" to DayOfWeek.TUESDAY,
+        "WE" to DayOfWeek.WEDNESDAY,
+        "TH" to DayOfWeek.THURSDAY,
+        "FR" to DayOfWeek.FRIDAY,
+        "SA" to DayOfWeek.SATURDAY,
+        "SU" to DayOfWeek.SUNDAY,
+    )
     private val BITCOIN_AMOUNT = Regex("""[0-9]+(\.[0-9]+)?""")
     private val LONGITUDES = -180.0..180.0
 
@@ -39,6 +69,7 @@ internal object BarcodeContentParser {
             value.hasPrefix(PayloadSyntax.MMS) -> parseMmsUri(uri = value.drop(PayloadSyntax.MMS.length))
             value.hasPrefix(PayloadSyntax.MECARD) -> parseMecard(fieldsText = value.drop(PayloadSyntax.MECARD.length))
             value.hasPrefix(PayloadSyntax.VCARD) -> parseVcard(text = value)
+            value.hasPrefix(PayloadSyntax.VCALENDAR) || value.hasPrefix(PayloadSyntax.VEVENT) -> parseEvent(text = value)
             value.hasPrefix(PayloadSyntax.TEL) -> parsePhone(uri = value.drop(PayloadSyntax.TEL.length))
             value.hasPrefix(PayloadSyntax.GEO) -> parseGeo(uri = value.drop(PayloadSyntax.GEO.length))
             value.hasPrefix(PayloadSyntax.MEBKM) -> parseBookmark(fieldsText = value.drop(PayloadSyntax.MEBKM.length))
@@ -472,6 +503,196 @@ internal object BarcodeContentParser {
             label = parameters["label"].nullIfBlank(),
             message = parameters["message"].nullIfBlank(),
         )
+    }
+
+    // The first VEVENT, alone or in its VCALENDAR; its VALARM gives the reminder. An event needs its start
+    private fun parseEvent(text: String): BarcodeContent.Event? {
+        var properties = mapOf<String, EventProperty>()
+        val multipleProperties = mutableMapOf<String, MutableList<EventProperty>>()
+        var trigger: String? = null
+        var isInEvent = false
+        var isInAlarm = false
+
+        for (line in unfoldedLines(text = text)) {
+            val separatorIndex = line.indexOf(':')
+            if (separatorIndex <= 0) {
+                continue
+            }
+            val nameAndParameters = line.take(separatorIndex).split(';')
+            val name = nameAndParameters.first().trim().uppercase()
+            val value = line.drop(separatorIndex + 1)
+            val parameters = nameAndParameters.drop(1).associate { parameter ->
+                parameter.substringBefore('=').trim().uppercase() to parameter.substringAfter(delimiter = '=', missingDelimiterValue = "").trim().removeSurrounding("\"")
+            }
+            when {
+                name == "BEGIN" && value.trim().equals(other = "VEVENT", ignoreCase = true) -> isInEvent = true
+                name == "END" && value.trim().equals(other = "VEVENT", ignoreCase = true) -> break
+                !isInEvent -> Unit
+                name == "BEGIN" && value.trim().equals(other = "VALARM", ignoreCase = true) -> isInAlarm = true
+                name == "END" && value.trim().equals(other = "VALARM", ignoreCase = true) -> isInAlarm = false
+                isInAlarm -> if (name == "TRIGGER" && trigger == null) trigger = value.trim()
+                name == "ATTENDEE" || name == "CATEGORIES" -> multipleProperties.getOrPut(name) { mutableListOf() } += EventProperty(value, parameters)
+                name !in properties -> properties = properties + (name to EventProperty(value, parameters))
+            }
+        }
+
+        val start = properties["DTSTART"]?.let { property -> eventDateTime(property = property) } ?: return null
+        val end = properties["DTEND"]?.let { property -> eventDateTime(property = property) }
+            ?: properties["DURATION"]?.value?.let { duration -> isoDuration(text = duration) }?.let { duration -> start.plus(duration = duration) }
+        val geo = properties["GEO"]?.value?.split(';')
+        val latitude = geo?.getOrNull(0)?.trim()?.toDoubleOrNull()?.takeIf { it in LATITUDES }
+        val longitude = geo?.getOrNull(1)?.trim()?.toDoubleOrNull()?.takeIf { it in LONGITUDES }
+        val hasGeo = latitude != null && longitude != null
+
+        return BarcodeContent.Event(
+            summary = properties["SUMMARY"]?.text(),
+            start = start,
+            end = end,
+            location = properties["LOCATION"]?.text(),
+            latitude = latitude.takeIf { hasGeo },
+            longitude = longitude.takeIf { hasGeo },
+            description = properties["DESCRIPTION"]?.text(),
+            url = properties["URL"]?.value?.trim().nullIfBlank(),
+            organizer = properties["ORGANIZER"]?.value?.let { organizer -> calendarAddress(value = organizer) },
+            attendees = multipleProperties["ATTENDEE"].orEmpty().mapNotNull { attendee -> calendarAddress(value = attendee.value) },
+            recurrence = properties["RRULE"]?.value?.let { rule -> recurrence(rule = rule) },
+            // A reminder before the start: "-PT15M". One after it, or at a given time, is left out
+            reminderMinutes = trigger?.takeIf { it.startsWith('-') }?.let { reminder -> isoDuration(text = reminder.drop(1)) }?.inWholeMinutes?.toInt(),
+            status = properties["STATUS"]?.value?.let { status -> EventStatus.entries.firstOrNull { it.name.equals(other = status.trim(), ignoreCase = true) } },
+            transparency = properties["TRANSP"]?.value?.let { transparency ->
+                EventTransparency.entries.firstOrNull { it.name.equals(other = transparency.trim(), ignoreCase = true) }
+            },
+            classification = properties["CLASS"]?.value?.let { classification ->
+                EventClassification.entries.firstOrNull { it.name.equals(other = classification.trim(), ignoreCase = true) }
+            },
+            // 0 is a priority left undefined
+            priority = properties["PRIORITY"]?.value?.trim()?.toIntOrNull()?.takeIf { it in 1..9 },
+            categories = multipleProperties["CATEGORIES"].orEmpty().flatMap { categories -> splitTextList(value = categories.value) },
+        )
+    }
+
+    private class EventProperty(
+        val value: String,
+        val parameters: Map<String, String>,
+    ) {
+        fun text(): String? =
+            unescapeVcard(value = value).nullIfBlank()
+    }
+
+    // "20261122T150000Z" in UTC, "20261122T150000" with its TZID or floating, "20261122" for a whole day
+    private fun eventDateTime(property: EventProperty): EventDateTime? {
+        val value = property.value.trim()
+        val date = isoDate(text = value)?.let { date -> localDate(isoDate = date) } ?: return null
+        val time = value.substringAfter(delimiter = 'T', missingDelimiterValue = "")
+            .removeSuffix("Z")
+            .takeIf { it.length >= 4 && it.all { char -> char.isDigit() } }
+            ?.let { digits ->
+                LocalTime(
+                    hour = digits.take(2).toInt().takeIf { it < 24 } ?: return null,
+                    minute = digits.substring(2, 4).toInt().takeIf { it < 60 } ?: return null,
+                    second = digits.drop(4).take(2).toIntOrNull()?.takeIf { it < 60 } ?: 0,
+                )
+            }
+        val isWholeDay = time == null || property.parameters["VALUE"].equals(other = "DATE", ignoreCase = true)
+
+        return EventDateTime(
+            date = date,
+            time = time.takeUnless { isWholeDay },
+            timeZone = when {
+                isWholeDay -> null
+                value.endsWith('Z') -> EventDateTime.UTC
+                else -> property.parameters["TZID"].nullIfBlank()
+            },
+        )
+    }
+
+    // A duration of ISO 8601 as iCalendar writes it: "P1W", "P1DT2H", "PT90M"
+    private fun isoDuration(text: String): Duration? {
+        val match = ISO_DURATION.matchEntire(input = text.trim().removePrefix("+")) ?: return null
+        val (weeks, days, hours, minutes, seconds) = match.destructured
+        return listOf(
+            (weeks.toLongOrNull() ?: 0) * 7.days.inWholeSeconds,
+            (days.toLongOrNull() ?: 0) * 1.days.inWholeSeconds,
+            (hours.toLongOrNull() ?: 0) * 1.hours.inWholeSeconds,
+            (minutes.toLongOrNull() ?: 0) * 60,
+            seconds.toLongOrNull() ?: 0,
+        ).sum().seconds
+    }
+
+    // The end an event of a duration reaches: whole days for a whole day, the clock otherwise. A duration of
+    // more than a century is not taken: the end would be out of the calendar
+    private fun EventDateTime.plus(duration: Duration): EventDateTime? {
+        if (duration.inWholeDays > MAX_EVENT_DAYS) {
+            return null
+        }
+        val time = time
+        if (time == null) {
+            return copy(date = date.plus(duration.inWholeDays.toInt(), DateTimeUnit.DAY))
+        }
+        val end = LocalDateTime(date, time).toInstant(TimeZone.UTC).plus(duration).toLocalDateTime(TimeZone.UTC)
+        return copy(date = end.date, time = end.time)
+    }
+
+    // "1990-05-12", a day that exists: February has no 30th, nor a 29th out of a leap year
+    private fun localDate(isoDate: String): LocalDate? {
+        val (year, month, day) = isoDate.split('-').map { part -> part.toInt() }
+        val isLeapYear = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)
+        val monthLength = when (month) {
+            2 -> if (isLeapYear) 29 else 28
+            4, 6, 9, 11 -> 30
+            in 1..12 -> 31
+            else -> return null
+        }
+        if (day !in 1..monthLength) {
+            return null
+        }
+        return LocalDate(year = year, month = month, day = day)
+    }
+
+    // "mailto:john@doe.fr", the name of the person (CN) aside
+    private fun calendarAddress(value: String): String? =
+        value.trim().let { address -> if (address.hasPrefix("mailto:")) address.drop(7) else address }.nullIfBlank()
+
+    // "FREQ=WEEKLY;INTERVAL=2;COUNT=10;BYDAY=MO,WE": a frequency the calendars do not create is left out
+    private fun recurrence(rule: String): EventRecurrence? {
+        val parts = rule.split(';').associate { part ->
+            part.substringBefore('=').trim().uppercase() to part.substringAfter(delimiter = '=', missingDelimiterValue = "").trim()
+        }
+        val frequency = EventFrequency.entries.firstOrNull { it.name.equals(other = parts["FREQ"], ignoreCase = true) } ?: return null
+
+        return EventRecurrence(
+            frequency = frequency,
+            interval = parts["INTERVAL"]?.toIntOrNull()?.takeIf { it > 1 },
+            count = parts["COUNT"]?.toIntOrNull()?.takeIf { it > 0 },
+            until = parts["UNTIL"]?.let { until -> isoDate(text = until) }?.let { date -> localDate(isoDate = date) },
+            // A day with a position in the month ("1MO") is left out
+            days = parts["BYDAY"].orEmpty().split(',').mapNotNull { day -> WEEK_DAYS[day.trim().uppercase()] }.toSet(),
+        )
+    }
+
+    // "a,b\,c": the values of a list of texts, an escaped comma in its value
+    private fun splitTextList(value: String): List<String> =
+        splitEscapedCommas(value = value).mapNotNull { item -> unescapeVcard(value = item).nullIfBlank() }
+
+    private fun splitEscapedCommas(value: String): List<String> {
+        val items = mutableListOf(StringBuilder())
+        var index = 0
+        while (index < value.length) {
+            val char = value[index]
+            when {
+                char == '\\' && index + 1 < value.length -> {
+                    items.last().append(char)
+                    items.last().append(value[index + 1])
+                    index++
+                }
+
+                char == ',' -> items += StringBuilder()
+
+                else -> items.last().append(char)
+            }
+            index++
+        }
+        return items.map { item -> item.toString() }
     }
 
     private class Field(

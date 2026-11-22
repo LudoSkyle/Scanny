@@ -82,7 +82,9 @@ fun ScanDetailRoute(
                         snackbarState.show(message = getString(Res.string.code_not_deleted))
                     }
 
-                    ScanDetailViewModel.ScanDetailEvent.ContactNotAdded -> launch {
+                    ScanDetailViewModel.ScanDetailEvent.ContactNotAdded,
+                    ScanDetailViewModel.ScanDetailEvent.EventNotAdded,
+                    -> launch {
                         snackbarState.show(message = getString(Res.string.no_app_to_open))
                     }
 
@@ -149,6 +151,7 @@ fun ScanDetailRoute(
                 }
 
                 is CodeAction.AddContact -> viewModel.onAddContactClicked(contact = action.contact)
+                is CodeAction.AddEvent -> viewModel.onAddEventClicked(event = action.event)
                 is CodeAction.JoinWifi -> wifiNetworkJoiner.join(wifi = action.wifi)
             }
         },

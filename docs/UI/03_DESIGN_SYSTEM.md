@@ -21,7 +21,9 @@ On y trouve :
   lue comme un onglet), `SCTag` (un court libellé dans une pastille, qui classe ce qu'il
   accompagne : le type d'un code, les types des codes d'un groupe), `SCDateField` (une date choisie
   dans un calendrier, montrée comme l'appelant l'écrit, en millisecondes à minuit UTC vers le
-  calendrier de Material, aux couleurs du thème, que le thème ne donne pas à Material) et `SCColorPicker`
+  calendrier de Material, aux couleurs du thème, que le thème ne donne pas à Material), `SCTimeField`
+  (une heure choisie sur l'horloge de Material, en minutes depuis minuit, en 12 ou 24 h selon
+  l'appareil) et `SCColorPicker`
   (n'importe quelle couleur, par sa teinte sur une barre puis sa saturation et sa luminosité sur un
   carré, en HSV que l'appelant garde).
   Les autres arrivent avec le premier écran qui en a besoin ;
@@ -50,6 +52,7 @@ designSystem/src/commonMain/
 │       ├── card/              (SCCard : un bloc de contenu détaché du fond ; SCCardStructure : son titre au-dessus ; SCExpandableCardStructure : repliée sous son titre, dans la carte)
 │       ├── datefield/         (SCDateField : une date choisie dans un calendrier, effaçable)
 │       ├── dialog/            (SCDialog : une question avant une action)
+│       ├── timefield/         (SCTimeField : une heure choisie sur une horloge, effaçable)
 │       ├── divider/           (SCDivider : une ligne fine entre deux rangées, de la couleur du fond)
 │       ├── dropdownfield/     (SCDropdownField : un choix dans un menu, aux styles de SCTextField)
 │       ├── dropdownmenu/      (SCDropdownMenu : un menu d'options, le choix en cours en couleur)
