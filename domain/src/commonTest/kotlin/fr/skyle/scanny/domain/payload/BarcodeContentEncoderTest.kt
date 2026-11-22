@@ -11,6 +11,7 @@ import fr.skyle.scanny.domain.model.ContactWebsite
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.model.WifiTransitionMode
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -176,13 +177,16 @@ class BarcodeContentEncoderTest {
     }
 
     @Test
-    fun `a hidden wpa3 network is written as a hidden sae network`() {
+    fun `a hidden wpa3 network only is written as the wpa3 specification writes it`() {
         // Given
         val content = BarcodeContent.Wifi(
             ssid = "Modern",
-            encryption = WifiEncryption.WPA3,
+            encryption = WifiEncryption.WPA,
             password = "secret",
             isHidden = true,
+            transitionDisable = setOf(WifiTransitionMode.WPA3_PERSONAL, WifiTransitionMode.SAE_PK),
+            passwordIdentifier = "john",
+            publicKey = "MDkwEwYHKoZIzj0CAQ==",
         )
 
         // When
@@ -190,7 +194,31 @@ class BarcodeContentEncoderTest {
 
         // Then
         assertEquals(
-            expected = "WIFI:T:SAE;S:Modern;P:secret;H:true;;",
+            expected = "WIFI:T:WPA;R:3;S:Modern;H:true;I:john;P:secret;K:MDkwEwYHKoZIzj0CAQ==;;",
+            actual = payload,
+        )
+    }
+
+    @Test
+    fun `an enterprise network is written with the fields of zxing`() {
+        // Given
+        val content = BarcodeContent.Wifi(
+            ssid = "Corp",
+            encryption = WifiEncryption.WPA_ENTERPRISE,
+            password = "secret",
+            transitionDisable = setOf(WifiTransitionMode.WPA3_ENTERPRISE),
+            eapMethod = "PEAP",
+            identity = "john@corp",
+            anonymousIdentity = "anon",
+            phase2Method = "MSCHAPV2",
+        )
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = "WIFI:T:WPA2-EAP;R:4;S:Corp;I:john@corp;P:secret;E:PEAP;A:anon;PH2:MSCHAPV2;;",
             actual = payload,
         )
     }
@@ -482,8 +510,27 @@ class BarcodeContentEncoderTest {
             ),
             BarcodeContent.Wifi(
                 ssid = "Modern",
-                encryption = WifiEncryption.WPA3,
+                encryption = WifiEncryption.WPA,
                 password = "secret",
+                transitionDisable = setOf(WifiTransitionMode.WPA3_PERSONAL),
+                passwordIdentifier = "john; the: \\first",
+                publicKey = "MDkwEwYHKoZIzj0CAQ==",
+            ),
+            BarcodeContent.Wifi(
+                ssid = "Corp; inc",
+                encryption = WifiEncryption.WPA_ENTERPRISE,
+                password = "p;ss",
+                isHidden = true,
+                transitionDisable = setOf(WifiTransitionMode.WPA3_ENTERPRISE),
+                eapMethod = "TTLS",
+                identity = "john@corp",
+                anonymousIdentity = "anon:ymous",
+                phase2Method = "PAP",
+            ),
+            BarcodeContent.Wifi(
+                ssid = "Cafe",
+                encryption = WifiEncryption.NONE,
+                transitionDisable = setOf(WifiTransitionMode.ENHANCED_OPEN),
             ),
             BarcodeContent.Contact(
                 formattedName = "John; Doe, Jr\nthe second",

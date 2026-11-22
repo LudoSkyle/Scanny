@@ -23,12 +23,14 @@ import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
+import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.account
 import fr.skyle.scanny.resources.add_phone
 import fr.skyle.scanny.resources.blind_carbon_copy
 import fr.skyle.scanny.resources.carbon_copy
 import fr.skyle.scanny.resources.counter
+import fr.skyle.scanny.resources.identity
 import fr.skyle.scanny.resources.issuer
 import fr.skyle.scanny.resources.latitude
 import fr.skyle.scanny.resources.link
@@ -36,7 +38,9 @@ import fr.skyle.scanny.resources.longitude
 import fr.skyle.scanny.resources.mecard
 import fr.skyle.scanny.resources.mobile
 import fr.skyle.scanny.resources.name_prefix
+import fr.skyle.scanny.resources.password
 import fr.skyle.scanny.resources.period_in_seconds
+import fr.skyle.scanny.resources.phase2_method
 import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.place
 import fr.skyle.scanny.resources.recipients
@@ -265,6 +269,46 @@ internal class CreationFormFieldsTest : ComposeTest() {
                 to = listOf("a@doe.fr", "b@doe.fr"),
                 cc = listOf("c@doe.fr"),
                 bcc = listOf("d@doe.fr"),
+            ),
+            actual = form.toBarcodeContent(),
+        )
+    }
+
+    @Test
+    fun `an enterprise network asks for its identity and drops the password for a method without one`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(
+            CreationForm(
+                kind = CreationKind.WIFI,
+                wifiSsid = "Corp",
+                wifiEncryption = WifiEncryption.WPA_ENTERPRISE,
+            ),
+        )
+        setContent {
+            SCTheme {
+                Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+                    CreationFormFields(
+                        form = form,
+                        onFormChanged = { changedForm -> form = changedForm },
+                    )
+                }
+            }
+        }
+
+        // When
+        onNode(hasSetTextAction() and hasText(required(Res.string.identity))).performTextInput("john@corp")
+        onNodeWithText("PEAP").performClick()
+        onNodeWithText("TLS").performClick()
+
+        // Then
+        onNode(hasSetTextAction() and hasText(required(Res.string.password))).assertDoesNotExist()
+        onNodeWithText(getString(Res.string.phase2_method)).assertDoesNotExist()
+        assertEquals(
+            expected = BarcodeContent.Wifi(
+                ssid = "Corp",
+                encryption = WifiEncryption.WPA_ENTERPRISE,
+                eapMethod = "TLS",
+                identity = "john@corp",
             ),
             actual = form.toBarcodeContent(),
         )

@@ -7,6 +7,7 @@ import android.provider.Settings
 import androidx.activity.ComponentActivity
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.model.WifiTransitionMode
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
@@ -40,7 +41,7 @@ class WifiNetworkJoinerTest {
         val canSave = listOf(
             wifi(encryption = WifiEncryption.NONE, password = null),
             wifi(encryption = WifiEncryption.WPA, password = "secret123"),
-            wifi(encryption = WifiEncryption.WPA3, password = "secret123"),
+            wifi(encryption = WifiEncryption.WPA, password = "secret123").copy(transitionDisable = setOf(WifiTransitionMode.WPA3_PERSONAL)),
         ).map { wifi -> canSaveWithSystemScreen(wifi = wifi, sdkInt = ANDROID_11) }
 
         // Then
@@ -51,18 +52,19 @@ class WifiNetworkJoinerTest {
     }
 
     @Test
-    fun `the settings are left to the user before android 11 for a wep network or a passphrase the system refuses`() {
+    fun `the settings are left to the user before android 11 for a wep or an enterprise network or a passphrase refused`() {
         // When
         val canSave = listOf(
             canSaveWithSystemScreen(wifi = wifi(encryption = WifiEncryption.WPA, password = "secret123"), sdkInt = ANDROID_10),
             canSaveWithSystemScreen(wifi = wifi(encryption = WifiEncryption.WEP, password = "secret123"), sdkInt = ANDROID_11),
             canSaveWithSystemScreen(wifi = wifi(encryption = WifiEncryption.WPA, password = "short"), sdkInt = ANDROID_11),
             canSaveWithSystemScreen(wifi = wifi(encryption = WifiEncryption.WPA, password = "é".repeat(10)), sdkInt = ANDROID_11),
+            canSaveWithSystemScreen(wifi = wifi(encryption = WifiEncryption.WPA_ENTERPRISE, password = "secret123"), sdkInt = ANDROID_11),
         )
 
         // Then
         assertEquals(
-            expected = listOf(false, false, false, false),
+            expected = listOf(false, false, false, false, false),
             actual = canSave,
         )
     }

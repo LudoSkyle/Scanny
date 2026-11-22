@@ -15,6 +15,7 @@ import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.model.WifiTransitionMode
 import fr.skyle.scanny.domain.payload.toRawValue
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
@@ -45,6 +46,29 @@ class CodeFormMapperTest {
                 encryption = WifiEncryption.WPA,
                 password = "secret12",
                 isHidden = true,
+            ),
+            BarcodeContent.Wifi(
+                ssid = "Modern",
+                encryption = WifiEncryption.WPA,
+                password = "short",
+                transitionDisable = setOf(WifiTransitionMode.WPA3_PERSONAL, WifiTransitionMode.SAE_PK),
+                passwordIdentifier = "john",
+                publicKey = "MDkwEwYH",
+            ),
+            BarcodeContent.Wifi(
+                ssid = "Corp",
+                encryption = WifiEncryption.WPA_ENTERPRISE,
+                password = "secret",
+                transitionDisable = setOf(WifiTransitionMode.WPA3_ENTERPRISE),
+                eapMethod = "TTLS",
+                identity = "john@corp",
+                anonymousIdentity = "anon",
+                phase2Method = "PAP",
+            ),
+            BarcodeContent.Wifi(
+                ssid = "Cafe",
+                encryption = WifiEncryption.NONE,
+                transitionDisable = setOf(WifiTransitionMode.ENHANCED_OPEN),
             ),
             BarcodeContent.Contact(
                 formattedName = "Dr. John Q. Doe",

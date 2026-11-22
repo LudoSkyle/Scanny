@@ -18,6 +18,7 @@
     <string name="altitude_in_meters">Altitude en mètres</string>
     <string name="amount">Montant</string>
     <string name="amount_in_bitcoins">Montant en BTC</string>
+    <string name="anonymous_identity">Identité anonyme</string>
     <string name="app_description">Scanny scanne les QR codes et les codes-barres, avec les dernières technologies et sans publicité, tout en restant légère et fiable.</string>
     <string name="at_time">%1$s à %2$s</string>
     <string name="background_color">Couleur du fond</string>
@@ -106,8 +107,10 @@
     <string name="display_name">Nom affiché</string>
     <string name="dot_color">Couleur des points</string>
     <string name="dot_shape">Forme des points</string>
+    <string name="eap_method">Méthode EAP</string>
     <string name="edit_code">Modifier le code</string>
     <string name="email">E-mail</string>
+    <string name="enhanced_open_only">Wi-Fi Enhanced Open uniquement</string>
     <string name="error_correction">Correction d'erreur</string>
     <string name="error_correction_auto">Automatique</string>
     <string name="error_correction_auto_description">La plus faible, la maximale sous un logo</string>
@@ -194,6 +197,7 @@
     <string name="home_email">E-mail personnel</string>
     <string name="home_phone">Téléphone domicile</string>
     <string name="home_website">Site personnel</string>
+    <string name="identity">Identité</string>
     <string name="image_not_saved">L'image n'a pas pu être enregistrée</string>
     <string name="image_not_shared">L'image n'a pas pu être partagée</string>
     <string name="image_saved">Image enregistrée dans les photos</string>
@@ -255,8 +259,10 @@
     <string name="otp_type">Type de clé</string>
     <string name="pass_codes_in_front_of_camera">Passez les codes devant la caméra</string>
     <string name="password">Mot de passe</string>
+    <string name="password_identifier">Identifiant du mot de passe</string>
     <string name="period">Période</string>
     <string name="period_in_seconds">Période en secondes</string>
+    <string name="phase2_method">Authentification de phase 2</string>
     <string name="phone">Téléphone</string>
     <string name="phone_number">Numéro de téléphone</string>
     <string name="place">Lieu</string>
@@ -279,6 +285,7 @@
     <string name="retention_one_week">7 jours</string>
     <string name="retention_one_year">1 an</string>
     <string name="retention_three_months">90 jours</string>
+    <string name="sae_pk_public_key">Clé publique SAE-PK</string>
     <string name="save_creations_in_history">Enregistrer les créations dans l'historique</string>
     <string name="save_image">Enregistrer l'image</string>
     <string name="save_scans_in_history">Enregistrer les scans dans l'historique</string>
@@ -337,6 +344,8 @@
     <string name="work_email">E-mail professionnel</string>
     <string name="work_phone">Téléphone travail</string>
     <string name="work_website">Site professionnel</string>
+    <string name="wpa3_enterprise_only">WPA3-Enterprise uniquement</string>
+    <string name="wpa3_only">WPA3 uniquement</string>
     <string name="write_email">Écrire un e-mail</string>
     <string name="write_mms">Écrire un MMS</string>
     <string name="write_sms">Écrire un SMS</string>

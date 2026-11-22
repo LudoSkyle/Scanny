@@ -50,7 +50,9 @@ domain/src/commonMain/kotlin/fr/skyle/scanny/domain/
 
 `BarcodeContent` est une `sealed interface` dont chaque type porte les champs utiles à l'affichage
 et aux actions : `Text`, `Url`, `Email` (destinataires, copies, copies cachées, sujet, corps, de la RFC 6068), `Sms` (numéro, message),
-`Wifi` (SSID, chiffrement `NONE`/`WEP`/`WPA`/`WPA3`, mot de passe, réseau masqué), `Contact`, `Phone`
+`Wifi` (SSID, chiffrement `NONE`/`WEP`/`WPA`/`WPA_ENTERPRISE`, mot de passe, réseau masqué, modes sans
+repli `WifiTransitionMode`, identifiant du mot de passe SAE, clé publique SAE-PK ; pour un réseau
+d'entreprise, méthode EAP, identité, identité anonyme, phase 2), `Contact`, `Phone`
 (numéro), `Location` (latitude et longitude en degrés décimaux, altitude et incertitude en mètres, nom du lieu), `Bookmark` (lien et
 titre), `Otp` (clé secrète, type `TOTP`/`HOTP`, émetteur, compte, et algorithme `OtpAlgorithm`, nombre
 de chiffres, période et compteur tels que lus, nuls quand le code les laisse à leur défaut : SHA1, 6
@@ -98,8 +100,17 @@ parseur, et obtiennent le même résultat.
   `MECARD:`, et une valeur entre guillemets non échappés perd ses guillemets), les lignes repliées
   d'une vCard sont dépliées (CRLF ou LF), ses groupes (`item1.`) et paramètres (`;TYPE=…`) ignorés,
   et l'encodage `%` d'un `mailto:` ou d'un `sms:` est décodé en UTF-8. Un `+` reste un `+`.
-- Un `WIFI:` sans type est un réseau ouvert, sauf s'il donne un mot de passe (alors WPA) ; `SAE` est
-  du WPA3.
+- Un `WIFI:` suit la section « WIFI URI » de la spécification WPA3 de la Wi-Fi Alliance, et pour un
+  réseau d'entreprise le format de ZXing. Sans type, c'est un réseau ouvert, sauf s'il donne un mot de
+  passe (alors WPA) ; un type en `…EAP` est un réseau d'entreprise. `R:` donne en hexadécimal les modes
+  dont le réseau ne revient pas (bit 0 WPA3-Personal seul, 1 SAE-PK seul, 2 WPA3-Entreprise seul, 3
+  Wi-Fi Enhanced Open seul) ; `SAE` et `WPA3`, types d'anciens générateurs, sont le WPA3-Personal seul
+  que la spécification écrit `T:WPA;R:1`. `I:` est l'identité d'un réseau d'entreprise (ZXing),
+  l'identifiant du mot de passe SAE sinon (Wi-Fi Alliance) ; `K:` la clé publique SAE-PK ; `E:`, `A:`,
+  `PH2:` la méthode EAP, l'identité anonyme et la phase 2.
+- Les champs d'un `WIFI:` sont échappés par une barre oblique inverse, comme ZXing et les appareils
+  photo d'Android et d'iOS les lisent, et non encodés en `%` comme le veut la spécification : décoder
+  les deux ferait d'un mot de passe ZXing qui contient `%41` un autre mot de passe.
 - Un contenu structuré sans aucun champ utile (un `WIFI:` sans SSID, une vCard vide) est un texte.
   Un lien sans schéma (`www.…`) reste un texte.
 - **Le parseur ne lève jamais d'exception** : un contenu qu'il ne reconnaît pas, ou mal formé (un `%`
@@ -114,7 +125,7 @@ parseur, et obtiennent le même résultat.
 | Texte, URL | tel quel |
 | Email | `mailto:adresse,adresse?cc=…&bcc=…&subject=…&body=…`, encodé en `%`, les adresses séparées par des virgules ; le paramètre `to=` est lu aussi (`MATMSG:`, un seul destinataire, n'est que lu) |
 | SMS | `SMSTO:numéro:message` (`sms:` n'est que lu) |
-| WiFi | `WIFI:T:…;S:…;P:…;H:true;;`, `T:nopass` et pas de `P:` pour un réseau ouvert, `SAE` pour le WPA3, `H:true` seulement pour un réseau masqué |
+| WiFi | dans l'ordre de la spécification WPA3 : `WIFI:T:…;R:…;S:…;H:true;I:…;P:…;K:…;`, puis `E:…;A:…;PH2:…;` d'un réseau d'entreprise (`T:WPA2-EAP`) et `;` ; `T:nopass` et pas de `P:` pour un réseau ouvert, le WPA3 seul en `T:WPA;R:1`, `R:` et `H:true` seulement quand ils servent |
 | Contact | vCard 3.0 : `N` en cinq parties, `FN`, `NICKNAME`, `ORG` (organisation;service), `TITLE`, `TEL`, `EMAIL`, `ADR` (sept parties), `URL` avec `;TYPE=` (aucun pour « autre »), `BDAY`, `NOTE` ; seules les propriétés texte sont échappées. En MeCard : `MECARD:N:nom,prénom;…;;` (ou le nom affiché seul), `NICKNAME`, `TEL`, `EMAIL`, `ADR` (ses parties séparées par des virgules, une rue seule écrite seule), `URL`, `BDAY` (AAAAMMJJ), `NOTE`, et `ORG`, `TITLE` hors du format mais lus par les lecteurs ; champs échappés comme ceux d'un `WIFI:`, une virgule échappée dans `N` ou `ADR` appartient à la partie. Un MeCard n'a ni les autres parties du nom, ni service, ni types |
 | MMS | `mms:numéro?subject=…&body=…`, encodé en `%` (`MMSTO:numéro:message`, sans objet, n'est que lu) |
 | Téléphone | `tel:numéro`, encodé en `%` |
@@ -201,7 +212,9 @@ format, son style, sa date.
   organisation) et en MeCard un prénom ou un nom (les champs qu'un MeCard ne tient pas restent dans le
   formulaire, cachés, mais ne sont pas écrits), le
   nom d'un réseau et, pour un réseau WPA, un mot de passe de 8 à 63 caractères (ceux qu'Android
-  accepte), le compte et la clé d'une clé à usage unique (en base32, 16 caractères au moins, tapée en
+  accepte) s'il peut se replier sur le WPA2, d'une longueur quelconque en WPA3 seul (une clé publique
+  SAE-PK le rend SAE-PK seul, donc WPA3 seul), pour un réseau d'entreprise une identité et le mot de
+  passe des méthodes qui en prennent un (PEAP, TTLS, PWD), la phase 2 n'étant offerte qu'à PEAP et TTLS, le compte et la clé d'une clé à usage unique (en base32, 16 caractères au moins, tapée en
   groupes et en minuscules comme les services la montrent), sa période (TOTP) ou son compteur (HOTP). Le format juge ensuite le texte (`canHold`), avec l'encodeur qui le dessine : un
   code-barres refuse une mauvaise longueur ou un mauvais chiffre de contrôle, un QR code un texte
   trop long pour la correction avec laquelle il sera encodé (`qrErrorCorrection`). qrose encode un QR code

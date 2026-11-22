@@ -21,19 +21,20 @@ import fr.skyle.scanny.resources.hidden_network
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import org.jetbrains.compose.resources.stringResource
 
-/** Whether the network created does not show its name: switched by a touch anywhere on the row. */
+/** An option of the content, on or off, named by its [label]: switched by a touch anywhere on the row. */
 @Composable
-fun HiddenNetworkRow(
-    isHidden: Boolean,
-    onHiddenChange: (Boolean) -> Unit,
+fun CreationSwitchRow(
+    label: String,
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
             .toggleable(
-                value = isHidden,
+                value = isChecked,
                 role = Role.Switch,
-                onValueChange = onHiddenChange,
+                onValueChange = onCheckedChange,
             )
             .padding(
                 horizontal = 4.dp,
@@ -43,7 +44,7 @@ fun HiddenNetworkRow(
     ) {
         SCText(
             modifier = Modifier.weight(1f),
-            text = stringResource(Res.string.hidden_network),
+            text = label,
             style = SCTheme.typography.body1,
             color = SCTheme.colors.textDark,
         )
@@ -52,7 +53,7 @@ fun HiddenNetworkRow(
 
         SCSwitch(
             modifier = Modifier.wrapContentSize(),
-            isChecked = isHidden,
+            isChecked = isChecked,
             onCheckedChange = null,
             style = SCSwitchDefaults.Style.PRIMARY,
         )
@@ -61,12 +62,13 @@ fun HiddenNetworkRow(
 
 @AppPreviewWithBackground
 @Composable
-private fun PreviewHiddenNetworkRow() {
+private fun PreviewCreationSwitchRow() {
     SCTheme {
-        HiddenNetworkRow(
+        CreationSwitchRow(
             modifier = Modifier.fillMaxWidth(),
-            isHidden = true,
-            onHiddenChange = {},
+            label = stringResource(Res.string.hidden_network),
+            isChecked = true,
+            onCheckedChange = {},
         )
     }
 }

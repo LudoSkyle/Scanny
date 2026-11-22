@@ -149,23 +149,39 @@ internal object BarcodeContentEncoder {
         }
     }
 
+    // In the order of the WPA3 specification: type, modes not to fall back from, SSID, hidden, identifier,
+    // password, public key; then the fields of an enterprise network of ZXing. The fields are escaped with
+    // a backslash, as ZXing and the cameras of the phones read them, not percent-encoded
     private fun encodeWifi(wifi: BarcodeContent.Wifi): String {
         val type = when (wifi.encryption) {
             WifiEncryption.NONE -> "nopass"
             WifiEncryption.WEP -> "WEP"
             WifiEncryption.WPA -> "WPA"
-            WifiEncryption.WPA3 -> "SAE"
+            WifiEncryption.WPA_ENTERPRISE -> "WPA2-EAP"
         }
+        val bitmap = wifi.transitionDisable.sumOf { mode -> 1 shl mode.bit }
+        val isEnterprise = wifi.encryption == WifiEncryption.WPA_ENTERPRISE
 
         return buildString {
             append(PayloadSyntax.WIFI)
             append("T:$type;")
+            if (bitmap != 0) {
+                append("R:${bitmap.toString(radix = 16).uppercase()};")
+            }
             append("S:${escapeField(value = wifi.ssid)};")
+            if (wifi.isHidden) {
+                append("H:true;")
+            }
+            val identifier = if (isEnterprise) wifi.identity else wifi.passwordIdentifier
+            identifier?.let { append("I:${escapeField(value = identifier)};") }
             if (wifi.encryption != WifiEncryption.NONE && wifi.password != null) {
                 append("P:${escapeField(value = wifi.password)};")
             }
-            if (wifi.isHidden) {
-                append("H:true;")
+            wifi.publicKey?.let { publicKey -> append("K:${escapeField(value = publicKey)};") }
+            if (isEnterprise) {
+                wifi.eapMethod?.let { eapMethod -> append("E:${escapeField(value = eapMethod)};") }
+                wifi.anonymousIdentity?.let { anonymousIdentity -> append("A:${escapeField(value = anonymousIdentity)};") }
+                wifi.phase2Method?.let { phase2Method -> append("PH2:${escapeField(value = phase2Method)};") }
             }
             append(';')
         }

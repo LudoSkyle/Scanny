@@ -9,6 +9,7 @@ import fr.skyle.scanny.resources.address
 import fr.skyle.scanny.resources.algorithm
 import fr.skyle.scanny.resources.altitude
 import fr.skyle.scanny.resources.amount
+import fr.skyle.scanny.resources.anonymous_identity
 import fr.skyle.scanny.resources.aztec
 import fr.skyle.scanny.resources.birthday
 import fr.skyle.scanny.resources.bitcoin
@@ -28,6 +29,7 @@ import fr.skyle.scanny.resources.department
 import fr.skyle.scanny.resources.digits
 import fr.skyle.scanny.resources.ean_13
 import fr.skyle.scanny.resources.ean_8
+import fr.skyle.scanny.resources.eap_method
 import fr.skyle.scanny.resources.email
 import fr.skyle.scanny.resources.fax
 import fr.skyle.scanny.resources.format_aztec_example
@@ -85,6 +87,7 @@ import fr.skyle.scanny.resources.ic_password
 import fr.skyle.scanny.resources.ic_person
 import fr.skyle.scanny.resources.ic_sms
 import fr.skyle.scanny.resources.ic_wifi
+import fr.skyle.scanny.resources.identity
 import fr.skyle.scanny.resources.issuer
 import fr.skyle.scanny.resources.itf
 import fr.skyle.scanny.resources.job_title
@@ -104,13 +107,16 @@ import fr.skyle.scanny.resources.organization
 import fr.skyle.scanny.resources.otp
 import fr.skyle.scanny.resources.otp_type
 import fr.skyle.scanny.resources.password
+import fr.skyle.scanny.resources.password_identifier
 import fr.skyle.scanny.resources.pdf417
 import fr.skyle.scanny.resources.period
+import fr.skyle.scanny.resources.phase2_method
 import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.phone_number
 import fr.skyle.scanny.resources.place
 import fr.skyle.scanny.resources.qr_code
 import fr.skyle.scanny.resources.recipient
+import fr.skyle.scanny.resources.sae_pk_public_key
 import fr.skyle.scanny.resources.secret_key
 import fr.skyle.scanny.resources.security
 import fr.skyle.scanny.resources.show_on_map
@@ -190,6 +196,12 @@ internal fun CodeFieldLabel.toText(): StringResource =
         CodeFieldLabel.NETWORK -> Res.string.network
         CodeFieldLabel.SECURITY -> Res.string.security
         CodeFieldLabel.PASSWORD -> Res.string.password
+        CodeFieldLabel.PASSWORD_IDENTIFIER -> Res.string.password_identifier
+        CodeFieldLabel.PUBLIC_KEY -> Res.string.sae_pk_public_key
+        CodeFieldLabel.EAP_METHOD -> Res.string.eap_method
+        CodeFieldLabel.IDENTITY -> Res.string.identity
+        CodeFieldLabel.ANONYMOUS_IDENTITY -> Res.string.anonymous_identity
+        CodeFieldLabel.PHASE2_METHOD -> Res.string.phase2_method
         CodeFieldLabel.RECIPIENT -> Res.string.recipient
         CodeFieldLabel.CARBON_COPY -> Res.string.carbon_copy
         CodeFieldLabel.BLIND_CARBON_COPY -> Res.string.blind_carbon_copy

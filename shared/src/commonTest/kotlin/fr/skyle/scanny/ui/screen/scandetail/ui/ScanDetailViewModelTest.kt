@@ -83,7 +83,7 @@ class ScanDetailViewModelTest {
                     ),
                     CodeField(
                         label = CodeFieldLabel.SECURITY,
-                        value = "WPA",
+                        value = "WPA/WPA2/WPA3",
                     ),
                     CodeField(
                         label = CodeFieldLabel.PASSWORD,

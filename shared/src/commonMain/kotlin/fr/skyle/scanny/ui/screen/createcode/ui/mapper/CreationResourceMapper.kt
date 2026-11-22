@@ -67,7 +67,7 @@ import fr.skyle.scanny.resources.wifi
 import fr.skyle.scanny.resources.wifi_security_none
 import fr.skyle.scanny.resources.wifi_security_wep
 import fr.skyle.scanny.resources.wifi_security_wpa
-import fr.skyle.scanny.resources.wifi_security_wpa3
+import fr.skyle.scanny.resources.wifi_security_wpa_enterprise
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeBackgroundColor
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeDotColor
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
@@ -119,7 +119,7 @@ internal fun WifiEncryption.toText(): StringResource =
         WifiEncryption.NONE -> Res.string.wifi_security_none
         WifiEncryption.WEP -> Res.string.wifi_security_wep
         WifiEncryption.WPA -> Res.string.wifi_security_wpa
-        WifiEncryption.WPA3 -> Res.string.wifi_security_wpa3
+        WifiEncryption.WPA_ENTERPRISE -> Res.string.wifi_security_wpa_enterprise
     }
 
 internal fun CodeShape.toText(): StringResource =
