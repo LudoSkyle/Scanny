@@ -93,23 +93,36 @@ sealed interface BarcodeContent {
         val isHidden: Boolean = false,
     ) : BarcodeContent
 
+    /**
+     * A contact, with the fields of a vCard: its name in parts and as shown, its organization, its
+     * telephones, e-mail addresses, postal addresses and websites, each with what it is for, its
+     * birthday and a note.
+     */
     data class Contact(
         val formattedName: String? = null,
+        val namePrefix: String? = null,
         val firstName: String? = null,
+        val middleName: String? = null,
         val lastName: String? = null,
+        val nameSuffix: String? = null,
+        val nickname: String? = null,
         val organization: String? = null,
+        val department: String? = null,
         val title: String? = null,
-        val phones: List<String> = emptyList(),
-        val emails: List<String> = emptyList(),
-        val addresses: List<String> = emptyList(),
-        val urls: List<String> = emptyList(),
+        val phones: List<ContactPhone> = emptyList(),
+        val emails: List<ContactEmail> = emptyList(),
+        val addresses: List<ContactAddress> = emptyList(),
+        val websites: List<ContactWebsite> = emptyList(),
+        // In ISO 8601: 1990-05-12
+        val birthday: String? = null,
+        val note: String? = null,
         // The format the contact is written in: the one it was read in, for an edited contact to keep it
         val format: ContactFormat = ContactFormat.VCARD,
     ) : BarcodeContent {
 
-        /** The name to show: the formatted one, or else the first and last names. */
+        /** The name to show: the formatted one, or else the parts of the name. */
         val displayName: String?
-            get() = formattedName ?: listOfNotNull(firstName, lastName)
+            get() = formattedName ?: listOfNotNull(namePrefix, firstName, middleName, lastName, nameSuffix)
                 .joinToString(separator = " ")
                 .ifEmpty { null }
     }

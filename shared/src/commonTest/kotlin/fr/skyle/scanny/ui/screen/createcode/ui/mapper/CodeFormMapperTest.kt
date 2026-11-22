@@ -3,13 +3,20 @@ package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
+import fr.skyle.scanny.domain.model.ContactAddress
+import fr.skyle.scanny.domain.model.ContactEmail
+import fr.skyle.scanny.domain.model.ContactEntryType
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.ContactPhone
+import fr.skyle.scanny.domain.model.ContactPhoneType
+import fr.skyle.scanny.domain.model.ContactWebsite
 import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.payload.toRawValue
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import kotlin.test.Test
@@ -40,12 +47,41 @@ class CodeFormMapperTest {
                 isHidden = true,
             ),
             BarcodeContent.Contact(
-                formattedName = "John Doe",
+                formattedName = "Dr. John Q. Doe",
+                namePrefix = "Dr.",
+                firstName = "John",
+                middleName = "Q.",
+                lastName = "Doe",
+                nickname = "Johnny",
                 organization = "Scanny",
-                phones = listOf("+33600000000"),
-                emails = listOf("john@scanny.app"),
-                addresses = listOf("1 rue de Scanny"),
-                urls = listOf("https://scanny.app"),
+                department = "Mobile",
+                title = "Lead",
+                phones = listOf(
+                    ContactPhone(number = "+33600000000", type = ContactPhoneType.MOBILE),
+                    ContactPhone(number = "+33100000000", type = ContactPhoneType.FAX),
+                ),
+                emails = listOf(ContactEmail(address = "john@scanny.app", type = ContactEntryType.WORK)),
+                addresses = listOf(
+                    ContactAddress(
+                        poBox = "BP 1",
+                        extended = "Apt 4",
+                        street = "1 rue de Scanny",
+                        city = "Paris",
+                        region = "IDF",
+                        postalCode = "75002",
+                        country = "France",
+                        type = ContactEntryType.HOME,
+                    ),
+                ),
+                websites = listOf(ContactWebsite(url = "https://scanny.app")),
+                birthday = "1990-05-12",
+                note = "Met at the fair",
+            ),
+            // A name shown other than the one the parts make
+            BarcodeContent.Contact(
+                formattedName = "Johnny",
+                firstName = "John",
+                lastName = "Doe",
             ),
             BarcodeContent.Phone(phoneNumber = "+33 6 00 00 00 00"),
             BarcodeContent.Mms(
@@ -54,8 +90,10 @@ class CodeFormMapperTest {
                 message = "See you",
             ),
             BarcodeContent.Contact(
-                formattedName = "John Doe",
-                phones = listOf("+33600000000"),
+                firstName = "John",
+                lastName = "Doe",
+                phones = listOf(ContactPhone(number = "+33600000000")),
+                websites = listOf(ContactWebsite(url = "https://scanny.app")),
                 format = ContactFormat.MECARD,
             ),
             BarcodeContent.Location(
@@ -151,16 +189,17 @@ class CodeFormMapperTest {
     }
 
     @Test
-    fun `a contact keeps the first of its phones e-mails addresses and websites`() {
+    fun `a contact keeps every one of its entries and an empty row for those it has none of`() {
         // When
         val form = scannedCode(
             content = BarcodeContent.Contact(
+                formattedName = "John Doe",
                 firstName = "John",
                 lastName = "Doe",
-                phones = listOf("+33600000000", "+33700000000"),
-                emails = listOf("john@scanny.app", "doe@scanny.app"),
-                addresses = listOf("1 rue de Scanny", "2 rue de Scanny"),
-                urls = listOf("https://scanny.app", "https://example.org"),
+                phones = listOf(
+                    ContactPhone(number = "+33600000000"),
+                    ContactPhone(number = "+33700000000", type = ContactPhoneType.WORK),
+                ),
             ),
         ).toCreationForm()
 
@@ -168,11 +207,33 @@ class CodeFormMapperTest {
         assertEquals(
             expected = CreationForm(
                 kind = CreationKind.CONTACT,
-                contactName = "John Doe",
-                contactPhone = "+33600000000",
-                contactEmail = "john@scanny.app",
-                contactAddress = "1 rue de Scanny",
-                contactWebsite = "https://scanny.app",
+                contactFirstName = "John",
+                contactLastName = "Doe",
+                contactPhones = listOf(
+                    ContactPhoneField(number = "+33600000000", type = ContactPhoneType.OTHER),
+                    ContactPhoneField(number = "+33700000000", type = ContactPhoneType.WORK),
+                ),
+            ),
+            actual = form,
+        )
+    }
+
+    @Test
+    fun `a mecard named in one piece shows it as its last name`() {
+        // When
+        val form = scannedCode(
+            content = BarcodeContent.Contact(
+                formattedName = "John Doe",
+                format = ContactFormat.MECARD,
+            ),
+        ).toCreationForm()
+
+        // Then
+        assertEquals(
+            expected = CreationForm(
+                kind = CreationKind.CONTACT,
+                contactLastName = "John Doe",
+                contactFormat = ContactFormat.MECARD,
             ),
             actual = form,
         )

@@ -1,7 +1,13 @@
 package fr.skyle.scanny.domain.payload
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.ContactAddress
+import fr.skyle.scanny.domain.model.ContactEmail
+import fr.skyle.scanny.domain.model.ContactEntryType
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.ContactPhone
+import fr.skyle.scanny.domain.model.ContactPhoneType
+import fr.skyle.scanny.domain.model.ContactWebsite
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
@@ -268,12 +274,46 @@ class BarcodeContentParserTest {
                 lastName = "Doe",
                 organization = "Scanny",
                 phones = listOf(
-                    "+33600000000",
-                    "+33100000000",
+                    ContactPhone(number = "+33600000000"),
+                    ContactPhone(number = "+33100000000"),
                 ),
-                emails = listOf("john@doe.fr"),
-                addresses = listOf("12 rue de la Paix"),
-                urls = listOf("https://doe.fr"),
+                emails = listOf(ContactEmail(address = "john@doe.fr")),
+                addresses = listOf(ContactAddress(street = "12 rue de la Paix")),
+                websites = listOf(ContactWebsite(url = "https://doe.fr")),
+                format = ContactFormat.MECARD,
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a mecard gives its nickname its birthday its note its videophone and its addresses in parts`() {
+        // Given
+        val rawValue = "MECARD:N:Doe,John;NICKNAME:Johnny;BDAY:19900512;NOTE:Hi\\, there;TEL-AV:+33100000000;" +
+            "ADR:,Apt 4,12 rue de la Paix,Paris,IDF,75002,France;;"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Contact(
+                firstName = "John",
+                lastName = "Doe",
+                nickname = "Johnny",
+                phones = listOf(ContactPhone(number = "+33100000000")),
+                addresses = listOf(
+                    ContactAddress(
+                        extended = "Apt 4",
+                        street = "12 rue de la Paix",
+                        city = "Paris",
+                        region = "IDF",
+                        postalCode = "75002",
+                        country = "France",
+                    ),
+                ),
+                birthday = "1990-05-12",
+                note = "Hi, there",
                 format = ContactFormat.MECARD,
             ),
             actual = content,
@@ -360,6 +400,53 @@ class BarcodeContentParserTest {
     }
 
     @Test
+    fun `a vcard gives every part of the name the unit of the organization the birthday and the note`() {
+        // Given
+        val rawValue = listOf(
+            "BEGIN:VCARD",
+            "VERSION:3.0",
+            "N:Doe;John;Quincy;Dr.;Jr.",
+            "NICKNAME:Johnny",
+            "ORG:Scanny;Mobile;Android",
+            "BDAY:1990-05-12T08:30:00Z",
+            "NOTE:Met at the fair\\nCall back",
+            "TEL;TYPE=WORK,FAX:+33100000000",
+            "TEL;TYPE=HOME:+33200000000",
+            "TEL:+33300000000",
+            "EMAIL;TYPE=INTERNET,WORK:john@scanny.app",
+            "URL;TYPE=HOME:https://doe.fr",
+            "END:VCARD",
+        ).joinToString(separator = "\n")
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Contact(
+                namePrefix = "Dr.",
+                firstName = "John",
+                middleName = "Quincy",
+                lastName = "Doe",
+                nameSuffix = "Jr.",
+                nickname = "Johnny",
+                organization = "Scanny",
+                department = "Mobile, Android",
+                phones = listOf(
+                    ContactPhone(number = "+33100000000", type = ContactPhoneType.FAX),
+                    ContactPhone(number = "+33200000000", type = ContactPhoneType.HOME),
+                    ContactPhone(number = "+33300000000"),
+                ),
+                emails = listOf(ContactEmail(address = "john@scanny.app", type = ContactEntryType.WORK)),
+                websites = listOf(ContactWebsite(url = "https://doe.fr", type = ContactEntryType.HOME)),
+                birthday = "1990-05-12",
+                note = "Met at the fair\nCall back",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
     fun `the lines of a vcard can end with crlf`() {
         // Given
         val rawValue = listOf(
@@ -403,7 +490,7 @@ class BarcodeContentParserTest {
     }
 
     @Test
-    fun `vcard groups and parameters are ignored`() {
+    fun `vcard groups are ignored and the types of every version are read`() {
         // Given
         val rawValue = "BEGIN:VCARD\nVERSION:2.1\nitem1.EMAIL;type=INTERNET:john@doe.fr\n" +
             "TEL;CELL:+33600000000\nEND:VCARD"
@@ -414,8 +501,8 @@ class BarcodeContentParserTest {
         // Then
         assertEquals(
             expected = BarcodeContent.Contact(
-                phones = listOf("+33600000000"),
-                emails = listOf("john@doe.fr"),
+                phones = listOf(ContactPhone(number = "+33600000000", type = ContactPhoneType.MOBILE)),
+                emails = listOf(ContactEmail(address = "john@doe.fr")),
             ),
             actual = content,
         )
@@ -449,7 +536,7 @@ class BarcodeContentParserTest {
 
         // Then
         assertEquals(
-            expected = BarcodeContent.Contact(phones = listOf("+33600000000")),
+            expected = BarcodeContent.Contact(phones = listOf(ContactPhone(number = "+33600000000", type = ContactPhoneType.MOBILE))),
             actual = content,
         )
     }
@@ -1276,11 +1363,19 @@ class BarcodeContentParserTest {
             organization = "Scanny",
             title = "Developer",
             phones = listOf(
-                "+33600000000",
-                "+33100000000",
+                ContactPhone(number = "+33600000000", type = ContactPhoneType.MOBILE),
+                ContactPhone(number = "+33100000000", type = ContactPhoneType.WORK),
             ),
-            emails = listOf("john@doe.fr"),
-            addresses = listOf("12 rue de la Paix, Paris, 75002, France"),
-            urls = listOf("https://doe.fr"),
+            emails = listOf(ContactEmail(address = "john@doe.fr")),
+            addresses = listOf(
+                ContactAddress(
+                    street = "12 rue de la Paix",
+                    city = "Paris",
+                    postalCode = "75002",
+                    country = "France",
+                    type = ContactEntryType.HOME,
+                ),
+            ),
+            websites = listOf(ContactWebsite(url = "https://doe.fr")),
         )
 }

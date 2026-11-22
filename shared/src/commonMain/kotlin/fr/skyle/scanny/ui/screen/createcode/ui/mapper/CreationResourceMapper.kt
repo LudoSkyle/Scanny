@@ -4,7 +4,9 @@ import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeGradient
 import fr.skyle.scanny.domain.model.CodeLogoMargin
 import fr.skyle.scanny.domain.model.CodeShape
+import fr.skyle.scanny.domain.model.ContactEntryType
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.barcode
@@ -37,6 +39,7 @@ import fr.skyle.scanny.resources.error_correction_quartile
 import fr.skyle.scanny.resources.error_correction_quartile_description
 import fr.skyle.scanny.resources.error_correction_too_high_for_content
 import fr.skyle.scanny.resources.error_correction_too_low_for_logo
+import fr.skyle.scanny.resources.fax
 import fr.skyle.scanny.resources.gradient_linear
 import fr.skyle.scanny.resources.gradient_none
 import fr.skyle.scanny.resources.gradient_radial
@@ -48,6 +51,7 @@ import fr.skyle.scanny.resources.logo_margin_normal
 import fr.skyle.scanny.resources.logo_needs_highest_correction
 import fr.skyle.scanny.resources.mecard
 import fr.skyle.scanny.resources.mms
+import fr.skyle.scanny.resources.mobile
 import fr.skyle.scanny.resources.otp
 import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.shape_circle
@@ -55,6 +59,9 @@ import fr.skyle.scanny.resources.shape_rounded
 import fr.skyle.scanny.resources.shape_square
 import fr.skyle.scanny.resources.sms
 import fr.skyle.scanny.resources.text
+import fr.skyle.scanny.resources.type_home
+import fr.skyle.scanny.resources.type_other
+import fr.skyle.scanny.resources.type_work
 import fr.skyle.scanny.resources.vcard
 import fr.skyle.scanny.resources.wifi
 import fr.skyle.scanny.resources.wifi_security_none
@@ -89,6 +96,22 @@ internal fun ContactFormat.toText(): StringResource =
     when (this) {
         ContactFormat.VCARD -> Res.string.vcard
         ContactFormat.MECARD -> Res.string.mecard
+    }
+
+internal fun ContactPhoneType.toText(): StringResource =
+    when (this) {
+        ContactPhoneType.MOBILE -> Res.string.mobile
+        ContactPhoneType.HOME -> Res.string.type_home
+        ContactPhoneType.WORK -> Res.string.type_work
+        ContactPhoneType.FAX -> Res.string.fax
+        ContactPhoneType.OTHER -> Res.string.type_other
+    }
+
+internal fun ContactEntryType.toText(): StringResource =
+    when (this) {
+        ContactEntryType.HOME -> Res.string.type_home
+        ContactEntryType.WORK -> Res.string.type_work
+        ContactEntryType.OTHER -> Res.string.type_other
     }
 
 internal fun WifiEncryption.toText(): StringResource =

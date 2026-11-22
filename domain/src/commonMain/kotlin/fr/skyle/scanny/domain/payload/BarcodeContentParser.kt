@@ -1,7 +1,13 @@
 package fr.skyle.scanny.domain.payload
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.ContactAddress
+import fr.skyle.scanny.domain.model.ContactEmail
+import fr.skyle.scanny.domain.model.ContactEntryType
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.ContactPhone
+import fr.skyle.scanny.domain.model.ContactPhoneType
+import fr.skyle.scanny.domain.model.ContactWebsite
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
@@ -157,24 +163,60 @@ internal object BarcodeContentParser {
         // N is "last name,first name", or a whole name without comma: an escaped comma is part of the name
         val nameField = fields.firstOrNull { it.key == "N" }
         val name = nameField?.value.nullIfBlank()
-        val nameParts = nameField?.raw?.let { raw -> splitEscaped(text = raw) }
+        val nameParts = nameField?.raw?.let { raw -> splitEscaped(text = raw, limit = 2) }
 
         return BarcodeContent.Contact(
             formattedName = name.takeIf { nameParts?.size == 1 },
             firstName = nameParts?.getOrNull(1).nullIfBlank(),
             lastName = nameParts?.takeIf { it.size == 2 }?.first().nullIfBlank(),
+            nickname = fields.valueOf(key = "NICKNAME").nullIfBlank(),
             organization = fields.valueOf(key = "ORG").nullIfBlank(),
             title = fields.valueOf(key = "TITLE").nullIfBlank(),
-            phones = fields.valuesOf(key = "TEL"),
-            emails = fields.valuesOf(key = "EMAIL"),
-            addresses = fields.valuesOf(key = "ADR"),
-            urls = fields.valuesOf(key = "URL"),
+            // A MeCard has no kind of telephone: a videophone (TEL-AV) is a telephone like the others
+            phones = fields.filter { it.key == "TEL" || it.key == "TEL-AV" }
+                .mapNotNull { field -> field.value.nullIfBlank()?.let { number -> ContactPhone(number = number) } },
+            emails = fields.valuesOf(key = "EMAIL").map { address -> ContactEmail(address = address) },
+            addresses = fields.filter { it.key == "ADR" }.mapNotNull { field -> mecardAddress(raw = field.raw) },
+            websites = fields.valuesOf(key = "URL").map { url -> ContactWebsite(url = url) },
+            birthday = fields.valueOf(key = "BDAY")?.let { birthday -> isoDate(text = birthday) },
+            note = fields.valueOf(key = "NOTE").nullIfBlank(),
             format = ContactFormat.MECARD,
         ).takeUnless { it == BarcodeContent.Contact(format = ContactFormat.MECARD) }
     }
 
-    // Splits at the first comma not escaped, each part unescaped
-    private fun splitEscaped(text: String): List<String> {
+    // "PO box,room,street,city,region,postal code,country" in a MeCard; a value without comma is a street
+    private fun mecardAddress(raw: String): ContactAddress? {
+        val parts = splitEscaped(text = raw).map { part -> part.nullIfBlank() }
+        val address = if (parts.size == 1) {
+            ContactAddress(street = parts.first())
+        } else {
+            ContactAddress(
+                poBox = parts.getOrNull(0),
+                extended = parts.getOrNull(1),
+                street = parts.getOrNull(2),
+                city = parts.getOrNull(3),
+                region = parts.getOrNull(4),
+                postalCode = parts.getOrNull(5),
+                country = parts.getOrNull(6),
+            )
+        }
+        return address.takeUnless { it == ContactAddress() }
+    }
+
+    // A date as a vCard or a MeCard writes it, "1990-05-12" or "19900512" and maybe a time after, in ISO 8601
+    private fun isoDate(text: String): String? {
+        val digits = text.trim().substringBefore('T').filter { char -> char != '-' }
+        if (digits.length != 8 || !digits.all { char -> char.isDigit() }) {
+            return null
+        }
+        return "${digits.take(4)}-${digits.substring(4, 6)}-${digits.takeLast(2)}"
+    }
+
+    // Splits at the commas not escaped, at most into [limit] parts, each part unescaped
+    private fun splitEscaped(
+        text: String,
+        limit: Int = Int.MAX_VALUE,
+    ): List<String> {
         val parts = mutableListOf(StringBuilder())
         var index = 0
         while (index < text.length) {
@@ -185,7 +227,7 @@ internal object BarcodeContentParser {
                     index++
                 }
 
-                char == ',' && parts.size == 1 -> parts += StringBuilder()
+                char == ',' && parts.size < limit -> parts += StringBuilder()
 
                 else -> parts.last().append(char)
             }
@@ -204,11 +246,10 @@ internal object BarcodeContentParser {
                 return@forEach
             }
 
-            // "item1.TEL;TYPE=CELL" is the property TEL: its group and its parameters are not needed
-            val property = line.take(separatorIndex)
-                .substringBefore(';')
-                .substringAfterLast('.')
-                .uppercase()
+            // "item1.TEL;TYPE=CELL,VOICE" is the property TEL of the types CELL and VOICE: its group is not needed
+            val nameAndParameters = line.take(separatorIndex).split(';')
+            val property = nameAndParameters.first().substringAfterLast('.').uppercase()
+            val types = vcardTypes(parameters = nameAndParameters.drop(1))
             val value = line.drop(separatorIndex + 1)
 
             contact = when (property) {
@@ -218,19 +259,95 @@ internal object BarcodeContentParser {
                     contact.copy(
                         lastName = components.getOrNull(0).nullIfBlank(),
                         firstName = components.getOrNull(1).nullIfBlank(),
+                        middleName = components.getOrNull(2).nullIfBlank(),
+                        namePrefix = components.getOrNull(3).nullIfBlank(),
+                        nameSuffix = components.getOrNull(4).nullIfBlank(),
                     )
                 }
-                "ORG" -> contact.copy(organization = joinVcardComponents(value = value))
+                "NICKNAME" -> contact.copy(nickname = unescapeVcard(value = value).nullIfBlank())
+                // The organization, then its units: the department
+                "ORG" -> {
+                    val components = splitVcardComponents(value = value)
+                    contact.copy(
+                        organization = components.first().nullIfBlank(),
+                        department = components.drop(1)
+                            .filter { it.isNotBlank() }
+                            .joinToString(separator = ", ")
+                            .nullIfBlank(),
+                    )
+                }
                 "TITLE" -> contact.copy(title = unescapeVcard(value = value).nullIfBlank())
-                "TEL" -> contact.copy(phones = contact.phones + listOfNotNull(vcardPhone(value = value)))
-                "EMAIL" -> contact.copy(emails = contact.emails + listOfNotNull(unescapeVcard(value = value).nullIfBlank()))
-                "ADR" -> contact.copy(addresses = contact.addresses + listOfNotNull(joinVcardComponents(value = value)))
-                "URL" -> contact.copy(urls = contact.urls + listOfNotNull(unescapeVcard(value = value).nullIfBlank()))
+                "TEL" -> contact.copy(
+                    phones = contact.phones + listOfNotNull(
+                        vcardPhone(value = value)?.let { number -> ContactPhone(number = number, type = phoneType(types = types)) },
+                    ),
+                )
+                "EMAIL" -> contact.copy(
+                    emails = contact.emails + listOfNotNull(
+                        unescapeVcard(value = value).nullIfBlank()?.let { address -> ContactEmail(address = address, type = entryType(types = types)) },
+                    ),
+                )
+                "ADR" -> contact.copy(addresses = contact.addresses + listOfNotNull(vcardAddress(value = value, types = types)))
+                "URL" -> contact.copy(
+                    websites = contact.websites + listOfNotNull(
+                        unescapeVcard(value = value).nullIfBlank()?.let { url -> ContactWebsite(url = url, type = entryType(types = types)) },
+                    ),
+                )
+                "BDAY" -> contact.copy(birthday = isoDate(text = value))
+                "NOTE" -> contact.copy(note = unescapeVcard(value = value).nullIfBlank())
                 else -> contact
             }
         }
 
         return contact.takeUnless { it == BarcodeContent.Contact() }
+    }
+
+    // "TYPE=CELL,VOICE", "TYPE=\"cell,voice\"" (vCard 4) or "CELL" alone (vCard 2.1): the types, in capitals
+    private fun vcardTypes(parameters: List<String>): Set<String> =
+        parameters.flatMap { parameter ->
+            val types = if ('=' in parameter) {
+                parameter.takeIf { it.substringBefore('=').trim().equals(other = "TYPE", ignoreCase = true) }
+                    ?.substringAfter('=')
+                    .orEmpty()
+            } else {
+                parameter
+            }
+            types.replace("\"", "").split(',').map { type -> type.trim().uppercase() }
+        }.toSet()
+
+    private fun phoneType(types: Set<String>): ContactPhoneType =
+        when {
+            "FAX" in types -> ContactPhoneType.FAX
+            "CELL" in types -> ContactPhoneType.MOBILE
+            "WORK" in types -> ContactPhoneType.WORK
+            "HOME" in types -> ContactPhoneType.HOME
+            else -> ContactPhoneType.OTHER
+        }
+
+    private fun entryType(types: Set<String>): ContactEntryType =
+        when {
+            "WORK" in types -> ContactEntryType.WORK
+            "HOME" in types -> ContactEntryType.HOME
+            else -> ContactEntryType.OTHER
+        }
+
+    // "PO box;extended;street;city;region;postal code;country"
+    private fun vcardAddress(
+        value: String,
+        types: Set<String>,
+    ): ContactAddress? {
+        val components = splitVcardComponents(value = value).map { component -> component.nullIfBlank() }
+        val address = ContactAddress(
+            poBox = components.getOrNull(0),
+            extended = components.getOrNull(1),
+            street = components.getOrNull(2),
+            city = components.getOrNull(3),
+            region = components.getOrNull(4),
+            postalCode = components.getOrNull(5),
+            country = components.getOrNull(6),
+            type = entryType(types = types),
+        )
+        return address.takeUnless { it.copy(type = ContactEntryType.OTHER) == ContactAddress() }
     }
 
     private fun parsePhone(uri: String): BarcodeContent.Phone? =
@@ -467,12 +584,6 @@ internal object BarcodeContentParser {
 
         return components
     }
-
-    private fun joinVcardComponents(value: String): String? =
-        splitVcardComponents(value = value)
-            .filter { it.isNotBlank() }
-            .joinToString(separator = ", ")
-            .nullIfBlank()
 
     private fun unescapeVcard(value: String): String =
         buildString {

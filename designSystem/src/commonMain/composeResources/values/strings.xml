@@ -1,7 +1,10 @@
 <resources>
     <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="clear">Clear</string>
     <string name="collapsed">Collapsed</string>
     <string name="expanded">Expanded</string>
     <string name="hue">Hue</string>
+    <string name="ok">OK</string>
     <string name="saturation_brightness">Saturation and brightness</string>
 </resources>

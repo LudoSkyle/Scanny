@@ -2,10 +2,14 @@ package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.payload.toCoordinateText
 import fr.skyle.scanny.ui.core.code.mapper.toBarcodeType
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactAddressField
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactEntryField
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 
@@ -25,9 +29,8 @@ internal fun Creation.toCreationForm(): CreationForm =
 
 /**
  * The form a code fills. A barcode of a format the editor draws stays a barcode of its value; any other
- * code becomes a QR code holding its content. The editor holds one phone, one e-mail, one address and
- * one website for a contact: the first of each. A parameter a one-time password leaves to its default
- * shows its default.
+ * code becomes a QR code holding its content.
+ * A parameter a one-time password leaves to its default shows its default.
  */
 private fun BarcodeContent.toCreationForm(
     rawValue: String,
@@ -85,12 +88,44 @@ private fun BarcodeContent.toCreationForm(
 
         is BarcodeContent.Contact -> CreationForm(
             kind = CreationKind.CONTACT,
-            contactName = content.displayName.orEmpty(),
-            contactPhone = content.phones.firstOrNull().orEmpty(),
-            contactEmail = content.emails.firstOrNull().orEmpty(),
+            contactNamePrefix = content.namePrefix.orEmpty(),
+            contactFirstName = content.firstName.orEmpty(),
+            contactMiddleName = content.middleName.orEmpty(),
+            // A MeCard named in one piece shows it as its last name: the editor has no name shown for it
+            contactLastName = content.lastName
+                ?: content.formattedName.takeIf { content.format == ContactFormat.MECARD && content.firstName == null }.orEmpty(),
+            contactNameSuffix = content.nameSuffix.orEmpty(),
+            // The name shown of a vCard, only when the editor would not make it the same from the other fields
+            contactDisplayName = content.formattedName
+                ?.takeUnless { formattedName -> content.format == ContactFormat.MECARD || formattedName == content.defaultFormattedName() }
+                .orEmpty(),
+            contactNickname = content.nickname.orEmpty(),
             contactOrganization = content.organization.orEmpty(),
-            contactAddress = content.addresses.firstOrNull().orEmpty(),
-            contactWebsite = content.urls.firstOrNull().orEmpty(),
+            contactDepartment = content.department.orEmpty(),
+            contactTitle = content.title.orEmpty(),
+            contactPhones = content.phones
+                .map { phone -> ContactPhoneField(number = phone.number, type = phone.type) }
+                .ifEmpty { listOf(ContactPhoneField()) },
+            contactEmails = content.emails
+                .map { email -> ContactEntryField(value = email.address, type = email.type) }
+                .ifEmpty { listOf(ContactEntryField()) },
+            contactAddresses = content.addresses.map { address ->
+                ContactAddressField(
+                    street = address.street.orEmpty(),
+                    extended = address.extended.orEmpty(),
+                    poBox = address.poBox.orEmpty(),
+                    postalCode = address.postalCode.orEmpty(),
+                    city = address.city.orEmpty(),
+                    region = address.region.orEmpty(),
+                    country = address.country.orEmpty(),
+                    type = address.type,
+                )
+            },
+            contactWebsites = content.websites
+                .map { website -> ContactEntryField(value = website.url, type = website.type) }
+                .ifEmpty { listOf(ContactEntryField()) },
+            contactBirthday = content.birthday.orEmpty(),
+            contactNote = content.note.orEmpty(),
             contactFormat = content.format,
         )
 
@@ -135,3 +170,7 @@ private fun BarcodeContent.toCreationForm(
         )
     }
 }
+
+// The name the editor shows for a vCard when none is typed: the parts of the name, else the organization
+private fun BarcodeContent.Contact.defaultFormattedName(): String? =
+    listOfNotNull(namePrefix, firstName, middleName, lastName, nameSuffix).joinToString(separator = " ").ifEmpty { null } ?: organization

@@ -1,6 +1,9 @@
 package fr.skyle.scanny.ui.core.code.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.ContactAddress
+import fr.skyle.scanny.domain.model.ContactEntryType
+import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
@@ -83,7 +86,7 @@ private fun BarcodeContent.toSummary(rawValue: String): String =
         is BarcodeContent.Sms -> phoneNumber ?: message
         is BarcodeContent.Mms -> phoneNumber ?: subject ?: message
         is BarcodeContent.Wifi -> ssid
-        is BarcodeContent.Contact -> displayName ?: organization ?: phones.firstOrNull() ?: emails.firstOrNull()
+        is BarcodeContent.Contact -> displayName ?: organization ?: phones.firstOrNull()?.number ?: emails.firstOrNull()?.address
         is BarcodeContent.Phone -> phoneNumber
         is BarcodeContent.Location -> label ?: coordinates()
         is BarcodeContent.Bookmark -> title ?: url
@@ -175,31 +178,69 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
             ),
         )
 
+        // Each telephone, address, e-mail and website under the name of what it is for
         is BarcodeContent.Contact -> listOfNotNull(
             codeField(
                 label = CodeFieldLabel.NAME,
                 value = displayName,
             ),
             codeField(
+                label = CodeFieldLabel.NICKNAME,
+                value = nickname,
+            ),
+            codeField(
                 label = CodeFieldLabel.ORGANIZATION,
                 value = organization,
+            ),
+            codeField(
+                label = CodeFieldLabel.DEPARTMENT,
+                value = department,
             ),
             codeField(
                 label = CodeFieldLabel.JOB_TITLE,
                 value = title,
             ),
-        ) + codeFields(
-            label = CodeFieldLabel.PHONE,
-            values = phones,
-        ) + codeFields(
-            label = CodeFieldLabel.EMAIL,
-            values = emails,
-        ) + codeFields(
-            label = CodeFieldLabel.ADDRESS,
-            values = addresses,
-        ) + codeFields(
-            label = CodeFieldLabel.WEBSITE,
-            values = urls,
+        ) + phones.map { phone ->
+            CodeField(
+                label = phone.type.toCodeFieldLabel(),
+                value = phone.number,
+            )
+        } + emails.map { email ->
+            CodeField(
+                label = email.type.toCodeFieldLabel(
+                    home = CodeFieldLabel.HOME_EMAIL,
+                    work = CodeFieldLabel.WORK_EMAIL,
+                    other = CodeFieldLabel.EMAIL,
+                ),
+                value = email.address,
+            )
+        } + addresses.map { address ->
+            CodeField(
+                label = address.type.toCodeFieldLabel(
+                    home = CodeFieldLabel.HOME_ADDRESS,
+                    work = CodeFieldLabel.WORK_ADDRESS,
+                    other = CodeFieldLabel.ADDRESS,
+                ),
+                value = address.toText(),
+            )
+        } + websites.map { website ->
+            CodeField(
+                label = website.type.toCodeFieldLabel(
+                    home = CodeFieldLabel.HOME_WEBSITE,
+                    work = CodeFieldLabel.WORK_WEBSITE,
+                    other = CodeFieldLabel.WEBSITE,
+                ),
+                value = website.url,
+            )
+        } + listOfNotNull(
+            codeField(
+                label = CodeFieldLabel.BIRTHDAY,
+                value = birthday,
+            ),
+            codeField(
+                label = CodeFieldLabel.NOTE,
+                value = note,
+            ),
         )
 
         is BarcodeContent.Phone -> listOf(
@@ -297,6 +338,37 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
             ),
         )
     }
+
+private fun ContactPhoneType.toCodeFieldLabel(): CodeFieldLabel =
+    when (this) {
+        ContactPhoneType.MOBILE -> CodeFieldLabel.MOBILE
+        ContactPhoneType.HOME -> CodeFieldLabel.HOME_PHONE
+        ContactPhoneType.WORK -> CodeFieldLabel.WORK_PHONE
+        ContactPhoneType.FAX -> CodeFieldLabel.FAX
+        ContactPhoneType.OTHER -> CodeFieldLabel.PHONE
+    }
+
+private fun ContactEntryType.toCodeFieldLabel(
+    home: CodeFieldLabel,
+    work: CodeFieldLabel,
+    other: CodeFieldLabel,
+): CodeFieldLabel =
+    when (this) {
+        ContactEntryType.HOME -> home
+        ContactEntryType.WORK -> work
+        ContactEntryType.OTHER -> other
+    }
+
+// As written on an envelope: the street and what completes it, then the city after its postal code
+private fun ContactAddress.toText(): String =
+    listOfNotNull(
+        street,
+        extended,
+        poBox,
+        listOfNotNull(postalCode, city).joinToString(separator = " ").ifEmpty { null },
+        region,
+        country,
+    ).joinToString(separator = "\n")
 
 // "48.8584, 2.2945", as the maps apps take them in their search
 private fun BarcodeContent.Location.coordinates(): String =

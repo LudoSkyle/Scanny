@@ -2,6 +2,12 @@ package fr.skyle.scanny.ui.core.code.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.ContactAddress
+import fr.skyle.scanny.domain.model.ContactEmail
+import fr.skyle.scanny.domain.model.ContactEntryType
+import fr.skyle.scanny.domain.model.ContactPhone
+import fr.skyle.scanny.domain.model.ContactPhoneType
+import fr.skyle.scanny.domain.model.ContactWebsite
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
@@ -123,20 +129,34 @@ class CodeMapperTest {
     }
 
     @Test
-    fun `a contact shows its name then each of its phones emails addresses and websites`() {
+    fun `a contact shows each of its fields and each entry under what it is for`() {
         // Given
         val content = BarcodeContent.Contact(
+            namePrefix = "Dr.",
             firstName = "John",
             lastName = "Doe",
+            nickname = "Johnny",
             organization = "Doe & Co",
+            department = "Mobile",
             title = "Lead",
             phones = listOf(
-                "+33600000000",
-                "+33100000000",
+                ContactPhone(number = "+33600000000", type = ContactPhoneType.MOBILE),
+                ContactPhone(number = "+33100000000", type = ContactPhoneType.FAX),
             ),
-            emails = listOf("john@doe.fr"),
-            addresses = listOf("12 rue de la Paix, Paris"),
-            urls = listOf("https://doe.fr"),
+            emails = listOf(ContactEmail(address = "john@doe.fr", type = ContactEntryType.WORK)),
+            addresses = listOf(
+                ContactAddress(
+                    street = "12 rue de la Paix",
+                    extended = "Apt 4",
+                    city = "Paris",
+                    postalCode = "75002",
+                    country = "France",
+                    type = ContactEntryType.HOME,
+                ),
+            ),
+            websites = listOf(ContactWebsite(url = "https://doe.fr")),
+            birthday = "1990-05-12",
+            note = "Met at the fair",
         )
 
         // When
@@ -147,35 +167,51 @@ class CodeMapperTest {
             expected = listOf(
                 field(
                     label = CodeFieldLabel.NAME,
-                    value = "John Doe",
+                    value = "Dr. John Doe",
+                ),
+                field(
+                    label = CodeFieldLabel.NICKNAME,
+                    value = "Johnny",
                 ),
                 field(
                     label = CodeFieldLabel.ORGANIZATION,
                     value = "Doe & Co",
                 ),
                 field(
+                    label = CodeFieldLabel.DEPARTMENT,
+                    value = "Mobile",
+                ),
+                field(
                     label = CodeFieldLabel.JOB_TITLE,
                     value = "Lead",
                 ),
                 field(
-                    label = CodeFieldLabel.PHONE,
+                    label = CodeFieldLabel.MOBILE,
                     value = "+33600000000",
                 ),
                 field(
-                    label = CodeFieldLabel.PHONE,
+                    label = CodeFieldLabel.FAX,
                     value = "+33100000000",
                 ),
                 field(
-                    label = CodeFieldLabel.EMAIL,
+                    label = CodeFieldLabel.WORK_EMAIL,
                     value = "john@doe.fr",
                 ),
                 field(
-                    label = CodeFieldLabel.ADDRESS,
-                    value = "12 rue de la Paix, Paris",
+                    label = CodeFieldLabel.HOME_ADDRESS,
+                    value = "12 rue de la Paix\nApt 4\n75002 Paris\nFrance",
                 ),
                 field(
                     label = CodeFieldLabel.WEBSITE,
                     value = "https://doe.fr",
+                ),
+                field(
+                    label = CodeFieldLabel.BIRTHDAY,
+                    value = "1990-05-12",
+                ),
+                field(
+                    label = CodeFieldLabel.NOTE,
+                    value = "Met at the fair",
                 ),
             ),
             actual = fields,
@@ -467,7 +503,7 @@ class CodeMapperTest {
     fun `a contact with nothing to show is summed up by its raw value`() {
         // Given
         val code = scannedCode(
-            content = BarcodeContent.Contact(addresses = listOf("12 rue de la Paix")),
+            content = BarcodeContent.Contact(addresses = listOf(ContactAddress(street = "12 rue de la Paix"))),
             rawValue = "BEGIN:VCARD",
         )
 

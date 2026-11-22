@@ -1,7 +1,10 @@
 package fr.skyle.scanny.domain.payload
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.ContactAddress
+import fr.skyle.scanny.domain.model.ContactEntryType
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.WifiEncryption
 
 /**
@@ -168,39 +171,136 @@ internal object BarcodeContentEncoder {
         }
     }
 
-    // vCard 3.0. Only the text properties are escaped: a telephone, an e-mail or an URL is written as is
+    // vCard 3.0. Only the text properties are escaped: a telephone, an e-mail or an URL is written as is.
+    // A telephone, an e-mail, an address or a website of no particular kind has no type
     private fun encodeContact(contact: BarcodeContent.Contact): String =
         buildList {
             add("BEGIN:VCARD")
             add("VERSION:3.0")
-            if (contact.lastName != null || contact.firstName != null) {
-                val lastName = escapeVcard(value = contact.lastName.orEmpty())
-                val firstName = escapeVcard(value = contact.firstName.orEmpty())
-                add("N:$lastName;$firstName;;;")
+            val nameParts = listOf(contact.lastName, contact.firstName, contact.middleName, contact.namePrefix, contact.nameSuffix)
+            if (nameParts.any { part -> part != null }) {
+                add("N:${nameParts.joinToString(separator = ";") { part -> escapeVcard(value = part.orEmpty()) }}")
             }
             contact.formattedName?.let { formattedName ->
                 add("FN:${escapeVcard(value = formattedName)}")
             }
-            contact.organization?.let { organization ->
-                add("ORG:${escapeVcard(value = organization)}")
+            contact.nickname?.let { nickname ->
+                add("NICKNAME:${escapeVcard(value = nickname)}")
+            }
+            if (contact.organization != null || contact.department != null) {
+                add("ORG:${escapeVcard(value = contact.organization.orEmpty())}${contact.department?.let { department -> ";${escapeVcard(value = department)}" }.orEmpty()}")
             }
             contact.title?.let { title ->
                 add("TITLE:${escapeVcard(value = title)}")
             }
             contact.phones.forEach { phone ->
-                add("TEL:$phone")
+                add("TEL${vcardType(type = phone.type.vcardType())}:${phone.number}")
             }
             contact.emails.forEach { email ->
-                add("EMAIL:$email")
+                add("EMAIL${vcardType(type = email.type.vcardType())}:${email.address}")
             }
             contact.addresses.forEach { address ->
-                add("ADR:;;${escapeVcard(value = address)};;;;")
+                val components = listOf(
+                    address.poBox,
+                    address.extended,
+                    address.street,
+                    address.city,
+                    address.region,
+                    address.postalCode,
+                    address.country,
+                ).joinToString(separator = ";") { component -> escapeVcard(value = component.orEmpty()) }
+                add("ADR${vcardType(type = address.type.vcardType())}:$components")
             }
-            contact.urls.forEach { url ->
-                add("URL:$url")
+            contact.websites.forEach { website ->
+                add("URL${vcardType(type = website.type.vcardType())}:${website.url}")
+            }
+            contact.birthday?.let { birthday ->
+                add("BDAY:$birthday")
+            }
+            contact.note?.let { note ->
+                add("NOTE:${escapeVcard(value = note)}")
             }
             add("END:VCARD")
         }.joinToString(separator = "\n")
+
+    private fun vcardType(type: String?): String =
+        type?.let { ";TYPE=$type" }.orEmpty()
+
+    private fun ContactPhoneType.vcardType(): String? =
+        when (this) {
+            ContactPhoneType.MOBILE -> "CELL"
+            ContactPhoneType.HOME -> "HOME"
+            ContactPhoneType.WORK -> "WORK"
+            ContactPhoneType.FAX -> "FAX"
+            ContactPhoneType.OTHER -> null
+        }
+
+    private fun ContactEntryType.vcardType(): String? =
+        when (this) {
+            ContactEntryType.HOME -> "HOME"
+            ContactEntryType.WORK -> "WORK"
+            ContactEntryType.OTHER -> null
+        }
+
+    // The fields of a MeCard: N is "last name,first name", or the whole name. A MeCard has no other part
+    // of a name, no department and no kind of telephone, address or website: they are left out. Its
+    // organization and its title are not in the format, but the readers read them
+    private fun encodeMecard(contact: BarcodeContent.Contact): String =
+        buildString {
+            append(PayloadSyntax.MECARD)
+            if (contact.lastName != null || contact.firstName != null) {
+                append("N:${escapeField(value = contact.lastName.orEmpty())},${escapeField(value = contact.firstName.orEmpty())};")
+            } else if (contact.formattedName != null) {
+                append("N:${escapeField(value = contact.formattedName)};")
+            }
+            contact.nickname?.let { nickname ->
+                append("NICKNAME:${escapeField(value = nickname)};")
+            }
+            contact.organization?.let { organization ->
+                append("ORG:${escapeField(value = organization)};")
+            }
+            contact.title?.let { title ->
+                append("TITLE:${escapeField(value = title)};")
+            }
+            contact.phones.forEach { phone ->
+                append("TEL:${escapeField(value = phone.number)};")
+            }
+            contact.emails.forEach { email ->
+                append("EMAIL:${escapeField(value = email.address)};")
+            }
+            contact.addresses.forEach { address ->
+                append("ADR:${mecardAddress(address = address)};")
+            }
+            contact.websites.forEach { website ->
+                append("URL:${escapeField(value = website.url)};")
+            }
+            contact.birthday?.let { birthday ->
+                append("BDAY:${birthday.filter { char -> char != '-' }};")
+            }
+            contact.note?.let { note ->
+                append("NOTE:${escapeField(value = note)};")
+            }
+            append(';')
+        }
+
+    // "PO box,room,street,city,region,postal code,country"; a street alone is written alone
+    private fun mecardAddress(address: ContactAddress): String {
+        val components = listOf(
+            address.poBox,
+            address.extended,
+            address.street,
+            address.city,
+            address.region,
+            address.postalCode,
+            address.country,
+        )
+        val isStreetAlone = components.count { component -> component != null } == 1 && address.street != null
+        return if (isStreetAlone) {
+            escapeField(value = address.street.orEmpty())
+        } else {
+            components.joinToString(separator = ",") { component -> escapeField(value = component.orEmpty()) }
+        }
+    }
 
     private fun encodePhone(phone: BarcodeContent.Phone): String =
         PayloadSyntax.TEL + percentEncode(
@@ -293,36 +393,6 @@ internal object BarcodeContentEncoder {
                 )
                 append(')')
             }
-        }
-
-    // N is "last name,first name", or the whole name: a MeCard holds one or the other
-    private fun encodeMecard(contact: BarcodeContent.Contact): String =
-        buildString {
-            append(PayloadSyntax.MECARD)
-            if (contact.lastName != null || contact.firstName != null) {
-                append("N:${escapeField(value = contact.lastName.orEmpty())},${escapeField(value = contact.firstName.orEmpty())};")
-            } else if (contact.formattedName != null) {
-                append("N:${escapeField(value = contact.formattedName)};")
-            }
-            contact.organization?.let { organization ->
-                append("ORG:${escapeField(value = organization)};")
-            }
-            contact.title?.let { title ->
-                append("TITLE:${escapeField(value = title)};")
-            }
-            contact.phones.forEach { phone ->
-                append("TEL:${escapeField(value = phone)};")
-            }
-            contact.emails.forEach { email ->
-                append("EMAIL:${escapeField(value = email)};")
-            }
-            contact.addresses.forEach { address ->
-                append("ADR:${escapeField(value = address)};")
-            }
-            contact.urls.forEach { url ->
-                append("URL:${escapeField(value = url)};")
-            }
-            append(';')
         }
 
     private fun escapeField(value: String): String =

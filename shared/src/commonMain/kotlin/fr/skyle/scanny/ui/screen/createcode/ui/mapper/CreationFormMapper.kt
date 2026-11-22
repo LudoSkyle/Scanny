@@ -2,6 +2,13 @@ package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.ContactAddress
+import fr.skyle.scanny.domain.model.ContactEmail
+import fr.skyle.scanny.domain.model.ContactEntryType
+import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.ContactPhone
+import fr.skyle.scanny.domain.model.ContactPhoneType
+import fr.skyle.scanny.domain.model.ContactWebsite
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
@@ -73,17 +80,7 @@ internal fun CreationForm.toBarcodeContent(): BarcodeContent? =
 
         CreationKind.WIFI -> toWifi()
 
-        CreationKind.CONTACT -> contactName.trim().takeIf { name -> name.isNotEmpty() }?.let { name ->
-            BarcodeContent.Contact(
-                formattedName = name,
-                organization = contactOrganization.trim().ifEmpty { null },
-                phones = listOfNotNull(contactPhone.trim().ifEmpty { null }),
-                emails = listOfNotNull(contactEmail.trim().ifEmpty { null }),
-                addresses = listOfNotNull(contactAddress.trim().ifEmpty { null }),
-                urls = listOfNotNull(contactWebsite.trim().ifEmpty { null }),
-                format = contactFormat,
-            )
-        }
+        CreationKind.CONTACT -> toContact()
 
         CreationKind.LOCATION -> toLocation()
 
@@ -103,6 +100,75 @@ internal fun CreationForm.toBarcodeContent(): BarcodeContent? =
             BarcodeContent.Text(text = value)
         }
     }
+
+// A vCard needs a name to show: the one typed, else the parts of the name, else the organization. A
+// MeCard needs a last or a first name. The fields a MeCard does not hold (the other parts of the name, the
+// department, the title and the kinds of the entries) stay in the form, but are not written
+private fun CreationForm.toContact(): BarcodeContent.Contact? {
+    val isVcard = contactFormat == ContactFormat.VCARD
+    fun String.field(isHeld: Boolean = true): String? = trim().ifEmpty { null }?.takeIf { isHeld }
+
+    val namePrefix = contactNamePrefix.field(isHeld = isVcard)
+    val firstName = contactFirstName.field()
+    val middleName = contactMiddleName.field(isHeld = isVcard)
+    val lastName = contactLastName.field()
+    val nameSuffix = contactNameSuffix.field(isHeld = isVcard)
+    val organization = contactOrganization.field()
+    val formattedName = if (isVcard) {
+        contactDisplayName.field()
+            ?: listOfNotNull(namePrefix, firstName, middleName, lastName, nameSuffix).joinToString(separator = " ").ifEmpty { null }
+            ?: organization
+    } else {
+        null
+    }
+    val hasName = if (isVcard) formattedName != null else firstName != null || lastName != null
+    if (!hasName) {
+        return null
+    }
+
+    return BarcodeContent.Contact(
+        formattedName = formattedName,
+        namePrefix = namePrefix,
+        firstName = firstName,
+        middleName = middleName,
+        lastName = lastName,
+        nameSuffix = nameSuffix,
+        nickname = contactNickname.field(),
+        organization = organization,
+        department = contactDepartment.field(isHeld = isVcard),
+        title = contactTitle.field(isHeld = isVcard),
+        phones = contactPhones.mapNotNull { phone ->
+            phone.number.field()?.let { number ->
+                ContactPhone(number = number, type = if (isVcard) phone.type else ContactPhoneType.OTHER)
+            }
+        },
+        emails = contactEmails.mapNotNull { email ->
+            email.value.field()?.let { address ->
+                ContactEmail(address = address, type = if (isVcard) email.type else ContactEntryType.OTHER)
+            }
+        },
+        addresses = contactAddresses.mapNotNull { address ->
+            ContactAddress(
+                poBox = address.poBox.field(),
+                extended = address.extended.field(),
+                street = address.street.field(),
+                city = address.city.field(),
+                region = address.region.field(),
+                postalCode = address.postalCode.field(),
+                country = address.country.field(),
+                type = if (isVcard) address.type else ContactEntryType.OTHER,
+            ).takeUnless { it.copy(type = ContactEntryType.OTHER) == ContactAddress() }
+        },
+        websites = contactWebsites.mapNotNull { website ->
+            website.value.field()?.let { url ->
+                ContactWebsite(url = url, type = if (isVcard) website.type else ContactEntryType.OTHER)
+            }
+        },
+        birthday = contactBirthday.ifEmpty { null },
+        note = contactNote.ifBlank { null },
+        format = contactFormat,
+    )
+}
 
 // Separated by commas, semicolons or spaces, which no address holds
 private fun String.toAddresses(): List<String> =
