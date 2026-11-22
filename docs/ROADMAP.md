@@ -236,12 +236,23 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     dans la feuille d'un scan ; la ligne et le détail d'un groupe ; une fiche « i » sur le type et le
     format d'un code. Décidé : modifier une création en crée une nouvelle, comme pour un code scanné ;
     pas de notification après l'enregistrement d'une image ; un groupe montre « Groupe de 3 codes »
-    et les types de ses codes ; « Étape 1 sur 2 » en sous-titre.
+    et les types de ses codes ; « Étape 1 sur 2 » en sous-titre. Ajouté en cours de route : des
+    options avancées. Le niveau de correction va dans celles de l'étape 1, là où le compteur montre
+    ce qu'il change : la limite du contenu le suit (jusqu'à 2953 octets en correction faible), et un
+    logo, qui demande la correction maximale, se désactive avec sa raison quand le niveau ou le contenu
+    ne le permettent pas. La couleur des coins, un dégradé, la forme et la marge du logo vont dans
+    celles de l'étape 2. Écartés : la forme ronde du code et le quatrième œil, hors norme, qui
+    gênent la lecture.
     - [x] L'éditeur en deux étapes : le contenu et son aperçu, puis la personnalisation ; le retour,
           de la barre comme du système, ramène au contenu sans perdre la personnalisation, perdue en
           quittant l'éditeur ; un code-barres n'a qu'une étape
     - [x] Modifier une création : son contenu et son style dans l'éditeur, un nouveau code au bout
-    - [ ] Le compteur de la taille du contenu
+    - [x] Le compteur de la taille du contenu : ce que le contenu entier prend du QR code, rouge
+          au-delà de ce qu'il tient
+    - [ ] Le niveau de correction, dans les options avancées du contenu : la limite et le compteur
+          le suivent ; un logo n'est possible qu'en correction maximale
+    - [ ] Les options avancées de la personnalisation : la couleur des coins, un dégradé, la forme et
+          la marge du logo
     - [ ] Une couleur saisie en hexadécimal ou en RVB
     - [ ] La snackbar « Voir » après l'enregistrement d'une image
     - [ ] Le contenu brut plus visible replié, et son réglage pour la feuille d'un scan

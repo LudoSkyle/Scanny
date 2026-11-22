@@ -28,6 +28,7 @@ import fr.skyle.scanny.ui.screen.createcode.ui.component.CreationContentStep
 import fr.skyle.scanny.ui.screen.createcode.ui.component.CreationStyleStep
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.format
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
@@ -40,6 +41,7 @@ private const val STEP_COUNT = 2
 fun CreateCodeScreen(
     form: CreationForm,
     preview: CodePreview,
+    contentSize: ContentSize?,
     style: CodeStyle,
     step: CreationStep,
     isCreating: Boolean,
@@ -88,6 +90,7 @@ fun CreateCodeScreen(
                     modifier = Modifier.fillMaxSize(),
                     form = form,
                     preview = preview,
+                    contentSize = contentSize,
                     style = style,
                     isCreating = isCreating,
                     contentPadding = contentPadding,
@@ -123,6 +126,11 @@ private fun PreviewCreateCodeScreen() {
             preview = CodePreview.Code(
                 rawValue = "https://scanny.app",
                 format = BarcodeFormat.QR_CODE,
+            ),
+            contentSize = ContentSize(
+                used = 18,
+                max = 1273,
+                hasWideCharacters = false,
             ),
             style = CodeStyle(),
             step = CreationStep.CONTENT,
