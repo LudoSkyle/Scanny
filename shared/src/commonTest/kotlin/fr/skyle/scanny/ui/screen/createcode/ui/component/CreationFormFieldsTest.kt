@@ -11,10 +11,13 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.account
+import fr.skyle.scanny.resources.issuer
 import fr.skyle.scanny.resources.latitude
 import fr.skyle.scanny.resources.link
 import fr.skyle.scanny.resources.longitude
 import fr.skyle.scanny.resources.place
+import fr.skyle.scanny.resources.secret_key
 import fr.skyle.scanny.resources.title
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toBarcodeContent
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
@@ -51,6 +54,35 @@ internal class CreationFormFieldsTest : ComposeTest() {
                 latitude = 48.8584,
                 longitude = 2.2945,
                 label = "Tour Eiffel",
+            ),
+            actual = form.toBarcodeContent(),
+        )
+    }
+
+    @Test
+    fun `the fields of an otp key fill its issuer its account and its secret`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(CreationForm(kind = CreationKind.OTP))
+        setContent {
+            SCTheme {
+                CreationFormFields(
+                    form = form,
+                    onFormChanged = { changedForm -> form = changedForm },
+                )
+            }
+        }
+
+        // When
+        onNode(hasSetTextAction() and hasText(getString(Res.string.issuer))).performTextInput("Scanny")
+        onNode(hasSetTextAction() and hasText(getString(Res.string.account))).performTextInput("john@doe.fr")
+        onNode(hasSetTextAction() and hasText(getString(Res.string.secret_key))).performTextInput("jbsw y3dp ehpk 3pxp")
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                issuer = "Scanny",
+                account = "john@doe.fr",
             ),
             actual = form.toBarcodeContent(),
         )

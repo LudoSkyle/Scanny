@@ -41,6 +41,21 @@ final class ScanFlowUITests: XCTestCase {
         keepScreenshot(named: "location-maps", of: maps)
     }
 
+    func testAnOtpKeyOpensInPasswords() throws {
+        let app = launchScanning(code: "otpauth://totp/Scanny:john?secret=JBSWY3DPEHPK3PXP&issuer=Scanny")
+
+        XCTAssertTrue(app.buttons["Add to an authenticator"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["JBSWY3DPEHPK3PXP"].exists)
+        keepScreenshot(named: "otp-sheet", of: app)
+
+        app.buttons["Add to an authenticator"].tap()
+
+        // iOS adds a verification code in its Passwords app
+        let passwords = XCUIApplication(bundleIdentifier: "com.apple.Passwords")
+        XCTAssertTrue(passwords.wait(for: .runningForeground, timeout: 10))
+        keepScreenshot(named: "otp-passwords", of: passwords)
+    }
+
     func testTheDetailCopiesSharesAndDeletesTheCode() throws {
         let app = launchScanning(code: "https://scanny.app/detail")
 

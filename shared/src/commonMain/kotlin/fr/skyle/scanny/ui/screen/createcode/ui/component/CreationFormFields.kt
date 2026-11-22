@@ -18,10 +18,13 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.platform.keyboard.coordinateKeyboardType
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.account
 import fr.skyle.scanny.resources.address
+import fr.skyle.scanny.resources.amount_in_bitcoins
 import fr.skyle.scanny.resources.barcode_value
 import fr.skyle.scanny.resources.email
 import fr.skyle.scanny.resources.format
+import fr.skyle.scanny.resources.issuer
 import fr.skyle.scanny.resources.latitude
 import fr.skyle.scanny.resources.link
 import fr.skyle.scanny.resources.longitude
@@ -34,6 +37,7 @@ import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.phone_number
 import fr.skyle.scanny.resources.place
 import fr.skyle.scanny.resources.recipient
+import fr.skyle.scanny.resources.secret_key
 import fr.skyle.scanny.resources.security
 import fr.skyle.scanny.resources.subject
 import fr.skyle.scanny.resources.text
@@ -243,6 +247,60 @@ fun CreationFormFields(
                     onValueChange = { url -> onFormChanged(form.copy(bookmarkUrl = url)) },
                     label = stringResource(Res.string.link),
                     keyboardType = KeyboardType.Uri,
+                )
+            }
+
+            CreationKind.OTP -> {
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.otpIssuer,
+                    onValueChange = { issuer -> onFormChanged(form.copy(otpIssuer = issuer)) },
+                    label = stringResource(Res.string.issuer),
+                )
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.otpAccount,
+                    onValueChange = { account -> onFormChanged(form.copy(otpAccount = account)) },
+                    label = stringResource(Res.string.account),
+                    keyboardType = KeyboardType.Email,
+                )
+                // Typed as a password: the keyboard does not correct it
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.otpSecret,
+                    onValueChange = { secret -> onFormChanged(form.copy(otpSecret = secret)) },
+                    label = stringResource(Res.string.secret_key),
+                    keyboardType = KeyboardType.Password,
+                )
+            }
+
+            CreationKind.BITCOIN -> {
+                // Typed as a link: the keyboard neither capitalizes nor corrects it
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.bitcoinAddress,
+                    onValueChange = { address -> onFormChanged(form.copy(bitcoinAddress = address)) },
+                    label = stringResource(Res.string.address),
+                    keyboardType = KeyboardType.Uri,
+                )
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.bitcoinAmount,
+                    onValueChange = { amount -> onFormChanged(form.copy(bitcoinAmount = amount)) },
+                    label = stringResource(Res.string.amount_in_bitcoins),
+                    keyboardType = KeyboardType.Decimal,
+                )
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.bitcoinLabel,
+                    onValueChange = { label -> onFormChanged(form.copy(bitcoinLabel = label)) },
+                    label = stringResource(Res.string.recipient),
+                )
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.bitcoinMessage,
+                    onValueChange = { message -> onFormChanged(form.copy(bitcoinMessage = message)) },
+                    label = stringResource(Res.string.message),
                 )
             }
 

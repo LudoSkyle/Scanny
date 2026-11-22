@@ -20,6 +20,10 @@ sealed interface CodeAction {
 
     data class ShowOnMap(override val link: String) : Link
 
+    data class AddToAuthenticator(override val link: String) : Link
+
+    data class OpenWallet(override val link: String) : Link
+
     data class AddContact(val contact: BarcodeContent.Contact) : CodeAction
 
     data class JoinWifi(val wifi: BarcodeContent.Wifi) : CodeAction

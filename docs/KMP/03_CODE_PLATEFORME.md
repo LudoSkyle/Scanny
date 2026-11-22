@@ -199,6 +199,9 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   permission n'est demandée. Une position s'ouvre par `platformMapsLink` : le lien `geo:` sur
   Android (Google Maps l'épingle sous son nom), le lien de Plans (`https://maps.apple.com/?ll=…&q=…`)
   sur iOS, qui n'a pas d'app pour un `geo:`. Un marque-page ouvre son lien.
+- Une clé à usage unique s'ouvre par son lien `otpauth://` : l'appli d'authentification installée sur
+  Android, Mots de passe sur iOS. Un paiement Bitcoin s'ouvre par son lien `bitcoin:`, dans le
+  portefeuille installé. Sans app pour eux, Android le dit ; iOS n'ouvre rien, comme pour tout lien.
 - La feuille du résultat a ses propres messages (`resultSnackbarState` de la `Route` du scan), au
   bas de la feuille : ceux de l'écran du scan seraient cachés dessous. Ce qui suit une action, un
   lien sans app, un contact qui ne s'ajoute pas, un réseau Wi-Fi, va à la feuille quand elle est
@@ -324,6 +327,8 @@ livrée ; le tableau est mis à jour dans le même commit.
 | Détection dans une image | ✅ (émulateur : code lu, enregistré ; image sans code signalée) — Photo Picker + ML Kit (`InputImage`) | Livré, à vérifier sur un iPhone — `PHPickerViewController` + Vision (`VNDetectBarcodesRequest`) | `expect` composable |
 | Ouvrir un lien, un mail, un SMS | ✅ (émulateur : lien ouvert dans Chrome, SMS prérempli dans Messages) — `LocalUriHandler` | ✅ lien et SMS (simulateur : Safari, message prérempli dans Messages) ; mail à vérifier sur un iPhone (pas de Mail sur le simulateur) — `LocalUriHandler`, `sms:` avec `&body=` | Compose |
 | Appeler un numéro | ✅ (émulateur : clavier du téléphone, numéro composé) — `tel:` par `LocalUriHandler` | À vérifier sur un iPhone (pas d'app Téléphone sur le simulateur) — `tel:` par `LocalUriHandler` | Compose |
+| Ajouter une clé à usage unique | ✅ (émulateur sans appli d'authentification : « aucune app » dit) — `otpauth://` par `LocalUriHandler` | ✅ (simulateur : Mots de passe ouvert) — `otpauth://` par `LocalUriHandler` | Compose |
+| Ouvrir un paiement Bitcoin | ✅ (émulateur sans portefeuille : « aucune app » dit) — `bitcoin:` par `LocalUriHandler` | À vérifier avec un portefeuille sur un iPhone ; sans portefeuille, rien ne s'ouvre — `bitcoin:` par `LocalUriHandler` | Compose |
 | Voir une position sur la carte | ✅ (émulateur : Google Maps, lieu épinglé sous son nom) — `geo:…?q=lat,lon(nom)` | ✅ (simulateur : Plans ouvert) — `https://maps.apple.com/?ll=…&q=…` | Compose + `expect` pour le lien (`platformMapsLink`) |
 | Vibration | `LocalHapticFeedback` (`Confirm`) | `LocalHapticFeedback` (`Confirm`) | Compose |
 | Bip après un scan | Livré, à écouter sur un appareil (l'émulateur tourne sans son) — `ToneGenerator` (`TONE_PROP_BEEP`, flux des notifications) | Livré, à écouter sur un iPhone — `AudioServicesPlaySystemSound` (son système 1057) | interface (`ScanBeeper`) |

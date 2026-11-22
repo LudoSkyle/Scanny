@@ -7,6 +7,7 @@ import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.barcode
+import fr.skyle.scanny.resources.bitcoin
 import fr.skyle.scanny.resources.bookmark
 import fr.skyle.scanny.resources.color_black
 import fr.skyle.scanny.resources.color_brown
@@ -44,6 +45,7 @@ import fr.skyle.scanny.resources.logo_margin_large
 import fr.skyle.scanny.resources.logo_margin_none
 import fr.skyle.scanny.resources.logo_margin_normal
 import fr.skyle.scanny.resources.logo_needs_highest_correction
+import fr.skyle.scanny.resources.otp
 import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.shape_circle
 import fr.skyle.scanny.resources.shape_rounded
@@ -73,6 +75,8 @@ internal fun CreationKind.toText(): StringResource =
         CreationKind.CONTACT -> Res.string.contact
         CreationKind.LOCATION -> Res.string.location
         CreationKind.BOOKMARK -> Res.string.bookmark
+        CreationKind.OTP -> Res.string.otp
+        CreationKind.BITCOIN -> Res.string.bitcoin
         CreationKind.BARCODE -> Res.string.barcode
     }
 

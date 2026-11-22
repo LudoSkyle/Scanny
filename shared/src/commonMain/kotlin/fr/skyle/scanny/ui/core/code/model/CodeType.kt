@@ -11,4 +11,6 @@ enum class CodeType {
     PHONE,
     LOCATION,
     BOOKMARK,
+    OTP,
+    BITCOIN,
 }

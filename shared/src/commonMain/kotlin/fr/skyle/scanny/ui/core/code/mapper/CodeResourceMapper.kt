@@ -2,9 +2,13 @@ package fr.skyle.scanny.ui.core.code.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.account
 import fr.skyle.scanny.resources.add_contact
+import fr.skyle.scanny.resources.add_to_authenticator
 import fr.skyle.scanny.resources.address
+import fr.skyle.scanny.resources.amount
 import fr.skyle.scanny.resources.aztec
+import fr.skyle.scanny.resources.bitcoin
 import fr.skyle.scanny.resources.bookmark
 import fr.skyle.scanny.resources.call
 import fr.skyle.scanny.resources.codabar
@@ -58,13 +62,16 @@ import fr.skyle.scanny.resources.format_upc_e_structure
 import fr.skyle.scanny.resources.format_upc_e_use
 import fr.skyle.scanny.resources.ic_bookmark
 import fr.skyle.scanny.resources.ic_call
+import fr.skyle.scanny.resources.ic_currency_bitcoin
 import fr.skyle.scanny.resources.ic_link
 import fr.skyle.scanny.resources.ic_location_on
 import fr.skyle.scanny.resources.ic_mail
 import fr.skyle.scanny.resources.ic_notes
+import fr.skyle.scanny.resources.ic_password
 import fr.skyle.scanny.resources.ic_person
 import fr.skyle.scanny.resources.ic_sms
 import fr.skyle.scanny.resources.ic_wifi
+import fr.skyle.scanny.resources.issuer
 import fr.skyle.scanny.resources.itf
 import fr.skyle.scanny.resources.job_title
 import fr.skyle.scanny.resources.join_network
@@ -73,8 +80,10 @@ import fr.skyle.scanny.resources.location
 import fr.skyle.scanny.resources.message
 import fr.skyle.scanny.resources.name
 import fr.skyle.scanny.resources.network
+import fr.skyle.scanny.resources.open_in_wallet
 import fr.skyle.scanny.resources.open_link
 import fr.skyle.scanny.resources.organization
+import fr.skyle.scanny.resources.otp
 import fr.skyle.scanny.resources.password
 import fr.skyle.scanny.resources.pdf417
 import fr.skyle.scanny.resources.phone
@@ -82,6 +91,7 @@ import fr.skyle.scanny.resources.phone_number
 import fr.skyle.scanny.resources.place
 import fr.skyle.scanny.resources.qr_code
 import fr.skyle.scanny.resources.recipient
+import fr.skyle.scanny.resources.secret_key
 import fr.skyle.scanny.resources.security
 import fr.skyle.scanny.resources.show_on_map
 import fr.skyle.scanny.resources.sms
@@ -111,6 +121,8 @@ internal fun CodeType.toText(): StringResource =
         CodeType.PHONE -> Res.string.phone
         CodeType.LOCATION -> Res.string.location
         CodeType.BOOKMARK -> Res.string.bookmark
+        CodeType.OTP -> Res.string.otp
+        CodeType.BITCOIN -> Res.string.bitcoin
     }
 
 internal fun CodeType.toIcon(): DrawableResource =
@@ -124,6 +136,8 @@ internal fun CodeType.toIcon(): DrawableResource =
         CodeType.PHONE -> Res.drawable.ic_call
         CodeType.LOCATION -> Res.drawable.ic_location_on
         CodeType.BOOKMARK -> Res.drawable.ic_bookmark
+        CodeType.OTP -> Res.drawable.ic_password
+        CodeType.BITCOIN -> Res.drawable.ic_currency_bitcoin
     }
 
 internal fun BarcodeFormat.toText(): StringResource =
@@ -163,6 +177,10 @@ internal fun CodeFieldLabel.toText(): StringResource =
         CodeFieldLabel.COORDINATES -> Res.string.coordinates
         CodeFieldLabel.TITLE -> Res.string.title
         CodeFieldLabel.LINK -> Res.string.link
+        CodeFieldLabel.ISSUER -> Res.string.issuer
+        CodeFieldLabel.ACCOUNT -> Res.string.account
+        CodeFieldLabel.SECRET_KEY -> Res.string.secret_key
+        CodeFieldLabel.AMOUNT -> Res.string.amount
     }
 
 internal fun CodeAction.toText(): StringResource =
@@ -172,6 +190,8 @@ internal fun CodeAction.toText(): StringResource =
         is CodeAction.WriteSms -> Res.string.write_sms
         is CodeAction.Call -> Res.string.call
         is CodeAction.ShowOnMap -> Res.string.show_on_map
+        is CodeAction.AddToAuthenticator -> Res.string.add_to_authenticator
+        is CodeAction.OpenWallet -> Res.string.open_in_wallet
         is CodeAction.AddContact -> Res.string.add_contact
         is CodeAction.JoinWifi -> Res.string.join_network
     }

@@ -4,8 +4,10 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.payload.toBitcoinLink
 import fr.skyle.scanny.domain.payload.toCoordinateText
 import fr.skyle.scanny.domain.payload.toMailtoLink
+import fr.skyle.scanny.domain.payload.toOtpauthLink
 import fr.skyle.scanny.domain.payload.toSmsLink
 import fr.skyle.scanny.domain.payload.toTelLink
 import fr.skyle.scanny.platform.link.platformMapsLink
@@ -15,6 +17,9 @@ import fr.skyle.scanny.ui.core.code.model.CodeField
 import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
 import fr.skyle.scanny.ui.core.code.model.CodeRowItem
 import fr.skyle.scanny.ui.core.code.model.CodeType
+
+// The symbol of the bitcoin, the same in every language
+private const val BITCOIN_UNIT = "BTC"
 
 internal fun BarcodeContent.toCodeType(): CodeType =
     when (this) {
@@ -27,6 +32,8 @@ internal fun BarcodeContent.toCodeType(): CodeType =
         is BarcodeContent.Phone -> CodeType.PHONE
         is BarcodeContent.Location -> CodeType.LOCATION
         is BarcodeContent.Bookmark -> CodeType.BOOKMARK
+        is BarcodeContent.Otp -> CodeType.OTP
+        is BarcodeContent.Bitcoin -> CodeType.BITCOIN
     }
 
 internal fun BarcodeContent.toCodeAction(canJoinWifi: (BarcodeContent.Wifi) -> Boolean): CodeAction? =
@@ -39,6 +46,8 @@ internal fun BarcodeContent.toCodeAction(canJoinWifi: (BarcodeContent.Wifi) -> B
         is BarcodeContent.Phone -> CodeAction.Call(link = toTelLink())
         is BarcodeContent.Location -> CodeAction.ShowOnMap(link = platformMapsLink(location = this))
         is BarcodeContent.Bookmark -> CodeAction.OpenLink(link = url)
+        is BarcodeContent.Otp -> CodeAction.AddToAuthenticator(link = toOtpauthLink())
+        is BarcodeContent.Bitcoin -> CodeAction.OpenWallet(link = toBitcoinLink())
         // Nothing to open for a text
         is BarcodeContent.Text -> null
     }
@@ -69,6 +78,9 @@ private fun BarcodeContent.toSummary(rawValue: String): String =
         is BarcodeContent.Phone -> phoneNumber
         is BarcodeContent.Location -> label ?: coordinates()
         is BarcodeContent.Bookmark -> title ?: url
+        // "Scanny: john@doe.fr", as the authenticator apps name a key
+        is BarcodeContent.Otp -> listOfNotNull(issuer, account).joinToString(separator = ": ").ifEmpty { null }
+        is BarcodeContent.Bitcoin -> label ?: address
     } ?: rawValue
 
 /** Whether the raw text of a code says more than its content: a text or a link is its own raw text. */
@@ -187,6 +199,41 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
             CodeField(
                 label = CodeFieldLabel.LINK,
                 value = url,
+            ),
+        )
+
+        // The number of digits, the period and the algorithm show in the raw content
+        is BarcodeContent.Otp -> listOfNotNull(
+            codeField(
+                label = CodeFieldLabel.ISSUER,
+                value = issuer,
+            ),
+            codeField(
+                label = CodeFieldLabel.ACCOUNT,
+                value = account,
+            ),
+            CodeField(
+                label = CodeFieldLabel.SECRET_KEY,
+                value = secret,
+            ),
+        )
+
+        is BarcodeContent.Bitcoin -> listOfNotNull(
+            CodeField(
+                label = CodeFieldLabel.ADDRESS,
+                value = address,
+            ),
+            codeField(
+                label = CodeFieldLabel.AMOUNT,
+                value = amount?.let { amount -> "$amount $BITCOIN_UNIT" },
+            ),
+            codeField(
+                label = CodeFieldLabel.RECIPIENT,
+                value = label,
+            ),
+            codeField(
+                label = CodeFieldLabel.MESSAGE,
+                value = message,
             ),
         )
     }

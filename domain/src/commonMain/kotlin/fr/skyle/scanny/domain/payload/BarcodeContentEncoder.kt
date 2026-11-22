@@ -26,6 +26,8 @@ internal object BarcodeContentEncoder {
             is BarcodeContent.Phone -> encodePhone(phone = content)
             is BarcodeContent.Location -> encodeLocation(location = content)
             is BarcodeContent.Bookmark -> encodeBookmark(bookmark = content)
+            is BarcodeContent.Otp -> encodeOtp(otp = content)
+            is BarcodeContent.Bitcoin -> encodeBitcoin(bitcoin = content)
         }
 
     /** The geo: link that opens the maps of Android on this place, pinned under its name if any. */
@@ -182,6 +184,45 @@ internal object BarcodeContentEncoder {
             append("URL:${escapeField(value = bookmark.url)};")
             append(';')
         }
+
+    // The issuer goes in the label and in the parameters: the authenticator apps read one or the other.
+    // An issuer without account keeps its colon, or it would be read back as the account
+    private fun encodeOtp(otp: BarcodeContent.Otp): String {
+        val label = buildString {
+            if (otp.issuer != null) {
+                append(percentEncode(value = otp.issuer, allowed = URI_UNRESERVED))
+                append(':')
+            }
+            append(percentEncode(value = otp.account.orEmpty(), allowed = URI_UNRESERVED))
+        }
+        val parameters = listOfNotNull(
+            "secret=${percentEncode(value = otp.secret, allowed = URI_UNRESERVED)}",
+            otp.issuer?.let { issuer -> "issuer=${percentEncode(value = issuer, allowed = URI_UNRESERVED)}" },
+            otp.algorithm?.let { algorithm -> "algorithm=${percentEncode(value = algorithm, allowed = URI_UNRESERVED)}" },
+            otp.digits?.let { digits -> "digits=$digits" },
+            otp.period?.let { period -> "period=$period" },
+            otp.counter?.let { counter -> "counter=$counter" },
+        )
+
+        return "${PayloadSyntax.OTPAUTH}${otp.type.name.lowercase()}/$label?${parameters.joinToString(separator = "&")}"
+    }
+
+    private fun encodeBitcoin(bitcoin: BarcodeContent.Bitcoin): String {
+        val parameters = listOfNotNull(
+            bitcoin.amount?.let { amount -> "amount=$amount" },
+            bitcoin.label?.let { label -> "label=${percentEncode(value = label, allowed = URI_UNRESERVED)}" },
+            bitcoin.message?.let { message -> "message=${percentEncode(value = message, allowed = URI_UNRESERVED)}" },
+        )
+
+        return buildString {
+            append(PayloadSyntax.BITCOIN)
+            append(bitcoin.address)
+            if (parameters.isNotEmpty()) {
+                append('?')
+                append(parameters.joinToString(separator = "&"))
+            }
+        }
+    }
 
     private fun BarcodeContent.Location.coordinates(): String =
         "${latitude.toCoordinateText()},${longitude.toCoordinateText()}"
