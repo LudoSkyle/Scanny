@@ -61,14 +61,17 @@ relu à chaque lecture de la base : un type nouveau s'applique aussi aux codes d
 contact sur Android prend un nom affiché, iOS (`CNMutableContact`) veut le prénom et le nom.
 `displayName` donne le nom à montrer : le nom affiché, ou à défaut le prénom et le nom. S'y
 ajoutent l'organisation, la fonction, et des listes de téléphones, d'emails, d'adresses (une adresse
-est une ligne, ses composants séparés par des virgules) et de sites.
+est une ligne, ses composants séparés par des virgules) et de sites. Son `format` (`VCARD`, `MECARD`)
+est celui dans lequel il a été lu : un contact modifié s'écrit comme il était écrit.
+
+`Mms` est un SMS qui a un objet : numéro, objet, message.
 
 Le parseur est **le cœur de la parité entre les plateformes**. ML Kit sait typer un code sur
 Android, mais AVFoundation et Vision ne rendent qu'un texte brut sur iOS. Scanny n'utilise donc
 jamais les types structurés de ML Kit : les deux plateformes passent le texte brut au même
 parseur, et obtiennent le même résultat.
 
-- Formats reconnus : `WIFI:`, `MATMSG:`, `mailto:`, `SMSTO:` / `sms:`, `MECARD:`, `BEGIN:VCARD`,
+- Formats reconnus : `WIFI:`, `MATMSG:`, `mailto:`, `SMSTO:` / `sms:`, `MMSTO:` / `mms:`, `MECARD:`, `BEGIN:VCARD`,
   `tel:`, `geo:`, `MEBKM:`, `otpauth://`, `bitcoin:`, et les URL (`http://`, `https://`). Les préfixes et les clés sont
   insensibles à la casse, les valeurs non.
 - Un `geo:` (RFC 5870) donne sa latitude et sa longitude ; son altitude et ses paramètres (`;u=…`)
@@ -103,14 +106,15 @@ parseur, et obtiennent le même résultat.
 | Email | `mailto:adresse?subject=…&body=…`, encodé en `%` (`MATMSG:` n'est que lu) |
 | SMS | `SMSTO:numéro:message` (`sms:` n'est que lu) |
 | WiFi | `WIFI:T:…;S:…;P:…;H:true;;`, `T:nopass` et pas de `P:` pour un réseau ouvert, `SAE` pour le WPA3, `H:true` seulement pour un réseau masqué |
-| Contact | vCard 3.0 ; seules les propriétés texte (`N`, `FN`, `ORG`, `TITLE`, `ADR`) sont échappées |
+| Contact | vCard 3.0 ; seules les propriétés texte (`N`, `FN`, `ORG`, `TITLE`, `ADR`) sont échappées. En MeCard : `MECARD:N:nom,prénom;…;;` (ou le nom affiché seul), champs échappés comme ceux d'un `WIFI:` ; une virgule échappée dans `N` appartient au nom |
+| MMS | `mms:numéro?subject=…&body=…`, encodé en `%` (`MMSTO:numéro:message`, sans objet, n'est que lu) |
 | Téléphone | `tel:numéro`, encodé en `%` |
 | Position | `geo:lat,lon`, et `?q=lat,lon(nom)` s'il a un nom ; coordonnées en décimales, sept au plus (`toCoordinateText()`, jamais en exposant : le texte d'un `Double` diffère entre les plateformes) |
 | Marque-page | `MEBKM:TITLE:…;URL:…;;`, champs échappés comme ceux d'un `WIFI:` |
 | Clé à usage unique | `otpauth://totp/émetteur:compte?secret=…&issuer=…`, puis les seuls paramètres lus ; l'émetteur dans le libellé et dans `issuer`, que les applis lisent l'un ou l'autre ; un émetteur sans compte garde son `:` |
 | Bitcoin | `bitcoin:adresse?amount=…&label=…&message=…`, nom et message encodés en `%` |
 - Le parseur et l'encodeur sont `internal` : `shared` les utilise à travers les UseCases. Seuls sont
-  publics les liens qui ouvrent l'app d'un contenu (`toMailtoLink()`, `toSmsLink()`, `toTelLink()`,
+  publics les liens qui ouvrent l'app d'un contenu (`toMailtoLink()`, `toSmsLink()`, `toMmsLink()`, `toTelLink()`,
   `toGeoLink()`, `toAppleMapsLink()`, `toOtpauthLink()`, `toBitcoinLink()`, dans `ContentLinks.kt`) et l'écriture d'une coordonnée
   (`toCoordinateText()`) : `shared` les ouvre et les affiche tels quels, et leur encodage `%` est celui
   de l'encodeur. Le lien `geo:` d'une position y porte toujours son lieu (`?q=lat,lon`) : sans lui,

@@ -169,4 +169,23 @@ class ContentLinksTest {
             actual = links,
         )
     }
+
+    @Test
+    fun `an mms link carries its subject on the first line of its body`() {
+        // Given
+        val mms = BarcodeContent.Mms(
+            phoneNumber = "+33600000000",
+            subject = "Hello",
+            message = "See you",
+        )
+
+        // When
+        val link = mms.toMmsLink()
+
+        // Then
+        assertEquals(
+            expected = "mms:+33600000000?body=Hello%0ASee%20you",
+            actual = link,
+        )
+    }
 }

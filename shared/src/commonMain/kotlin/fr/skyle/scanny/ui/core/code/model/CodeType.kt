@@ -6,6 +6,7 @@ enum class CodeType {
     LINK,
     EMAIL,
     SMS,
+    MMS,
     WIFI,
     CONTACT,
     PHONE,

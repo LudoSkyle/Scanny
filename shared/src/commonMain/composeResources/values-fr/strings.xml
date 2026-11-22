@@ -289,6 +289,7 @@
     <string name="wifi_saved">« %1$s » enregistré : l'appareil s'y connecte à portée.</string>
     <string name="wifi_security_none">Aucune</string>
     <string name="write_email">Écrire un e-mail</string>
+    <string name="write_mms">Écrire un MMS</string>
     <string name="write_sms">Écrire un SMS</string>
     <string name="yesterday">Hier</string>
 </resources>

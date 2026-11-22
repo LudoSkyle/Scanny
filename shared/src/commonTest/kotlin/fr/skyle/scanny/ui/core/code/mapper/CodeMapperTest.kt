@@ -5,6 +5,7 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.platform.link.platformMapsLink
+import fr.skyle.scanny.platform.link.platformMmsLink
 import fr.skyle.scanny.platform.link.platformSmsLink
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
@@ -304,6 +305,38 @@ class CodeMapperTest {
     }
 
     @Test
+    fun `an mms shows its number its subject and its message`() {
+        // Given
+        val content = BarcodeContent.Mms(
+            phoneNumber = "+33600000000",
+            subject = "Hello",
+            message = "See you",
+        )
+
+        // When
+        val fields = content.toCodeFields()
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                field(
+                    label = CodeFieldLabel.PHONE_NUMBER,
+                    value = "+33600000000",
+                ),
+                field(
+                    label = CodeFieldLabel.SUBJECT,
+                    value = "Hello",
+                ),
+                field(
+                    label = CodeFieldLabel.MESSAGE,
+                    value = "See you",
+                ),
+            ),
+            actual = fields,
+        )
+    }
+
+    @Test
     fun `the summary of a code is its most telling part`() {
         // Given
         val codes = listOf(
@@ -326,6 +359,7 @@ class CodeMapperTest {
                 ),
             ),
             scannedCode(content = BarcodeContent.Bookmark(url = "https://scanny.app")),
+            scannedCode(content = BarcodeContent.Mms(subject = "Hello MMS")),
             scannedCode(
                 content = BarcodeContent.Otp(
                     secret = "JBSWY3DPEHPK3PXP",
@@ -356,6 +390,7 @@ class CodeMapperTest {
                 "+33100000000",
                 "48.8584, 2.2945",
                 "https://scanny.app",
+                "Hello MMS",
                 "Scanny: john@doe.fr",
                 "otpauth://totp/?secret=JBSWY3DPEHPK3PXP",
                 "1BoatSLRHtKNngkdXEeobR76b53LETtpyT",
@@ -468,6 +503,24 @@ class CodeMapperTest {
                 CodeAction.OpenWallet(link = "bitcoin:1BoatSLRHtKNngkdXEeobR76b53LETtpyT?amount=0.5"),
             ),
             actual = actions,
+        )
+    }
+
+    @Test
+    fun `an mms is written in the messages app`() {
+        // Given
+        val mms = BarcodeContent.Mms(
+            phoneNumber = "+33600000000",
+            subject = "Hello",
+        )
+
+        // When
+        val action = mms.toCodeAction(canJoinWifi = { false })
+
+        // Then
+        assertEquals(
+            expected = CodeAction.WriteMms(link = platformMmsLink(mms = mms)),
+            actual = action,
         )
     }
 

@@ -62,6 +62,13 @@ sealed interface BarcodeContent {
         val message: String? = null,
     ) : BarcodeContent
 
+    /** A multimedia message: an SMS that has a subject. */
+    data class Mms(
+        val phoneNumber: String? = null,
+        val subject: String? = null,
+        val message: String? = null,
+    ) : BarcodeContent
+
     data class Wifi(
         val ssid: String,
         val encryption: WifiEncryption,
@@ -79,6 +86,8 @@ sealed interface BarcodeContent {
         val emails: List<String> = emptyList(),
         val addresses: List<String> = emptyList(),
         val urls: List<String> = emptyList(),
+        // The format the contact is written in: the one it was read in, for an edited contact to keep it
+        val format: ContactFormat = ContactFormat.VCARD,
     ) : BarcodeContent {
 
         /** The name to show: the formatted one, or else the first and last names. */

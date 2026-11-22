@@ -66,6 +66,13 @@ private fun BarcodeContent.toCreationForm(
             smsMessage = content.message.orEmpty(),
         )
 
+        is BarcodeContent.Mms -> CreationForm(
+            kind = CreationKind.MMS,
+            smsPhoneNumber = content.phoneNumber.orEmpty(),
+            mmsSubject = content.subject.orEmpty(),
+            smsMessage = content.message.orEmpty(),
+        )
+
         is BarcodeContent.Wifi -> CreationForm(
             kind = CreationKind.WIFI,
             wifiSsid = content.ssid,
@@ -82,6 +89,7 @@ private fun BarcodeContent.toCreationForm(
             contactOrganization = content.organization.orEmpty(),
             contactAddress = content.addresses.firstOrNull().orEmpty(),
             contactWebsite = content.urls.firstOrNull().orEmpty(),
+            contactFormat = content.format,
         )
 
         is BarcodeContent.Phone -> CreationForm(

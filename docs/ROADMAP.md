@@ -19,8 +19,8 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [x] Écran de permission refusée, avec un accès aux réglages de l'app
 - [x] Vibration après un scan (réglage) *(testée, non observée)*
 - [x] Ouverture automatique du contenu après un scan (réglage) : lien, e-mail, SMS, contact,
-      réseau Wi-Fi, téléphone, position, marque-page, clé à usage unique, paiement Bitcoin *(lien observé
-      sur le simulateur iOS)*
+      réseau Wi-Fi, téléphone, position, marque-page, clé à usage unique, paiement Bitcoin, MMS *(lien
+      observé sur le simulateur iOS)*
 - [x] Détection en pause tant qu'un résultat est affiché *(testée)*
 
 ### Détail d'un scan
@@ -28,7 +28,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [x] Type (icône et libellé) et format du code
 - [x] Contenu formaté et contenu brut (le brut selon le réglage), chaque partie copiable, le code
       partageable (sa valeur brute)
-- [x] Action selon le type : URL → ouvrir ; email → écrire le mail ; SMS → écrire le SMS ;
+- [x] Action selon le type : URL → ouvrir ; email → écrire le mail ; SMS, MMS → écrire le message ;
       WiFi → rejoindre le réseau (Android : l'écran du système à partir d'Android 11, les réglages
       Wi-Fi et le mot de passe copié sinon, avec un message dans tous les cas ; iOS plus tard) ; contact →
       l'ajouter aux contacts ; téléphone → appeler ; position → voir sur la carte ; marque-page →
@@ -64,7 +64,7 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - Nouveaux types de contenu, chacun lu, affiché avec son action, et créé :
   - [x] Téléphone (`tel:`), position (`geo:`), marque-page (`MEBKM:`)
   - [x] Mot de passe à usage unique (`otpauth://`), Bitcoin (`bitcoin:`)
-  - [ ] MMS, et le format MeCard pour un contact créé
+  - [x] MMS, et le format MeCard pour un contact créé
   - [ ] Événement (`VEVENT`), ajouté au calendrier
 - [ ] Création de Data Matrix, Aztec et PDF417, l'éditeur partagé entre QR code, code 2D et
       code-barres

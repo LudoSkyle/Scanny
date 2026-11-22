@@ -4,6 +4,7 @@ import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeGradient
 import fr.skyle.scanny.domain.model.CodeLogoMargin
 import fr.skyle.scanny.domain.model.CodeShape
+import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.barcode
@@ -45,6 +46,8 @@ import fr.skyle.scanny.resources.logo_margin_large
 import fr.skyle.scanny.resources.logo_margin_none
 import fr.skyle.scanny.resources.logo_margin_normal
 import fr.skyle.scanny.resources.logo_needs_highest_correction
+import fr.skyle.scanny.resources.mecard
+import fr.skyle.scanny.resources.mms
 import fr.skyle.scanny.resources.otp
 import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.shape_circle
@@ -52,6 +55,7 @@ import fr.skyle.scanny.resources.shape_rounded
 import fr.skyle.scanny.resources.shape_square
 import fr.skyle.scanny.resources.sms
 import fr.skyle.scanny.resources.text
+import fr.skyle.scanny.resources.vcard
 import fr.skyle.scanny.resources.wifi
 import fr.skyle.scanny.resources.wifi_security_none
 import fr.skyle.scanny.resources.wifi_security_wep
@@ -70,6 +74,7 @@ internal fun CreationKind.toText(): StringResource =
         CreationKind.LINK -> Res.string.link
         CreationKind.EMAIL -> Res.string.email
         CreationKind.SMS -> Res.string.sms
+        CreationKind.MMS -> Res.string.mms
         CreationKind.PHONE -> Res.string.phone
         CreationKind.WIFI -> Res.string.wifi
         CreationKind.CONTACT -> Res.string.contact
@@ -78,6 +83,12 @@ internal fun CreationKind.toText(): StringResource =
         CreationKind.OTP -> Res.string.otp
         CreationKind.BITCOIN -> Res.string.bitcoin
         CreationKind.BARCODE -> Res.string.barcode
+    }
+
+internal fun ContactFormat.toText(): StringResource =
+    when (this) {
+        ContactFormat.VCARD -> Res.string.vcard
+        ContactFormat.MECARD -> Res.string.mecard
     }
 
 internal fun WifiEncryption.toText(): StringResource =

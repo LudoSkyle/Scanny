@@ -57,6 +57,14 @@ internal fun CreationForm.toBarcodeContent(): BarcodeContent? =
             )
         }
 
+        CreationKind.MMS -> smsPhoneNumber.trim().takeIf { phoneNumber -> phoneNumber.isNotEmpty() }?.let { phoneNumber ->
+            BarcodeContent.Mms(
+                phoneNumber = phoneNumber,
+                subject = mmsSubject.ifBlank { null },
+                message = smsMessage.ifBlank { null },
+            )
+        }
+
         CreationKind.PHONE -> phoneNumber.trim().takeIf { phoneNumber -> phoneNumber.isNotEmpty() }?.let { phoneNumber ->
             BarcodeContent.Phone(phoneNumber = phoneNumber)
         }
@@ -71,6 +79,7 @@ internal fun CreationForm.toBarcodeContent(): BarcodeContent? =
                 emails = listOfNotNull(contactEmail.trim().ifEmpty { null }),
                 addresses = listOfNotNull(contactAddress.trim().ifEmpty { null }),
                 urls = listOfNotNull(contactWebsite.trim().ifEmpty { null }),
+                format = contactFormat,
             )
         }
 

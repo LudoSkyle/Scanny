@@ -12,6 +12,13 @@ fun BarcodeContent.Email.toMailtoLink(): String =
 fun BarcodeContent.Sms.toSmsLink(): String =
     BarcodeContentEncoder.smsLink(sms = this)
 
+/**
+ * The mms: link that opens the messages app on this message, written, its subject on its first line: the
+ * messages apps leave out the subject of a link.
+ */
+fun BarcodeContent.Mms.toMmsLink(): String =
+    BarcodeContentEncoder.mmsLink(mms = this)
+
 /** The tel: link that opens the phone app on this number, to call it. */
 fun BarcodeContent.Phone.toTelLink(): String =
     BarcodeContentEncoder.encode(content = this)

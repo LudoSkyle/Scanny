@@ -1,6 +1,7 @@
 package fr.skyle.scanny.ui.screen.createcode.ui.model
 
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 
@@ -15,8 +16,10 @@ data class CreationForm(
     val emailAddress: String = "",
     val emailSubject: String = "",
     val emailBody: String = "",
+    // The number and the message of an SMS or of an MMS, kept from one to the other
     val smsPhoneNumber: String = "",
     val smsMessage: String = "",
+    val mmsSubject: String = "",
     val phoneNumber: String = "",
     val wifiSsid: String = "",
     val wifiEncryption: WifiEncryption = WifiEncryption.WPA,
@@ -28,6 +31,7 @@ data class CreationForm(
     val contactOrganization: String = "",
     val contactAddress: String = "",
     val contactWebsite: String = "",
+    val contactFormat: ContactFormat = ContactFormat.VCARD,
     // As typed: a decimal comma or point
     val locationLatitude: String = "",
     val locationLongitude: String = "",
