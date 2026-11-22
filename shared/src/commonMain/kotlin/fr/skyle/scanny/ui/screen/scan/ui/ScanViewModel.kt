@@ -130,7 +130,12 @@ class ScanViewModel(
                 } else {
                     _uiState.update { uiState ->
                         uiState.copy(
-                            result = ScanResult.Code(item = scannedCode.toScanResultItem(canJoinWifi = wifiNetworkSupport::canJoin)),
+                            result = ScanResult.Code(
+                                item = scannedCode.toScanResultItem(
+                                    canJoinWifi = wifiNetworkSupport::canJoin,
+                                    isRawContentShown = settings.isRawContentShown,
+                                ),
+                            ),
                         )
                     }
                 }
@@ -246,13 +251,17 @@ class ScanViewModel(
         viewModelScope.launch {
             try {
                 val scan = recordScanUseCase(barcodes = multipleScanBarcodes.toList())
+                val settings = watchScanSettingsUseCase().first()
 
                 multipleScanBarcodes.clear()
                 multipleScanCandidates.clear()
                 _uiState.update { uiState ->
                     uiState.copy(
                         multipleScan = null,
-                        result = scan.toScanResult(canJoinWifi = wifiNetworkSupport::canJoin),
+                        result = scan.toScanResult(
+                            canJoinWifi = wifiNetworkSupport::canJoin,
+                            isRawContentShown = settings.isRawContentShown,
+                        ),
                     )
                 }
             } catch (exception: CancellationException) {

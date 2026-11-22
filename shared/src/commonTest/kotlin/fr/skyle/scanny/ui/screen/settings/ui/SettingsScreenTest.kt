@@ -18,6 +18,7 @@ import fr.skyle.scanny.resources.beep_after_scan
 import fr.skyle.scanny.resources.give_feedback
 import fr.skyle.scanny.resources.keep_history
 import fr.skyle.scanny.resources.rate_app
+import fr.skyle.scanny.resources.raw_content_after_scan
 import fr.skyle.scanny.resources.retention_forever
 import fr.skyle.scanny.resources.retention_one_month
 import fr.skyle.scanny.resources.scan_preferences
@@ -59,6 +60,26 @@ internal class SettingsScreenTest : ComposeTest() {
         // Then
         assertEquals(
             expected = listOf(ScanSetting.BEEP_AFTER_SCAN to false),
+            actual = changes,
+        )
+    }
+
+    @Test
+    fun `the raw content after a scan is turned on from its row`() = runComposeUiTest {
+        // Given
+        val changes = mutableListOf<Pair<ScanSetting, Boolean>>()
+        setContent {
+            settingsScreen(
+                onSettingChanged = { setting, isEnabled -> changes += setting to isEnabled },
+            )
+        }
+
+        // When
+        onNodeWithText(getString(Res.string.raw_content_after_scan)).performScrollTo().performClick()
+
+        // Then
+        assertEquals(
+            expected = listOf(ScanSetting.RAW_CONTENT_SHOWN to true),
             actual = changes,
         )
     }
@@ -116,6 +137,7 @@ internal class SettingsScreenTest : ComposeTest() {
                     isCopyAfterScanEnabled = false,
                     isOpenContentAfterScanEnabled = false,
                     isFrontCameraUsed = false,
+                    isRawContentShown = false,
                 ),
                 historySettings = HistorySettings(
                     isScanHistoryEnabled = true,

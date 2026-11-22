@@ -40,6 +40,7 @@ import fr.skyle.scanny.resources.ic_content_copy
 import fr.skyle.scanny.resources.ic_control_point_duplicate
 import fr.skyle.scanny.resources.ic_domain
 import fr.skyle.scanny.resources.ic_history
+import fr.skyle.scanny.resources.ic_notes
 import fr.skyle.scanny.resources.ic_open_in_new
 import fr.skyle.scanny.resources.ic_qr_code
 import fr.skyle.scanny.resources.ic_shield
@@ -53,6 +54,7 @@ import fr.skyle.scanny.resources.open_content_after_scan
 import fr.skyle.scanny.resources.openium
 import fr.skyle.scanny.resources.privacy_policy
 import fr.skyle.scanny.resources.rate_app
+import fr.skyle.scanny.resources.raw_content_after_scan
 import fr.skyle.scanny.resources.save_creations_in_history
 import fr.skyle.scanny.resources.save_scans_in_history
 import fr.skyle.scanny.resources.scan_preferences
@@ -163,6 +165,16 @@ fun SettingsScreen(
                         title = stringResource(Res.string.open_content_after_scan),
                         isChecked = settings.isOpenContentAfterScanEnabled,
                         onCheckedChange = { isEnabled -> onSettingChanged(ScanSetting.OPEN_CONTENT_AFTER_SCAN, isEnabled) },
+                    )
+
+                    SettingsRowDivider(modifier = Modifier.fillMaxWidth())
+
+                    SettingsSwitchRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = painterResource(Res.drawable.ic_notes),
+                        title = stringResource(Res.string.raw_content_after_scan),
+                        isChecked = settings.isRawContentShown,
+                        onCheckedChange = { isEnabled -> onSettingChanged(ScanSetting.RAW_CONTENT_SHOWN, isEnabled) },
                     )
 
                     SettingsRowDivider(modifier = Modifier.fillMaxWidth())
@@ -309,6 +321,7 @@ private fun PreviewSettingsScreen() {
                 isCopyAfterScanEnabled = false,
                 isOpenContentAfterScanEnabled = false,
                 isFrontCameraUsed = false,
+                isRawContentShown = false,
             ),
             historySettings = HistorySettings(
                 isScanHistoryEnabled = true,

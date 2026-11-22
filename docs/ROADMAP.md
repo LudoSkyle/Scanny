@@ -256,7 +256,7 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] La forme et la marge du logo, dans les options avancées de la personnalisation
     - [x] Une couleur saisie en hexadécimal ou en RVB
     - [x] La snackbar « Voir » après l'enregistrement d'une image
-    - [ ] Le contenu brut plus visible replié, et son réglage pour la feuille d'un scan
+    - [x] Le contenu brut plus visible replié, et son réglage pour la feuille d'un scan
     - [ ] La ligne d'un groupe dans l'historique, et la séparation dans son détail
     - [ ] Les fiches « i » du type et du format
 12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI. Deux remarques

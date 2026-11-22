@@ -181,6 +181,7 @@
     <string name="qr_code" translatable="false">QR Code</string>
     <string name="rate_app">Rate the app</string>
     <string name="raw_content">Raw content</string>
+    <string name="raw_content_after_scan">Show the raw content after a scan</string>
     <string name="recipient">Recipient</string>
     <string name="remove_logo">Remove the logo</string>
     <string name="retention_forever">Forever</string>
