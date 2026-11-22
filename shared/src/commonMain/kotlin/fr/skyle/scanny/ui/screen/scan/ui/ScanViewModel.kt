@@ -307,8 +307,11 @@ class ScanViewModel(
         try {
             contactAdder.addContact(contact = contact)
         } catch (exception: Exception) {
-            // Under the sheet, a message would not be seen: the failure is only logged
             Logger.e(throwable = exception) { "Failed to open the addition of a scanned contact" }
+
+            viewModelScope.launch {
+                _event.send(ScanEvent.ContactNotAdded)
+            }
         }
     }
 
@@ -394,6 +397,7 @@ class ScanViewModel(
         data class OpenContent(val action: CodeAction) : ScanEvent
         data object NoCodeInImage : ScanEvent
         data object ScanNotSaved : ScanEvent
+        data object ContactNotAdded : ScanEvent
         data class OpenScanDetail(val codeId: Long) : ScanEvent
         data class OpenScanGroup(val scanId: Long) : ScanEvent
         data object ConfirmCodesDiscard : ScanEvent
