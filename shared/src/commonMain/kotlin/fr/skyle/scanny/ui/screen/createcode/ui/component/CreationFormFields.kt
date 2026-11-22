@@ -25,6 +25,7 @@ import fr.skyle.scanny.resources.algorithm
 import fr.skyle.scanny.resources.altitude_in_meters
 import fr.skyle.scanny.resources.amount_in_bitcoins
 import fr.skyle.scanny.resources.barcode_value
+import fr.skyle.scanny.resources.barcode_value_example
 import fr.skyle.scanny.resources.blind_carbon_copy
 import fr.skyle.scanny.resources.carbon_copy
 import fr.skyle.scanny.resources.counter
@@ -49,6 +50,7 @@ import fr.skyle.scanny.resources.uncertainty_in_meters
 import fr.skyle.scanny.ui.core.code.mapper.toBarcodeType
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
+import fr.skyle.scanny.ui.screen.createcode.ui.mapper.exampleValue
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toText
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationFamily
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
@@ -92,6 +94,9 @@ fun CreationFormFields(
                 onValueChange = { value -> onFormChanged(form.copy(barcodeValue = value)) },
                 label = stringResource(Res.string.barcode_value),
                 isRequired = true,
+                supportingText = form.barcodeFormat.exampleValue?.let { example ->
+                    stringResource(Res.string.barcode_value_example, example)
+                },
             )
         } else {
             when (form.kind) {

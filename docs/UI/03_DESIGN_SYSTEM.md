@@ -130,7 +130,8 @@ object SCTheme {
   s'ajoute avec le composant qui en a besoin.
 - Une valeur à lire caractère par caractère (un numéro, un code) s'écrit entre accents graves dans
   sa chaîne, et s'affiche par `SCTextWithCode` dans le style `code` de `SCTypography` : la police à
-  chasse fixe du système, sur une teinte, à la taille du texte qui l'entoure.
+  chasse fixe du système, sur une teinte, à la taille du texte qui l'entoure. `SCTextField` montre
+  ainsi son `supportingText`, l'aide sous le champ.
 - Un écran affiche un texte avec `SCText` et un message court par un `SCSnackbarState` donné à
   `SCScreenStructure` : il ne voit jamais `Text` ni `SnackbarHostState` de Material. Une feuille qui
   cache l'écran a ses propres messages (`snackbarState` de `SCBottomSheet`), vidés à sa fermeture
