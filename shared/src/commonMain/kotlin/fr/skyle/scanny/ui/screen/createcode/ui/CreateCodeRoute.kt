@@ -14,7 +14,9 @@ import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.platform.gallery.rememberLogoPicker
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.creation_not_saved
+import fr.skyle.scanny.resources.customization_reset
 import fr.skyle.scanny.resources.logo_not_read
+import fr.skyle.scanny.resources.undo
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationSource
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
 import kotlinx.coroutines.launch
@@ -52,6 +54,17 @@ fun CreateCodeRoute(
                     CreateCodeViewModel.CreateCodeEvent.LogoNotRead -> launch {
                         snackbarState.show(message = getString(Res.string.logo_not_read))
                     }
+
+                    // A logo picked would be lost with it: the reset can be undone
+                    CreateCodeViewModel.CreateCodeEvent.StyleReset -> launch {
+                        val isUndoClicked = snackbarState.show(
+                            message = getString(Res.string.customization_reset),
+                            actionLabel = getString(Res.string.undo),
+                        )
+                        if (isUndoClicked) {
+                            viewModel.onUndoStyleResetClicked()
+                        }
+                    }
                 }
             }
         }
@@ -71,6 +84,7 @@ fun CreateCodeRoute(
         errorCorrectionChoices = uiState.errorCorrectionChoices,
         logoBlocker = uiState.logoBlocker,
         style = uiState.style,
+        canResetStyle = uiState.canResetStyle,
         step = uiState.step,
         isCreating = uiState.isCreating,
         snackbarState = snackbarState,
@@ -82,6 +96,7 @@ fun CreateCodeRoute(
         },
         onFormChanged = viewModel::onFormChanged,
         onStyleChanged = viewModel::onStyleChanged,
+        onResetStyleClicked = viewModel::onResetStyleClicked,
         onAddLogoClicked = pickLogo,
         onNextClicked = viewModel::onNextClicked,
         onCreateClicked = viewModel::onCreateClicked,

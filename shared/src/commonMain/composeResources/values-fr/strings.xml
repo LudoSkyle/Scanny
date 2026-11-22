@@ -72,6 +72,7 @@
     <string name="creation_not_saved">Le code n'a pas pu être créé</string>
     <string name="creations">Créations</string>
     <string name="customization">Personnalisation</string>
+    <string name="customization_reset">Personnalisation réinitialisée</string>
     <string name="day_date">%1$d %2$s %3$d</string>
     <string name="delete">Supprimer</string>
     <string name="delete_code_question">Supprimer ce code ?</string>
@@ -185,6 +186,7 @@
     <string name="raw_content_after_scan">Afficher le contenu brut après un scan</string>
     <string name="recipient">Destinataire</string>
     <string name="remove_logo">Retirer le logo</string>
+    <string name="reset_customization">Réinitialiser la personnalisation</string>
     <string name="retention_forever">Toujours</string>
     <string name="retention_one_month">30 jours</string>
     <string name="retention_one_week">7 jours</string>
@@ -228,6 +230,7 @@
     <string name="type_sms_info">Un SMS à envoyer : son numéro, parfois son message. Scanny ouvre vos messages avec eux.</string>
     <string name="type_text_info">Un texte brut, lu tel quel. Scanny l'affiche et le copie.</string>
     <string name="type_wifi_info">Le nom, la sécurité et le mot de passe d'un réseau Wi-Fi, pour le rejoindre sans les saisir.</string>
+    <string name="undo">Annuler</string>
     <string name="use_front_camera">Utiliser la caméra avant</string>
     <string name="value_not_for_format">Cette valeur ne convient pas à ce format.</string>
     <string name="version_and_build">Version %1$s (build %2$s)</string>

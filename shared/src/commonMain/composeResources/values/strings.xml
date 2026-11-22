@@ -79,6 +79,7 @@
     <string name="creation_not_saved">The code could not be created</string>
     <string name="creations">Creations</string>
     <string name="customization">Customization</string>
+    <string name="customization_reset">Customization reset</string>
     <string name="data_matrix" translatable="false">Data Matrix</string>
     <string name="day_date">%2$s %1$d, %3$d</string>
     <string name="delete">Delete</string>
@@ -200,6 +201,7 @@
     <string name="raw_content_after_scan">Show the raw content after a scan</string>
     <string name="recipient">Recipient</string>
     <string name="remove_logo">Remove the logo</string>
+    <string name="reset_customization">Reset the customization</string>
     <string name="retention_forever">Forever</string>
     <string name="retention_one_month">30 days</string>
     <string name="retention_one_week">7 days</string>
@@ -244,6 +246,7 @@
     <string name="type_sms_info">A text message to send: its number, and sometimes its message. Scanny opens your messages with them.</string>
     <string name="type_text_info">Plain text, read as it is. Scanny shows it and copies it.</string>
     <string name="type_wifi_info">The name, the security and the password of a Wi-Fi network, to join it without typing them.</string>
+    <string name="undo">Undo</string>
     <string name="upc_a" translatable="false">UPC-A</string>
     <string name="upc_e" translatable="false">UPC-E</string>
     <string name="use_front_camera">Use the front camera</string>

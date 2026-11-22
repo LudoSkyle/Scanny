@@ -174,6 +174,9 @@ format, son style, sa date.
   leur), aux points un dégradé vers une seconde couleur, et, une fois un logo posé, sa forme et sa
   marge. qrose ne donne de forme qu'à l'espace dégagé autour du logo : le logo est découpé à sa
   forme par `ShapedLogoPainter`. Sans marge, il est posé sur les points.
+- La barre du haut de la personnalisation la réinitialise : retour au style par défaut, la correction
+  choisie avec le contenu gardée. Un logo s'y perdrait : un message propose d'annuler, tant que la
+  personnalisation n'a pas changé depuis.
 - L'avertissement de lisibilité juge les points, les coins et la seconde couleur du dégradé : plus
   sombres que le fond, et moins de moitié aussi lumineux que lui, dans la luminance que ZXing lit
   (`scannerLuminance` : rouge, deux fois le vert et bleu, sur quatre, en nombres entiers). Le
