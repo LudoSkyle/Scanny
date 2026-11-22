@@ -30,6 +30,17 @@ data class CreationForm(
     val wifiEncryption: WifiEncryption = WifiEncryption.WPA,
     val wifiPassword: String = "",
     val isWifiHidden: Boolean = false,
+    // The modes not to fall back from, one per kind of network
+    val isWifiWpa3Only: Boolean = false,
+    val isWifiEnhancedOpenOnly: Boolean = false,
+    val isWifiWpa3EnterpriseOnly: Boolean = false,
+    val wifiPasswordIdentifier: String = "",
+    val wifiPublicKey: String = "",
+    val wifiEapMethod: String = "PEAP",
+    val wifiIdentity: String = "",
+    val wifiAnonymousIdentity: String = "",
+    // Null for none
+    val wifiPhase2Method: String? = "MSCHAPV2",
     // A contact: its name in parts, and as shown when it differs from them
     val contactNamePrefix: String = "",
     val contactFirstName: String = "",

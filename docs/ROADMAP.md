@@ -67,10 +67,10 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
         (`bitcoin:`)
   - [x] MMS, et le format MeCard pour un contact créé
   - [ ] Événement (`VEVENT`), ajouté au calendrier
-- [ ] Chaque champ de la spec de chaque contenu à la création, les obligatoires marqués d'un
-      astérisque : fait pour la clé à usage unique, l'e-mail (plusieurs destinataires, copie, copie
-      cachée), la position (altitude, incertitude) et le contact (vCard et MeCard complets) ; à faire
-      pour le Wi-Fi (réseaux d'entreprise)
+- [x] Chaque champ de la spec de chaque contenu à la création, les obligatoires marqués d'un
+      astérisque : la clé à usage unique, l'e-mail (plusieurs destinataires, copie, copie cachée), la
+      position (altitude, incertitude), le contact (vCard et MeCard complets) et le Wi-Fi (modes sans
+      repli, SAE, SAE-PK et Enhanced Open de la spécification WPA3, réseaux d'entreprise)
 - [ ] Création de Data Matrix, Aztec et PDF417, l'éditeur partagé entre QR code, code 2D et
       code-barres
 - Pistes, non engagées : avis et mise à jour depuis l'app.

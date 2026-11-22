@@ -11,6 +11,7 @@ import fr.skyle.scanny.domain.model.ContactWebsite
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.model.WifiTransitionMode
 
 /**
  * Interprets the raw text of a code. Both platforms go through it, and never through the typed
@@ -55,14 +56,21 @@ internal object BarcodeContentParser {
         val ssid = fields.valueOf(key = "S")?.takeIf { it.isNotEmpty() } ?: return null
         val password = fields.valueOf(key = "P")?.takeIf { it.isNotEmpty() }
 
-        val encryption = when (fields.valueOf(key = "T")?.uppercase()) {
-            "NOPASS", "" -> WifiEncryption.NONE
-            "WEP" -> WifiEncryption.WEP
-            "SAE", "WPA3" -> WifiEncryption.WPA3
+        val type = fields.valueOf(key = "T")?.uppercase()
+        val encryption = when {
+            type == "NOPASS" || type == "" -> WifiEncryption.NONE
+            type == "WEP" -> WifiEncryption.WEP
+            type?.endsWith("EAP") == true -> WifiEncryption.WPA_ENTERPRISE
             // No type is an open network, unless it gives a password anyway
-            null -> if (password != null) WifiEncryption.WPA else WifiEncryption.NONE
+            type == null -> if (password != null) WifiEncryption.WPA else WifiEncryption.NONE
             else -> WifiEncryption.WPA
         }
+        // The bitmap of the modes not to fall back from, in hexadecimal. "SAE" and "WPA3", types older
+        // writers give, are the WPA3-Personal only mode the specification writes "T:WPA;R:1"
+        val bitmap = fields.valueOf(key = "R")?.trim()?.toIntOrNull(radix = 16) ?: 0
+        val transitionDisable = WifiTransitionMode.entries.filter { mode -> bitmap and (1 shl mode.bit) != 0 }.toSet() +
+            setOfNotNull(WifiTransitionMode.WPA3_PERSONAL.takeIf { type == "SAE" || type == "WPA3" })
+        val isEnterprise = encryption == WifiEncryption.WPA_ENTERPRISE
 
         return BarcodeContent.Wifi(
             ssid = ssid,
@@ -72,6 +80,14 @@ internal object BarcodeContentParser {
                 other = "true",
                 ignoreCase = true,
             ),
+            transitionDisable = transitionDisable,
+            // "I:" is the identity of an enterprise network for ZXing, the identifier of an SAE password else
+            passwordIdentifier = fields.valueOf(key = "I").nullIfBlank().takeUnless { isEnterprise },
+            publicKey = fields.valueOf(key = "K").nullIfBlank(),
+            eapMethod = fields.valueOf(key = "E").nullIfBlank()?.uppercase().takeIf { isEnterprise },
+            identity = fields.valueOf(key = "I").nullIfBlank().takeIf { isEnterprise },
+            anonymousIdentity = fields.valueOf(key = "A").nullIfBlank().takeIf { isEnterprise },
+            phase2Method = fields.valueOf(key = "PH2").nullIfBlank()?.uppercase().takeIf { isEnterprise },
         )
     }
 

@@ -12,6 +12,7 @@ import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.model.WifiTransitionMode
 import fr.skyle.scanny.platform.link.platformMapsLink
 import fr.skyle.scanny.platform.link.platformMmsLink
 import fr.skyle.scanny.platform.link.platformSmsLink
@@ -50,8 +51,9 @@ class CodeMapperTest {
         // Given
         val content = BarcodeContent.Wifi(
             ssid = "Scanny",
-            encryption = WifiEncryption.WPA3,
+            encryption = WifiEncryption.WPA,
             password = "secret",
+            transitionDisable = setOf(WifiTransitionMode.WPA3_PERSONAL),
         )
 
         // When
@@ -71,6 +73,101 @@ class CodeMapperTest {
                 field(
                     label = CodeFieldLabel.PASSWORD,
                     value = "secret",
+                ),
+            ),
+            actual = fields,
+        )
+    }
+
+    @Test
+    fun `an enterprise network shows its method its identities and its phase 2`() {
+        // Given
+        val content = BarcodeContent.Wifi(
+            ssid = "Corp",
+            encryption = WifiEncryption.WPA_ENTERPRISE,
+            password = "secret",
+            eapMethod = "PEAP",
+            identity = "john@corp",
+            anonymousIdentity = "anon",
+            phase2Method = "MSCHAPV2",
+        )
+
+        // When
+        val fields = content.toCodeFields()
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                field(
+                    label = CodeFieldLabel.NETWORK,
+                    value = "Corp",
+                ),
+                field(
+                    label = CodeFieldLabel.SECURITY,
+                    value = "WPA2/WPA3-Enterprise",
+                ),
+                field(
+                    label = CodeFieldLabel.EAP_METHOD,
+                    value = "PEAP",
+                ),
+                field(
+                    label = CodeFieldLabel.IDENTITY,
+                    value = "john@corp",
+                ),
+                field(
+                    label = CodeFieldLabel.ANONYMOUS_IDENTITY,
+                    value = "anon",
+                ),
+                field(
+                    label = CodeFieldLabel.PHASE2_METHOD,
+                    value = "MSCHAPV2",
+                ),
+                field(
+                    label = CodeFieldLabel.PASSWORD,
+                    value = "secret",
+                ),
+            ),
+            actual = fields,
+        )
+    }
+
+    @Test
+    fun `a wpa3 sae-pk network shows its password identifier and its public key`() {
+        // Given
+        val content = BarcodeContent.Wifi(
+            ssid = "MyNet",
+            encryption = WifiEncryption.WPA,
+            password = "a2bc-de3f-ghi4",
+            transitionDisable = setOf(WifiTransitionMode.WPA3_PERSONAL, WifiTransitionMode.SAE_PK),
+            passwordIdentifier = "john",
+            publicKey = "MDkwEwYH",
+        )
+
+        // When
+        val fields = content.toCodeFields()
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                field(
+                    label = CodeFieldLabel.NETWORK,
+                    value = "MyNet",
+                ),
+                field(
+                    label = CodeFieldLabel.SECURITY,
+                    value = "WPA3 SAE-PK",
+                ),
+                field(
+                    label = CodeFieldLabel.PASSWORD_IDENTIFIER,
+                    value = "john",
+                ),
+                field(
+                    label = CodeFieldLabel.PASSWORD,
+                    value = "a2bc-de3f-ghi4",
+                ),
+                field(
+                    label = CodeFieldLabel.PUBLIC_KEY,
+                    value = "MDkwEwYH",
                 ),
             ),
             actual = fields,

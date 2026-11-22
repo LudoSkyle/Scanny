@@ -282,12 +282,16 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   permet à une app, et dit ce qui en est sorti (`WifiJoinResult`) :
   - À partir d'Android 11, pour un réseau ouvert ou un WPA dont le système accepte le mot de passe
     (8 à 63 caractères ASCII imprimables), l'écran du système qui enregistre un réseau
-    (`ACTION_WIFI_ADD_NETWORKS`). Il ne s'affiche qu'à une app qui attend son résultat, d'où
+    (`ACTION_WIFI_ADD_NETWORKS`) : en SAE pour un réseau WPA3 seul (`setWpa3Passphrase`), en
+    Enhanced Open pour un réseau ouvert qui ne revient pas à l'ouvert simple (`setIsEnhancedOpen`).
+    Un réseau d'entreprise n'y passe pas : une suggestion ne le prend qu'avec le certificat de son
+    serveur, qu'un code ne porte pas. Il ne s'affiche qu'à une app qui attend son résultat, d'où
     `rememberLauncherForActivityResult`. Son résultat est une `ArrayList<Integer>`
     (`getIntegerArrayListExtra`, pas `getIntArrayExtra`) : enregistré, déjà enregistré (l'écran se
     ferme aussitôt, sans rien montrer), refusé ; sans résultat, l'utilisateur a annulé.
   - Sinon (avant Android 11, où `WifiManager.addNetwork` échoue toujours pour une app qui vise
-    Android 10 et plus ; un WEP ; un mot de passe que l'écran refuserait), le mot de passe est copié,
+    Android 10 et plus ; un WEP ; un réseau d'entreprise ; un mot de passe que l'écran refuserait),
+    le mot de passe est copié,
     marqué sensible, et les réglages Wi-Fi s'ouvrent : le panneau par-dessus l'app à partir
     d'Android 10, l'écran des réglages avant.
   - Le message suit : « enregistré », ou « déjà enregistré » et « refusé » avec une action qui ouvre

@@ -18,6 +18,7 @@
     <string name="altitude_in_meters">Altitude in meters</string>
     <string name="amount">Amount</string>
     <string name="amount_in_bitcoins">Amount in BTC</string>
+    <string name="anonymous_identity">Anonymous identity</string>
     <string name="app_description">Scanny scans QR codes and barcodes, with the latest technologies and without advertising, while staying light and reliable.</string>
     <string name="app_name" translatable="false">Scanny</string>
     <string name="at_time">%1$s at %2$s</string>
@@ -117,8 +118,10 @@
     <string name="dot_shape">Shape of the dots</string>
     <string name="ean_13" translatable="false">EAN-13</string>
     <string name="ean_8" translatable="false">EAN-8</string>
+    <string name="eap_method">EAP method</string>
     <string name="edit_code">Edit the code</string>
     <string name="email">E-mail</string>
+    <string name="enhanced_open_only">Wi-Fi Enhanced Open only</string>
     <string name="error_correction">Error correction</string>
     <string name="error_correction_auto">Automatic</string>
     <string name="error_correction_auto_description">The lowest, the highest under a logo</string>
@@ -206,6 +209,7 @@
     <string name="home_email">Personal e-mail</string>
     <string name="home_phone">Home phone</string>
     <string name="home_website">Personal website</string>
+    <string name="identity">Identity</string>
     <string name="image_not_saved">The image could not be saved</string>
     <string name="image_not_shared">The image could not be shared</string>
     <string name="image_saved">Image saved to the photos</string>
@@ -272,9 +276,11 @@
     <string name="otp_type">Key type</string>
     <string name="pass_codes_in_front_of_camera">Pass the codes in front of the camera</string>
     <string name="password">Password</string>
+    <string name="password_identifier">Password identifier</string>
     <string name="pdf417" translatable="false">PDF417</string>
     <string name="period">Period</string>
     <string name="period_in_seconds">Period in seconds</string>
+    <string name="phase2_method">Phase 2 authentication</string>
     <string name="phone">Phone</string>
     <string name="phone_number">Phone number</string>
     <string name="place">Place</string>
@@ -298,6 +304,7 @@
     <string name="retention_one_week">7 days</string>
     <string name="retention_one_year">1 year</string>
     <string name="retention_three_months">90 days</string>
+    <string name="sae_pk_public_key">SAE-PK public key</string>
     <string name="save_creations_in_history">Save the creations in the history</string>
     <string name="save_image">Save the image</string>
     <string name="save_scans_in_history">Save the scans in the history</string>
@@ -358,12 +365,14 @@
     <string name="wifi_saved">“%1$s” saved: the device joins it when in range.</string>
     <string name="wifi_security_none">None</string>
     <string name="wifi_security_wep" translatable="false">WEP</string>
-    <string name="wifi_security_wpa" translatable="false">WPA/WPA2</string>
-    <string name="wifi_security_wpa3" translatable="false">WPA3</string>
+    <string name="wifi_security_wpa" translatable="false">WPA/WPA2/WPA3</string>
+    <string name="wifi_security_wpa_enterprise" translatable="false">WPA2/WPA3-Enterprise</string>
     <string name="work_address">Work address</string>
     <string name="work_email">Work e-mail</string>
     <string name="work_phone">Work phone</string>
     <string name="work_website">Work website</string>
+    <string name="wpa3_enterprise_only">WPA3-Enterprise only</string>
+    <string name="wpa3_only">WPA3 only</string>
     <string name="write_email">Write an e-mail</string>
     <string name="write_mms">Write an MMS</string>
     <string name="write_sms">Write an SMS</string>

@@ -17,7 +17,6 @@ import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
-import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.platform.keyboard.coordinateKeyboardType
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.account
@@ -36,16 +35,13 @@ import fr.skyle.scanny.resources.latitude
 import fr.skyle.scanny.resources.link
 import fr.skyle.scanny.resources.longitude
 import fr.skyle.scanny.resources.message
-import fr.skyle.scanny.resources.network
 import fr.skyle.scanny.resources.otp_type
-import fr.skyle.scanny.resources.password
 import fr.skyle.scanny.resources.period_in_seconds
 import fr.skyle.scanny.resources.phone_number
 import fr.skyle.scanny.resources.place
 import fr.skyle.scanny.resources.recipient
 import fr.skyle.scanny.resources.recipients
 import fr.skyle.scanny.resources.secret_key
-import fr.skyle.scanny.resources.security
 import fr.skyle.scanny.resources.subject
 import fr.skyle.scanny.resources.text
 import fr.skyle.scanny.resources.title
@@ -183,40 +179,11 @@ fun CreationFormFields(
                 keyboardType = KeyboardType.Phone,
             )
 
-            CreationKind.WIFI -> {
-                CreationTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = form.wifiSsid,
-                    onValueChange = { ssid -> onFormChanged(form.copy(wifiSsid = ssid)) },
-                    label = stringResource(Res.string.network),
-                    isRequired = true,
-                )
-                SCDropdownField(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = stringResource(Res.string.security),
-                    placeholder = stringResource(Res.string.security),
-                    options = WifiEncryption.entries,
-                    selectedOption = form.wifiEncryption,
-                    optionText = { encryption -> stringResource(encryption.toText()) },
-                    onOptionSelected = { encryption -> onFormChanged(form.copy(wifiEncryption = encryption)) },
-                    style = SCTextFieldDefaults.Style.LIGHT,
-                )
-                if (form.wifiEncryption != WifiEncryption.NONE) {
-                    CreationTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                        value = form.wifiPassword,
-                        onValueChange = { password -> onFormChanged(form.copy(wifiPassword = password)) },
-                        label = stringResource(Res.string.password),
-                        isRequired = true,
-                        keyboardType = KeyboardType.Password,
-                    )
-                }
-                HiddenNetworkRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    isHidden = form.isWifiHidden,
-                    onHiddenChange = { isHidden -> onFormChanged(form.copy(isWifiHidden = isHidden)) },
-                )
-            }
+            CreationKind.WIFI -> WifiFormFields(
+                modifier = Modifier.fillMaxWidth(),
+                form = form,
+                onFormChanged = onFormChanged,
+            )
 
             CreationKind.CONTACT -> ContactFormFields(
                 modifier = Modifier.fillMaxWidth(),

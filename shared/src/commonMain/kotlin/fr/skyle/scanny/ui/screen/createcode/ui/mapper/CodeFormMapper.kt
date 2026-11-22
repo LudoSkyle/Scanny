@@ -5,6 +5,8 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.ScannedCode
+import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.model.WifiTransitionMode
 import fr.skyle.scanny.domain.payload.toCoordinateText
 import fr.skyle.scanny.ui.core.code.mapper.toBarcodeType
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactAddressField
@@ -84,6 +86,15 @@ private fun BarcodeContent.toCreationForm(
             wifiEncryption = content.encryption,
             wifiPassword = content.password.orEmpty(),
             isWifiHidden = content.isHidden,
+            isWifiWpa3Only = WifiTransitionMode.WPA3_PERSONAL in content.transitionDisable,
+            isWifiEnhancedOpenOnly = WifiTransitionMode.ENHANCED_OPEN in content.transitionDisable,
+            isWifiWpa3EnterpriseOnly = WifiTransitionMode.WPA3_ENTERPRISE in content.transitionDisable,
+            wifiPasswordIdentifier = content.passwordIdentifier.orEmpty(),
+            wifiPublicKey = content.publicKey.orEmpty(),
+            wifiEapMethod = content.eapMethod ?: CreationForm().wifiEapMethod,
+            wifiIdentity = content.identity.orEmpty(),
+            wifiAnonymousIdentity = content.anonymousIdentity.orEmpty(),
+            wifiPhase2Method = if (content.encryption == WifiEncryption.WPA_ENTERPRISE) content.phase2Method else CreationForm().wifiPhase2Method,
         )
 
         is BarcodeContent.Contact -> CreationForm(

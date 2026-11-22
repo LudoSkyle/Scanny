@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.model.WifiTransitionMode
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.wifi_choose_in_settings
 import fr.skyle.scanny.resources.wifi_password_copied
@@ -83,8 +84,9 @@ internal actual fun rememberWifiNetworkJoiner(
 
 /**
  * Whether the screen of the system that saves a network takes [wifi]: from Android 11, an open network
- * or a WPA one with a passphrase the system accepts, never a WEP one. Before, an app can no longer save
- * a network itself: the Wi-Fi settings are left to the user.
+ * or a WPA one with a passphrase the system accepts, never a WEP one, nor an enterprise one, which a
+ * suggestion takes only with the certificate of its server. Before, an app can no longer save a network
+ * itself: the Wi-Fi settings are left to the user.
  */
 internal fun canSaveWithSystemScreen(
     wifi: BarcodeContent.Wifi,
@@ -92,10 +94,10 @@ internal fun canSaveWithSystemScreen(
 ): Boolean =
     sdkInt >= Build.VERSION_CODES.R && when (wifi.encryption) {
         WifiEncryption.NONE -> true
-        WifiEncryption.WEP -> false
-        WifiEncryption.WPA,
-        WifiEncryption.WPA3,
-        -> wifi.password?.isPassphrase() == true
+        WifiEncryption.WEP,
+        WifiEncryption.WPA_ENTERPRISE,
+        -> false
+        WifiEncryption.WPA -> wifi.password?.isPassphrase() == true
     }
 
 // What the system takes as a WPA passphrase: 8 to 63 printable ASCII characters
@@ -132,11 +134,14 @@ private fun addNetworkIntent(wifi: BarcodeContent.Wifi): Intent {
         .apply {
             val password = wifi.password
             when (wifi.encryption) {
-                WifiEncryption.WPA -> if (password != null) setWpa2Passphrase(password)
-                WifiEncryption.WPA3 -> if (password != null) setWpa3Passphrase(password)
-                // An open network has no passphrase, a WEP one never comes here
-                WifiEncryption.NONE,
+                // SAE only for a WPA3 only network, the passphrase of WPA2 else
+                WifiEncryption.WPA -> if (password != null) {
+                    if (WifiTransitionMode.WPA3_PERSONAL in wifi.transitionDisable) setWpa3Passphrase(password) else setWpa2Passphrase(password)
+                }
+                WifiEncryption.NONE -> setIsEnhancedOpen(WifiTransitionMode.ENHANCED_OPEN in wifi.transitionDisable)
+                // A WEP or an enterprise network never comes here
                 WifiEncryption.WEP,
+                WifiEncryption.WPA_ENTERPRISE,
                 -> Unit
             }
         }

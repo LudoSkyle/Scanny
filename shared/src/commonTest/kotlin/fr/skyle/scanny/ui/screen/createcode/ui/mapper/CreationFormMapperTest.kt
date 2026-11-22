@@ -11,6 +11,7 @@ import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.model.WifiTransitionMode
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactAddressField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactEntryField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
@@ -143,6 +144,109 @@ class CreationFormMapperTest {
                     ssid = "Scanny",
                     encryption = WifiEncryption.WPA,
                     password = "long enough",
+                ),
+            ),
+            actual = contents,
+        )
+    }
+
+    @Test
+    fun `a wpa3 only network takes a password of any length and a public key makes it sae-pk only`() {
+        // When
+        val contents = listOf(
+            CreationForm(
+                kind = CreationKind.WIFI,
+                wifiSsid = "Modern",
+                wifiPassword = "short",
+                isWifiWpa3Only = true,
+                wifiPasswordIdentifier = " john ",
+            ),
+            CreationForm(
+                kind = CreationKind.WIFI,
+                wifiSsid = "Modern",
+                wifiPassword = "a2bc-de3f-ghi4",
+                wifiPublicKey = " MDkwEwYH ",
+            ),
+        ).map { form -> form.toBarcodeContent() }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                BarcodeContent.Wifi(
+                    ssid = "Modern",
+                    encryption = WifiEncryption.WPA,
+                    password = "short",
+                    transitionDisable = setOf(WifiTransitionMode.WPA3_PERSONAL),
+                    passwordIdentifier = "john",
+                ),
+                BarcodeContent.Wifi(
+                    ssid = "Modern",
+                    encryption = WifiEncryption.WPA,
+                    password = "a2bc-de3f-ghi4",
+                    transitionDisable = setOf(WifiTransitionMode.WPA3_PERSONAL, WifiTransitionMode.SAE_PK),
+                    publicKey = "MDkwEwYH",
+                ),
+            ),
+            actual = contents,
+        )
+    }
+
+    @Test
+    fun `an enterprise network needs an identity and a password for the methods that take one`() {
+        // When
+        val contents = listOf(
+            CreationForm(
+                kind = CreationKind.WIFI,
+                wifiSsid = "Corp",
+                wifiEncryption = WifiEncryption.WPA_ENTERPRISE,
+                wifiPassword = "secret",
+            ),
+            CreationForm(
+                kind = CreationKind.WIFI,
+                wifiSsid = "Corp",
+                wifiEncryption = WifiEncryption.WPA_ENTERPRISE,
+                wifiIdentity = "john@corp",
+            ),
+            CreationForm(
+                kind = CreationKind.WIFI,
+                wifiSsid = "Corp",
+                wifiEncryption = WifiEncryption.WPA_ENTERPRISE,
+                wifiPassword = "secret",
+                wifiIdentity = " john@corp ",
+                wifiAnonymousIdentity = "anon",
+                isWifiWpa3EnterpriseOnly = true,
+            ),
+            // A certificate stands for the password of TLS, which opens no tunnel for a phase 2
+            CreationForm(
+                kind = CreationKind.WIFI,
+                wifiSsid = "Corp",
+                wifiEncryption = WifiEncryption.WPA_ENTERPRISE,
+                wifiPassword = "left out",
+                wifiEapMethod = "TLS",
+                wifiIdentity = "john@corp",
+            ),
+        ).map { form -> form.toBarcodeContent() }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                null,
+                null,
+                BarcodeContent.Wifi(
+                    ssid = "Corp",
+                    encryption = WifiEncryption.WPA_ENTERPRISE,
+                    password = "secret",
+                    transitionDisable = setOf(WifiTransitionMode.WPA3_ENTERPRISE),
+                    eapMethod = "PEAP",
+                    identity = "john@corp",
+                    anonymousIdentity = "anon",
+                    phase2Method = "MSCHAPV2",
+                ),
+                BarcodeContent.Wifi(
+                    ssid = "Corp",
+                    encryption = WifiEncryption.WPA_ENTERPRISE,
+                    eapMethod = "TLS",
+                    identity = "john@corp",
                 ),
             ),
             actual = contents,

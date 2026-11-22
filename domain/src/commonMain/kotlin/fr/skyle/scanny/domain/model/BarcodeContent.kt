@@ -86,11 +86,23 @@ sealed interface BarcodeContent {
         val message: String? = null,
     ) : BarcodeContent
 
+    /**
+     * A Wi-Fi network, with the fields of the "WIFI:" format of the WPA3 specification (the modes it does
+     * not fall back from, the identifier of an SAE password, the public key of SAE-PK) and, for an
+     * enterprise network, those of ZXing (the method of EAP, the identities, the phase 2).
+     */
     data class Wifi(
         val ssid: String,
         val encryption: WifiEncryption,
         val password: String? = null,
         val isHidden: Boolean = false,
+        val transitionDisable: Set<WifiTransitionMode> = emptySet(),
+        val passwordIdentifier: String? = null,
+        val publicKey: String? = null,
+        val eapMethod: String? = null,
+        val identity: String? = null,
+        val anonymousIdentity: String? = null,
+        val phase2Method: String? = null,
     ) : BarcodeContent
 
     /**

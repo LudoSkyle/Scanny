@@ -8,6 +8,7 @@ import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.model.WifiTransitionMode
 import fr.skyle.scanny.domain.payload.toBitcoinLink
 import fr.skyle.scanny.domain.payload.toCoordinateText
 import fr.skyle.scanny.domain.payload.toMailtoLink
@@ -161,7 +162,7 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
             ),
         )
 
-        // An open network has no security and no password to show
+        // An open network has no password to show, and no security unless it is Wi-Fi Enhanced Open only
         is BarcodeContent.Wifi -> listOfNotNull(
             codeField(
                 label = CodeFieldLabel.NETWORK,
@@ -169,12 +170,35 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
             ),
             codeField(
                 label = CodeFieldLabel.SECURITY,
-                // The names of the encryptions are the ones the settings of the phones show
-                value = encryption.name.takeIf { encryption != WifiEncryption.NONE },
+                value = securityText(),
+            ),
+            codeField(
+                label = CodeFieldLabel.EAP_METHOD,
+                value = eapMethod,
+            ),
+            codeField(
+                label = CodeFieldLabel.IDENTITY,
+                value = identity,
+            ),
+            codeField(
+                label = CodeFieldLabel.ANONYMOUS_IDENTITY,
+                value = anonymousIdentity,
+            ),
+            codeField(
+                label = CodeFieldLabel.PHASE2_METHOD,
+                value = phase2Method,
+            ),
+            codeField(
+                label = CodeFieldLabel.PASSWORD_IDENTIFIER,
+                value = passwordIdentifier,
             ),
             codeField(
                 label = CodeFieldLabel.PASSWORD,
                 value = password.takeIf { encryption != WifiEncryption.NONE },
+            ),
+            codeField(
+                label = CodeFieldLabel.PUBLIC_KEY,
+                value = publicKey,
             ),
         )
 
@@ -337,6 +361,19 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
                 value = message,
             ),
         )
+    }
+
+// The names the settings of the phones give, the same in every language: the narrowest the network allows
+private fun BarcodeContent.Wifi.securityText(): String? =
+    when (encryption) {
+        WifiEncryption.NONE -> "Wi-Fi Enhanced Open".takeIf { WifiTransitionMode.ENHANCED_OPEN in transitionDisable }
+        WifiEncryption.WEP -> "WEP"
+        WifiEncryption.WPA -> when {
+            WifiTransitionMode.SAE_PK in transitionDisable -> "WPA3 SAE-PK"
+            WifiTransitionMode.WPA3_PERSONAL in transitionDisable -> "WPA3"
+            else -> "WPA/WPA2/WPA3"
+        }
+        WifiEncryption.WPA_ENTERPRISE -> if (WifiTransitionMode.WPA3_ENTERPRISE in transitionDisable) "WPA3-Enterprise" else "WPA2/WPA3-Enterprise"
     }
 
 private fun ContactPhoneType.toCodeFieldLabel(): CodeFieldLabel =

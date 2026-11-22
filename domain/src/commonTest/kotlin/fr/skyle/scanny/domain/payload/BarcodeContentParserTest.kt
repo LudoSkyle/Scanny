@@ -11,6 +11,7 @@ import fr.skyle.scanny.domain.model.ContactWebsite
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.model.WifiTransitionMode
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -167,7 +168,7 @@ class BarcodeContentParserTest {
     }
 
     @Test
-    fun `a sae network is a wpa3 network`() {
+    fun `a sae network is a wpa3 network only`() {
         // Given
         val rawValue = "WIFI:T:SAE;S:Modern;P:secret;;"
 
@@ -178,12 +179,79 @@ class BarcodeContentParserTest {
         assertEquals(
             expected = BarcodeContent.Wifi(
                 ssid = "Modern",
-                encryption = WifiEncryption.WPA3,
+                encryption = WifiEncryption.WPA,
                 password = "secret",
+                transitionDisable = setOf(WifiTransitionMode.WPA3_PERSONAL),
             ),
             actual = content,
         )
     }
+
+    @Test
+    fun `a wpa3 network gives the modes it does not fall back from its password identifier and its public key`() {
+        // Given
+        val rawValue = "WIFI:T:WPA;R:3;S:MyNet;I:john;P:a2bc-de3f-ghi4;K:MDkwEwYHKoZIzj0CAQ==;;"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Wifi(
+                ssid = "MyNet",
+                encryption = WifiEncryption.WPA,
+                password = "a2bc-de3f-ghi4",
+                transitionDisable = setOf(WifiTransitionMode.WPA3_PERSONAL, WifiTransitionMode.SAE_PK),
+                passwordIdentifier = "john",
+                publicKey = "MDkwEwYHKoZIzj0CAQ==",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an enterprise network gives its eap method its identities and its phase 2`() {
+        // Given
+        val rawValue = "WIFI:T:WPA2-EAP;R:4;S:Corp;P:secret;E:peap;A:anon;I:john@corp;PH2:mschapv2;;"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Wifi(
+                ssid = "Corp",
+                encryption = WifiEncryption.WPA_ENTERPRISE,
+                password = "secret",
+                transitionDisable = setOf(WifiTransitionMode.WPA3_ENTERPRISE),
+                eapMethod = "PEAP",
+                identity = "john@corp",
+                anonymousIdentity = "anon",
+                phase2Method = "MSCHAPV2",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an enhanced open network only does not fall back to an open one`() {
+        // Given
+        val rawValue = "WIFI:T:nopass;R:8;S:Cafe;;"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Wifi(
+                ssid = "Cafe",
+                encryption = WifiEncryption.NONE,
+                transitionDisable = setOf(WifiTransitionMode.ENHANCED_OPEN),
+            ),
+            actual = content,
+        )
+    }
+
 
     @Test
     fun `a hidden wifi network is flagged`() {
@@ -1295,6 +1363,8 @@ class BarcodeContentParserTest {
             "WIFI:S:",
             "WIFI:S:\\",
             "WIFI:S:\"",
+            "WIFI:R:zz;S:a;;",
+            "WIFI:T:WPA2-EAP;S:a;I:;E:;;",
             "MECARD:",
             "MECARD:N:,",
             "MATMSG:",

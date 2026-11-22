@@ -11,6 +11,7 @@ import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.ContactWebsite
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.model.WifiTransitionMode
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 
@@ -257,27 +258,66 @@ private fun CreationForm.toBitcoin(): BarcodeContent.Bitcoin? {
     )
 }
 
-// A name; a password for a network that asks for one, of the length WPA needs
+/** The methods of EAP an enterprise network is joined with, as the WIFI: format of ZXing names them. */
+internal val WIFI_EAP_METHODS = listOf("PEAP", "TTLS", "TLS", "PWD", "SIM", "AKA", "AKA'")
+
+/** The authentications of phase 2 inside the tunnel of PEAP or TTLS, null for none. */
+internal val WIFI_PHASE2_METHODS = listOf(null, "PAP", "MSCHAP", "MSCHAPV2", "GTC")
+
+/** Whether a method of EAP takes a password: a certificate or a SIM card stands for it in the others. */
+internal fun isPasswordEap(method: String): Boolean =
+    method in setOf("PEAP", "TTLS", "PWD")
+
+/** Whether a method of EAP opens a tunnel, inside which a phase 2 authenticates. */
+internal fun isTunneledEap(method: String): Boolean =
+    method in setOf("PEAP", "TTLS")
+
+// A name; a password for a network that asks for one: of the length WPA2 needs for a network it may join,
+// of any length for a WPA3 only one. An identity for an enterprise network. The mode not to fall back from
+// of its kind; the public key of SAE-PK makes it SAE-PK only, and so WPA3 only
 private fun CreationForm.toWifi(): BarcodeContent.Wifi? {
     if (wifiSsid.isEmpty()) {
         return null
     }
 
-    val isPasswordValid = when (wifiEncryption) {
-        WifiEncryption.NONE -> true
-        WifiEncryption.WEP -> wifiPassword.isNotEmpty()
-        WifiEncryption.WPA,
-        WifiEncryption.WPA3,
-        -> wifiPassword.length in WPA_PASSWORD_LENGTH
+    val publicKey = wifiPublicKey.trim().ifEmpty { null }.takeIf { wifiEncryption == WifiEncryption.WPA }
+    val transitionDisable = when (wifiEncryption) {
+        WifiEncryption.NONE -> setOfNotNull(WifiTransitionMode.ENHANCED_OPEN.takeIf { isWifiEnhancedOpenOnly })
+        WifiEncryption.WEP -> emptySet()
+        WifiEncryption.WPA -> setOfNotNull(
+            WifiTransitionMode.WPA3_PERSONAL.takeIf { isWifiWpa3Only || publicKey != null },
+            WifiTransitionMode.SAE_PK.takeIf { publicKey != null },
+        )
+        WifiEncryption.WPA_ENTERPRISE -> setOfNotNull(WifiTransitionMode.WPA3_ENTERPRISE.takeIf { isWifiWpa3EnterpriseOnly })
     }
-    if (!isPasswordValid) {
+    val isEnterprise = wifiEncryption == WifiEncryption.WPA_ENTERPRISE
+    val hasPassword = when (wifiEncryption) {
+        WifiEncryption.NONE -> false
+        WifiEncryption.WEP, WifiEncryption.WPA -> true
+        WifiEncryption.WPA_ENTERPRISE -> isPasswordEap(method = wifiEapMethod)
+    }
+
+    val isPasswordValid = when {
+        !hasPassword -> true
+        wifiEncryption == WifiEncryption.WPA && WifiTransitionMode.WPA3_PERSONAL !in transitionDisable -> wifiPassword.length in WPA_PASSWORD_LENGTH
+        else -> wifiPassword.isNotEmpty()
+    }
+    val identity = wifiIdentity.trim().ifEmpty { null }.takeIf { isEnterprise }
+    if (!isPasswordValid || (isEnterprise && identity == null)) {
         return null
     }
 
     return BarcodeContent.Wifi(
         ssid = wifiSsid,
         encryption = wifiEncryption,
-        password = wifiPassword.takeIf { wifiEncryption != WifiEncryption.NONE },
+        password = wifiPassword.takeIf { hasPassword },
         isHidden = isWifiHidden,
+        transitionDisable = transitionDisable,
+        passwordIdentifier = wifiPasswordIdentifier.trim().ifEmpty { null }.takeIf { wifiEncryption == WifiEncryption.WPA },
+        publicKey = publicKey,
+        eapMethod = wifiEapMethod.takeIf { isEnterprise },
+        identity = identity,
+        anonymousIdentity = wifiAnonymousIdentity.trim().ifEmpty { null }.takeIf { isEnterprise },
+        phase2Method = wifiPhase2Method.takeIf { isEnterprise && isTunneledEap(method = wifiEapMethod) },
     )
 }
