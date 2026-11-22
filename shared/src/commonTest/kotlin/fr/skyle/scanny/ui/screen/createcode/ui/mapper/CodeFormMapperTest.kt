@@ -5,6 +5,7 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.Creation
+import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
@@ -71,10 +72,14 @@ class CodeFormMapperTest {
                 type = OtpType.HOTP,
                 issuer = "Scanny",
                 account = "john@scanny.app",
-                algorithm = "SHA512",
+                algorithm = OtpAlgorithm.SHA512,
                 digits = 8,
-                period = 60,
                 counter = 7,
+            ),
+            BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                account = "john@scanny.app",
+                period = 60,
             ),
             BarcodeContent.Bitcoin(
                 address = "1BoatSLRHtKNngkdXEeobR76b53LETtpyT",

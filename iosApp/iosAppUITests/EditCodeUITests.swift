@@ -24,7 +24,7 @@ final class EditCodeUITests: XCTestCase {
         // The editor opens filled with its content, and its customization after it
         XCTAssertTrue(app.buttons["Edit the code"].waitForExistence(timeout: 5))
         app.buttons["Edit the code"].tap()
-        let textField = textInput(labelled: "Text", in: app)
+        let textField = textInput(labelled: "Text *", in: app)
         XCTAssertTrue(textField.waitForExistence(timeout: 5))
         XCTAssertEqual(textField.value as? String, text)
         goToTheCustomization(in: app)
@@ -54,7 +54,7 @@ final class EditCodeUITests: XCTestCase {
         // The editor opens filled with the content of the scan
         XCTAssertTrue(app.buttons["Edit the code"].waitForExistence(timeout: 5))
         app.buttons["Edit the code"].tap()
-        let linkField = textInput(labelled: "Link", in: app)
+        let linkField = textInput(labelled: "Link *", in: app)
         XCTAssertTrue(linkField.waitForExistence(timeout: 5))
         XCTAssertEqual(linkField.value as? String, url)
         keepScreenshot(named: "editor-from-a-scan", of: app)

@@ -236,7 +236,7 @@ internal object BarcodeContentEncoder {
         val parameters = listOfNotNull(
             "secret=${percentEncode(value = otp.secret, allowed = URI_UNRESERVED)}",
             otp.issuer?.let { issuer -> "issuer=${percentEncode(value = issuer, allowed = URI_UNRESERVED)}" },
-            otp.algorithm?.let { algorithm -> "algorithm=${percentEncode(value = algorithm, allowed = URI_UNRESERVED)}" },
+            otp.algorithm?.let { algorithm -> "algorithm=${algorithm.name}" },
             otp.digits?.let { digits -> "digits=$digits" },
             otp.period?.let { period -> "period=$period" },
             otp.counter?.let { counter -> "counter=$counter" },

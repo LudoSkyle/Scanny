@@ -6,6 +6,7 @@
     <string name="add_to_authenticator">Ajouter à l'authentificateur</string>
     <string name="address">Adresse</string>
     <string name="advanced_options">Options avancées</string>
+    <string name="algorithm">Algorithme</string>
     <string name="all_creations_deleted">Toutes les créations seront supprimées.</string>
     <string name="all_scans_deleted">Tous les scans seront supprimés.</string>
     <string name="allow_camera">Autoriser la caméra</string>
@@ -75,6 +76,7 @@
     <string name="corner_color">Couleur des coins</string>
     <string name="corner_color_like_dots">Comme les points</string>
     <string name="corner_shape">Forme des coins</string>
+    <string name="counter">Compteur</string>
     <string name="create">Créer</string>
     <string name="create_code">Créer un code</string>
     <string name="created_codes_appear_here">Les codes que vous créez, avec le + du scan, apparaissent ici.</string>
@@ -86,6 +88,7 @@
     <string name="delete">Supprimer</string>
     <string name="delete_code_question">Supprimer ce code ?</string>
     <string name="delete_group_question">Supprimer ce groupe ?</string>
+    <string name="digits">Nombre de chiffres</string>
     <string name="discard">Abandonner</string>
     <string name="discard_codes_question">Abandonner les codes trouvés ?</string>
     <string name="dot_color">Couleur des points</string>
@@ -222,8 +225,11 @@
     <string name="organization">Organisation</string>
     <string name="other_color">Autre couleur</string>
     <string name="otp">Code à usage unique</string>
+    <string name="otp_type">Type de clé</string>
     <string name="pass_codes_in_front_of_camera">Passez les codes devant la caméra</string>
     <string name="password">Mot de passe</string>
+    <string name="period">Période</string>
+    <string name="period_in_seconds">Période en secondes</string>
     <string name="phone">Téléphone</string>
     <string name="phone_number">Numéro de téléphone</string>
     <string name="place">Lieu</string>
@@ -234,6 +240,7 @@
     <string name="raw_content_after_scan">Afficher le contenu brut après un scan</string>
     <string name="recipient">Destinataire</string>
     <string name="remove_logo">Retirer le logo</string>
+    <string name="required_field">%1$s *</string>
     <string name="reset_customization">Réinitialiser la personnalisation</string>
     <string name="retention_forever">Toujours</string>
     <string name="retention_one_month">30 jours</string>

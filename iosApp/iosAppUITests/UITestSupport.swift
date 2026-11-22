@@ -131,7 +131,7 @@ extension XCTestCase {
         _ text: String,
         in app: XCUIApplication,
     ) {
-        let textField = textInput(labelled: "Text", in: app)
+        let textField = textInput(labelled: "Text *", in: app)
         XCTAssertTrue(textField.waitForExistence(timeout: 5))
         waitUntilStill(textField)
         textField.tap()

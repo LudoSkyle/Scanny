@@ -63,9 +63,14 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [ ] Favori et annotation d'une capture, scan simple ou groupe entier *(pas urgent)*
 - Nouveaux types de contenu, chacun lu, affiché avec son action, et créé :
   - [x] Téléphone (`tel:`), position (`geo:`), marque-page (`MEBKM:`)
-  - [x] Mot de passe à usage unique (`otpauth://`), Bitcoin (`bitcoin:`)
+  - [x] Mot de passe à usage unique (`otpauth://`, chacun de ses paramètres à la création), Bitcoin
+        (`bitcoin:`)
   - [x] MMS, et le format MeCard pour un contact créé
   - [ ] Événement (`VEVENT`), ajouté au calendrier
+- [ ] Chaque champ de la spec de chaque contenu à la création, les obligatoires marqués d'un
+      astérisque : fait pour la clé à usage unique ; à faire pour l'e-mail (copie, copie cachée,
+      plusieurs adresses), la position (altitude, incertitude), le contact (vCard et MeCard
+      complets) et le Wi-Fi (réseaux d'entreprise)
 - [ ] Création de Data Matrix, Aztec et PDF417, l'éditeur partagé entre QR code, code 2D et
       code-barres
 - Pistes, non engagées : avis et mise à jour depuis l'app.

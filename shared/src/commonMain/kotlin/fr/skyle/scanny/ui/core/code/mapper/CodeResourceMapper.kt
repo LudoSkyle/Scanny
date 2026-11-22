@@ -6,6 +6,7 @@ import fr.skyle.scanny.resources.account
 import fr.skyle.scanny.resources.add_contact
 import fr.skyle.scanny.resources.add_to_authenticator
 import fr.skyle.scanny.resources.address
+import fr.skyle.scanny.resources.algorithm
 import fr.skyle.scanny.resources.amount
 import fr.skyle.scanny.resources.aztec
 import fr.skyle.scanny.resources.bitcoin
@@ -17,7 +18,9 @@ import fr.skyle.scanny.resources.code_39
 import fr.skyle.scanny.resources.code_93
 import fr.skyle.scanny.resources.contact
 import fr.skyle.scanny.resources.coordinates
+import fr.skyle.scanny.resources.counter
 import fr.skyle.scanny.resources.data_matrix
+import fr.skyle.scanny.resources.digits
 import fr.skyle.scanny.resources.ean_13
 import fr.skyle.scanny.resources.ean_8
 import fr.skyle.scanny.resources.email
@@ -86,8 +89,10 @@ import fr.skyle.scanny.resources.open_in_wallet
 import fr.skyle.scanny.resources.open_link
 import fr.skyle.scanny.resources.organization
 import fr.skyle.scanny.resources.otp
+import fr.skyle.scanny.resources.otp_type
 import fr.skyle.scanny.resources.password
 import fr.skyle.scanny.resources.pdf417
+import fr.skyle.scanny.resources.period
 import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.phone_number
 import fr.skyle.scanny.resources.place
@@ -185,6 +190,11 @@ internal fun CodeFieldLabel.toText(): StringResource =
         CodeFieldLabel.ISSUER -> Res.string.issuer
         CodeFieldLabel.ACCOUNT -> Res.string.account
         CodeFieldLabel.SECRET_KEY -> Res.string.secret_key
+        CodeFieldLabel.OTP_TYPE -> Res.string.otp_type
+        CodeFieldLabel.ALGORITHM -> Res.string.algorithm
+        CodeFieldLabel.DIGITS -> Res.string.digits
+        CodeFieldLabel.PERIOD -> Res.string.period
+        CodeFieldLabel.COUNTER -> Res.string.counter
         CodeFieldLabel.AMOUNT -> Res.string.amount
     }
 

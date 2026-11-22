@@ -3,6 +3,7 @@ package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
@@ -326,6 +327,7 @@ class CreationFormMapperTest {
         val content = CreationForm(
             kind = CreationKind.OTP,
             otpIssuer = " Scanny ",
+            otpAccount = " john@doe.fr ",
             otpSecret = "jbsw y3dp-ehpk 3pxp",
         ).toBarcodeContent()
 
@@ -334,13 +336,14 @@ class CreationFormMapperTest {
             expected = BarcodeContent.Otp(
                 secret = "JBSWY3DPEHPK3PXP",
                 issuer = "Scanny",
+                account = "john@doe.fr",
             ),
             actual = content,
         )
     }
 
     @Test
-    fun `an otp key needs 16 base32 characters and an issuer or an account`() {
+    fun `an otp key needs an account and 16 base32 characters`() {
         // When
         val contents = listOf(
             "JBSWY3DPEHPK3PX" to "john",
@@ -349,6 +352,7 @@ class CreationFormMapperTest {
         ).map { (secret, account) ->
             CreationForm(
                 kind = CreationKind.OTP,
+                otpIssuer = "Scanny",
                 otpAccount = account,
                 otpSecret = secret,
             ).toBarcodeContent()
@@ -362,31 +366,89 @@ class CreationFormMapperTest {
     }
 
     @Test
-    fun `an otp key keeps the parameters of the scanned one`() {
+    fun `a totp key needs a period and a hotp key its counter`() {
         // When
-        val content = CreationForm(
-            kind = CreationKind.OTP,
-            otpAccount = "john",
-            otpSecret = "JBSWY3DPEHPK3PXP",
-            otpType = OtpType.HOTP,
-            otpAlgorithm = "SHA256",
-            otpDigits = 8,
-            otpPeriod = 60,
-            otpCounter = 3,
-        ).toBarcodeContent()
+        val contents = listOf(
+            CreationForm(
+                kind = CreationKind.OTP,
+                otpAccount = "john",
+                otpSecret = "JBSWY3DPEHPK3PXP",
+                otpPeriod = "0",
+            ),
+            CreationForm(
+                kind = CreationKind.OTP,
+                otpAccount = "john",
+                otpSecret = "JBSWY3DPEHPK3PXP",
+                otpType = OtpType.HOTP,
+            ),
+            CreationForm(
+                kind = CreationKind.OTP,
+                otpAccount = "john",
+                otpSecret = "JBSWY3DPEHPK3PXP",
+                otpType = OtpType.HOTP,
+                otpCounter = "-1",
+            ),
+        ).map { form -> form.toBarcodeContent() }
 
         // Then
         assertEquals(
-            expected = BarcodeContent.Otp(
-                secret = "JBSWY3DPEHPK3PXP",
-                type = OtpType.HOTP,
-                account = "john",
-                algorithm = "SHA256",
-                digits = 8,
-                period = 60,
-                counter = 3,
+            expected = listOf(null, null, null),
+            actual = contents,
+        )
+    }
+
+    @Test
+    fun `every parameter of an otp key is written unless left to its default`() {
+        // When
+        val contents = listOf(
+            CreationForm(
+                kind = CreationKind.OTP,
+                otpAccount = "john",
+                otpSecret = "JBSWY3DPEHPK3PXP",
+                otpType = OtpType.HOTP,
+                otpAlgorithm = OtpAlgorithm.SHA256,
+                otpDigits = 8,
+                otpPeriod = "60",
+                otpCounter = " 3 ",
             ),
-            actual = content,
+            CreationForm(
+                kind = CreationKind.OTP,
+                otpAccount = "john",
+                otpSecret = "JBSWY3DPEHPK3PXP",
+                otpPeriod = " 60 ",
+                otpCounter = "3",
+            ),
+            CreationForm(
+                kind = CreationKind.OTP,
+                otpAccount = "john",
+                otpSecret = "JBSWY3DPEHPK3PXP",
+            ),
+        ).map { form -> form.toBarcodeContent() }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                // A period is of a TOTP key only
+                BarcodeContent.Otp(
+                    secret = "JBSWY3DPEHPK3PXP",
+                    type = OtpType.HOTP,
+                    account = "john",
+                    algorithm = OtpAlgorithm.SHA256,
+                    digits = 8,
+                    counter = 3,
+                ),
+                // And a counter of a HOTP key only
+                BarcodeContent.Otp(
+                    secret = "JBSWY3DPEHPK3PXP",
+                    account = "john",
+                    period = 60,
+                ),
+                BarcodeContent.Otp(
+                    secret = "JBSWY3DPEHPK3PXP",
+                    account = "john",
+                ),
+            ),
+            actual = contents,
         )
     }
 

@@ -1,7 +1,9 @@
 package fr.skyle.scanny.ui.screen.createcode.ui.model
 
+import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 
@@ -41,12 +43,12 @@ data class CreationForm(
     val otpIssuer: String = "",
     val otpAccount: String = "",
     val otpSecret: String = "",
-    // Kept from a scanned key, not shown: a code with other digits or another period gives other codes
     val otpType: OtpType = OtpType.TOTP,
-    val otpAlgorithm: String? = null,
-    val otpDigits: Int? = null,
-    val otpPeriod: Int? = null,
-    val otpCounter: Long? = null,
+    val otpAlgorithm: OtpAlgorithm = BarcodeContent.Otp.DEFAULT_ALGORITHM,
+    val otpDigits: Int = BarcodeContent.Otp.DEFAULT_DIGITS,
+    // As typed: the period of a TOTP key, in seconds, and the counter of a HOTP one
+    val otpPeriod: String = BarcodeContent.Otp.DEFAULT_PERIOD.toString(),
+    val otpCounter: String = "",
     val bitcoinAddress: String = "",
     // As typed: a decimal comma or point
     val bitcoinAmount: String = "",

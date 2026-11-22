@@ -26,8 +26,8 @@ internal fun Creation.toCreationForm(): CreationForm =
 /**
  * The form a code fills. A barcode of a format the editor draws stays a barcode of its value; any other
  * code becomes a QR code holding its content. The editor holds one phone, one e-mail, one address and
- * one website for a contact: the first of each. A one-time password keeps its type, its digits, its
- * period and its algorithm, which the editor does not show.
+ * one website for a contact: the first of each. A parameter a one-time password leaves to its default
+ * shows its default.
  */
 private fun BarcodeContent.toCreationForm(
     rawValue: String,
@@ -116,10 +116,10 @@ private fun BarcodeContent.toCreationForm(
             otpAccount = content.account.orEmpty(),
             otpSecret = content.secret,
             otpType = content.type,
-            otpAlgorithm = content.algorithm,
-            otpDigits = content.digits,
-            otpPeriod = content.period,
-            otpCounter = content.counter,
+            otpAlgorithm = content.algorithm ?: BarcodeContent.Otp.DEFAULT_ALGORITHM,
+            otpDigits = content.digits ?: BarcodeContent.Otp.DEFAULT_DIGITS,
+            otpPeriod = (content.period ?: BarcodeContent.Otp.DEFAULT_PERIOD).toString(),
+            otpCounter = content.counter?.toString().orEmpty(),
         )
 
         is BarcodeContent.Bitcoin -> CreationForm(

@@ -16,13 +16,18 @@ import fr.skyle.scanny.designsystem.core.textfield.SCTextFieldDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.OtpAlgorithm
+import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.platform.keyboard.coordinateKeyboardType
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.account
 import fr.skyle.scanny.resources.address
+import fr.skyle.scanny.resources.algorithm
 import fr.skyle.scanny.resources.amount_in_bitcoins
 import fr.skyle.scanny.resources.barcode_value
+import fr.skyle.scanny.resources.counter
+import fr.skyle.scanny.resources.digits
 import fr.skyle.scanny.resources.email
 import fr.skyle.scanny.resources.format
 import fr.skyle.scanny.resources.issuer
@@ -33,7 +38,9 @@ import fr.skyle.scanny.resources.message
 import fr.skyle.scanny.resources.name
 import fr.skyle.scanny.resources.network
 import fr.skyle.scanny.resources.organization
+import fr.skyle.scanny.resources.otp_type
 import fr.skyle.scanny.resources.password
+import fr.skyle.scanny.resources.period_in_seconds
 import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.phone_number
 import fr.skyle.scanny.resources.place
@@ -51,6 +58,9 @@ import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toText
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import org.jetbrains.compose.resources.stringResource
+
+// The lengths of a one-time password the key URI format allows
+private val OTP_DIGITS = listOf(6, 8)
 
 // The barcodes qrose draws, the formats a barcode can be created in
 private val barcodeFormats = BarcodeFormat.entries.filter { format -> format.toBarcodeType() != null }
@@ -72,6 +82,7 @@ fun CreationFormFields(
                 value = form.text,
                 onValueChange = { text -> onFormChanged(form.copy(text = text)) },
                 label = stringResource(Res.string.text),
+                isRequired = true,
                 minLines = 4,
             )
 
@@ -80,6 +91,7 @@ fun CreationFormFields(
                 value = form.url,
                 onValueChange = { url -> onFormChanged(form.copy(url = url)) },
                 label = stringResource(Res.string.link),
+                isRequired = true,
                 keyboardType = KeyboardType.Uri,
             )
 
@@ -89,6 +101,7 @@ fun CreationFormFields(
                     value = form.emailAddress,
                     onValueChange = { address -> onFormChanged(form.copy(emailAddress = address)) },
                     label = stringResource(Res.string.recipient),
+                    isRequired = true,
                     keyboardType = KeyboardType.Email,
                 )
                 CreationTextField(
@@ -112,6 +125,7 @@ fun CreationFormFields(
                     value = form.smsPhoneNumber,
                     onValueChange = { phoneNumber -> onFormChanged(form.copy(smsPhoneNumber = phoneNumber)) },
                     label = stringResource(Res.string.phone_number),
+                    isRequired = true,
                     keyboardType = KeyboardType.Phone,
                 )
                 CreationTextField(
@@ -129,6 +143,7 @@ fun CreationFormFields(
                     value = form.smsPhoneNumber,
                     onValueChange = { phoneNumber -> onFormChanged(form.copy(smsPhoneNumber = phoneNumber)) },
                     label = stringResource(Res.string.phone_number),
+                    isRequired = true,
                     keyboardType = KeyboardType.Phone,
                 )
                 CreationTextField(
@@ -151,6 +166,7 @@ fun CreationFormFields(
                 value = form.phoneNumber,
                 onValueChange = { phoneNumber -> onFormChanged(form.copy(phoneNumber = phoneNumber)) },
                 label = stringResource(Res.string.phone_number),
+                isRequired = true,
                 keyboardType = KeyboardType.Phone,
             )
 
@@ -160,6 +176,7 @@ fun CreationFormFields(
                     value = form.wifiSsid,
                     onValueChange = { ssid -> onFormChanged(form.copy(wifiSsid = ssid)) },
                     label = stringResource(Res.string.network),
+                    isRequired = true,
                 )
                 SCDropdownField(
                     modifier = Modifier.fillMaxWidth(),
@@ -177,6 +194,7 @@ fun CreationFormFields(
                         value = form.wifiPassword,
                         onValueChange = { password -> onFormChanged(form.copy(wifiPassword = password)) },
                         label = stringResource(Res.string.password),
+                        isRequired = true,
                         keyboardType = KeyboardType.Password,
                     )
                 }
@@ -193,6 +211,7 @@ fun CreationFormFields(
                     value = form.contactName,
                     onValueChange = { name -> onFormChanged(form.copy(contactName = name)) },
                     label = stringResource(Res.string.name),
+                    isRequired = true,
                 )
                 CreationTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -249,6 +268,7 @@ fun CreationFormFields(
                         value = form.locationLatitude,
                         onValueChange = { latitude -> onFormChanged(form.copy(locationLatitude = latitude)) },
                         label = stringResource(Res.string.latitude),
+                        isRequired = true,
                         keyboardType = coordinateKeyboardType,
                     )
                     CreationTextField(
@@ -256,6 +276,7 @@ fun CreationFormFields(
                         value = form.locationLongitude,
                         onValueChange = { longitude -> onFormChanged(form.copy(locationLongitude = longitude)) },
                         label = stringResource(Res.string.longitude),
+                        isRequired = true,
                         keyboardType = coordinateKeyboardType,
                     )
                 }
@@ -279,11 +300,20 @@ fun CreationFormFields(
                     value = form.bookmarkUrl,
                     onValueChange = { url -> onFormChanged(form.copy(bookmarkUrl = url)) },
                     label = stringResource(Res.string.link),
+                    isRequired = true,
                     keyboardType = KeyboardType.Uri,
                 )
             }
 
             CreationKind.OTP -> {
+                SegmentedChoice(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = stringResource(Res.string.otp_type),
+                    options = OtpType.entries,
+                    selectedOption = form.otpType,
+                    optionText = { type -> type.name },
+                    onOptionSelected = { type -> onFormChanged(form.copy(otpType = type)) },
+                )
                 CreationTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = form.otpIssuer,
@@ -295,6 +325,7 @@ fun CreationFormFields(
                     value = form.otpAccount,
                     onValueChange = { account -> onFormChanged(form.copy(otpAccount = account)) },
                     label = stringResource(Res.string.account),
+                    isRequired = true,
                     keyboardType = KeyboardType.Email,
                 )
                 // Typed as a password: the keyboard does not correct it
@@ -303,8 +334,45 @@ fun CreationFormFields(
                     value = form.otpSecret,
                     onValueChange = { secret -> onFormChanged(form.copy(otpSecret = secret)) },
                     label = stringResource(Res.string.secret_key),
+                    isRequired = true,
                     keyboardType = KeyboardType.Password,
                 )
+                SegmentedChoice(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = stringResource(Res.string.algorithm),
+                    options = OtpAlgorithm.entries,
+                    selectedOption = form.otpAlgorithm,
+                    optionText = { algorithm -> algorithm.name },
+                    onOptionSelected = { algorithm -> onFormChanged(form.copy(otpAlgorithm = algorithm)) },
+                )
+                SegmentedChoice(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = stringResource(Res.string.digits),
+                    // The two lengths of the format, and the one of a scanned key if it has another
+                    options = (OTP_DIGITS + form.otpDigits).distinct().sorted(),
+                    selectedOption = form.otpDigits,
+                    optionText = { digits -> digits.toString() },
+                    onOptionSelected = { digits -> onFormChanged(form.copy(otpDigits = digits)) },
+                )
+                when (form.otpType) {
+                    OtpType.TOTP -> CreationTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = form.otpPeriod,
+                        onValueChange = { period -> onFormChanged(form.copy(otpPeriod = period)) },
+                        label = stringResource(Res.string.period_in_seconds),
+                        isRequired = true,
+                        keyboardType = KeyboardType.Number,
+                    )
+
+                    OtpType.HOTP -> CreationTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = form.otpCounter,
+                        onValueChange = { counter -> onFormChanged(form.copy(otpCounter = counter)) },
+                        label = stringResource(Res.string.counter),
+                        isRequired = true,
+                        keyboardType = KeyboardType.Number,
+                    )
+                }
             }
 
             CreationKind.BITCOIN -> {
@@ -314,6 +382,7 @@ fun CreationFormFields(
                     value = form.bitcoinAddress,
                     onValueChange = { address -> onFormChanged(form.copy(bitcoinAddress = address)) },
                     label = stringResource(Res.string.address),
+                    isRequired = true,
                     keyboardType = KeyboardType.Uri,
                 )
                 CreationTextField(
@@ -353,6 +422,7 @@ fun CreationFormFields(
                     value = form.barcodeValue,
                     onValueChange = { value -> onFormChanged(form.copy(barcodeValue = value)) },
                     label = stringResource(Res.string.barcode_value),
+                    isRequired = true,
                 )
             }
         }
