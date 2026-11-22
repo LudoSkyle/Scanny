@@ -183,6 +183,94 @@ class BarcodeContentEncoderTest {
     }
 
     @Test
+    fun `a phone number is written as a percent encoded tel link`() {
+        // Given
+        val content = BarcodeContent.Phone(phoneNumber = "+33 6 00 00 00 00")
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = "tel:+33%206%2000%2000%2000%2000",
+            actual = payload,
+        )
+    }
+
+    @Test
+    fun `a location is written as a geo link`() {
+        // Given
+        val content = BarcodeContent.Location(
+            latitude = 48.8584,
+            longitude = 2.2945,
+        )
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = "geo:48.8584,2.2945",
+            actual = payload,
+        )
+    }
+
+    @Test
+    fun `a location with a name puts its place in the query`() {
+        // Given
+        val content = BarcodeContent.Location(
+            latitude = 48.8584,
+            longitude = 2.2945,
+            label = "Tour Eiffel",
+        )
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = "geo:48.8584,2.2945?q=48.8584,2.2945(Tour%20Eiffel)",
+            actual = payload,
+        )
+    }
+
+    @Test
+    fun `coordinates are written in decimals rounded to seven places`() {
+        // Given
+        val content = BarcodeContent.Location(
+            latitude = 0.00001,
+            longitude = -122.00000012345,
+        )
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = "geo:0.00001,-122.0000001",
+            actual = payload,
+        )
+    }
+
+    @Test
+    fun `a bookmark is written as a mebkm payload with its escaped fields`() {
+        // Given
+        val content = BarcodeContent.Bookmark(
+            url = "https://scanny.app",
+            title = "Scanny; the app",
+        )
+
+        // When
+        val payload = encode(content = content)
+
+        // Then
+        assertEquals(
+            expected = "MEBKM:TITLE:Scanny\\; the app;URL:https\\://scanny.app;;",
+            actual = payload,
+        )
+    }
+
+    @Test
     fun `every written content is read back unchanged`() {
         // Given
         val contents = listOf(
@@ -234,6 +322,21 @@ class BarcodeContentEncoderTest {
                 urls = listOf("https://doe.fr"),
             ),
             BarcodeContent.Contact(firstName = "John"),
+            BarcodeContent.Phone(phoneNumber = "+33 (0)6 00-00.00 00"),
+            BarcodeContent.Location(
+                latitude = -33.8568,
+                longitude = 151.2152967,
+            ),
+            BarcodeContent.Location(
+                latitude = 48.8584,
+                longitude = 2.2945,
+                label = "Tour (Eiffel) & co, Paris",
+            ),
+            BarcodeContent.Bookmark(
+                url = "https://scanny.app/path?query=1;other=2",
+                title = "Scanny: \"the\" app, with\\backslash",
+            ),
+            BarcodeContent.Bookmark(url = "https://scanny.app"),
         )
 
         // When

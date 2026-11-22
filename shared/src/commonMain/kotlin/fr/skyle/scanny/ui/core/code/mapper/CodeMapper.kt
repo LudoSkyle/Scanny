@@ -4,8 +4,11 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.domain.payload.toCoordinateText
 import fr.skyle.scanny.domain.payload.toMailtoLink
 import fr.skyle.scanny.domain.payload.toSmsLink
+import fr.skyle.scanny.domain.payload.toTelLink
+import fr.skyle.scanny.platform.link.platformMapsLink
 import fr.skyle.scanny.platform.link.platformSmsLink
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
@@ -21,6 +24,9 @@ internal fun BarcodeContent.toCodeType(): CodeType =
         is BarcodeContent.Sms -> CodeType.SMS
         is BarcodeContent.Wifi -> CodeType.WIFI
         is BarcodeContent.Contact -> CodeType.CONTACT
+        is BarcodeContent.Phone -> CodeType.PHONE
+        is BarcodeContent.Location -> CodeType.LOCATION
+        is BarcodeContent.Bookmark -> CodeType.BOOKMARK
     }
 
 internal fun BarcodeContent.toCodeAction(canJoinWifi: (BarcodeContent.Wifi) -> Boolean): CodeAction? =
@@ -30,6 +36,9 @@ internal fun BarcodeContent.toCodeAction(canJoinWifi: (BarcodeContent.Wifi) -> B
         is BarcodeContent.Sms -> CodeAction.WriteSms(link = platformSmsLink(smsLink = toSmsLink()))
         is BarcodeContent.Contact -> CodeAction.AddContact(contact = this)
         is BarcodeContent.Wifi -> CodeAction.JoinWifi(wifi = this).takeIf { canJoinWifi(this) }
+        is BarcodeContent.Phone -> CodeAction.Call(link = toTelLink())
+        is BarcodeContent.Location -> CodeAction.ShowOnMap(link = platformMapsLink(location = this))
+        is BarcodeContent.Bookmark -> CodeAction.OpenLink(link = url)
         // Nothing to open for a text
         is BarcodeContent.Text -> null
     }
@@ -57,6 +66,9 @@ private fun BarcodeContent.toSummary(rawValue: String): String =
         is BarcodeContent.Sms -> phoneNumber ?: message
         is BarcodeContent.Wifi -> ssid
         is BarcodeContent.Contact -> displayName ?: organization ?: phones.firstOrNull() ?: emails.firstOrNull()
+        is BarcodeContent.Phone -> phoneNumber
+        is BarcodeContent.Location -> label ?: coordinates()
+        is BarcodeContent.Bookmark -> title ?: url
     } ?: rawValue
 
 /** Whether the raw text of a code says more than its content: a text or a link is its own raw text. */
@@ -148,7 +160,40 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
             label = CodeFieldLabel.WEBSITE,
             values = urls,
         )
+
+        is BarcodeContent.Phone -> listOf(
+            CodeField(
+                label = CodeFieldLabel.PHONE_NUMBER,
+                value = phoneNumber,
+            ),
+        )
+
+        is BarcodeContent.Location -> listOfNotNull(
+            codeField(
+                label = CodeFieldLabel.PLACE,
+                value = label,
+            ),
+            CodeField(
+                label = CodeFieldLabel.COORDINATES,
+                value = coordinates(),
+            ),
+        )
+
+        is BarcodeContent.Bookmark -> listOfNotNull(
+            codeField(
+                label = CodeFieldLabel.TITLE,
+                value = title,
+            ),
+            CodeField(
+                label = CodeFieldLabel.LINK,
+                value = url,
+            ),
+        )
     }
+
+// "48.8584, 2.2945", as the maps apps take them in their search
+private fun BarcodeContent.Location.coordinates(): String =
+    "${latitude.toCoordinateText()}, ${longitude.toCoordinateText()}"
 
 private fun codeField(
     label: CodeFieldLabel,

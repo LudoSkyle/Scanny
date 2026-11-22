@@ -709,6 +709,207 @@ class BarcodeContentParserTest {
     }
 
     @Test
+    fun `a tel link gives the phone number`() {
+        // Given
+        val rawValue = "tel:+33600000000"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Phone(phoneNumber = "+33600000000"),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a percent encoded tel link is decoded and its prefix is case insensitive`() {
+        // Given
+        val rawValue = "TEL:+33%206%2000%2000%2000%2000"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Phone(phoneNumber = "+33 6 00 00 00 00"),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a tel link without number is shown as text`() {
+        // Given
+        val rawValue = "tel:"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Text(text = "tel:"),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a geo link gives the latitude and the longitude`() {
+        // Given
+        val rawValue = "geo:48.8584,2.2945"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Location(
+                latitude = 48.8584,
+                longitude = 2.2945,
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `the altitude and the parameters of a geo link are left out`() {
+        // Given
+        val rawValue = "GEO:-33.8568,151.2153,40;u=35"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Location(
+                latitude = -33.8568,
+                longitude = 151.2153,
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `the place in the query of a geo link gives its name`() {
+        // Given
+        val rawValue = "geo:48.8584,2.2945?q=48.8584,2.2945(Tour%20Eiffel)"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Location(
+                latitude = 48.8584,
+                longitude = 2.2945,
+                label = "Tour Eiffel",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a geo link at zero takes the coordinates of the place in its query`() {
+        // Given
+        val rawValue = "geo:0,0?q=48.8584,2.2945(Tour Eiffel)"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Location(
+                latitude = 48.8584,
+                longitude = 2.2945,
+                label = "Tour Eiffel",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a geo link searching around its position names it after the search`() {
+        // Given
+        val rawValue = "geo:48.8584,2.2945?q=Tour%20Eiffel"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Location(
+                latitude = 48.8584,
+                longitude = 2.2945,
+                label = "Tour Eiffel",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a geo link searching an address is shown as text`() {
+        // Given
+        val rawValue = "geo:0,0?q=1 rue de la Paix, Paris"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Text(text = "geo:0,0?q=1 rue de la Paix, Paris"),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a geo link out of the map is shown as text`() {
+        // Given
+        val rawValue = "geo:91,0"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Text(text = "geo:91,0"),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a mebkm payload gives the title and the link`() {
+        // Given
+        val rawValue = "MEBKM:TITLE:Scanny\\; the app;URL:https\\://scanny.app;;"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Bookmark(
+                url = "https://scanny.app",
+                title = "Scanny; the app",
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a mebkm payload without link is shown as text`() {
+        // Given
+        val rawValue = "MEBKM:TITLE:Scanny;;"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Text(text = "MEBKM:TITLE:Scanny;;"),
+            actual = content,
+        )
+    }
+
+    @Test
     fun `malformed payloads never throw`() {
         // Given
         val random = Random(seed = 42)
@@ -738,6 +939,15 @@ class BarcodeContentParserTest {
             "sms:",
             "sms:?body=%E",
             "http://",
+            "tel:%",
+            "geo:",
+            "geo:,",
+            "geo:1",
+            "geo:NaN,Infinity",
+            "geo:0,0?q=",
+            "geo:0,0?q=1,2(",
+            "MEBKM:",
+            "MEBKM:URL:;",
             CharArray(size = 10_000) {
                 random.nextInt(
                     from = 0,

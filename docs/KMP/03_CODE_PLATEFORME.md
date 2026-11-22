@@ -194,6 +194,11 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   anciennes. Quand aucune app ne l'ouvre, Android lève une exception : l'échec est journalisé, et
   l'écran le dit. Le `LocalUriHandler` d'iOS, lui, ne signale aucun échec : sans app pour le lien
   (Mail absent), rien ne se passe.
+- Appeler un numéro et voir une position sur la carte passent par le même chemin. Le lien `tel:`
+  vient du domaine ; Android ouvre le clavier du téléphone, numéro composé, sans appeler : aucune
+  permission n'est demandée. Une position s'ouvre par `platformMapsLink` : le lien `geo:` sur
+  Android (Google Maps l'épingle sous son nom), le lien de Plans (`https://maps.apple.com/?ll=…&q=…`)
+  sur iOS, qui n'a pas d'app pour un `geo:`. Un marque-page ouvre son lien.
 - La feuille du résultat a ses propres messages (`resultSnackbarState` de la `Route` du scan), au
   bas de la feuille : ceux de l'écran du scan seraient cachés dessous. Ce qui suit une action, un
   lien sans app, un contact qui ne s'ajoute pas, un réseau Wi-Fi, va à la feuille quand elle est
@@ -289,6 +294,14 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   comme une partie du détail, sans message : la feuille du résultat s'ouvre au même moment et le
   cacherait.
 
+### Clavier d'une coordonnée
+
+Une latitude ou une longitude se tape avec `coordinateKeyboardType`, un `expect` : il faut des
+chiffres, un séparateur décimal et un signe moins (une coordonnée au sud ou à l'ouest). Le pavé
+décimal d'Android les a (`KeyboardType.Decimal`, vérifié avec Gboard sur l'émulateur). Celui d'iOS
+(`UIKeyboardTypeDecimalPad`, où Compose envoie `Decimal`) n'a pas de moins : iOS prend le clavier
+ASCII, dont la page des chiffres a les deux. La virgule et le point sont acceptés comme séparateur.
+
 ### Couleur des icônes des barres système
 
 Elle suit le style de `SCScreenStructure` : clair sur le style `BLACK`, sombre sinon. Android règle
@@ -310,6 +323,8 @@ livrée ; le tableau est mis à jour dans le même commit.
 | Permission caméra | ✅ (refus, refus définitif, accord) — `RequestPermission` | ✅ demande et description affichées (simulateur) — `AVCaptureDevice.requestAccess` | `expect` composable |
 | Détection dans une image | ✅ (émulateur : code lu, enregistré ; image sans code signalée) — Photo Picker + ML Kit (`InputImage`) | Livré, à vérifier sur un iPhone — `PHPickerViewController` + Vision (`VNDetectBarcodesRequest`) | `expect` composable |
 | Ouvrir un lien, un mail, un SMS | ✅ (émulateur : lien ouvert dans Chrome, SMS prérempli dans Messages) — `LocalUriHandler` | ✅ lien et SMS (simulateur : Safari, message prérempli dans Messages) ; mail à vérifier sur un iPhone (pas de Mail sur le simulateur) — `LocalUriHandler`, `sms:` avec `&body=` | Compose |
+| Appeler un numéro | ✅ (émulateur : clavier du téléphone, numéro composé) — `tel:` par `LocalUriHandler` | À vérifier sur un iPhone (pas d'app Téléphone sur le simulateur) — `tel:` par `LocalUriHandler` | Compose |
+| Voir une position sur la carte | ✅ (émulateur : Google Maps, lieu épinglé sous son nom) — `geo:…?q=lat,lon(nom)` | ✅ (simulateur : Plans ouvert) — `https://maps.apple.com/?ll=…&q=…` | Compose + `expect` pour le lien (`platformMapsLink`) |
 | Vibration | `LocalHapticFeedback` (`Confirm`) | `LocalHapticFeedback` (`Confirm`) | Compose |
 | Bip après un scan | Livré, à écouter sur un appareil (l'émulateur tourne sans son) — `ToneGenerator` (`TONE_PROP_BEEP`, flux des notifications) | Livré, à écouter sur un iPhone — `AudioServicesPlaySystemSound` (son système 1057) | interface (`ScanBeeper`) |
 | Copier | ✅ (émulateur : confirmation du système, Android 13 et plus) — `LocalClipboard`, `ClipData` | ✅ (simulateur : texte dans le presse-papiers, message de l'app ; copie après un scan collée dans un champ de l'app) — `LocalClipboard`, `ClipEntry.withPlainText` | Compose + `expect` pour créer le `ClipEntry` |

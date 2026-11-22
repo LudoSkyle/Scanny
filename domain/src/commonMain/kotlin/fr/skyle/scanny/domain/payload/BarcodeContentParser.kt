@@ -10,6 +10,11 @@ import fr.skyle.scanny.domain.model.WifiEncryption
  */
 internal object BarcodeContentParser {
 
+    // The place in the query of a geo: link, "lat,lon" and its name between parentheses if any
+    private val GEO_PLACE = Regex("""\s*([-+]?[0-9.]+)\s*,\s*([-+]?[0-9.]+)\s*(?:\((.*)\))?\s*""")
+    private val LATITUDES = -90.0..90.0
+    private val LONGITUDES = -180.0..180.0
+
     fun parse(rawValue: String): BarcodeContent {
         val value = rawValue.trim()
 
@@ -21,6 +26,9 @@ internal object BarcodeContentParser {
             value.hasPrefix(PayloadSyntax.SMS) -> parseSmsUri(uri = value.drop(PayloadSyntax.SMS.length))
             value.hasPrefix(PayloadSyntax.MECARD) -> parseMecard(fieldsText = value.drop(PayloadSyntax.MECARD.length))
             value.hasPrefix(PayloadSyntax.VCARD) -> parseVcard(text = value)
+            value.hasPrefix(PayloadSyntax.TEL) -> parsePhone(uri = value.drop(PayloadSyntax.TEL.length))
+            value.hasPrefix(PayloadSyntax.GEO) -> parseGeo(uri = value.drop(PayloadSyntax.GEO.length))
+            value.hasPrefix(PayloadSyntax.MEBKM) -> parseBookmark(fieldsText = value.drop(PayloadSyntax.MEBKM.length))
             value.hasPrefix(PayloadSyntax.HTTP) || value.hasPrefix(PayloadSyntax.HTTPS) -> BarcodeContent.Url(url = value)
             else -> null
         }
@@ -155,6 +163,53 @@ internal object BarcodeContentParser {
         }
 
         return contact.takeUnless { it == BarcodeContent.Contact() }
+    }
+
+    private fun parsePhone(uri: String): BarcodeContent.Phone? =
+        percentDecode(value = uri).nullIfBlank()?.let { phoneNumber ->
+            BarcodeContent.Phone(phoneNumber = phoneNumber)
+        }
+
+    // "lat,lon[,alt][;parameters][?q=…]" of RFC 5870. Android puts the place in the query, with its name:
+    // "q=lat,lon(name)", or a search around the position: "q=name". A search around 0,0 has no position
+    private fun parseGeo(uri: String): BarcodeContent.Location? {
+        val coordinates = uri.substringBefore('?')
+            .substringBefore(';')
+            .split(',')
+        val latitude = coordinates.getOrNull(0)?.trim()?.toDoubleOrNull() ?: return null
+        val longitude = coordinates.getOrNull(1)?.trim()?.toDoubleOrNull() ?: return null
+        val isAtZero = latitude == 0.0 && longitude == 0.0
+
+        val search = parseQuery(
+            query = uri.substringAfter(
+                delimiter = '?',
+                missingDelimiterValue = "",
+            ),
+        )["q"].nullIfBlank()
+        val place = search?.let { GEO_PLACE.matchEntire(input = search) }
+        if (isAtZero && search != null && place == null) {
+            return null
+        }
+        val placeLatitude = place?.groupValues?.get(1)?.toDoubleOrNull()
+        val placeLongitude = place?.groupValues?.get(2)?.toDoubleOrNull()
+
+        val location = BarcodeContent.Location(
+            latitude = if (isAtZero && placeLatitude != null) placeLatitude else latitude,
+            longitude = if (isAtZero && placeLongitude != null) placeLongitude else longitude,
+            label = if (place != null) place.groupValues[3].nullIfBlank() else search,
+        )
+
+        return location.takeIf { location.latitude in LATITUDES && location.longitude in LONGITUDES }
+    }
+
+    private fun parseBookmark(fieldsText: String): BarcodeContent.Bookmark? {
+        val fields = parseFields(text = fieldsText)
+        val url = fields.valueOf(key = "URL").nullIfBlank() ?: return null
+
+        return BarcodeContent.Bookmark(
+            url = url,
+            title = fields.valueOf(key = "TITLE").nullIfBlank(),
+        )
     }
 
     private class Field(

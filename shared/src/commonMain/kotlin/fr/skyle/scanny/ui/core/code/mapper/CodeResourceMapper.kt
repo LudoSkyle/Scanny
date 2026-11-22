@@ -5,11 +5,14 @@ import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.add_contact
 import fr.skyle.scanny.resources.address
 import fr.skyle.scanny.resources.aztec
+import fr.skyle.scanny.resources.bookmark
+import fr.skyle.scanny.resources.call
 import fr.skyle.scanny.resources.codabar
 import fr.skyle.scanny.resources.code_128
 import fr.skyle.scanny.resources.code_39
 import fr.skyle.scanny.resources.code_93
 import fr.skyle.scanny.resources.contact
+import fr.skyle.scanny.resources.coordinates
 import fr.skyle.scanny.resources.data_matrix
 import fr.skyle.scanny.resources.ean_13
 import fr.skyle.scanny.resources.ean_8
@@ -53,7 +56,10 @@ import fr.skyle.scanny.resources.format_upc_a_use
 import fr.skyle.scanny.resources.format_upc_e_example
 import fr.skyle.scanny.resources.format_upc_e_structure
 import fr.skyle.scanny.resources.format_upc_e_use
+import fr.skyle.scanny.resources.ic_bookmark
+import fr.skyle.scanny.resources.ic_call
 import fr.skyle.scanny.resources.ic_link
+import fr.skyle.scanny.resources.ic_location_on
 import fr.skyle.scanny.resources.ic_mail
 import fr.skyle.scanny.resources.ic_notes
 import fr.skyle.scanny.resources.ic_person
@@ -63,6 +69,7 @@ import fr.skyle.scanny.resources.itf
 import fr.skyle.scanny.resources.job_title
 import fr.skyle.scanny.resources.join_network
 import fr.skyle.scanny.resources.link
+import fr.skyle.scanny.resources.location
 import fr.skyle.scanny.resources.message
 import fr.skyle.scanny.resources.name
 import fr.skyle.scanny.resources.network
@@ -72,12 +79,15 @@ import fr.skyle.scanny.resources.password
 import fr.skyle.scanny.resources.pdf417
 import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.phone_number
+import fr.skyle.scanny.resources.place
 import fr.skyle.scanny.resources.qr_code
 import fr.skyle.scanny.resources.recipient
 import fr.skyle.scanny.resources.security
+import fr.skyle.scanny.resources.show_on_map
 import fr.skyle.scanny.resources.sms
 import fr.skyle.scanny.resources.subject
 import fr.skyle.scanny.resources.text
+import fr.skyle.scanny.resources.title
 import fr.skyle.scanny.resources.upc_a
 import fr.skyle.scanny.resources.upc_e
 import fr.skyle.scanny.resources.website
@@ -98,6 +108,9 @@ internal fun CodeType.toText(): StringResource =
         CodeType.SMS -> Res.string.sms
         CodeType.WIFI -> Res.string.wifi
         CodeType.CONTACT -> Res.string.contact
+        CodeType.PHONE -> Res.string.phone
+        CodeType.LOCATION -> Res.string.location
+        CodeType.BOOKMARK -> Res.string.bookmark
     }
 
 internal fun CodeType.toIcon(): DrawableResource =
@@ -108,6 +121,9 @@ internal fun CodeType.toIcon(): DrawableResource =
         CodeType.SMS -> Res.drawable.ic_sms
         CodeType.WIFI -> Res.drawable.ic_wifi
         CodeType.CONTACT -> Res.drawable.ic_person
+        CodeType.PHONE -> Res.drawable.ic_call
+        CodeType.LOCATION -> Res.drawable.ic_location_on
+        CodeType.BOOKMARK -> Res.drawable.ic_bookmark
     }
 
 internal fun BarcodeFormat.toText(): StringResource =
@@ -143,6 +159,10 @@ internal fun CodeFieldLabel.toText(): StringResource =
         CodeFieldLabel.EMAIL -> Res.string.email
         CodeFieldLabel.ADDRESS -> Res.string.address
         CodeFieldLabel.WEBSITE -> Res.string.website
+        CodeFieldLabel.PLACE -> Res.string.place
+        CodeFieldLabel.COORDINATES -> Res.string.coordinates
+        CodeFieldLabel.TITLE -> Res.string.title
+        CodeFieldLabel.LINK -> Res.string.link
     }
 
 internal fun CodeAction.toText(): StringResource =
@@ -150,6 +170,8 @@ internal fun CodeAction.toText(): StringResource =
         is CodeAction.OpenLink -> Res.string.open_link
         is CodeAction.WriteEmail -> Res.string.write_email
         is CodeAction.WriteSms -> Res.string.write_sms
+        is CodeAction.Call -> Res.string.call
+        is CodeAction.ShowOnMap -> Res.string.show_on_map
         is CodeAction.AddContact -> Res.string.add_contact
         is CodeAction.JoinWifi -> Res.string.join_network
     }

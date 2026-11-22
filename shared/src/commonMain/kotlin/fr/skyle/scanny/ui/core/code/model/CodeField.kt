@@ -22,4 +22,8 @@ enum class CodeFieldLabel {
     EMAIL,
     ADDRESS,
     WEBSITE,
+    PLACE,
+    COORDINATES,
+    TITLE,
+    LINK,
 }

@@ -13,6 +13,7 @@ internal object BarcodeContentEncoder {
     private const val URI_UNRESERVED = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
     private const val MAILTO_ADDRESS_ALLOWED = "$URI_UNRESERVED@+"
     private const val PHONE_NUMBER_ALLOWED = "$URI_UNRESERVED+"
+    private const val APPLE_MAPS = "https://maps.apple.com/"
 
     fun encode(content: BarcodeContent): String =
         when (content) {
@@ -22,7 +23,26 @@ internal object BarcodeContentEncoder {
             is BarcodeContent.Sms -> encodeSms(sms = content)
             is BarcodeContent.Wifi -> encodeWifi(wifi = content)
             is BarcodeContent.Contact -> encodeContact(contact = content)
+            is BarcodeContent.Phone -> encodePhone(phone = content)
+            is BarcodeContent.Location -> encodeLocation(location = content)
+            is BarcodeContent.Bookmark -> encodeBookmark(bookmark = content)
         }
+
+    /** The geo: link that opens the maps of Android on this place, pinned under its name if any. */
+    fun geoLink(location: BarcodeContent.Location): String =
+        "${PayloadSyntax.GEO}${location.coordinates()}?q=${location.place()}"
+
+    /** The link of Apple Maps on this place, pinned under its name, or else under its coordinates. */
+    fun appleMapsLink(location: BarcodeContent.Location): String {
+        val name = location.label?.let { label ->
+            percentEncode(
+                value = label,
+                allowed = URI_UNRESERVED,
+            )
+        }
+
+        return "$APPLE_MAPS?ll=${location.coordinates()}&q=${name ?: location.coordinates()}"
+    }
 
     /** The sms: link of RFC 5724, which opens the messages app on this message, written. */
     fun smsLink(sms: BarcodeContent.Sms): String =
@@ -135,6 +155,52 @@ internal object BarcodeContentEncoder {
             }
             add("END:VCARD")
         }.joinToString(separator = "\n")
+
+    private fun encodePhone(phone: BarcodeContent.Phone): String =
+        PayloadSyntax.TEL + percentEncode(
+            value = phone.phoneNumber,
+            allowed = PHONE_NUMBER_ALLOWED,
+        )
+
+    // The place goes in the query only to carry the name: a reader takes the coordinates first
+    private fun encodeLocation(location: BarcodeContent.Location): String =
+        buildString {
+            append(PayloadSyntax.GEO)
+            append(location.coordinates())
+            if (location.label != null) {
+                append("?q=")
+                append(location.place())
+            }
+        }
+
+    private fun encodeBookmark(bookmark: BarcodeContent.Bookmark): String =
+        buildString {
+            append(PayloadSyntax.MEBKM)
+            if (bookmark.title != null) {
+                append("TITLE:${escapeField(value = bookmark.title)};")
+            }
+            append("URL:${escapeField(value = bookmark.url)};")
+            append(';')
+        }
+
+    private fun BarcodeContent.Location.coordinates(): String =
+        "${latitude.toCoordinateText()},${longitude.toCoordinateText()}"
+
+    // "lat,lon(name)", the name percent-encoded: the place in the query of a geo: link
+    private fun BarcodeContent.Location.place(): String =
+        buildString {
+            append(coordinates())
+            if (label != null) {
+                append('(')
+                append(
+                    percentEncode(
+                        value = label,
+                        allowed = URI_UNRESERVED,
+                    ),
+                )
+                append(')')
+            }
+        }
 
     private fun escapeField(value: String): String =
         buildString {

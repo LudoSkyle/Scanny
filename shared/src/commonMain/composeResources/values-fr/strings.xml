@@ -14,6 +14,8 @@
     <string name="barcode_value">Valeur</string>
     <string name="barcodes">Codes-barres</string>
     <string name="beep_after_scan">Bip après un scan</string>
+    <string name="bookmark">Marque-page</string>
+    <string name="call">Appeler</string>
     <string name="camera_blocked">La caméra est bloquée pour Scanny. Autorisez-la dans les réglages de votre appareil pour scanner des codes.</string>
     <string name="camera_needed">Scanny a besoin de la caméra pour scanner des codes.</string>
     <string name="camera_unavailable">Aucune caméra n'est disponible sur cet appareil. Vous pouvez toujours scanner un code dans une image.</string>
@@ -61,6 +63,7 @@
     <string name="content_too_long">Ce contenu est trop long pour un QR code.</string>
     <string name="content_too_long_for_logo">Ce contenu est trop long pour un logo, qui demande la correction maximale.</string>
     <string name="content_type">Type</string>
+    <string name="coordinates">Coordonnées</string>
     <string name="copied">Copié</string>
     <string name="copied_to_clipboard">Copié dans le presse-papiers</string>
     <string name="copy">Copier</string>
@@ -170,7 +173,9 @@
     <string name="job_title">Fonction</string>
     <string name="join_network">Rejoindre le réseau</string>
     <string name="keep_history">Conserver l'historique</string>
+    <string name="latitude">Latitude</string>
     <string name="link">Lien</string>
+    <string name="location">Position</string>
     <string name="logo">Logo</string>
     <string name="logo_margin">Marge autour du logo</string>
     <string name="logo_margin_large">Large</string>
@@ -179,6 +184,7 @@
     <string name="logo_needs_highest_correction">Un logo demande la correction automatique ou maximale, dans les options avancées du contenu.</string>
     <string name="logo_not_read">L'image n'a pas pu être lue</string>
     <string name="logo_shape">Forme du logo</string>
+    <string name="longitude">Longitude</string>
     <string name="made_by_skyle">Fait par Skyle avec ❤️ chez Openium</string>
     <string name="mail_app_opens_with_message">Votre app de mail s'ouvre avec votre message, prêt à être envoyé.</string>
     <string name="message">Message</string>
@@ -213,6 +219,7 @@
     <string name="password">Mot de passe</string>
     <string name="phone">Téléphone</string>
     <string name="phone_number">Numéro de téléphone</string>
+    <string name="place">Lieu</string>
     <string name="place_code_in_frame">Placez un code dans le cadre</string>
     <string name="privacy_policy">Politique de confidentialité</string>
     <string name="rate_app">Noter l'app</string>
@@ -247,6 +254,7 @@
     <string name="share">Partager</string>
     <string name="share_image">Partager l'image</string>
     <string name="show_code">Afficher le code</string>
+    <string name="show_on_map">Voir sur la carte</string>
     <string name="skip_consecutive_duplicates">Ignorer un code scanné de nouveau aussitôt</string>
     <string name="star_project">Mettre une étoile au projet sur GitHub</string>
     <string name="step_of">Étape %1$d sur %2$d</string>
@@ -255,6 +263,7 @@
     <string name="text">Texte</string>
     <string name="the_code">Le code</string>
     <string name="the_logo">Le logo</string>
+    <string name="title">Titre</string>
     <string name="today">Aujourd'hui</string>
     <string name="turn_off_torch">Éteindre la lampe</string>
     <string name="turn_on_torch">Allumer la lampe</string>
