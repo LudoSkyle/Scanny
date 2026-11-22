@@ -5,8 +5,9 @@ s'appliquent : tout changement qui introduit ou déplace de la logique est livr�
 le même commit. Ce document dit comment les écrire dans Scanny.
 
 Tout est testé en **test unitaire**, sans device ni émulateur : `./gradlew :<module>:allTests`
-exécute la suite sur la JVM et sur le simulateur iOS. S'y ajoutent les **tests d'interface iOS**, qui
-pilotent l'app sur le simulateur (voir plus bas).
+exécute la suite sur la JVM et sur le simulateur iOS, écrans Compose compris. S'y ajoutent quelques
+**tests d'interface iOS**, qui pilotent l'app sur le simulateur pour les parcours qui passent par le
+système (voir plus bas).
 
 | Source set | Code testé | Exécuté sur |
 |---|---|---|
@@ -26,7 +27,7 @@ les deux plateformes.
 | Room | vraie base en mémoire, `BundledSQLiteDriver` |
 | Android sur la JVM | Robolectric + `androidx.test:core-ktx`, seulement dans `androidHostTest` |
 | Lisibilité d'un code dessiné | Robolectric en rendu natif (`@GraphicsMode(NATIVE)`) + ZXing, dans `androidHostTest` de `shared` |
-| Composants Compose | `runComposeUiTest`, qui tourne sur la JVM et sur le simulateur iOS |
+| Écrans et composants Compose | `runComposeUiTest` (API `v2`), sur la JVM (Robolectric) et le simulateur iOS |
 | Doublures | Fakes écrits à la main, dans un package `fake/` du source set de test |
 
 Pas de framework de mock : les interfaces sont petites, un fake qui enregistre les appels est plus
@@ -40,7 +41,8 @@ lisible et ne casse pas au premier refactor.
 | UseCase (`domain`) | fakes des Repositories de `data` | orchestration, règles métier, exceptions typées levées |
 | Repository et DAO (`data`) | vraie base Room en mémoire | mapping entité ↔ modèle, tri, filtres, suppression |
 | ViewModel (`shared`) | fakes des UseCases et des interfaces natives | état exposé, events émis, erreurs attrapées |
-| Composant avec de la logique d'affichage | `runComposeUiTest` | ce qui s'affiche selon l'état |
+| Écran ou composant (`shared`) | `runComposeUiTest` | ce qui s'affiche selon l'état, les rappels qu'un toucher déclenche |
+| Parcours qui passe par le système | XCUITest, sur le simulateur | ce que seule l'app entière montre : une autre app ouverte, une feuille du système, un geste d'iOS |
 
 - **Tout UseCase, Repository et ViewModel est livré avec son fichier de test**, nommé comme lui et
   suffixé `Test` (`RecordScanUseCaseTest`), dans le même package du source set de test.
@@ -174,14 +176,68 @@ Kotlin/Native impose quelques règles au code de `commonTest` :
 - Un test qui croit vérifier un comportement le prouve en échouant quand on casse ce comportement :
   avant de livrer, on retire le code protégé, on voit le test échouer, on le remet.
 
+### Écrans Compose
+
+Un écran se teste par sa fonction sans état (`ScanDetailScreen(code, …, onShareClicked, …)`), pas
+par sa route : ni Koin, ni ViewModel, ni navigation. Le test pose l'état, touche, puis vérifie ce qui
+s'affiche et les rappels reçus, collectés dans une liste. C'est le niveau de la plupart des
+vérifications d'écran : un test y prend une fraction de seconde (quatre secondes pour le premier, le
+temps que Robolectric démarre), contre quinze à vingt pour un test d'interface iOS.
+
+```kotlin
+@OptIn(ExperimentalTestApi::class)
+internal class ScanDetailScreenTest : ComposeTest() {
+
+    @Test
+    fun `a code that cannot be drawn again has no button to show it`() = runComposeUiTest {
+        // When
+        setContent {
+            scanDetailScreen(code = EMAIL.copy(format = BarcodeFormat.DATA_MATRIX))
+        }
+
+        // Then
+        onNodeWithContentDescription(getString(Res.string.share)).assertExists()
+        onNodeWithContentDescription(getString(Res.string.show_code)).assertDoesNotExist()
+    }
+}
+```
+
+- `runComposeUiTest` vient de `androidx.compose.ui.test.v2` : son bloc est `suspend`, ce qui permet
+  de lire un texte par `getString(Res.string.x)`.
+- La classe de test hérite de `ComposeTest`, une classe `expect` de `commonTest` : sur Android, elle
+  porte le lanceur Robolectric et le rendu natif (`@GraphicsMode(NATIVE)`), sans quoi la JVM n'a rien
+  pour dessiner ; sur iOS, elle est vide.
+- Un texte du design system n'est pas accessible depuis les tests de `shared` (son `Res` est
+  `internal` à `designSystem`) : un test ne s'appuie pas dessus.
+- Un élément hors de l'écran se fait défiler (`performScrollTo()`) avant d'être touché, ou pour lire
+  son état (`assertIsNotEnabled()`).
+- Un état qui change pendant le test se pose dans un `mutableStateOf`, lu dans `setContent`.
+- La couleur d'un point se lit dans la capture du nœud (`captureToImage().toPixelMap()`, à une
+  tolérance près) : c'est ce qui vérifie qu'un code est dessiné dans les couleurs de son style
+  (`CodeImageTest`).
+- Un glissement se simule (`performTouchInput { swipeLeft() }`) : c'est ce qui vérifie que les vues
+  de l'historique suivent le doigt.
+- Dépendances : `org.jetbrains.compose.ui:ui-test` dans `commonTest`, et dans `androidHostTest`
+  `androidx.compose.ui:ui-test-manifest`, qui déclare l'activité que le test lance, avec
+  `isIncludeAndroidResources = true` dans `withHostTest`.
+
 ### Tests d'interface iOS
 
-La cible `iosAppUITests` du projet Xcode (XCUITest, en Swift) lance l'app sur le simulateur et
-vérifie ce qui suit un scan : la feuille, le détail, la copie, le partage, l'ouverture d'un lien dans
-Safari, d'un SMS dans Messages, l'ajout d'un contact dans Contacts, la suppression, l'historique et
-son effacement, le scan multiple et l'écran du groupe, les réglages (dont la copie du code après un
-scan, l'ouverture de son contenu, un scan hors de l'historique, un doublon consécutif gardé une fois
-et la durée de conservation), le feedback, les textes français.
+La cible `iosAppUITests` du projet Xcode (XCUITest, en Swift) lance l'app sur le simulateur. Elle
+est réservée à ce que seule l'app entière montre : l'ouverture d'un lien dans Safari, d'un SMS dans
+Messages, l'ajout d'un contact dans Contacts, la copie (relue par un collage), la feuille de partage,
+l'enregistrement dans Photos, le sélecteur de photos, le geste de retour depuis le bord, un scan
+simple et un scan multiple de bout en bout (base, navigation, historique, suppression), la
+modification d'un code en nouvelle création, les réglages qui agissent après un scan (copie,
+ouverture du contenu), et les textes français (les tests Compose parlent la langue du Mac). Ce qu'un
+écran affiche selon son état se teste en Compose (voir ci-dessus), pas ici. Un parcours de plus se
+greffe de préférence à un test existant plutôt qu'à un nouveau lancement de l'app.
+
+- La suite tourne en parallèle sur trois clones du simulateur (voir la commande dans
+  [iosApp/CLAUDE.md](../../iosApp/CLAUDE.md)), une classe de test par clone : un test ne compte pas
+  sur ce qu'un test d'une autre classe a enregistré. Une classe tourne d'un bloc sur son clone : une
+  classe longue se scinde (`CreateCodeUITests`, `EditCodeUITests`) pour que les clones finissent
+  ensemble.
 
 - Le simulateur n'a pas de caméra : un build Debug y lit le code de la variable d'environnement
   `SCANNY_SIMULATED_CODE` comme si la caméra le voyait (voir
@@ -209,16 +265,23 @@ et la durée de conservation), le feedback, les textes français.
   de l'app ; l'app lancée, la base est à la nouvelle version et la capture toujours là.
 - Une ligne cliquable est un bouton dont le texte est aussi vu à part : pour compter des lignes, on
   compte les boutons (`app.buttons`).
-- Une demande du système (la caméra, l'ajout aux photos) s'accepte par `allowTheSystemAlertIfAsked` :
-  demandée une fois, le simulateur garde la réponse. Une image ajoutée aux photos se relit sur le Mac,
-  dans le dossier `data/Media/DCIM` du simulateur.
+- Une demande du système s'accepte quand son alerte gêne un toucher (`allowTheSystemAlertsInTheWay`,
+  posé dans le `setUp` de chaque classe), sans rien coûter quand aucune ne s'affiche : demandée une
+  fois, le simulateur garde la réponse. Une alerte qu'aucun toucher ne rencontre (l'ajout aux photos,
+  dont le test attend le résultat) s'accepte par `allowTheSystemAlertIfAsked`. Un test n'attend jamais
+  une alerte à chaque lancement : deux secondes par test, pour une alerte qui ne vient plus. Une image
+  ajoutée aux photos se relit sur le Mac, dans le dossier `data/Media/DCIM` du simulateur.
 - Les aides des tests sont communes (`UITestSupport`) : lancer l'app, trouver un élément par son
   libellé ou un champ de texte (`textInput`, vu comme une vue de texte quand il peut tenir plusieurs
   lignes), faire défiler jusqu'à un élément et attendre qu'il ne bouge plus avant de le toucher
   (`scroll`, `waitUntilStill`), y compris pendant l'arrivée d'un écran ou l'ouverture d'un menu, et
   ouvrir le détail depuis la feuille d'un scan une fois qu'elle a fini de monter (`openTheDetail`),
-  ouvrir la feuille du code d'un détail (`showTheCode`), fermer une feuille (`closeTheSheet`) et
-  passer à la personnalisation d'un QR code créé (`goToTheCustomization`).
+  ouvrir la feuille du code d'un détail (`showTheCode`), fermer la feuille d'un scan
+  (`closeTheResult`), saisir un texte dans l'éditeur et fermer le clavier
+  (`typeATextAndCloseTheKeyboard`), passer à la personnalisation d'un QR code créé
+  (`goToTheCustomization`) et revenir en arrière par le geste depuis le bord (`goBackByTheEdge`).
+- Un champ de texte se cherche une fois l'écran arrivé (`textInput` attend l'un ou l'autre) : vue de
+  texte ou champ de texte, le choisir avant reviendrait parfois à attendre celui qui ne viendra pas.
 - La feuille de partage d'iOS se ferme par un glissement vers le bas : un toucher au-dessus d'elle
   fermerait aussi la feuille de l'app restée dessous.
   Après un balayage, `scroll` attend encore une seconde : une liste glisse d'une fraction de point
@@ -233,9 +296,6 @@ et la durée de conservation), le feedback, les textes français.
   tests enregistrent, jusqu'à ce que le sélecteur ne la crée plus. Il la touche à sa place
   (`coordinate`) : le sélecteur tourne dans un autre processus, où XCUITest ne sait pas toujours dire
   qu'une photo peut être touchée.
-- La couleur d'un point de l'écran se lit dans la capture (`screenColor`, à une tolérance près) :
-  c'est ce qui vérifie qu'une création garde les couleurs choisies. Le cadre d'une image de Compose
-  est celui de l'image elle-même, sans la marge que lui donne son `padding`.
 - Un test garde ses captures d'écran (`XCTAttachment`, `lifetime = .keepAlways`) : elles se relisent
   après coup, extraites du `.xcresult`.
 - Le presse-papiers du simulateur se lit depuis le Mac : `xcrun simctl pbpaste booted`. Depuis le
@@ -255,7 +315,7 @@ La détection des codes par la caméra et dans une image ne se teste pas sur le 
 pas de caméra, et Vision n'y trouve aucun code (limite du simulateur, constatée quelle que soit la
 révision de la requête, dans l'app comme dans les tests Kotlin, de même que le `CIDetector` de Core
 Image). Elle se vérifie à la main, sur un appareil. Tout ce qui suit la détection, en revanche, est
-couvert par les tests d'interface.
+couvert par les tests Compose et d'interface.
 
 La lisibilité des codes que l'app dessine se teste donc sur la JVM : `CodeImageReadabilityTest`
 dessine l'image d'un QR code pour de vrai, par le rendu natif de Robolectric, et la relit avec ZXing,

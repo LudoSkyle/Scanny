@@ -51,7 +51,8 @@ de la [feuille de route](./docs/ROADMAP.md).
 ```bash
 ./gradlew :domain:allTests :data:allTests :shared:allTests   # tests (JVM et simulateur iOS)
 xcodebuild test -project iosApp/iosApp.xcodeproj -scheme iosApp \
-  -destination 'platform=iOS Simulator,name=iPhone 17'       # tests d'interface iOS (simulateur)
+  -destination 'platform=iOS Simulator,name=iPhone 17' \
+  -parallel-testing-worker-count 3                           # tests d'interface iOS (simulateur)
 ./gradlew :androidApp:assembleDebug                          # app Android
 ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64        # framework iOS
 ```
@@ -68,6 +69,10 @@ partagé s'appliquent. Avant d'écrire un test, lis [docs/Common/03_TESTS.md](./
 il porte la forme KMP (source sets, outillage). Le skill `android-testing-first` donne la structure
 d'un test de UseCase, de Repository et de ViewModel (Given/When/Then, fakes) ; quand il diverge du
 document du projet (JUnit 4 et Robolectric partout), c'est le document du projet qui fait foi.
+
+Un écran se teste en Compose (`runComposeUiTest`, en code commun) ; un test d'interface iOS ne
+s'écrit que pour un parcours qui passe par le système. Voir
+[ADR-0003](./docs/adr/0003-les-ecrans-se-testent-en-compose.md).
 
 ## Git
 

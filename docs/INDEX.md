@@ -30,6 +30,7 @@ Les documents sont répartis par périmètre :
 | [KMP/03_CODE_PLATEFORME.md](./KMP/03_CODE_PLATEFORME.md) | `expect`/`actual`, interfaces natives, matrice Android/iOS | Caméra, détection, permissions, actions système |
 | [adr/0001-le-domaine-depend-de-la-donnee.md](./adr/0001-le-domaine-depend-de-la-donnee.md) | `shared` → `domain` → `data`, exceptions typées | Toute intervention sur `data` ou `domain` |
 | [adr/0002-ui-commune-en-compose-multiplatform.md](./adr/0002-ui-commune-en-compose-multiplatform.md) | UI 100 % Compose Multiplatform, natif derrière une frontière | Toute question « commun ou natif ? » |
+| [adr/0003-les-ecrans-se-testent-en-compose.md](./adr/0003-les-ecrans-se-testent-en-compose.md) | Écrans testés en Compose, XCUITest réservé aux parcours système | Tout test d'écran |
 
 ## Résumé rapide des modules
 
