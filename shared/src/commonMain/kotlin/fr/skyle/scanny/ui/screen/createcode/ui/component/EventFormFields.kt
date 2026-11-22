@@ -27,8 +27,10 @@ import fr.skyle.scanny.resources.availability
 import fr.skyle.scanny.resources.categories
 import fr.skyle.scanny.resources.classification
 import fr.skyle.scanny.resources.description
+import fr.skyle.scanny.resources.details
 import fr.skyle.scanny.resources.end_date
 import fr.skyle.scanny.resources.end_time
+import fr.skyle.scanny.resources.event
 import fr.skyle.scanny.resources.floating_time
 import fr.skyle.scanny.resources.frequency
 import fr.skyle.scanny.resources.frequency_daily
@@ -93,233 +95,270 @@ fun EventFormFields(
     onFormChanged: (CreationForm) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // The zone of the device, the one a new event is in
+    val deviceZone = TimeZone.currentSystemDefault().id
+
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(space = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(space = 24.dp),
     ) {
-        CreationTextField(
+        // An event in a whole day has no time, and so no zone
+        CreationSection(
             modifier = Modifier.fillMaxWidth(),
-            value = form.eventSummary,
-            onValueChange = { summary -> onFormChanged(form.copy(eventSummary = summary)) },
-            label = stringResource(Res.string.title),
-            isRequired = true,
-        )
-        CreationSwitchRow(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.all_day),
-            isChecked = form.isEventAllDay,
-            onCheckedChange = { isAllDay -> onFormChanged(form.copy(isEventAllDay = isAllDay)) },
-        )
-        DayAndTime(
-            dateLabel = stringResource(Res.string.start_date),
-            date = form.eventStartDate,
-            onDateChange = { date -> onFormChanged(form.copy(eventStartDate = date)) },
-            timeLabel = stringResource(Res.string.start_time),
-            time = form.eventStartTime,
-            onTimeChange = { time -> onFormChanged(form.copy(eventStartTime = time)) },
-            isTimeShown = !form.isEventAllDay,
-            isRequired = true,
-        )
-        DayAndTime(
-            dateLabel = stringResource(Res.string.end_date),
-            date = form.eventEndDate,
-            onDateChange = { date -> onFormChanged(form.copy(eventEndDate = date)) },
-            timeLabel = stringResource(Res.string.end_time),
-            time = form.eventEndTime,
-            onTimeChange = { time -> onFormChanged(form.copy(eventEndTime = time)) },
-            isTimeShown = !form.isEventAllDay,
-            isRequired = false,
-        )
-        if (!form.isEventAllDay) {
-            // The zone of the device, UTC, a time wherever one is, and the zone of a scanned event
-            val zones = listOf(TimeZone.currentSystemDefault().id, EventDateTime.UTC, null, form.eventTimeZone).distinct()
+            title = stringResource(Res.string.event),
+            moreOptions = if (form.isEventAllDay) {
+                null
+            } else {
+                {
+                    // The zone of the device, UTC, a time wherever one is, and the zone of a scanned event
+                    val zones = listOf(deviceZone, EventDateTime.UTC, null, form.eventTimeZone).distinct()
+                    SCDropdownField(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = stringResource(Res.string.time_zone),
+                        placeholder = stringResource(Res.string.time_zone),
+                        options = zones,
+                        selectedOption = form.eventTimeZone,
+                        optionText = { zone -> zone ?: stringResource(Res.string.floating_time) },
+                        onOptionSelected = { zone -> onFormChanged(form.copy(eventTimeZone = zone)) },
+                        style = SCTextFieldDefaults.Style.LIGHT,
+                    )
+                }
+            },
+            hasMoreOptionsSet = !form.isEventAllDay && form.eventTimeZone != deviceZone,
+        ) {
+            CreationTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = form.eventSummary,
+                onValueChange = { summary -> onFormChanged(form.copy(eventSummary = summary)) },
+                label = stringResource(Res.string.title),
+                isRequired = true,
+            )
+            CreationSwitchRow(
+                modifier = Modifier.fillMaxWidth(),
+                label = stringResource(Res.string.all_day),
+                isChecked = form.isEventAllDay,
+                onCheckedChange = { isAllDay -> onFormChanged(form.copy(isEventAllDay = isAllDay)) },
+            )
+            DayAndTime(
+                dateLabel = stringResource(Res.string.start_date),
+                date = form.eventStartDate,
+                onDateChange = { date -> onFormChanged(form.copy(eventStartDate = date)) },
+                timeLabel = stringResource(Res.string.start_time),
+                time = form.eventStartTime,
+                onTimeChange = { time -> onFormChanged(form.copy(eventStartTime = time)) },
+                isTimeShown = !form.isEventAllDay,
+                isRequired = true,
+            )
+            DayAndTime(
+                dateLabel = stringResource(Res.string.end_date),
+                date = form.eventEndDate,
+                onDateChange = { date -> onFormChanged(form.copy(eventEndDate = date)) },
+                timeLabel = stringResource(Res.string.end_time),
+                time = form.eventEndTime,
+                onTimeChange = { time -> onFormChanged(form.copy(eventEndTime = time)) },
+                isTimeShown = !form.isEventAllDay,
+                isRequired = false,
+            )
             SCDropdownField(
                 modifier = Modifier.fillMaxWidth(),
-                label = stringResource(Res.string.time_zone),
-                placeholder = stringResource(Res.string.time_zone),
-                options = zones,
-                selectedOption = form.eventTimeZone,
-                optionText = { zone -> zone ?: stringResource(Res.string.floating_time) },
-                onOptionSelected = { zone -> onFormChanged(form.copy(eventTimeZone = zone)) },
+                label = stringResource(Res.string.reminder),
+                placeholder = stringResource(Res.string.reminder),
+                // The reminder of a scanned event among the usual ones
+                options = (listOf(null) + (REMINDERS + listOfNotNull(form.eventReminderMinutes)).distinct().sorted()),
+                selectedOption = form.eventReminderMinutes,
+                optionText = { minutes -> minutes?.let { reminderText(minutes = minutes) } ?: stringResource(Res.string.not_set) },
+                onOptionSelected = { minutes -> onFormChanged(form.copy(eventReminderMinutes = minutes)) },
                 style = SCTextFieldDefaults.Style.LIGHT,
             )
         }
-        CreationTextField(
+
+        CreationSection(
             modifier = Modifier.fillMaxWidth(),
-            value = form.eventLocation,
-            onValueChange = { location -> onFormChanged(form.copy(eventLocation = location)) },
-            label = stringResource(Res.string.place),
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
+            title = stringResource(Res.string.place),
+            moreOptions = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
+                ) {
+                    CreationTextField(
+                        modifier = Modifier.weight(1f),
+                        value = form.eventLatitude,
+                        onValueChange = { latitude -> onFormChanged(form.copy(eventLatitude = latitude)) },
+                        label = stringResource(Res.string.latitude),
+                        keyboardType = coordinateKeyboardType,
+                    )
+                    CreationTextField(
+                        modifier = Modifier.weight(1f),
+                        value = form.eventLongitude,
+                        onValueChange = { longitude -> onFormChanged(form.copy(eventLongitude = longitude)) },
+                        label = stringResource(Res.string.longitude),
+                        keyboardType = coordinateKeyboardType,
+                    )
+                }
+            },
+            hasMoreOptionsSet = form.eventLatitude.isNotBlank() || form.eventLongitude.isNotBlank(),
         ) {
             CreationTextField(
-                modifier = Modifier.weight(1f),
-                value = form.eventLatitude,
-                onValueChange = { latitude -> onFormChanged(form.copy(eventLatitude = latitude)) },
-                label = stringResource(Res.string.latitude),
-                keyboardType = coordinateKeyboardType,
-            )
-            CreationTextField(
-                modifier = Modifier.weight(1f),
-                value = form.eventLongitude,
-                onValueChange = { longitude -> onFormChanged(form.copy(eventLongitude = longitude)) },
-                label = stringResource(Res.string.longitude),
-                keyboardType = coordinateKeyboardType,
+                modifier = Modifier.fillMaxWidth(),
+                value = form.eventLocation,
+                onValueChange = { location -> onFormChanged(form.copy(eventLocation = location)) },
+                label = stringResource(Res.string.place),
             )
         }
-        CreationTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = form.eventDescription,
-            onValueChange = { description -> onFormChanged(form.copy(eventDescription = description)) },
-            label = stringResource(Res.string.description),
-            minLines = 3,
-        )
-        CreationTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = form.eventUrl,
-            onValueChange = { url -> onFormChanged(form.copy(eventUrl = url)) },
-            label = stringResource(Res.string.link),
-            keyboardType = KeyboardType.Uri,
-        )
-        CreationTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = form.eventOrganizer,
-            onValueChange = { organizer -> onFormChanged(form.copy(eventOrganizer = organizer)) },
-            label = stringResource(Res.string.organizer),
-            keyboardType = KeyboardType.Email,
-        )
-        // Several addresses, separated by commas
-        CreationTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = form.eventAttendees,
-            onValueChange = { attendees -> onFormChanged(form.copy(eventAttendees = attendees)) },
-            label = stringResource(Res.string.attendees),
-            keyboardType = KeyboardType.Email,
-        )
 
-        SCDropdownField(
+        CreationSection(
             modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.recurrence),
-            placeholder = stringResource(Res.string.recurrence),
-            options = listOf(null) + EventFrequency.entries,
-            selectedOption = form.eventFrequency,
-            optionText = { frequency -> frequencyText(frequency = frequency) },
-            onOptionSelected = { frequency -> onFormChanged(form.copy(eventFrequency = frequency)) },
-            style = SCTextFieldDefaults.Style.LIGHT,
-        )
-        if (form.eventFrequency != null) {
+            title = stringResource(Res.string.details),
+            moreOptions = {
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.eventOrganizer,
+                    onValueChange = { organizer -> onFormChanged(form.copy(eventOrganizer = organizer)) },
+                    label = stringResource(Res.string.organizer),
+                    keyboardType = KeyboardType.Email,
+                )
+                // Several addresses, separated by commas
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.eventAttendees,
+                    onValueChange = { attendees -> onFormChanged(form.copy(eventAttendees = attendees)) },
+                    label = stringResource(Res.string.attendees),
+                    keyboardType = KeyboardType.Email,
+                )
+                SCDropdownField(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = stringResource(Res.string.status),
+                    placeholder = stringResource(Res.string.status),
+                    options = listOf(null) + EventStatus.entries,
+                    selectedOption = form.eventStatus,
+                    optionText = { status -> status?.let { eventStatusText(status = status) } ?: stringResource(Res.string.not_set) },
+                    onOptionSelected = { status -> onFormChanged(form.copy(eventStatus = status)) },
+                    style = SCTextFieldDefaults.Style.LIGHT,
+                )
+                SCDropdownField(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = stringResource(Res.string.availability),
+                    placeholder = stringResource(Res.string.availability),
+                    options = listOf(null) + EventTransparency.entries,
+                    selectedOption = form.eventTransparency,
+                    optionText = { transparency -> transparency?.let { availabilityText(transparency = transparency) } ?: stringResource(Res.string.not_set) },
+                    onOptionSelected = { transparency -> onFormChanged(form.copy(eventTransparency = transparency)) },
+                    style = SCTextFieldDefaults.Style.LIGHT,
+                )
+                SCDropdownField(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = stringResource(Res.string.classification),
+                    placeholder = stringResource(Res.string.classification),
+                    options = listOf(null) + EventClassification.entries,
+                    selectedOption = form.eventClassification,
+                    optionText = { classification -> classification?.let { classificationText(classification = classification) } ?: stringResource(Res.string.not_set) },
+                    onOptionSelected = { classification -> onFormChanged(form.copy(eventClassification = classification)) },
+                    style = SCTextFieldDefaults.Style.LIGHT,
+                )
+                // From 1, the highest, to 9
+                SCDropdownField(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = stringResource(Res.string.priority),
+                    placeholder = stringResource(Res.string.priority),
+                    options = listOf(null) + PRIORITIES,
+                    selectedOption = form.eventPriority,
+                    optionText = { priority -> priority?.toString() ?: stringResource(Res.string.not_set) },
+                    onOptionSelected = { priority -> onFormChanged(form.copy(eventPriority = priority)) },
+                    style = SCTextFieldDefaults.Style.LIGHT,
+                )
+                // Several categories, separated by commas
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.eventCategories,
+                    onValueChange = { categories -> onFormChanged(form.copy(eventCategories = categories)) },
+                    label = stringResource(Res.string.categories),
+                )
+            },
+            hasMoreOptionsSet = listOf(form.eventOrganizer, form.eventAttendees, form.eventCategories).any { field -> field.isNotBlank() } ||
+                listOf(form.eventStatus, form.eventTransparency, form.eventClassification, form.eventPriority).any { field -> field != null },
+        ) {
             CreationTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = form.eventInterval,
-                onValueChange = { interval -> onFormChanged(form.copy(eventInterval = interval)) },
-                label = stringResource(Res.string.repeat_interval),
-                keyboardType = KeyboardType.Number,
+                value = form.eventDescription,
+                onValueChange = { description -> onFormChanged(form.copy(eventDescription = description)) },
+                label = stringResource(Res.string.description),
+                minLines = 3,
             )
-            if (form.eventFrequency == EventFrequency.WEEKLY) {
-                WeekDaysChoice(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = stringResource(Res.string.repeats_on),
-                    selectedDays = form.eventDays,
-                    onDaysChange = { days -> onFormChanged(form.copy(eventDays = days)) },
-                )
-            }
-            SegmentedChoice(
+            CreationTextField(
                 modifier = Modifier.fillMaxWidth(),
-                label = stringResource(Res.string.recurrence_end),
-                options = RecurrenceEnd.entries,
-                selectedOption = form.eventRecurrenceEnd,
-                optionText = { end ->
-                    stringResource(
-                        when (end) {
-                            RecurrenceEnd.NEVER -> Res.string.recurrence_never
-                            RecurrenceEnd.COUNT -> Res.string.recurrence_after
-                            RecurrenceEnd.UNTIL -> Res.string.recurrence_on
-                        },
-                    )
-                },
-                onOptionSelected = { end -> onFormChanged(form.copy(eventRecurrenceEnd = end)) },
+                value = form.eventUrl,
+                onValueChange = { url -> onFormChanged(form.copy(eventUrl = url)) },
+                label = stringResource(Res.string.link),
+                keyboardType = KeyboardType.Uri,
             )
-            when (form.eventRecurrenceEnd) {
-                RecurrenceEnd.NEVER -> Unit
-                RecurrenceEnd.COUNT -> CreationTextField(
+        }
+
+        CreationSection(
+            modifier = Modifier.fillMaxWidth(),
+            title = stringResource(Res.string.recurrence),
+        ) {
+            SCDropdownField(
+                modifier = Modifier.fillMaxWidth(),
+                label = stringResource(Res.string.recurrence),
+                placeholder = stringResource(Res.string.recurrence),
+                options = listOf(null) + EventFrequency.entries,
+                selectedOption = form.eventFrequency,
+                optionText = { frequency -> frequencyText(frequency = frequency) },
+                onOptionSelected = { frequency -> onFormChanged(form.copy(eventFrequency = frequency)) },
+                style = SCTextFieldDefaults.Style.LIGHT,
+            )
+            if (form.eventFrequency != null) {
+                CreationTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = form.eventCount,
-                    onValueChange = { count -> onFormChanged(form.copy(eventCount = count)) },
-                    label = stringResource(Res.string.occurrences),
-                    isRequired = true,
+                    value = form.eventInterval,
+                    onValueChange = { interval -> onFormChanged(form.copy(eventInterval = interval)) },
+                    label = stringResource(Res.string.repeat_interval),
                     keyboardType = KeyboardType.Number,
                 )
-                RecurrenceEnd.UNTIL -> DateField(
+                if (form.eventFrequency == EventFrequency.WEEKLY) {
+                    WeekDaysChoice(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = stringResource(Res.string.repeats_on),
+                        selectedDays = form.eventDays,
+                        onDaysChange = { days -> onFormChanged(form.copy(eventDays = days)) },
+                    )
+                }
+                SegmentedChoice(
                     modifier = Modifier.fillMaxWidth(),
-                    label = stringResource(Res.string.until_date),
-                    date = form.eventUntil,
-                    onDateChange = { until -> onFormChanged(form.copy(eventUntil = until)) },
-                    isRequired = true,
+                    label = stringResource(Res.string.recurrence_end),
+                    options = RecurrenceEnd.entries,
+                    selectedOption = form.eventRecurrenceEnd,
+                    optionText = { end ->
+                        stringResource(
+                            when (end) {
+                                RecurrenceEnd.NEVER -> Res.string.recurrence_never
+                                RecurrenceEnd.COUNT -> Res.string.recurrence_after
+                                RecurrenceEnd.UNTIL -> Res.string.recurrence_on
+                            },
+                        )
+                    },
+                    onOptionSelected = { end -> onFormChanged(form.copy(eventRecurrenceEnd = end)) },
                 )
+                when (form.eventRecurrenceEnd) {
+                    RecurrenceEnd.NEVER -> Unit
+                    RecurrenceEnd.COUNT -> CreationTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = form.eventCount,
+                        onValueChange = { count -> onFormChanged(form.copy(eventCount = count)) },
+                        label = stringResource(Res.string.occurrences),
+                        isRequired = true,
+                        keyboardType = KeyboardType.Number,
+                    )
+                    RecurrenceEnd.UNTIL -> DateField(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = stringResource(Res.string.until_date),
+                        date = form.eventUntil,
+                        onDateChange = { until -> onFormChanged(form.copy(eventUntil = until)) },
+                        isRequired = true,
+                    )
+                }
             }
         }
-
-        SCDropdownField(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.reminder),
-            placeholder = stringResource(Res.string.reminder),
-            // The reminder of a scanned event among the usual ones
-            options = (listOf(null) + (REMINDERS + listOfNotNull(form.eventReminderMinutes)).distinct().sorted()),
-            selectedOption = form.eventReminderMinutes,
-            optionText = { minutes -> minutes?.let { reminderText(minutes = minutes) } ?: stringResource(Res.string.not_set) },
-            onOptionSelected = { minutes -> onFormChanged(form.copy(eventReminderMinutes = minutes)) },
-            style = SCTextFieldDefaults.Style.LIGHT,
-        )
-        SCDropdownField(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.status),
-            placeholder = stringResource(Res.string.status),
-            options = listOf(null) + EventStatus.entries,
-            selectedOption = form.eventStatus,
-            optionText = { status -> status?.let { eventStatusText(status = status) } ?: stringResource(Res.string.not_set) },
-            onOptionSelected = { status -> onFormChanged(form.copy(eventStatus = status)) },
-            style = SCTextFieldDefaults.Style.LIGHT,
-        )
-        SCDropdownField(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.availability),
-            placeholder = stringResource(Res.string.availability),
-            options = listOf(null) + EventTransparency.entries,
-            selectedOption = form.eventTransparency,
-            optionText = { transparency -> transparency?.let { availabilityText(transparency = transparency) } ?: stringResource(Res.string.not_set) },
-            onOptionSelected = { transparency -> onFormChanged(form.copy(eventTransparency = transparency)) },
-            style = SCTextFieldDefaults.Style.LIGHT,
-        )
-        SCDropdownField(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.classification),
-            placeholder = stringResource(Res.string.classification),
-            options = listOf(null) + EventClassification.entries,
-            selectedOption = form.eventClassification,
-            optionText = { classification -> classification?.let { classificationText(classification = classification) } ?: stringResource(Res.string.not_set) },
-            onOptionSelected = { classification -> onFormChanged(form.copy(eventClassification = classification)) },
-            style = SCTextFieldDefaults.Style.LIGHT,
-        )
-        // From 1, the highest, to 9
-        SCDropdownField(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.priority),
-            placeholder = stringResource(Res.string.priority),
-            options = listOf(null) + PRIORITIES,
-            selectedOption = form.eventPriority,
-            optionText = { priority -> priority?.toString() ?: stringResource(Res.string.not_set) },
-            onOptionSelected = { priority -> onFormChanged(form.copy(eventPriority = priority)) },
-            style = SCTextFieldDefaults.Style.LIGHT,
-        )
-        // Several categories, separated by commas
-        CreationTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = form.eventCategories,
-            onValueChange = { categories -> onFormChanged(form.copy(eventCategories = categories)) },
-            label = stringResource(Res.string.categories),
-        )
     }
 }
 
