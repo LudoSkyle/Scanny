@@ -16,7 +16,6 @@ final class CreateCodeUITests: XCTestCase {
         typeATextAndCloseTheKeyboard("Shared from Scanny", in: app)
         goToTheCustomization(in: app)
         let createButton = app.buttons["Create"]
-        scroll(to: createButton, in: app)
         createButton.tap()
         showTheCode(in: app)
 
@@ -69,7 +68,6 @@ final class CreateCodeUITests: XCTestCase {
         pickTheNewestPhoto(in: app)
         XCTAssertTrue(app.buttons["Change the logo"].waitForExistence(timeout: 10))
         let createButton = app.buttons["Create"]
-        scroll(to: createButton, in: app)
         createButton.tap()
         showTheCode(in: app)
         keepScreenshot(named: "created-code-with-a-logo", of: app)

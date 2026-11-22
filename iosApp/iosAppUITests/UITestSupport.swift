@@ -81,11 +81,12 @@ extension XCTestCase {
         upward: Bool = false,
     ) {
         let window = app.windows.firstMatch
+        // Under the top bar, above the bar fixed under the editor and the home indicator
         let clearArea = CGRect(
             x: window.frame.minX,
             y: window.frame.minY + 120,
             width: window.frame.width,
-            height: window.frame.height - 220,
+            height: window.frame.height - 280,
         )
         waitUntilStill(element)
         var swipeCount = 0
@@ -144,8 +145,8 @@ extension XCTestCase {
 
     /// Goes from the content of a QR code being created to its customization, the second step.
     func goToTheCustomization(in app: XCUIApplication) {
+        // In the bar fixed under the editor: never scrolled away
         let nextButton = app.buttons["Next"]
-        scroll(to: nextButton, in: app)
         XCTAssertTrue(nextButton.isEnabled)
         nextButton.tap()
         let title = app.staticTexts["Customization"]

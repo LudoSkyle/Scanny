@@ -18,7 +18,6 @@ final class EditCodeUITests: XCTestCase {
         scroll(to: green, in: app)
         green.tap()
         let createButton = app.buttons["Create"]
-        scroll(to: createButton, in: app)
         createButton.tap()
 
         // The editor opens filled with its content, and its customization after it
@@ -34,7 +33,6 @@ final class EditCodeUITests: XCTestCase {
         keepScreenshot(named: "editor-from-a-creation", of: app)
 
         // A new code takes the place of the editor: back returns to the creation it came from
-        scroll(to: createButton, in: app)
         createButton.tap()
         XCTAssertTrue(app.buttons["Edit the code"].waitForExistence(timeout: 5))
         app.buttons["Back"].tap()
@@ -61,7 +59,6 @@ final class EditCodeUITests: XCTestCase {
 
         goToTheCustomization(in: app)
         let createButton = app.buttons["Create"]
-        scroll(to: createButton, in: app)
         createButton.tap()
         XCTAssertTrue(app.buttons["Show the code"].waitForExistence(timeout: 5))
         XCTAssertTrue(element(labelled: url, in: app).exists)
