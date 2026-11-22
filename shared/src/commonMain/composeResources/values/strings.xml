@@ -126,7 +126,7 @@
     <string name="history_not_cleared">The history could not be cleared</string>
     <string name="image_not_saved">The image could not be saved</string>
     <string name="image_not_shared">The image could not be shared</string>
-    <string name="image_saved_short">Image saved</string>
+    <string name="image_saved">Image saved to the photos</string>
     <string name="itf" translatable="false">ITF</string>
     <string name="job_title">Job title</string>
     <string name="join_network">Join the network</string>
@@ -197,6 +197,7 @@
     <string name="scanned_codes_appear_here">The codes you scan appear here.</string>
     <string name="scans">Scans</string>
     <string name="security">Security</string>
+    <string name="see">See</string>
     <string name="see_detail">See the detail</string>
     <string name="see_group">See the group</string>
     <string name="send_email">Send the e-mail</string>

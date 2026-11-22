@@ -30,13 +30,19 @@ final class CreateCodeUITests: XCTestCase {
         waitForTheShareSheetToLeave(shareSheet)
 
         app.buttons["Save the image"].tap()
-        // The photos are asked for at the first save only. Saved, the button of the sheet says so
-        let savedButton = app.buttons["Image saved"]
-        if !savedButton.waitForExistence(timeout: 3) {
+        // The photos are asked for at the first save only. Saved, the sheet says so, with the way to them
+        let savedMessage = app.staticTexts["Image saved to the photos"]
+        if !savedMessage.waitForExistence(timeout: 3) {
             allowTheSystemAlertIfAsked(timeout: 2)
-            XCTAssertTrue(savedButton.waitForExistence(timeout: 10))
+            XCTAssertTrue(savedMessage.waitForExistence(timeout: 10))
         }
         keepScreenshot(named: "created-code-saved", of: app)
+
+        // iOS lets no app open a given photo: See opens the Photos app, where the image is the newest
+        app.buttons["See"].tap()
+        let photos = XCUIApplication(bundleIdentifier: "com.apple.mobileslideshow")
+        XCTAssertTrue(photos.wait(for: .runningForeground, timeout: 10))
+        keepScreenshot(named: "created-code-in-photos", of: photos)
     }
 
     func testALogoPickedInThePhotosIsPutAtTheCenterOfTheCode() throws {

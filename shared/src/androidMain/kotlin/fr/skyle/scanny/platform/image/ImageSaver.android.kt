@@ -23,10 +23,10 @@ internal class AndroidImageSaver(
     override suspend fun saveImage(
         png: ByteArray,
         fileName: String,
-    ) {
+    ): SavedImage {
         check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { "The pictures need a permission before Android 10" }
 
-        withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             val resolver = context.contentResolver
             val values = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
@@ -48,6 +48,7 @@ internal class AndroidImageSaver(
                     null,
                     null,
                 )
+                SavedImage(id = uri.toString())
             } catch (exception: Exception) {
                 // No half written image left in the pictures
                 resolver.delete(uri, null, null)

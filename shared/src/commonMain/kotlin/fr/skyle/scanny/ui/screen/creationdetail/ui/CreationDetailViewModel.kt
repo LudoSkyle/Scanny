@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.usecase.creation.DeleteCreationUseCase
 import fr.skyle.scanny.domain.usecase.creation.WatchCreationUseCase
+import fr.skyle.scanny.platform.image.SavedImage
 import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
 import fr.skyle.scanny.ui.screen.creationdetail.ui.mapper.toCreationDetailItem
 import fr.skyle.scanny.ui.screen.creationdetail.ui.model.CreationDetailItem
@@ -83,14 +84,14 @@ class CreationDetailViewModel(
         val format = creation.format ?: return
         viewModelScope.launch {
             try {
-                codeImageExporter.save(
+                val savedImage = codeImageExporter.save(
                     rawValue = creation.rawValue,
                     format = format,
                     style = creation.style,
                     fileName = imageFileName(),
                 )
 
-                _event.send(CreationDetailEvent.ImageSaved)
+                _event.send(CreationDetailEvent.ImageSaved(savedImage = savedImage))
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: Exception) {
@@ -137,7 +138,7 @@ class CreationDetailViewModel(
     sealed interface CreationDetailEvent {
         data object CreationDeleted : CreationDetailEvent
         data object DeleteFailed : CreationDetailEvent
-        data object ImageSaved : CreationDetailEvent
+        data class ImageSaved(val savedImage: SavedImage) : CreationDetailEvent
         data object ImageNotSaved : CreationDetailEvent
         data object ImageNotShared : CreationDetailEvent
     }

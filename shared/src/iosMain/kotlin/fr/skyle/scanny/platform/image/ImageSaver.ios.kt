@@ -19,7 +19,7 @@ internal class IosImageSaver : ImageSaver {
     override suspend fun saveImage(
         png: ByteArray,
         fileName: String,
-    ) {
+    ): SavedImage =
         suspendCancellableCoroutine { continuation ->
             PHPhotoLibrary.requestAuthorizationForAccessLevel(PHAccessLevelAddOnly) { status ->
                 if (status != PHAuthorizationStatusAuthorized && status != PHAuthorizationStatusLimited) {
@@ -27,19 +27,23 @@ internal class IosImageSaver : ImageSaver {
                     return@requestAuthorizationForAccessLevel
                 }
 
+                // The asset is known by its placeholder before it is written
+                var localIdentifier: String? = null
                 PHPhotoLibrary.sharedPhotoLibrary().performChanges(
                     changeBlock = {
-                        PHAssetCreationRequest.creationRequestForAsset().addResourceWithType(
+                        val request = PHAssetCreationRequest.creationRequestForAsset()
+                        request.addResourceWithType(
                             type = PHAssetResourceTypePhoto,
                             data = png.toNSData(),
                             options = PHAssetResourceCreationOptions().apply {
                                 originalFilename = fileName
                             },
                         )
+                        localIdentifier = request.placeholderForCreatedAsset?.localIdentifier
                     },
                     completionHandler = { isSaved, error ->
                         if (isSaved) {
-                            continuation.resume(Unit)
+                            continuation.resume(SavedImage(id = localIdentifier.orEmpty()))
                         } else {
                             continuation.resumeWithException(IllegalStateException("The photos refused the image: ${error?.localizedDescription}"))
                         }
@@ -47,5 +51,4 @@ internal class IosImageSaver : ImageSaver {
                 )
             }
         }
-    }
 }

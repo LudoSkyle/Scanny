@@ -17,13 +17,16 @@ import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.platform.clipboard.isCopyConfirmedBySystem
 import fr.skyle.scanny.platform.clipboard.textClipEntry
+import fr.skyle.scanny.platform.image.rememberSavedImageOpener
 import fr.skyle.scanny.platform.wifi.rememberWifiNetworkJoiner
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.code_not_deleted
 import fr.skyle.scanny.resources.copied_to_clipboard
 import fr.skyle.scanny.resources.image_not_saved
 import fr.skyle.scanny.resources.image_not_shared
+import fr.skyle.scanny.resources.image_saved
 import fr.skyle.scanny.resources.no_app_to_open
+import fr.skyle.scanny.resources.see
 import fr.skyle.scanny.ui.core.code.action.open
 import fr.skyle.scanny.ui.core.code.component.CodeImageSheet
 import fr.skyle.scanny.ui.core.code.component.DeleteCodeDialog
@@ -49,10 +52,12 @@ fun ScanDetailRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val snackbarState = rememberSCSnackbarState()
+    // The messages about the image of the code, in its sheet
+    val sheetSnackbarState = rememberSCSnackbarState()
+    val openSavedImage = rememberSavedImageOpener()
 
     var isDeleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     var isCodeSheetVisible by rememberSaveable { mutableStateOf(false) }
-    var isImageSaved by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -70,9 +75,15 @@ fun ScanDetailRoute(
                         snackbarState.show(message = getString(Res.string.no_app_to_open))
                     }
 
-                    // Told by the button of the sheet: a message of the screen would show under it
-                    ScanDetailViewModel.ScanDetailEvent.ImageSaved -> {
-                        isImageSaved = true
+                    // Told in the sheet, with the way to the photos
+                    is ScanDetailViewModel.ScanDetailEvent.ImageSaved -> launch {
+                        val isSeeClicked = sheetSnackbarState.show(
+                            message = getString(Res.string.image_saved),
+                            actionLabel = getString(Res.string.see),
+                        )
+                        if (isSeeClicked && !openSavedImage(event.savedImage)) {
+                            sheetSnackbarState.show(message = getString(Res.string.no_app_to_open))
+                        }
                     }
 
                     // The sheet closed for the message to be seen
@@ -99,7 +110,6 @@ fun ScanDetailRoute(
         isDeleting = uiState.isDeleting,
         snackbarState = snackbarState,
         onShowCodeClicked = {
-            isImageSaved = false
             isCodeSheetVisible = true
         },
         onEditClicked = navigateToCreateCode,
@@ -139,10 +149,11 @@ fun ScanDetailRoute(
             // A scanned code is drawn again dark on white, as any scanner reads it
             style = CodeStyle(),
             canSave = uiState.canSaveImage,
-            isSaved = isImageSaved,
+            snackbarState = sheetSnackbarState,
             onShareClicked = viewModel::onShareImageClicked,
             onSaveClicked = viewModel::onSaveImageClicked,
             onDismissRequest = {
+                sheetSnackbarState.dismiss()
                 isCodeSheetVisible = false
             },
         )

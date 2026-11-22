@@ -14,6 +14,7 @@ import fr.skyle.scanny.fake.FakeTextSharer
 import fr.skyle.scanny.fake.FakeWatchScannedCodeUseCase
 import fr.skyle.scanny.fake.FakeWifiNetworkSupport
 import fr.skyle.scanny.fake.FixedClock
+import fr.skyle.scanny.platform.image.SavedImage
 import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
@@ -270,7 +271,7 @@ class ScanDetailViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf(listOf<Byte>(1, 2, 3) to "scanny-scan-7.png") to listOf<ScanDetailViewModel.ScanDetailEvent>(ScanDetailViewModel.ScanDetailEvent.ImageSaved),
+            expected = listOf(listOf<Byte>(1, 2, 3) to "scanny-scan-7.png") to listOf<ScanDetailViewModel.ScanDetailEvent>(ScanDetailViewModel.ScanDetailEvent.ImageSaved(savedImage = SavedImage(id = "saved/scanny-scan-7.png"))),
             actual = imageSaver.savedImages to events,
         )
     }

@@ -8,6 +8,7 @@ import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.usecase.scan.DeleteScannedCodeUseCase
 import fr.skyle.scanny.domain.usecase.scan.WatchScannedCodeUseCase
 import fr.skyle.scanny.platform.contact.ContactAdder
+import fr.skyle.scanny.platform.image.SavedImage
 import fr.skyle.scanny.platform.share.TextSharer
 import fr.skyle.scanny.platform.wifi.WifiNetworkSupport
 import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
@@ -99,14 +100,14 @@ class ScanDetailViewModel(
         val format = code.format ?: return
         viewModelScope.launch {
             try {
-                codeImageExporter.save(
+                val savedImage = codeImageExporter.save(
                     rawValue = code.rawValue,
                     format = format,
                     style = CodeStyle(),
                     fileName = imageFileName(),
                 )
 
-                _event.send(ScanDetailEvent.ImageSaved)
+                _event.send(ScanDetailEvent.ImageSaved(savedImage = savedImage))
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: Exception) {
@@ -166,7 +167,7 @@ class ScanDetailViewModel(
         data object CodeDeleted : ScanDetailEvent
         data object DeleteFailed : ScanDetailEvent
         data object ContactNotAdded : ScanDetailEvent
-        data object ImageSaved : ScanDetailEvent
+        data class ImageSaved(val savedImage: SavedImage) : ScanDetailEvent
         data object ImageNotSaved : ScanDetailEvent
         data object ImageNotShared : ScanDetailEvent
     }

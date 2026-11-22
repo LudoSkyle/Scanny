@@ -1,16 +1,20 @@
 package fr.skyle.scanny.ui.core.code.component
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
+import fr.skyle.scanny.designsystem.core.snackbar.SCSnackbarState
+import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
-import fr.skyle.scanny.resources.image_saved_short
 import fr.skyle.scanny.resources.save_image
 import fr.skyle.scanny.resources.share_image
 import fr.skyle.scanny.resources.the_code
@@ -29,7 +33,6 @@ internal class CodeImageSheetTest : ComposeTest() {
         setContent {
             codeImageSheet(
                 canSave = true,
-                isSaved = false,
                 onShareClicked = { actions += "share" },
                 onSaveClicked = { actions += "save" },
             )
@@ -48,27 +51,41 @@ internal class CodeImageSheetTest : ComposeTest() {
     }
 
     @Test
-    fun `a saved image is told by its button`() = runComposeUiTest {
-        // When
+    fun `a message about the image shows in the sheet with its action`() = runComposeUiTest {
+        // Given
+        var isActionClicked: Boolean? = null
         setContent {
+            val snackbarState = rememberSCSnackbarState()
+            LaunchedEffect(Unit) {
+                isActionClicked = snackbarState.show(
+                    message = "Image saved to the photos",
+                    actionLabel = "See",
+                )
+            }
             codeImageSheet(
                 canSave = true,
-                isSaved = true,
+                snackbarState = snackbarState,
             )
         }
 
+        // When
+        onNodeWithText("Image saved to the photos").assertExists()
+        onNodeWithText("See").performClick()
+
         // Then
-        onNodeWithText(getString(Res.string.image_saved_short)).assertExists()
+        // The message answers once its coroutine resumes, after the touch
+        waitUntil { isActionClicked != null }
+        assertEquals(
+            expected = true,
+            actual = isActionClicked,
+        )
     }
 
     @Test
     fun `saving is not offered when the photos do not allow it`() = runComposeUiTest {
         // When
         setContent {
-            codeImageSheet(
-                canSave = false,
-                isSaved = false,
-            )
+            codeImageSheet(canSave = false)
         }
 
         // Then
@@ -79,7 +96,7 @@ internal class CodeImageSheetTest : ComposeTest() {
     @Composable
     private fun codeImageSheet(
         canSave: Boolean,
-        isSaved: Boolean,
+        snackbarState: SCSnackbarState = rememberSCSnackbarState(),
         onShareClicked: () -> Unit = {},
         onSaveClicked: () -> Unit = {},
     ) {
@@ -89,7 +106,7 @@ internal class CodeImageSheetTest : ComposeTest() {
                 format = BarcodeFormat.QR_CODE,
                 style = CodeStyle(),
                 canSave = canSave,
-                isSaved = isSaved,
+                snackbarState = snackbarState,
                 onShareClicked = onShareClicked,
                 onSaveClicked = onSaveClicked,
                 onDismissRequest = {},

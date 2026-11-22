@@ -1,6 +1,7 @@
 package fr.skyle.scanny.fake
 
 import fr.skyle.scanny.platform.image.ImageSaver
+import fr.skyle.scanny.platform.image.SavedImage
 
 /** Keeps the images it is given, or fails if [error] is set. */
 internal class FakeImageSaver(
@@ -13,9 +14,10 @@ internal class FakeImageSaver(
     override suspend fun saveImage(
         png: ByteArray,
         fileName: String,
-    ) {
+    ): SavedImage {
         error?.let { throw it }
 
         savedImages += png.toList() to fileName
+        return SavedImage(id = "saved/$fileName")
     }
 }
