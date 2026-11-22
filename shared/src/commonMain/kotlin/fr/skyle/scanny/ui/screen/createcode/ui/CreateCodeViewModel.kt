@@ -7,6 +7,7 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.payload.toRawValue
 import fr.skyle.scanny.domain.usecase.creation.RecordCreationUseCase
+import fr.skyle.scanny.domain.usecase.creation.WatchCreationUseCase
 import fr.skyle.scanny.domain.usecase.scan.WatchScannedCodeUseCase
 import fr.skyle.scanny.platform.gallery.LogoPickResult
 import fr.skyle.scanny.ui.core.code.mapper.canHold
@@ -15,6 +16,7 @@ import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toBarcodeContent
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toCreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationSource
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
 import io.github.alexzhirkevich.qrose.matrix.qr.QrErrorCorrection
 import kotlinx.coroutines.CancellationException
@@ -28,8 +30,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CreateCodeViewModel(
-    scannedCodeId: Long?,
-    watchScannedCodeUseCase: WatchScannedCodeUseCase,
+    private val source: CreationSource,
+    private val watchScannedCodeUseCase: WatchScannedCodeUseCase,
+    private val watchCreationUseCase: WatchCreationUseCase,
     private val recordCreationUseCase: RecordCreationUseCase,
 ) : ViewModel() {
 
@@ -40,18 +43,32 @@ class CreateCodeViewModel(
     val event = _event.receiveAsFlow()
 
     init {
-        // Filled once with the scanned code it opens on, then the user's
-        if (scannedCodeId != null) {
+        // Filled once with the code it opens on, then the user's
+        if (source != CreationSource.New) {
             viewModelScope.launch {
                 try {
-                    watchScannedCodeUseCase(codeId = scannedCodeId).first()?.let { scannedCode ->
-                        onFormChanged(form = scannedCode.toCreationForm())
-                    }
+                    fillFromSource()
                 } catch (exception: CancellationException) {
                     throw exception
                 } catch (exception: Exception) {
-                    Logger.e(throwable = exception) { "Failed to read the scanned code $scannedCodeId" }
+                    Logger.e(throwable = exception) { "Failed to read the code the editor opens on: $source" }
                 }
+            }
+        }
+    }
+
+    // A created code brings its style along: a QR code is changed as it was customized
+    private suspend fun fillFromSource() {
+        when (source) {
+            CreationSource.New -> Unit
+
+            is CreationSource.ScannedCode -> watchScannedCodeUseCase(codeId = source.codeId).first()?.let { scannedCode ->
+                onFormChanged(form = scannedCode.toCreationForm())
+            }
+
+            is CreationSource.CreatedCode -> watchCreationUseCase(creationId = source.creationId).first()?.let { creation ->
+                onFormChanged(form = creation.toCreationForm())
+                onStyleChanged(style = creation.style)
             }
         }
     }

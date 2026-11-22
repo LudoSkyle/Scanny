@@ -240,7 +240,7 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] L'éditeur en deux étapes : le contenu et son aperçu, puis la personnalisation ; le retour,
           de la barre comme du système, ramène au contenu sans perdre la personnalisation, perdue en
           quittant l'éditeur ; un code-barres n'a qu'une étape
-    - [ ] Modifier une création
+    - [x] Modifier une création : son contenu et son style dans l'éditeur, un nouveau code au bout
     - [ ] Le compteur de la taille du contenu
     - [ ] Une couleur saisie en hexadécimal ou en RVB
     - [ ] La snackbar « Voir » après l'enregistrement d'une image

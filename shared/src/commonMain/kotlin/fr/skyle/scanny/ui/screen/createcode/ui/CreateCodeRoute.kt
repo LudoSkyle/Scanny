@@ -15,6 +15,7 @@ import fr.skyle.scanny.platform.gallery.rememberLogoPicker
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.creation_not_saved
 import fr.skyle.scanny.resources.logo_not_read
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationSource
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -23,10 +24,10 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun CreateCodeRoute(
-    scannedCodeId: Long?,
+    source: CreationSource,
     navigateToCreationDetail: (creationId: Long) -> Unit,
     navigateBack: () -> Unit,
-    viewModel: CreateCodeViewModel = koinViewModel(parameters = { parametersOf(scannedCodeId) }),
+    viewModel: CreateCodeViewModel = koinViewModel(parameters = { parametersOf(source) }),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 

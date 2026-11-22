@@ -227,6 +227,40 @@ final class CreateCodeUITests: XCTestCase {
         photo.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
     }
 
+    func testACreatedCodeIsEditedIntoANewCreation() throws {
+        let text = "To edit \(Int(Date().timeIntervalSince1970))"
+        let app = launchApp()
+        app.buttons["Create a code"].tap()
+        typeATextAndCloseTheKeyboard(text, in: app)
+        goToTheCustomization(in: app)
+        let green = element(labelled: "Green", in: app)
+        scroll(to: green, in: app)
+        green.tap()
+        let createButton = app.buttons["Create"]
+        scroll(to: createButton, in: app)
+        createButton.tap()
+
+        // The editor opens filled with its content, and its customization after it
+        XCTAssertTrue(app.buttons["Edit the code"].waitForExistence(timeout: 5))
+        app.buttons["Edit the code"].tap()
+        let textField = textInput(labelled: "Text", in: app)
+        XCTAssertTrue(textField.waitForExistence(timeout: 5))
+        XCTAssertEqual(textField.value as? String, text)
+        goToTheCustomization(in: app)
+        let greenAgain = element(labelled: "Green", in: app)
+        scroll(to: greenAgain, in: app)
+        XCTAssertTrue(greenAgain.isSelected)
+        keepScreenshot(named: "editor-from-a-creation", of: app)
+
+        // A new code takes the place of the editor: back returns to the creation it came from
+        scroll(to: createButton, in: app)
+        createButton.tap()
+        XCTAssertTrue(app.buttons["Edit the code"].waitForExistence(timeout: 5))
+        app.buttons["Back"].tap()
+        XCTAssertTrue(app.buttons["Edit the code"].waitForExistence(timeout: 5))
+        XCTAssertTrue(element(labelled: text, in: app).exists)
+    }
+
     func testTheCustomizationIsKeptBackAndForthBetweenTheSteps() throws {
         let app = launchApp()
         app.buttons["Create a code"].tap()

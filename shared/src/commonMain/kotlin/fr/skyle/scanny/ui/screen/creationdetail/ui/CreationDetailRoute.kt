@@ -30,6 +30,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun CreationDetailRoute(
     creationId: Long,
+    navigateToCreateCode: () -> Unit,
     navigateBack: () -> Unit,
     viewModel: CreationDetailViewModel = koinViewModel(parameters = { parametersOf(creationId) }),
 ) {
@@ -90,6 +91,7 @@ fun CreationDetailRoute(
             isImageSaved = false
             isCodeSheetVisible = true
         },
+        onEditClicked = navigateToCreateCode,
         onDeleteClicked = {
             isDeleteDialogVisible = true
         },
