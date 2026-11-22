@@ -40,7 +40,6 @@ import fr.skyle.scanny.resources.error_correction_medium
 import fr.skyle.scanny.resources.error_correction_too_high_for_content
 import fr.skyle.scanny.resources.logo_needs_highest_correction
 import fr.skyle.scanny.resources.next
-import fr.skyle.scanny.resources.pdf417
 import fr.skyle.scanny.resources.reset_customization
 import fr.skyle.scanny.resources.step_of
 import fr.skyle.scanny.resources.the_code
@@ -151,9 +150,9 @@ internal class CreateCodeScreenTest : ComposeTest() {
         }
 
         // Then
-        onNodeWithText(getString(Res.string.data_matrix)).assertIsSelected()
-        onNodeWithText(getString(Res.string.aztec)).assertExists()
-        onNodeWithText(getString(Res.string.pdf417)).assertExists()
+        // The format chosen in a dropdown, the others in its menu
+        onNodeWithText(getString(Res.string.data_matrix)).assertExists()
+        onNodeWithText(getString(Res.string.aztec)).assertDoesNotExist()
         onNodeWithText("scanny.app").assertExists()
         onNodeWithText(getString(Res.string.create)).performScrollTo().assertExists()
         onNodeWithText(getString(Res.string.next)).assertDoesNotExist()
