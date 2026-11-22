@@ -1,4 +1,5 @@
 <resources>
+    <string name="about_code">About this code</string>
     <string name="add_contact">Add the contact</string>
     <string name="add_logo">Add a logo</string>
     <string name="address">Address</string>
@@ -112,6 +113,19 @@
     <string name="fill_content_to_see_code">Fill in the content to see the code.</string>
     <string name="finish">Finish</string>
     <string name="format">Format</string>
+    <string name="format_aztec_info">A square code in two dimensions, built around a target at its center. Used for train and plane tickets.</string>
+    <string name="format_codabar_info">An old barcode of digits and a few signs. Still used by libraries, blood banks and parcel services.</string>
+    <string name="format_code_128_info">A dense barcode for any character. On shipping labels and in logistics.</string>
+    <string name="format_code_39_info">A barcode of capital letters, digits and a few signs. Used in industry, logistics and on badges.</string>
+    <string name="format_code_93_info">A denser Code 39, with check characters. Used in logistics and by postal services.</string>
+    <string name="format_data_matrix_info">A small square code in two dimensions, edged with an L. Printed tiny on electronic parts, medicines and mail.</string>
+    <string name="format_ean_13_info">A barcode of 13 digits, the last one a check digit. On the products sold almost everywhere in the world.</string>
+    <string name="format_ean_8_info">A short barcode of 8 digits, for the small products with no room for an EAN-13.</string>
+    <string name="format_itf_info">A barcode of digits in pairs, Interleaved 2 of 5. On cartons and pallets, as the ITF-14.</string>
+    <string name="format_pdf417_info">A code of stacked rows, which holds a lot of data. Found on identity cards, driving licences and boarding passes.</string>
+    <string name="format_qr_code_info">A square code in two dimensions, told by its three corners. It holds up to a few thousand characters, and still reads when partly damaged. The most common code: links, payments, menus, tickets.</string>
+    <string name="format_upc_a_info">A barcode of 12 digits, on the products sold in North America.</string>
+    <string name="format_upc_e_info">A UPC-A shortened to 8 digits, for the small products sold in North America.</string>
     <string name="give_feedback">Give your feedback</string>
     <string name="gradient">Gradient</string>
     <string name="gradient_color">Second color of the gradient</string>
@@ -224,6 +238,12 @@
     <string name="today">Today</string>
     <string name="turn_off_torch">Turn off the torch</string>
     <string name="turn_on_torch">Turn on the torch</string>
+    <string name="type_contact_info">A business card, in vCard or MeCard: name, phones, e-mails, address… Scanny adds it to your contacts.</string>
+    <string name="type_email_info">An e-mail to write: its recipient, and sometimes its subject and message. Scanny opens your mail app with them.</string>
+    <string name="type_link_info">The address of a web page. Scanny opens it in your browser.</string>
+    <string name="type_sms_info">A text message to send: its number, and sometimes its message. Scanny opens your messages with them.</string>
+    <string name="type_text_info">Plain text, read as it is. Scanny shows it and copies it.</string>
+    <string name="type_wifi_info">The name, the security and the password of a Wi-Fi network, to join it without typing them.</string>
     <string name="upc_a" translatable="false">UPC-A</string>
     <string name="upc_e" translatable="false">UPC-E</string>
     <string name="use_front_camera">Use the front camera</string>

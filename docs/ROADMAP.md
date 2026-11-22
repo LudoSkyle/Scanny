@@ -258,7 +258,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] La snackbar « Voir » après l'enregistrement d'une image
     - [x] Le contenu brut plus visible replié, et son réglage pour la feuille d'un scan
     - [x] La ligne d'un groupe dans l'historique, et la séparation dans son détail
-    - [ ] Les fiches « i » du type et du format
+    - [x] Les fiches « i » du type et du format : ce que le code contient et ce que Scanny en fait,
+          puis à quoi son format ressemble et où on le trouve
 12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI. Deux remarques
     d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton galerie le temps
     de son affichage, et le Photo Picker range les images de la plus récente à la plus ancienne.

@@ -202,6 +202,10 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   bouton principal du résultat (`toCodeAction`), par le même chemin dans la `Route` : un lien, un
   e-mail, un SMS, un contact, un réseau Wi-Fi que l'appareil sait rejoindre. Un texte, ou un réseau
   qu'il ne sait pas rejoindre, s'affiche dans la feuille. La détection reprend 2 s plus tard.
+- Le « i » de l'en-tête d'un détail (`CodeHeader`) ouvre une fiche (`CodeInfoSheet`) : ce que le
+  type du code contient et ce que Scanny en fait, puis à quoi son format ressemble et où on le trouve
+  le plus souvent. Les textes sont communs aux deux plateformes : ils ne promettent pas d'action
+  qu'une seule sait faire (rejoindre un réseau Wi-Fi).
 - Le code se montre dans une feuille (`CodeImageSheet`), ouverte par « Afficher le code » du détail
   d'un scan comme de celui d'une création, en grand pour qu'un autre téléphone le scanne, avec les
   actions sur son image : la partager, l'enregistrer dans les photos (`CodeImageExporter`, qui la

@@ -29,6 +29,7 @@ import fr.skyle.scanny.resources.no_app_to_open
 import fr.skyle.scanny.resources.see
 import fr.skyle.scanny.ui.core.code.action.open
 import fr.skyle.scanny.ui.core.code.component.CodeImageSheet
+import fr.skyle.scanny.ui.core.code.component.CodeInfoSheet
 import fr.skyle.scanny.ui.core.code.component.DeleteCodeDialog
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import kotlinx.coroutines.launch
@@ -58,6 +59,7 @@ fun ScanDetailRoute(
 
     var isDeleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     var isCodeSheetVisible by rememberSaveable { mutableStateOf(false) }
+    var isInfoSheetVisible by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -112,6 +114,9 @@ fun ScanDetailRoute(
         onShowCodeClicked = {
             isCodeSheetVisible = true
         },
+        onInfoClicked = {
+            isInfoSheetVisible = true
+        },
         onEditClicked = navigateToCreateCode,
         onBackClicked = navigateBack,
         onShareClicked = viewModel::onShareClicked,
@@ -155,6 +160,17 @@ fun ScanDetailRoute(
             onDismissRequest = {
                 sheetSnackbarState.dismiss()
                 isCodeSheetVisible = false
+            },
+        )
+    }
+
+    val infoItem = uiState.code
+    if (isInfoSheetVisible && infoItem != null) {
+        CodeInfoSheet(
+            type = infoItem.type,
+            format = infoItem.format,
+            onDismissRequest = {
+                isInfoSheetVisible = false
             },
         )
     }
