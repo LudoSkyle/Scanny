@@ -9,6 +9,7 @@ import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.qrcode.QRCodeReader
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.platform.gallery.LOGO_MAX_SIDE
@@ -109,9 +110,51 @@ class CodeImageReadabilityTest {
         )
     }
 
-    private suspend fun renderQrCode(style: CodeStyle): ByteArray =
+    @Test
+    fun `a qr code is read back at every correction`() = runTest {
+        // Given
+        val styles = CodeErrorCorrection.entries.map { errorCorrection ->
+            CodeStyle(
+                dotShape = CodeShape.CIRCLE,
+                errorCorrection = errorCorrection,
+            )
+        }
+
+        // When
+        val unreadStyles = styles.filterNot { style -> renderQrCode(style = style).readQrCode() == TEXT }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = unreadStyles,
+        )
+    }
+
+    @Test
+    fun `the longest content a qr code holds is read back`() = runTest {
+        // Given
+        // The most at the lowest correction, in the densest code
+        val longest = "a".repeat(2953)
+
+        // When
+        val read = renderQrCode(
+            style = CodeStyle(),
+            rawValue = longest,
+        ).readQrCode()
+
+        // Then
+        assertEquals(
+            expected = longest,
+            actual = read,
+        )
+    }
+
+    private suspend fun renderQrCode(
+        style: CodeStyle,
+        rawValue: String = TEXT,
+    ): ByteArray =
         renderer.renderPng(
-            rawValue = TEXT,
+            rawValue = rawValue,
             format = BarcodeFormat.QR_CODE,
             style = style,
         )

@@ -1,5 +1,6 @@
 package fr.skyle.scanny.ui.core.code.mapper
 
+import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.ui.core.code.model.CodeReadability
 import io.github.alexzhirkevich.qrose.matrix.qr.QrErrorCorrection
@@ -26,7 +27,7 @@ class CodeStyleMapperTest {
     }
 
     @Test
-    fun `a qr code without a logo is encoded with the lowest correction`() {
+    fun `a qr code without a logo left to scanny is encoded with the lowest correction`() {
         // Given
         val style = CodeStyle()
 
@@ -35,7 +36,46 @@ class CodeStyleMapperTest {
 
         // Then
         assertEquals(
-            expected = QrErrorCorrectionLevel.Auto to QrErrorCorrection.L,
+            expected = QrErrorCorrectionLevel.Low to QrErrorCorrection.L,
+            actual = options.errorCorrectionLevel to style.qrErrorCorrection(),
+        )
+    }
+
+    @Test
+    fun `a qr code is encoded with the correction chosen`() {
+        // When
+        val corrections = CodeErrorCorrection.entries.associateWith { errorCorrection ->
+            val style = CodeStyle(errorCorrection = errorCorrection)
+            style.toQrOptions().errorCorrectionLevel to style.qrErrorCorrection()
+        }
+
+        // Then
+        assertEquals(
+            expected = mapOf(
+                CodeErrorCorrection.AUTO to (QrErrorCorrectionLevel.Low to QrErrorCorrection.L),
+                CodeErrorCorrection.LOW to (QrErrorCorrectionLevel.Low to QrErrorCorrection.L),
+                CodeErrorCorrection.MEDIUM to (QrErrorCorrectionLevel.Medium to QrErrorCorrection.M),
+                CodeErrorCorrection.QUARTILE to (QrErrorCorrectionLevel.MediumHigh to QrErrorCorrection.Q),
+                CodeErrorCorrection.HIGH to (QrErrorCorrectionLevel.High to QrErrorCorrection.H),
+            ),
+            actual = corrections,
+        )
+    }
+
+    @Test
+    fun `a logo is always encoded with the highest correction whatever the one stored`() {
+        // Given
+        val style = CodeStyle(
+            logo = byteArrayOf(1, 2, 3),
+            errorCorrection = CodeErrorCorrection.LOW,
+        )
+
+        // When
+        val options = style.toQrOptions()
+
+        // Then
+        assertEquals(
+            expected = QrErrorCorrectionLevel.High to QrErrorCorrection.H,
             actual = options.errorCorrectionLevel to style.qrErrorCorrection(),
         )
     }

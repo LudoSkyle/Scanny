@@ -121,6 +121,7 @@ internal class CodeStyleFieldsTest : ComposeTest() {
         SCTheme {
             CodeStyleFields(
                 style = style,
+                logoBlocker = null,
                 onStyleChanged = onStyleChanged,
                 onAddLogoClicked = {},
             )

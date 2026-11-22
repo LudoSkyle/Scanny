@@ -39,6 +39,9 @@ internal data class CreationEntity(
     // A PNG of a few hundred pixels a side at most, null for none
     @ColumnInfo(name = "logo", typeAffinity = ColumnInfo.BLOB)
     val logo: ByteArray?,
+    // The name of a CodeErrorCorrection value of domain, left to Scanny by default as before the version 6
+    @ColumnInfo(name = "error_correction", defaultValue = "AUTO")
+    val errorCorrection: String,
     // False when the user keeps no history of the creations: purged at the next start
     @ColumnInfo(name = "is_in_history", defaultValue = "1")
     val isInHistory: Boolean = true,
@@ -56,6 +59,7 @@ internal data class CreationEntity(
             dotShape == other.dotShape &&
             cornerShape == other.cornerShape &&
             logo.contentEquals(other.logo) &&
+            errorCorrection == other.errorCorrection &&
             isInHistory == other.isInHistory
 
     override fun hashCode(): Int {
@@ -68,6 +72,7 @@ internal data class CreationEntity(
         result = 31 * result + dotShape.hashCode()
         result = 31 * result + cornerShape.hashCode()
         result = 31 * result + logo.contentHashCode()
+        result = 31 * result + errorCorrection.hashCode()
         result = 31 * result + isInHistory.hashCode()
         return result
     }

@@ -22,6 +22,7 @@ import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.create
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
+import fr.skyle.scanny.ui.screen.createcode.ui.model.LogoBlocker
 import org.jetbrains.compose.resources.stringResource
 
 /** The second step of the editor of a QR code: how it looks, seen on the code as it is chosen. */
@@ -29,6 +30,7 @@ import org.jetbrains.compose.resources.stringResource
 fun CreationStyleStep(
     preview: CodePreview,
     style: CodeStyle,
+    logoBlocker: LogoBlocker?,
     isCreating: Boolean,
     contentPadding: PaddingValues,
     onStyleChanged: (CodeStyle) -> Unit,
@@ -57,6 +59,7 @@ fun CreationStyleStep(
         CodeStyleFields(
             modifier = Modifier.fillMaxWidth(),
             style = style,
+            logoBlocker = logoBlocker,
             onStyleChanged = onStyleChanged,
             onAddLogoClicked = onAddLogoClicked,
         )
@@ -87,6 +90,7 @@ private fun PreviewCreationStyleStep() {
                 darkColor = 0xFF3B43BE,
                 dotShape = CodeShape.ROUNDED,
             ),
+            logoBlocker = null,
             isCreating = false,
             contentPadding = PaddingValues(),
             onStyleChanged = {},

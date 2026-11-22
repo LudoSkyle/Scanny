@@ -30,6 +30,8 @@ import fr.skyle.scanny.resources.logo
 import fr.skyle.scanny.resources.remove_logo
 import fr.skyle.scanny.resources.the_logo
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
+import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toText
+import fr.skyle.scanny.ui.screen.createcode.ui.model.LogoBlocker
 import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -38,6 +40,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun LogoRow(
     logo: ByteArray?,
+    blocker: LogoBlocker?,
     onAddLogoClicked: () -> Unit,
     onRemoveLogoClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -78,6 +81,7 @@ fun LogoRow(
                 onClick = onAddLogoClicked,
                 style = SCButtonDefaults.Style.SECONDARY,
                 size = SCButtonDefaults.Size.MEDIUM,
+                isEnabled = blocker == null,
             )
 
             if (logo != null) {
@@ -93,6 +97,19 @@ fun LogoRow(
                 )
             }
         }
+
+        blocker?.let { reason ->
+            Spacer(modifier = Modifier.height(8.dp))
+
+            SCText(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                text = stringResource(reason.toText()),
+                style = SCTheme.typography.caption,
+                color = SCTheme.colors.text,
+            )
+        }
     }
 }
 
@@ -105,6 +122,7 @@ private fun PreviewLogoRow() {
                 .fillMaxWidth()
                 .padding(all = 16.dp),
             logo = null,
+            blocker = LogoBlocker.CORRECTION_TOO_LOW,
             onAddLogoClicked = {},
             onRemoveLogoClicked = {},
         )

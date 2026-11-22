@@ -148,7 +148,8 @@ internal expect val platformDataModule: Module
   ajoute `is_in_history` à `scan` (`AutoMigration` de 1 à 2), la version 3 la table `creation` (de 2
   à 3), la version 4 les couleurs et les formes d'une création (de 3 à 4 : une création plus
   ancienne garde ce qu'elle était, noir sur blanc et carrée), la version 5 son logo (de 4 à 5, sans
-  logo par défaut).
+  logo par défaut), la version 6 sa correction d'erreur (de 5 à 6, automatique par défaut, celle
+  qu'avaient les créations plus anciennes).
 - Une requête de lecture multiple a un `ORDER BY` explicite : sans lui, l'ordre est un détail de
   SQLite dont l'UI finit par dépendre.
 - Un index est attendu sur toute colonne utilisée en filtre ou en tri (date de scan, type).
@@ -190,7 +191,7 @@ trouvés pendant un scan multiple. Deux tables :
 
 | Table | Colonnes | Rôle |
 |---|---|---|
-| `creation` | `id`, `created_at` (indexée), `raw_value`, `format`, `dark_color`, `light_color` (ARGB, noir et blanc par défaut), `dot_shape`, `corner_shape` (`SQUARE` par défaut), `logo` (un PNG de 256 pixels de côté au plus, nul par défaut), `is_in_history` (indexée, `1` par défaut) | un code créé : le texte mis dans le code, son format, la façon de le dessiner, sa date |
+| `creation` | `id`, `created_at` (indexée), `raw_value`, `format`, `dark_color`, `light_color` (ARGB, noir et blanc par défaut), `dot_shape`, `corner_shape` (`SQUARE` par défaut), `logo` (un PNG de 256 pixels de côté au plus, nul par défaut), `error_correction` (`AUTO` par défaut), `is_in_history` (indexée, `1` par défaut) | un code créé : le texte mis dans le code, son format, la façon de le dessiner, sa date |
 
 - Seul le texte du code est stocké, comme pour un scan : le contenu se relit depuis lui.
 - Comme une capture, une création hors de l'historique (`is_in_history = 0`) se lit par son

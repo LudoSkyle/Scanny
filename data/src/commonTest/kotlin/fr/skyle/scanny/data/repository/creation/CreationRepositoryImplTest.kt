@@ -24,6 +24,7 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
             dotShape = "CIRCLE",
             cornerShape = "ROUNDED",
             logo = byteArrayOf(1, 2, 3),
+            errorCorrection = "HIGH",
         )
 
         // When
@@ -132,6 +133,7 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
                 dotShape = "SQUARE",
                 cornerShape = "SQUARE",
                 logo = null,
+                errorCorrection = "AUTO",
             ),
             createdAt = Instant.fromEpochMilliseconds(createdAtMillis),
             isInHistory = isInHistory,

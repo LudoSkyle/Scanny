@@ -7,6 +7,7 @@ import fr.skyle.scanny.domain.fake.FakeSettingsRepository
 import fr.skyle.scanny.domain.fake.FixedClock
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.Creation
@@ -39,6 +40,7 @@ class RecordCreationUseCaseTest {
                 dotShape = CodeShape.CIRCLE,
                 cornerShape = CodeShape.ROUNDED,
                 logo = byteArrayOf(1, 2, 3),
+                errorCorrection = CodeErrorCorrection.HIGH,
             ),
         )
 
@@ -55,6 +57,7 @@ class RecordCreationUseCaseTest {
                         dotShape = "CIRCLE",
                         cornerShape = "ROUNDED",
                         logo = byteArrayOf(1, 2, 3),
+                        errorCorrection = "HIGH",
                     ),
                     createdAt = NOW,
                 ),

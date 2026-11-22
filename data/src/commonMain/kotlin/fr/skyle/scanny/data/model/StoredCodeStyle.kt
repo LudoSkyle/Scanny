@@ -10,6 +10,8 @@ data class StoredCodeStyle(
     val cornerShape: String,
     // A PNG, null for none
     val logo: ByteArray?,
+    // The name of a CodeErrorCorrection value of domain
+    val errorCorrection: String,
 ) {
 
     // The logo compared by its bytes, not by its array
@@ -19,7 +21,8 @@ data class StoredCodeStyle(
             lightColor == other.lightColor &&
             dotShape == other.dotShape &&
             cornerShape == other.cornerShape &&
-            logo.contentEquals(other.logo)
+            logo.contentEquals(other.logo) &&
+            errorCorrection == other.errorCorrection
 
     override fun hashCode(): Int {
         var result = darkColor.hashCode()
@@ -27,6 +30,7 @@ data class StoredCodeStyle(
         result = 31 * result + dotShape.hashCode()
         result = 31 * result + cornerShape.hashCode()
         result = 31 * result + logo.contentHashCode()
+        result = 31 * result + errorCorrection.hashCode()
         return result
     }
 }

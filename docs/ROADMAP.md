@@ -249,8 +249,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] Modifier une création : son contenu et son style dans l'éditeur, un nouveau code au bout
     - [x] Le compteur de la taille du contenu : ce que le contenu entier prend du QR code, rouge
           au-delà de ce qu'il tient
-    - [ ] Le niveau de correction, dans les options avancées du contenu : la limite et le compteur
-          le suivent ; un logo n'est possible qu'en correction maximale
+    - [x] Le niveau de correction, dans les options avancées du contenu : la limite et le compteur
+          le suivent ; un logo n'est possible qu'en correction automatique ou maximale
     - [ ] Les options avancées de la personnalisation : la couleur des coins, un dégradé, la forme et
           la marge du logo
     - [ ] Une couleur saisie en hexadécimal ou en RVB

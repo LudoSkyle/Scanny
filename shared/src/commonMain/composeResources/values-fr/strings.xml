@@ -2,6 +2,7 @@
     <string name="add_contact">Ajouter le contact</string>
     <string name="add_logo">Ajouter un logo</string>
     <string name="address">Adresse</string>
+    <string name="advanced_options">Options avancées</string>
     <string name="all_creations_deleted">Toutes les créations seront supprimées.</string>
     <string name="all_scans_deleted">Tous les scans seront supprimés.</string>
     <string name="allow_camera">Autoriser la caméra</string>
@@ -50,6 +51,7 @@
     <string name="content_size">Taille du contenu</string>
     <string name="content_size_wide_characters">Un accent ou un emoji compte pour plusieurs.</string>
     <string name="content_too_long">Ce contenu est trop long pour un QR code.</string>
+    <string name="content_too_long_for_logo">Ce contenu est trop long pour un logo, qui demande la correction maximale.</string>
     <string name="content_type">Type</string>
     <string name="copied">Copié</string>
     <string name="copied_to_clipboard">Copié dans le presse-papiers</string>
@@ -72,6 +74,20 @@
     <string name="dot_shape">Forme des points</string>
     <string name="edit_code">Modifier le code</string>
     <string name="email">E-mail</string>
+    <string name="error_correction">Correction d'erreur</string>
+    <string name="error_correction_auto">Automatique</string>
+    <string name="error_correction_auto_description">La plus faible, la maximale sous un logo</string>
+    <string name="error_correction_explanation">La part du code qui peut être abîmée ou cachée sans l'empêcher d'être lu. Plus elle est faible, plus le contenu peut être long, dans un code moins dense.</string>
+    <string name="error_correction_high">Maximale</string>
+    <string name="error_correction_high_description">Environ 30 % du code, ce qu'un logo demande</string>
+    <string name="error_correction_low">Faible</string>
+    <string name="error_correction_low_description">Environ 7 % du code</string>
+    <string name="error_correction_medium">Moyenne</string>
+    <string name="error_correction_medium_description">Environ 15 % du code</string>
+    <string name="error_correction_quartile">Élevée</string>
+    <string name="error_correction_quartile_description">Environ 25 % du code</string>
+    <string name="error_correction_too_high_for_content">Trop forte pour ce contenu</string>
+    <string name="error_correction_too_low_for_logo">Trop faible pour le logo</string>
     <string name="feedback">Votre avis</string>
     <string name="feedback_about_other">Autre chose</string>
     <string name="feedback_about_scan">Le scan</string>
@@ -95,6 +111,7 @@
     <string name="keep_history">Conserver l'historique</string>
     <string name="link">Lien</string>
     <string name="logo">Logo</string>
+    <string name="logo_needs_highest_correction">Un logo demande la correction automatique ou maximale, dans les options avancées du contenu.</string>
     <string name="logo_not_read">L'image n'a pas pu être lue</string>
     <string name="made_by_skyle">Fait par Skyle avec ❤️ chez Openium</string>
     <string name="mail_app_opens_with_message">Votre app de mail s'ouvre avec votre message, prêt à être envoyé.</string>

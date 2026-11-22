@@ -3,6 +3,7 @@ package fr.skyle.scanny.ui.screen.createcode.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -11,8 +12,11 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.add_logo
+import fr.skyle.scanny.resources.advanced_options
 import fr.skyle.scanny.resources.content
 import fr.skyle.scanny.resources.content_size
 import fr.skyle.scanny.resources.content_size_count
@@ -20,6 +24,11 @@ import fr.skyle.scanny.resources.content_size_wide_characters
 import fr.skyle.scanny.resources.create
 import fr.skyle.scanny.resources.create_code
 import fr.skyle.scanny.resources.customization
+import fr.skyle.scanny.resources.error_correction_auto
+import fr.skyle.scanny.resources.error_correction_high
+import fr.skyle.scanny.resources.error_correction_medium
+import fr.skyle.scanny.resources.error_correction_too_high_for_content
+import fr.skyle.scanny.resources.logo_needs_highest_correction
 import fr.skyle.scanny.resources.next
 import fr.skyle.scanny.resources.step_of
 import fr.skyle.scanny.resources.the_code
@@ -29,6 +38,9 @@ import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ErrorCorrectionBlocker
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ErrorCorrectionChoice
+import fr.skyle.scanny.ui.screen.createcode.ui.model.LogoBlocker
 import fr.skyle.scanny.ui.test.ComposeTest
 import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
@@ -207,12 +219,109 @@ internal class CreateCodeScreenTest : ComposeTest() {
         onNodeWithText(getString(Res.string.content_size_wide_characters)).assertExists()
     }
 
+    @Test
+    fun `the error correction is chosen in the folded advanced options of the content`() = runComposeUiTest {
+        // Given
+        val styles = mutableListOf<CodeStyle>()
+        setContent {
+            createCodeScreen(
+                form = CreationForm(text = "Hello"),
+                preview = CodePreview.Code(rawValue = "Hello", format = BarcodeFormat.QR_CODE),
+                step = CreationStep.CONTENT,
+                onStyleChanged = { style -> styles += style },
+            )
+        }
+        onNodeWithText(getString(Res.string.error_correction_medium)).assertDoesNotExist()
+
+        // When
+        onNodeWithText(getString(Res.string.advanced_options)).performScrollTo().performClick()
+        onNodeWithText(getString(Res.string.error_correction_medium)).performScrollTo().performClick()
+
+        // Then
+        onNodeWithText(getString(Res.string.error_correction_auto)).assertIsSelected()
+        assertEquals(
+            expected = listOf(CodeStyle(errorCorrection = CodeErrorCorrection.MEDIUM)),
+            actual = styles,
+        )
+    }
+
+    @Test
+    fun `a correction that cannot be chosen says why`() = runComposeUiTest {
+        // When
+        setContent {
+            createCodeScreen(
+                form = CreationForm(text = "Hello"),
+                preview = CodePreview.Code(rawValue = "Hello", format = BarcodeFormat.QR_CODE),
+                step = CreationStep.CONTENT,
+                errorCorrectionChoices = listOf(
+                    ErrorCorrectionChoice(
+                        errorCorrection = CodeErrorCorrection.AUTO,
+                        blocker = null,
+                    ),
+                    ErrorCorrectionChoice(
+                        errorCorrection = CodeErrorCorrection.HIGH,
+                        blocker = ErrorCorrectionBlocker.TOO_HIGH_FOR_CONTENT,
+                    ),
+                ),
+            )
+        }
+        onNodeWithText(getString(Res.string.advanced_options)).performScrollTo().performClick()
+
+        // Then
+        onNodeWithText(getString(Res.string.error_correction_high)).performScrollTo().assertIsNotEnabled()
+        onNodeWithText(getString(Res.string.error_correction_too_high_for_content)).assertExists()
+    }
+
+    @Test
+    fun `a barcode has no advanced options`() = runComposeUiTest {
+        // When
+        setContent {
+            createCodeScreen(
+                form = CreationForm(
+                    kind = CreationKind.BARCODE,
+                    barcodeFormat = BarcodeFormat.EAN_13,
+                    barcodeValue = "4006381333931",
+                ),
+                preview = CodePreview.Code(rawValue = "4006381333931", format = BarcodeFormat.EAN_13),
+                step = CreationStep.CONTENT,
+            )
+        }
+
+        // Then
+        onNodeWithText(getString(Res.string.advanced_options)).assertDoesNotExist()
+    }
+
+    @Test
+    fun `a logo that cannot be added says why`() = runComposeUiTest {
+        // When
+        setContent {
+            createCodeScreen(
+                form = CreationForm(text = "Hello"),
+                preview = CodePreview.Code(rawValue = "Hello", format = BarcodeFormat.QR_CODE),
+                step = CreationStep.STYLE,
+                logoBlocker = LogoBlocker.CORRECTION_TOO_LOW,
+            )
+        }
+
+        // Then
+        onNodeWithText(getString(Res.string.add_logo)).performScrollTo().assertIsNotEnabled()
+        onNodeWithText(getString(Res.string.logo_needs_highest_correction)).assertExists()
+    }
+
     @Composable
     private fun createCodeScreen(
         form: CreationForm,
         preview: CodePreview,
         step: CreationStep,
         contentSize: ContentSize? = null,
+        errorCorrectionChoices: List<ErrorCorrectionChoice> = CodeErrorCorrection.entries.map { errorCorrection ->
+            ErrorCorrectionChoice(
+                errorCorrection = errorCorrection,
+                blocker = null,
+            )
+        },
+        logoBlocker: LogoBlocker? = null,
+        onStyleChanged: (CodeStyle) -> Unit = {},
         onNextClicked: () -> Unit = {},
         onCreateClicked: () -> Unit = {},
     ) {
@@ -221,13 +330,15 @@ internal class CreateCodeScreenTest : ComposeTest() {
                 form = form,
                 preview = preview,
                 contentSize = contentSize,
+                errorCorrectionChoices = errorCorrectionChoices,
+                logoBlocker = logoBlocker,
                 style = CodeStyle(),
                 step = step,
                 isCreating = false,
                 snackbarState = rememberSCSnackbarState(),
                 onBackClicked = {},
                 onFormChanged = {},
-                onStyleChanged = {},
+                onStyleChanged = onStyleChanged,
                 onAddLogoClicked = {},
                 onNextClicked = onNextClicked,
                 onCreateClicked = onCreateClicked,

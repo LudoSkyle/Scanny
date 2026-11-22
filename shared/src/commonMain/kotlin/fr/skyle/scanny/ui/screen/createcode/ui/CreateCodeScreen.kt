@@ -17,6 +17,7 @@ import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBar
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBarDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.content
@@ -32,6 +33,8 @@ import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ErrorCorrectionChoice
+import fr.skyle.scanny.ui.screen.createcode.ui.model.LogoBlocker
 import org.jetbrains.compose.resources.stringResource
 
 // The steps of a QR code; a barcode has the first only
@@ -42,6 +45,8 @@ fun CreateCodeScreen(
     form: CreationForm,
     preview: CodePreview,
     contentSize: ContentSize?,
+    errorCorrectionChoices: List<ErrorCorrectionChoice>,
+    logoBlocker: LogoBlocker?,
     style: CodeStyle,
     step: CreationStep,
     isCreating: Boolean,
@@ -91,10 +96,12 @@ fun CreateCodeScreen(
                     form = form,
                     preview = preview,
                     contentSize = contentSize,
+                    errorCorrectionChoices = errorCorrectionChoices,
                     style = style,
                     isCreating = isCreating,
                     contentPadding = contentPadding,
                     onFormChanged = onFormChanged,
+                    onStyleChanged = onStyleChanged,
                     onNextClicked = onNextClicked,
                     onCreateClicked = onCreateClicked,
                 )
@@ -103,6 +110,7 @@ fun CreateCodeScreen(
                     modifier = Modifier.fillMaxSize(),
                     preview = preview,
                     style = style,
+                    logoBlocker = logoBlocker,
                     isCreating = isCreating,
                     contentPadding = contentPadding,
                     onStyleChanged = onStyleChanged,
@@ -132,6 +140,13 @@ private fun PreviewCreateCodeScreen() {
                 max = 1273,
                 hasWideCharacters = false,
             ),
+            errorCorrectionChoices = CodeErrorCorrection.entries.map { errorCorrection ->
+                ErrorCorrectionChoice(
+                    errorCorrection = errorCorrection,
+                    blocker = null,
+                )
+            },
+            logoBlocker = null,
             style = CodeStyle(),
             step = CreationStep.CONTENT,
             isCreating = false,
