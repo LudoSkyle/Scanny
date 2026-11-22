@@ -48,8 +48,7 @@ final class ScanFlowUITests: XCTestCase {
         waitForTheShareSheetToLeave(shareSheet)
 
         // Deleted, the code leaves its detail for the scan
-        app.buttons["Delete"].tap()
-        XCTAssertTrue(app.staticTexts["Delete this code?"].waitForExistence(timeout: 5))
+        tap(app.buttons["Delete"], until: app.staticTexts["Delete this code?"])
         // The confirmation of the dialog, the last of the buttons named so
         app.buttons.matching(identifier: "Delete").allElementsBoundByIndex.last?.tap()
 

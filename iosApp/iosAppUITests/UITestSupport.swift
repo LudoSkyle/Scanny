@@ -172,6 +172,23 @@ extension XCTestCase {
         Thread.sleep(forTimeInterval: 1)
     }
 
+    /**
+     * Touches [element] until [result] shows, three times at most: a touch that comes while iOS finishes
+     * a transition, the dismissal of its share sheet for one, is sometimes lost however long the wait.
+     */
+    func tap(
+        _ element: XCUIElement,
+        until result: XCUIElement,
+    ) {
+        for _ in 0..<3 {
+            element.tap()
+            if result.waitForExistence(timeout: 2) {
+                return
+            }
+        }
+        XCTFail("\(result) did not show after three touches on \(element)")
+    }
+
     /// Goes back by the gesture from the left edge of the screen, as iOS users do.
     func goBackByTheEdge(in app: XCUIApplication) {
         let edge = app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.5))

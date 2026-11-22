@@ -286,7 +286,9 @@ greffe de préférence à un test existant plutôt qu'à un nouveau lancement de
 - Un champ de texte se cherche une fois l'écran arrivé (`textInput` attend l'un ou l'autre) : vue de
   texte ou champ de texte, le choisir avant reviendrait parfois à attendre celui qui ne viendra pas.
 - La feuille de partage d'iOS se ferme par un glissement vers le bas : un toucher au-dessus d'elle
-  fermerait aussi la feuille de l'app restée dessous.
+  fermerait aussi la feuille de l'app restée dessous. Après sa fermeture, un toucher se perd parfois, quelle que
+  soit l'attente : un toucher qui ouvre quelque chose se répète jusqu'à ce que cela s'ouvre
+  (`tap(_:until:)`, trois fois au plus).
   Après un balayage, `scroll` attend encore une seconde : une liste glisse d'une fraction de point
   après avoir l'air immobile, et Compose prend le premier toucher pour l'arrêter, sans toucher la
   ligne.

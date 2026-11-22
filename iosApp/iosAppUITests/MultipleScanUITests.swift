@@ -67,8 +67,7 @@ final class MultipleScanUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Group"].waitForExistence(timeout: 5))
 
         // Deleted, the group leaves the history it was opened from
-        app.buttons["Delete"].tap()
-        XCTAssertTrue(app.staticTexts["Delete this group?"].waitForExistence(timeout: 5))
+        tap(app.buttons["Delete"], until: app.staticTexts["Delete this group?"])
         // The confirmation of the dialog, the last of the buttons named so
         app.buttons.matching(identifier: "Delete").allElementsBoundByIndex.last?.tap()
         XCTAssertTrue(app.staticTexts["History"].waitForExistence(timeout: 5))
