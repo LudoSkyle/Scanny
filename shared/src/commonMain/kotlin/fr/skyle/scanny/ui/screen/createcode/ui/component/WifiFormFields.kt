@@ -49,134 +49,159 @@ fun WifiFormFields(
     modifier: Modifier = Modifier,
 ) {
     val encryption = form.wifiEncryption
+    // A certificate or a SIM card stands for the password of some methods of EAP
+    val hasPassword = when (encryption) {
+        WifiEncryption.NONE -> false
+        WifiEncryption.WEP, WifiEncryption.WPA -> true
+        WifiEncryption.WPA_ENTERPRISE -> isPasswordEap(method = form.wifiEapMethod)
+    }
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(space = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(space = 24.dp),
     ) {
-        CreationTextField(
+        CreationSection(
             modifier = Modifier.fillMaxWidth(),
-            value = form.wifiSsid,
-            onValueChange = { ssid -> onFormChanged(form.copy(wifiSsid = ssid)) },
-            label = stringResource(Res.string.network),
-            isRequired = true,
-        )
-        SCDropdownField(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.security),
-            placeholder = stringResource(Res.string.security),
-            options = WifiEncryption.entries,
-            selectedOption = encryption,
-            optionText = { option -> stringResource(option.toText()) },
-            onOptionSelected = { option -> onFormChanged(form.copy(wifiEncryption = option)) },
-            style = SCTextFieldDefaults.Style.LIGHT,
-        )
+            title = stringResource(Res.string.network),
+        ) {
+            CreationTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = form.wifiSsid,
+                onValueChange = { ssid -> onFormChanged(form.copy(wifiSsid = ssid)) },
+                label = stringResource(Res.string.network),
+                isRequired = true,
+            )
+            CreationSwitchRow(
+                modifier = Modifier.fillMaxWidth(),
+                label = stringResource(Res.string.hidden_network),
+                isChecked = form.isWifiHidden,
+                onCheckedChange = { isHidden -> onFormChanged(form.copy(isWifiHidden = isHidden)) },
+            )
+        }
 
-        if (encryption == WifiEncryption.WPA_ENTERPRISE) {
+        // The modes of WPA3 and the identities few networks use, folded
+        CreationSection(
+            modifier = Modifier.fillMaxWidth(),
+            title = stringResource(Res.string.security),
+            moreOptions = when (encryption) {
+                WifiEncryption.NONE -> {
+                    {
+                        CreationSwitchRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            label = stringResource(Res.string.enhanced_open_only),
+                            isChecked = form.isWifiEnhancedOpenOnly,
+                            onCheckedChange = { isChecked -> onFormChanged(form.copy(isWifiEnhancedOpenOnly = isChecked)) },
+                        )
+                    }
+                }
+
+                WifiEncryption.WEP -> null
+
+                WifiEncryption.WPA -> {
+                    {
+                        CreationSwitchRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            label = stringResource(Res.string.wpa3_only),
+                            isChecked = form.isWifiWpa3Only,
+                            onCheckedChange = { isChecked -> onFormChanged(form.copy(isWifiWpa3Only = isChecked)) },
+                        )
+                        CreationTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = form.wifiPasswordIdentifier,
+                            onValueChange = { identifier -> onFormChanged(form.copy(wifiPasswordIdentifier = identifier)) },
+                            label = stringResource(Res.string.password_identifier),
+                        )
+                        CreationTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = form.wifiPublicKey,
+                            onValueChange = { publicKey -> onFormChanged(form.copy(wifiPublicKey = publicKey)) },
+                            label = stringResource(Res.string.sae_pk_public_key),
+                            keyboardType = KeyboardType.Password,
+                        )
+                    }
+                }
+
+                WifiEncryption.WPA_ENTERPRISE -> {
+                    {
+                        CreationTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = form.wifiAnonymousIdentity,
+                            onValueChange = { identity -> onFormChanged(form.copy(wifiAnonymousIdentity = identity)) },
+                            label = stringResource(Res.string.anonymous_identity),
+                            keyboardType = KeyboardType.Email,
+                        )
+                        CreationSwitchRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            label = stringResource(Res.string.wpa3_enterprise_only),
+                            isChecked = form.isWifiWpa3EnterpriseOnly,
+                            onCheckedChange = { isChecked -> onFormChanged(form.copy(isWifiWpa3EnterpriseOnly = isChecked)) },
+                        )
+                    }
+                }
+            },
+            hasMoreOptionsSet = when (encryption) {
+                WifiEncryption.NONE -> form.isWifiEnhancedOpenOnly
+                WifiEncryption.WEP -> false
+                WifiEncryption.WPA -> form.isWifiWpa3Only || form.wifiPasswordIdentifier.isNotBlank() || form.wifiPublicKey.isNotBlank()
+                WifiEncryption.WPA_ENTERPRISE -> form.wifiAnonymousIdentity.isNotBlank() || form.isWifiWpa3EnterpriseOnly
+            },
+        ) {
             SCDropdownField(
                 modifier = Modifier.fillMaxWidth(),
-                label = stringResource(Res.string.eap_method),
-                placeholder = stringResource(Res.string.eap_method),
-                options = WIFI_EAP_METHODS,
-                selectedOption = form.wifiEapMethod,
-                optionText = { method -> method },
-                onOptionSelected = { method -> onFormChanged(form.copy(wifiEapMethod = method)) },
+                label = stringResource(Res.string.security),
+                placeholder = stringResource(Res.string.security),
+                options = WifiEncryption.entries,
+                selectedOption = encryption,
+                optionText = { option -> stringResource(option.toText()) },
+                onOptionSelected = { option -> onFormChanged(form.copy(wifiEncryption = option)) },
                 style = SCTextFieldDefaults.Style.LIGHT,
             )
-            CreationTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = form.wifiIdentity,
-                onValueChange = { identity -> onFormChanged(form.copy(wifiIdentity = identity)) },
-                label = stringResource(Res.string.identity),
-                isRequired = true,
-                keyboardType = KeyboardType.Email,
-            )
-            CreationTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = form.wifiAnonymousIdentity,
-                onValueChange = { identity -> onFormChanged(form.copy(wifiAnonymousIdentity = identity)) },
-                label = stringResource(Res.string.anonymous_identity),
-                keyboardType = KeyboardType.Email,
-            )
-        }
 
-        // A certificate or a SIM card stands for the password of some methods of EAP
-        val hasPassword = when (encryption) {
-            WifiEncryption.NONE -> false
-            WifiEncryption.WEP, WifiEncryption.WPA -> true
-            WifiEncryption.WPA_ENTERPRISE -> isPasswordEap(method = form.wifiEapMethod)
-        }
-        if (hasPassword) {
-            CreationTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = form.wifiPassword,
-                onValueChange = { password -> onFormChanged(form.copy(wifiPassword = password)) },
-                label = stringResource(Res.string.password),
-                isRequired = true,
-                keyboardType = KeyboardType.Password,
-            )
-        }
-
-        when (encryption) {
-            WifiEncryption.NONE -> CreationSwitchRow(
-                modifier = Modifier.fillMaxWidth(),
-                label = stringResource(Res.string.enhanced_open_only),
-                isChecked = form.isWifiEnhancedOpenOnly,
-                onCheckedChange = { isChecked -> onFormChanged(form.copy(isWifiEnhancedOpenOnly = isChecked)) },
-            )
-
-            WifiEncryption.WEP -> Unit
-
-            WifiEncryption.WPA -> {
-                CreationSwitchRow(
+            if (encryption == WifiEncryption.WPA_ENTERPRISE) {
+                SCDropdownField(
                     modifier = Modifier.fillMaxWidth(),
-                    label = stringResource(Res.string.wpa3_only),
-                    isChecked = form.isWifiWpa3Only,
-                    onCheckedChange = { isChecked -> onFormChanged(form.copy(isWifiWpa3Only = isChecked)) },
+                    label = stringResource(Res.string.eap_method),
+                    placeholder = stringResource(Res.string.eap_method),
+                    options = WIFI_EAP_METHODS,
+                    selectedOption = form.wifiEapMethod,
+                    optionText = { method -> method },
+                    onOptionSelected = { method -> onFormChanged(form.copy(wifiEapMethod = method)) },
+                    style = SCTextFieldDefaults.Style.LIGHT,
                 )
                 CreationTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = form.wifiPasswordIdentifier,
-                    onValueChange = { identifier -> onFormChanged(form.copy(wifiPasswordIdentifier = identifier)) },
-                    label = stringResource(Res.string.password_identifier),
+                    value = form.wifiIdentity,
+                    onValueChange = { identity -> onFormChanged(form.copy(wifiIdentity = identity)) },
+                    label = stringResource(Res.string.identity),
+                    isRequired = true,
+                    keyboardType = KeyboardType.Email,
                 )
+            }
+
+            if (hasPassword) {
                 CreationTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = form.wifiPublicKey,
-                    onValueChange = { publicKey -> onFormChanged(form.copy(wifiPublicKey = publicKey)) },
-                    label = stringResource(Res.string.sae_pk_public_key),
+                    value = form.wifiPassword,
+                    onValueChange = { password -> onFormChanged(form.copy(wifiPassword = password)) },
+                    label = stringResource(Res.string.password),
+                    isRequired = true,
                     keyboardType = KeyboardType.Password,
                 )
             }
 
-            WifiEncryption.WPA_ENTERPRISE -> {
-                if (isTunneledEap(method = form.wifiEapMethod)) {
-                    SCDropdownField(
-                        modifier = Modifier.fillMaxWidth(),
-                        label = stringResource(Res.string.phase2_method),
-                        placeholder = stringResource(Res.string.phase2_method),
-                        options = WIFI_PHASE2_METHODS,
-                        selectedOption = form.wifiPhase2Method,
-                        optionText = { method -> method ?: stringResource(Res.string.wifi_security_none) },
-                        onOptionSelected = { method -> onFormChanged(form.copy(wifiPhase2Method = method)) },
-                        style = SCTextFieldDefaults.Style.LIGHT,
-                    )
-                }
-                CreationSwitchRow(
+            if (encryption == WifiEncryption.WPA_ENTERPRISE && isTunneledEap(method = form.wifiEapMethod)) {
+                SCDropdownField(
                     modifier = Modifier.fillMaxWidth(),
-                    label = stringResource(Res.string.wpa3_enterprise_only),
-                    isChecked = form.isWifiWpa3EnterpriseOnly,
-                    onCheckedChange = { isChecked -> onFormChanged(form.copy(isWifiWpa3EnterpriseOnly = isChecked)) },
+                    label = stringResource(Res.string.phase2_method),
+                    placeholder = stringResource(Res.string.phase2_method),
+                    options = WIFI_PHASE2_METHODS,
+                    selectedOption = form.wifiPhase2Method,
+                    optionText = { method -> method ?: stringResource(Res.string.wifi_security_none) },
+                    onOptionSelected = { method -> onFormChanged(form.copy(wifiPhase2Method = method)) },
+                    style = SCTextFieldDefaults.Style.LIGHT,
                 )
             }
         }
-
-        CreationSwitchRow(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.hidden_network),
-            isChecked = form.isWifiHidden,
-            onCheckedChange = { isHidden -> onFormChanged(form.copy(isWifiHidden = isHidden)) },
-        )
     }
 }
 
