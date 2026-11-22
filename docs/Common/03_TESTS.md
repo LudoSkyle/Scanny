@@ -233,6 +233,8 @@ ouverture du contenu), et les textes français (les tests Compose parlent la lan
 écran affiche selon son état se teste en Compose (voir ci-dessus), pas ici. Un parcours de plus se
 greffe de préférence à un test existant plutôt qu'à un nouveau lancement de l'app.
 
+- Elle se lance avant toute pull request qui touche un écran ou un parcours. Pour une pull request
+  de documentation, ou qui ne touche que `domain` ou `data`, `allTests` suffit.
 - La suite tourne en parallèle sur trois clones du simulateur (voir la commande dans
   [iosApp/CLAUDE.md](../../iosApp/CLAUDE.md)), une classe de test par clone : un test ne compte pas
   sur ce qu'un test d'une autre classe a enregistré. Une classe tourne d'un bloc sur son clone : une

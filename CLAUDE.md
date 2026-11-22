@@ -60,7 +60,8 @@ xcodebuild test -project iosApp/iosApp.xcodeproj -scheme iosApp \
 L'app iOS se lance depuis Xcode (`iosApp/iosApp.xcodeproj`, schéma `iosApp`) : une phase de build
 y construit le framework `Shared`. Voir [iosApp/CLAUDE.md](./iosApp/CLAUDE.md).
 
-Lance les tests du module touché avant de considérer une modification comme terminée.
+Lance les tests du module touché avant de considérer une modification comme terminée, et les tests
+d'interface iOS avant toute pull request qui touche un écran ou un parcours.
 
 ## Tests
 
