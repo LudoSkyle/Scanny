@@ -67,6 +67,7 @@ fun CreateCodeRoute(
     CreateCodeScreen(
         form = uiState.form,
         preview = uiState.preview,
+        contentSize = uiState.contentSize,
         style = uiState.style,
         step = uiState.step,
         isCreating = uiState.isCreating,

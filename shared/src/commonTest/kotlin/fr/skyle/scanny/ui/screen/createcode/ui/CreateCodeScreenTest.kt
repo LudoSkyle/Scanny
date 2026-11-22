@@ -14,6 +14,9 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.content
+import fr.skyle.scanny.resources.content_size
+import fr.skyle.scanny.resources.content_size_count
+import fr.skyle.scanny.resources.content_size_wide_characters
 import fr.skyle.scanny.resources.create
 import fr.skyle.scanny.resources.create_code
 import fr.skyle.scanny.resources.customization
@@ -22,6 +25,7 @@ import fr.skyle.scanny.resources.step_of
 import fr.skyle.scanny.resources.the_code
 import fr.skyle.scanny.resources.value_not_for_format
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
@@ -158,11 +162,57 @@ internal class CreateCodeScreenTest : ComposeTest() {
         onNodeWithText(getString(Res.string.create)).performScrollTo().assertIsNotEnabled()
     }
 
+    @Test
+    fun `the size of the whole content is counted under its fields`() = runComposeUiTest {
+        // When
+        setContent {
+            createCodeScreen(
+                form = CreationForm(
+                    kind = CreationKind.LINK,
+                    url = "scanny.app",
+                ),
+                preview = CodePreview.Code(rawValue = "https://scanny.app", format = BarcodeFormat.QR_CODE),
+                step = CreationStep.CONTENT,
+                contentSize = ContentSize(
+                    used = 18,
+                    max = 1273,
+                    hasWideCharacters = false,
+                ),
+            )
+        }
+
+        // Then
+        onNodeWithText(getString(Res.string.content_size)).assertExists()
+        onNodeWithText(getString(Res.string.content_size_count, 18, 1273)).assertExists()
+        onNodeWithText(getString(Res.string.content_size_wide_characters)).assertDoesNotExist()
+    }
+
+    @Test
+    fun `a content with an accent or an emoji says they count for several`() = runComposeUiTest {
+        // When
+        setContent {
+            createCodeScreen(
+                form = CreationForm(text = "Café"),
+                preview = CodePreview.Code(rawValue = "Café", format = BarcodeFormat.QR_CODE),
+                step = CreationStep.CONTENT,
+                contentSize = ContentSize(
+                    used = 5,
+                    max = 1273,
+                    hasWideCharacters = true,
+                ),
+            )
+        }
+
+        // Then
+        onNodeWithText(getString(Res.string.content_size_wide_characters)).assertExists()
+    }
+
     @Composable
     private fun createCodeScreen(
         form: CreationForm,
         preview: CodePreview,
         step: CreationStep,
+        contentSize: ContentSize? = null,
         onNextClicked: () -> Unit = {},
         onCreateClicked: () -> Unit = {},
     ) {
@@ -170,6 +220,7 @@ internal class CreateCodeScreenTest : ComposeTest() {
             CreateCodeScreen(
                 form = form,
                 preview = preview,
+                contentSize = contentSize,
                 style = CodeStyle(),
                 step = step,
                 isCreating = false,

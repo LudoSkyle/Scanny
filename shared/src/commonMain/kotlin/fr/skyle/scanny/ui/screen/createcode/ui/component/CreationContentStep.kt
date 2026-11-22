@@ -30,6 +30,7 @@ import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.format
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toText
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import org.jetbrains.compose.resources.stringResource
@@ -42,6 +43,7 @@ import org.jetbrains.compose.resources.stringResource
 fun CreationContentStep(
     form: CreationForm,
     preview: CodePreview,
+    contentSize: ContentSize?,
     style: CodeStyle,
     isCreating: Boolean,
     contentPadding: PaddingValues,
@@ -88,6 +90,17 @@ fun CreationContentStep(
             onFormChanged = onFormChanged,
         )
 
+        contentSize?.let { size ->
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ContentSizeCounter(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                size = size,
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         CodePreviewCard(
@@ -121,6 +134,11 @@ private fun PreviewCreationContentStep() {
             preview = CodePreview.Code(
                 rawValue = "https://scanny.app",
                 format = BarcodeFormat.QR_CODE,
+            ),
+            contentSize = ContentSize(
+                used = 18,
+                max = 1273,
+                hasWideCharacters = false,
             ),
             style = CodeStyle(),
             isCreating = false,

@@ -11,6 +11,7 @@ import fr.skyle.scanny.fake.FakeWatchCreationUseCase
 import fr.skyle.scanny.fake.FakeWatchScannedCodeUseCase
 import fr.skyle.scanny.platform.gallery.LogoPickResult
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationSource
@@ -29,6 +30,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertFalse
 import kotlin.time.Instant
 
@@ -103,6 +105,72 @@ class CreateCodeViewModelTest {
             expected = CodePreview.Refused(format = BarcodeFormat.EAN_13),
             actual = viewModel.uiState.value.preview,
         )
+    }
+
+    @Test
+    fun `the content of a qr code is counted against the most the code holds`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+
+        // When
+        viewModel.onFormChanged(
+            form = CreationForm(
+                kind = CreationKind.LINK,
+                url = "scanny.app",
+            ),
+        )
+
+        // Then
+        // "https://scanny.app", counted with the scheme the code holds
+        assertEquals(
+            expected = ContentSize(
+                used = 18,
+                max = 1273,
+                hasWideCharacters = false,
+            ),
+            actual = viewModel.uiState.value.contentSize,
+        )
+    }
+
+    @Test
+    fun `a content over the limit is counted over it and refused`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+
+        // When
+        viewModel.onFormChanged(form = CreationForm(text = "a".repeat(1274)))
+
+        // Then
+        assertEquals(
+            expected = true,
+            actual = viewModel.uiState.value.contentSize?.isOverLimit,
+        )
+        assertEquals(
+            expected = CodePreview.Refused(format = BarcodeFormat.QR_CODE),
+            actual = viewModel.uiState.value.preview,
+        )
+    }
+
+    @Test
+    fun `an empty content counts nothing and a barcode is not counted`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+        assertEquals(
+            expected = 0,
+            actual = viewModel.uiState.value.contentSize?.used,
+        )
+
+        // When
+        viewModel.onFormChanged(
+            form = CreationForm(
+                kind = CreationKind.BARCODE,
+                barcodeFormat = BarcodeFormat.EAN_13,
+                barcodeValue = "4006381333931",
+            ),
+        )
+
+        // Then
+        assertNull(viewModel.uiState.value.contentSize)
     }
 
     @Test

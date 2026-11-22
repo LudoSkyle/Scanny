@@ -53,6 +53,9 @@
     <string name="color_white">White</string>
     <string name="contact">Contact</string>
     <string name="content">Content</string>
+    <string name="content_size">Content size</string>
+    <string name="content_size_count" translatable="false">%1$d / %2$d</string>
+    <string name="content_size_wide_characters">An accent or an emoji counts for several.</string>
     <string name="content_too_long">This content is too long for a QR code.</string>
     <string name="content_type">Type</string>
     <string name="copied">Copied</string>

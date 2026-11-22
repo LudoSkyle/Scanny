@@ -12,9 +12,11 @@ import fr.skyle.scanny.domain.usecase.scan.WatchScannedCodeUseCase
 import fr.skyle.scanny.platform.gallery.LogoPickResult
 import fr.skyle.scanny.ui.core.code.mapper.canHold
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.format
+import fr.skyle.scanny.ui.screen.createcode.ui.mapper.qrContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toBarcodeContent
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toCreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationSource
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
@@ -74,10 +76,12 @@ class CreateCodeViewModel(
     }
 
     fun onFormChanged(form: CreationForm) {
+        val rawValue = form.toBarcodeContent()?.toRawValue()
         _uiState.update { uiState ->
             uiState.copy(
                 form = form,
-                preview = form.toCodePreview(),
+                preview = form.toCodePreview(rawValue = rawValue),
+                contentSize = form.toContentSize(rawValue = rawValue),
             )
         }
     }
@@ -150,8 +154,10 @@ class CreateCodeViewModel(
     }
 
     // A QR code is tried with the highest correction, the one a logo can ask for
-    private fun CreationForm.toCodePreview(): CodePreview {
-        val rawValue = toBarcodeContent()?.toRawValue() ?: return CodePreview.Incomplete
+    private fun CreationForm.toCodePreview(rawValue: String?): CodePreview {
+        if (rawValue == null) {
+            return CodePreview.Incomplete
+        }
         val isHeld = format.canHold(
             rawValue = rawValue,
             errorCorrection = QrErrorCorrection.H,
@@ -166,9 +172,25 @@ class CreateCodeViewModel(
         }
     }
 
+    // Counted against the same correction as the preview, for a QR code only: a barcode has a length
+    private fun CreationForm.toContentSize(rawValue: String?): ContentSize? =
+        if (format == BarcodeFormat.QR_CODE) {
+            qrContentSize(
+                rawValue = rawValue.orEmpty(),
+                errorCorrection = QrErrorCorrection.H,
+            )
+        } else {
+            null
+        }
+
     data class CreateCodeUIState(
         val form: CreationForm = CreationForm(),
         val preview: CodePreview = CodePreview.Incomplete,
+        // Null for a barcode
+        val contentSize: ContentSize? = qrContentSize(
+            rawValue = "",
+            errorCorrection = QrErrorCorrection.H,
+        ),
         val style: CodeStyle = CodeStyle(),
         val step: CreationStep = CreationStep.CONTENT,
         val isCreating: Boolean = false,

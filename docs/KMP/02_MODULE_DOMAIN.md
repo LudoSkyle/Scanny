@@ -153,6 +153,13 @@ format, son style, sa date.
   code-barres refuse une mauvaise longueur ou un mauvais chiffre de contrôle, un QR code un texte
   trop long pour la correction la plus forte, celle qu'un logo peut demander. qrose encode un QR code
   en le dessinant, sans moyen d'en rattraper l'échec : un texte n'est dessiné qu'une fois accepté.
+- Sous les champs d'un QR code, un compteur (`qrContentSize`) dit ce que le contenu entier prend du
+  code, contre ce que le code tient à cette même correction. qrose écrit tout le texte dans un seul
+  mode, compté dans son unité : des chiffres seuls, des majuscules et chiffres (avec ` $%*+-./:`), ou
+  sinon les octets de son UTF-8, où un accent ou un emoji en prend plusieurs (le compteur le dit).
+  Ses maxima, ceux de la version 40 du QR code, sont vérifiés contre l'encodeur pour chaque mode et
+  chaque correction (`ContentSizeMapperTest`) : le compteur passe au rouge exactement quand l'aperçu
+  refuse le contenu.
 - À l'inverse, un code scanné ou créé remplit le formulaire (`CodeFormMapper`) pour être modifié et
   créé comme un nouveau code ; une création apporte aussi son style : un code-barres d'un format que l'éditeur dessine reste un code-barres de sa
   valeur, tout autre code devient un QR code de son contenu, et un contact garde le premier de ses
