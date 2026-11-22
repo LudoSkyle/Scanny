@@ -96,13 +96,16 @@ fun CreationContentStep(
         Spacer(modifier = Modifier.height(16.dp))
 
         if (form.family == CreationFamily.TWO_DIMENSIONAL) {
-            SegmentedChoice(
+            // As the format of a barcode
+            SCDropdownField(
                 modifier = Modifier.fillMaxWidth(),
                 label = stringResource(Res.string.format),
+                placeholder = stringResource(Res.string.format),
                 options = matrixFormats,
                 selectedOption = form.matrixFormat,
                 optionText = { format -> stringResource(format.toText()) },
                 onOptionSelected = { format -> onFormChanged(form.copy(matrixFormat = format)) },
+                style = SCTextFieldDefaults.Style.LIGHT,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
