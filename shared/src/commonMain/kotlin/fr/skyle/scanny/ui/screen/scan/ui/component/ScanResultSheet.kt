@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.bottomsheet.SCBottomSheet
 import fr.skyle.scanny.designsystem.core.button.SCButton
 import fr.skyle.scanny.designsystem.core.button.SCButtonDefaults
+import fr.skyle.scanny.designsystem.core.snackbar.SCSnackbarState
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
@@ -51,6 +52,8 @@ fun ScanResultSheet(
     onSeeDetailClicked: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
+    // What came of its action, a network joined or a link no app opens: a message of the screen would show under it
+    snackbarState: SCSnackbarState? = null,
 ) {
     // Told on the button itself: a message of the screen would show under the sheet
     var isCopied by remember(result.codeId) { mutableStateOf(false) }
@@ -65,6 +68,7 @@ fun ScanResultSheet(
     SCBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
+        snackbarState = snackbarState,
     ) {
         Column(
             modifier = Modifier

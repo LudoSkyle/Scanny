@@ -53,6 +53,7 @@ fun ScanScreen(
     multipleScan: MultipleScanSession?,
     result: ScanResult?,
     snackbarState: SCSnackbarState,
+    resultSnackbarState: SCSnackbarState,
     onBarcodeDetected: (DetectedBarcode) -> Unit,
     onCameraCapabilitiesChanged: (CameraCapabilities) -> Unit,
     onCameraUnavailable: () -> Unit,
@@ -178,6 +179,7 @@ fun ScanScreen(
             onCopyClicked = { onCopyResultClicked(result.item.rawValue) },
             onSeeDetailClicked = onSeeResultDetailClicked,
             onDismissRequest = onResultDismissed,
+            snackbarState = resultSnackbarState,
         )
 
         is ScanResult.Group -> ScanGroupResultSheet(
@@ -210,6 +212,7 @@ private fun PreviewScanScreen() {
             multipleScan = null,
             result = null,
             snackbarState = rememberSCSnackbarState(),
+            resultSnackbarState = rememberSCSnackbarState(),
             onBarcodeDetected = {},
             onCameraCapabilitiesChanged = {},
             onCameraUnavailable = {},
@@ -250,6 +253,7 @@ private fun PreviewScanScreen_MultipleScan() {
             multipleScan = MultipleScanSession(codeCount = 3),
             result = null,
             snackbarState = rememberSCSnackbarState(),
+            resultSnackbarState = rememberSCSnackbarState(),
             onBarcodeDetected = {},
             onCameraCapabilitiesChanged = {},
             onCameraUnavailable = {},
@@ -286,6 +290,7 @@ private fun PreviewScanScreen_CameraBlocked() {
             multipleScan = null,
             result = null,
             snackbarState = rememberSCSnackbarState(),
+            resultSnackbarState = rememberSCSnackbarState(),
             onBarcodeDetected = {},
             onCameraCapabilitiesChanged = {},
             onCameraUnavailable = {},

@@ -16,16 +16,19 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import fr.skyle.scanny.designsystem.core.snackbar.SCSnackbarState
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.platform.camera.CameraPermissionStatus
 import fr.skyle.scanny.platform.camera.rememberCameraPermissionState
 import fr.skyle.scanny.platform.clipboard.textClipEntry
 import fr.skyle.scanny.platform.gallery.rememberImageBarcodeScanner
+import fr.skyle.scanny.platform.wifi.WifiNetworkJoiner
 import fr.skyle.scanny.platform.wifi.rememberWifiNetworkJoiner
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.no_code_in_image
 import fr.skyle.scanny.resources.scan_not_saved
 import fr.skyle.scanny.ui.core.code.action.open
+import fr.skyle.scanny.ui.core.code.mapper.showWifiJoinResult
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.screen.scan.ui.component.DiscardCodesDialog
 import kotlinx.coroutines.launch
@@ -51,8 +54,18 @@ fun ScanRoute(
 
     val cameraPermissionState = rememberCameraPermissionState()
     val scanImage = rememberImageBarcodeScanner(onResult = viewModel::onImageScanned)
-    val joinWifiNetwork = rememberWifiNetworkJoiner()
     val snackbarState = rememberSCSnackbarState()
+    // The messages about a result, in its sheet: a message of the screen would show under it
+    val resultSnackbarState = rememberSCSnackbarState()
+    val messages: () -> SCSnackbarState = { if (viewModel.uiState.value.result != null) resultSnackbarState else snackbarState }
+    lateinit var wifiNetworkJoiner: WifiNetworkJoiner
+    wifiNetworkJoiner = rememberWifiNetworkJoiner { wifi, result ->
+        coroutineScope.launch {
+            if (messages().showWifiJoinResult(wifi = wifi, result = result)) {
+                wifiNetworkJoiner.joinFromSettings(wifi = wifi)
+            }
+        }
+    }
 
     var isDiscardDialogVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -61,7 +74,7 @@ fun ScanRoute(
         when (action) {
             is CodeAction.Link -> uriHandler.open(action = action)
             is CodeAction.AddContact -> viewModel.onAddContactClicked(contact = action.contact)
-            is CodeAction.JoinWifi -> joinWifiNetwork(action.wifi)
+            is CodeAction.JoinWifi -> wifiNetworkJoiner.join(wifi = action.wifi)
         }
     }
 
@@ -130,6 +143,7 @@ fun ScanRoute(
         multipleScan = uiState.multipleScan,
         result = uiState.result,
         snackbarState = snackbarState,
+        resultSnackbarState = resultSnackbarState,
         onBarcodeDetected = viewModel::onBarcodeDetected,
         onCameraCapabilitiesChanged = viewModel::onCameraCapabilitiesChanged,
         onCameraUnavailable = viewModel::onCameraUnavailable,
@@ -151,7 +165,10 @@ fun ScanRoute(
         onSeeResultDetailClicked = viewModel::onSeeDetailClicked,
         onResultCodeClicked = viewModel::onResultCodeClicked,
         onSeeResultGroupClicked = viewModel::onSeeGroupClicked,
-        onResultDismissed = viewModel::onResultDismissed,
+        onResultDismissed = {
+            resultSnackbarState.dismiss()
+            viewModel.onResultDismissed()
+        },
     )
 
     if (isDiscardDialogVisible) {

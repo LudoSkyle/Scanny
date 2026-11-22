@@ -32,5 +32,5 @@ internal actual val platformSharedModule: Module = module {
     singleOf(::AndroidAppVersion) bind AppVersion::class
     singleOf(::AndroidScanBeeper) bind ScanBeeper::class
     singleOf(::AndroidContactAdder) bind ContactAdder::class
-    single<WifiNetworkSupport> { AndroidWifiNetworkSupport(sdkInt = Build.VERSION.SDK_INT) }
+    single<WifiNetworkSupport> { AndroidWifiNetworkSupport() }
 }

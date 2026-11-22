@@ -1,24 +1,10 @@
 package fr.skyle.scanny.platform.wifi
 
-import android.os.Build
 import fr.skyle.scanny.domain.model.BarcodeContent
-import fr.skyle.scanny.domain.model.WifiEncryption
 
-internal class AndroidWifiNetworkSupport(
-    private val sdkInt: Int,
-) : WifiNetworkSupport {
+// Any network: saved by the screen of the system where it takes it, chosen in the Wi-Fi settings else
+internal class AndroidWifiNetworkSupport : WifiNetworkSupport {
 
-    // The screen that adds a network appeared with Android 11, and does not take WEP
     override fun canJoin(wifi: BarcodeContent.Wifi): Boolean =
-        sdkInt >= Build.VERSION_CODES.R && when (wifi.encryption) {
-            WifiEncryption.NONE -> true
-            WifiEncryption.WEP -> false
-            WifiEncryption.WPA,
-            WifiEncryption.WPA3,
-            -> wifi.password?.isPassphrase() == true
-        }
+        true
 }
-
-// What the system takes as a WPA passphrase: 8 to 63 printable ASCII characters
-private fun String.isPassphrase(): Boolean =
-    length in 8..63 && all { char -> char.code in 0x20..0x7E }
