@@ -28,6 +28,8 @@ data class SCTypography(
     val subtitle2: TextStyle,
     val button: TextStyle,
     val caption: TextStyle,
+    // A value read character by character: a number, a code. Monospaced, of the system
+    val code: TextStyle,
 )
 
 // Composable: a font of Compose Resources is only read during the composition
@@ -108,6 +110,11 @@ internal fun scannyTypography(): SCTypography {
                 fontWeight = FontWeight.Light,
                 fontSize = 12.sp,
             ),
+            code = TextStyle(
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.Medium,
+                fontSize = 15.sp,
+            ),
         )
     }
 }
@@ -124,5 +131,6 @@ internal val LocalTypography = staticCompositionLocalOf {
         subtitle2 = TextStyle.Default,
         button = TextStyle.Default,
         caption = TextStyle.Default,
+        code = TextStyle.Default,
     )
 }

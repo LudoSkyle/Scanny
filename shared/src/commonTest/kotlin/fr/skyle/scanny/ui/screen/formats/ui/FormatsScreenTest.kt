@@ -55,7 +55,8 @@ internal class FormatsScreenTest : ComposeTest() {
         // Then
         onNodeWithText(getString(Res.string.format_read_and_created)).assertExists()
         onNodeWithText(getString(Res.string.format_ean_13_use)).assertExists()
-        onNodeWithText(getString(Res.string.format_ean_13_example)).assertExists()
+        // Shown without the backticks that mark its values as code
+        onNodeWithText(getString(Res.string.format_ean_13_example).replace("`", "")).assertExists()
     }
 
     @Test

@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.text.SCText
+import fr.skyle.scanny.designsystem.core.text.SCTextWithCode
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 
@@ -29,7 +30,8 @@ fun CodeInfoSection(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        SCText(
+        // A value in it, between backticks, as code
+        SCTextWithCode(
             modifier = Modifier.fillMaxWidth(),
             text = text,
             style = SCTheme.typography.body1,

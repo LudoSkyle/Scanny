@@ -12,7 +12,8 @@ On y trouve :
 
 - le thème : `SCColors`, `SCTypography`, `SCShapes`, `SCTheme` ;
 - les composants génériques : `SCScreenStructure` (fond, insets, barre du haut, messages, couleur
-  des icônes système), `SCTopAppBar`, `SCIconButton`, `SCIconBadge`, `SCButton`, `SCText`, `SCCard`
+  des icônes système), `SCTopAppBar`, `SCIconButton`, `SCIconBadge`, `SCButton`, `SCText`,
+  `SCTextWithCode` (un texte dont les parties entre accents graves sont du code), `SCCard`
   et `SCCardStructure` (une carte et son titre), `SCExpandableCardStructure` (une carte repliée
   sous son titre, titre compris dans la carte pour qu'elle se lise touchable, jusqu'à un toucher), `SCDialog`, `SCBottomSheet`, `SCSnackbarState`,
   `SCSwitch`, `SCTextField`, `SCDropdownField` (un choix dans un menu qui se déplie sous le champ),
@@ -65,7 +66,7 @@ designSystem/src/commonMain/
 │       ├── snackbar/          (SCSnackbarState, SCSnackbarHost : les messages courts d'un écran ou d'une feuille)
 │       ├── switch/            (SCSwitch : un réglage allumé ou éteint)
 │       ├── tag/               (SCTag : un court libellé dans une pastille, non cliquable)
-│       ├── text/              (SCText : un texte dans un style du thème)
+│       ├── text/              (SCText : un texte dans un style du thème ; SCTextWithCode : ses valeurs en code)
 │       ├── textfield/         (SCTextField : un texte que l'utilisateur écrit)
 │       └── topappbar/         (SCTopAppBar : retour, titre et son sous-titre, actions)
 └── composeResources/
@@ -127,6 +128,9 @@ object SCTheme {
   boutons, des cartes et des cellules de la v1), `dialog` (24 dp) et `sheet` (le haut arrondi d'une
   bottom sheet). Une forme
   s'ajoute avec le composant qui en a besoin.
+- Une valeur à lire caractère par caractère (un numéro, un code) s'écrit entre accents graves dans
+  sa chaîne, et s'affiche par `SCTextWithCode` dans le style `code` de `SCTypography` : la police à
+  chasse fixe du système, sur une teinte, à la taille du texte qui l'entoure.
 - Un écran affiche un texte avec `SCText` et un message court par un `SCSnackbarState` donné à
   `SCScreenStructure` : il ne voit jamais `Text` ni `SnackbarHostState` de Material. Une feuille qui
   cache l'écran a ses propres messages (`snackbarState` de `SCBottomSheet`), vidés à sa fermeture
