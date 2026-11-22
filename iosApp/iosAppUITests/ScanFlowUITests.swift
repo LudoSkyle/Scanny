@@ -45,7 +45,7 @@ final class ScanFlowUITests: XCTestCase {
         keepScreenshot(named: "detail-share", of: app)
         // The share sheet has no button to close it: a touch above it does
         app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.4)).tap()
-        XCTAssertTrue(shareSheet.waitForNonExistence(timeout: 5))
+        waitForTheShareSheetToLeave(shareSheet)
 
         // Deleted, the code leaves its detail for the scan
         app.buttons["Delete"].tap()
