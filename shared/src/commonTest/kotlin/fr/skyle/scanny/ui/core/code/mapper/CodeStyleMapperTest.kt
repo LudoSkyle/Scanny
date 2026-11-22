@@ -152,23 +152,70 @@ class CodeStyleMapperTest {
 
         // Then
         assertEquals(
-            expected = CodeReadability.GOOD to 21.0,
-            actual = readability to contrastRatio(0xFF000000, 0xFFFFFFFF),
+            expected = CodeReadability.GOOD,
+            actual = readability,
         )
     }
 
     @Test
-    fun `grey dots on a white background stand out too little`() {
+    fun `vivid colors at most half as light as the background read well`() {
         // When
-        val readability = CodeStyle(
-            darkColor = 0xFFAAAAAA,
-            lightColor = 0xFFFFFFFF,
-        ).readability()
+        // Red, turquoise, green and pink on white, which the WCAG rule for a text told as too light
+        val readabilities = listOf(0xFFFF0000, 0xFF00A0A0, 0xFF00C000, 0xFFE91E63).map { darkColor ->
+            CodeStyle(darkColor = darkColor).readability()
+        }
 
         // Then
         assertEquals(
-            expected = CodeReadability.LOW_CONTRAST,
-            actual = readability,
+            expected = List(4) { CodeReadability.GOOD },
+            actual = readabilities,
+        )
+    }
+
+    @Test
+    fun `colors lighter than half the background are told`() {
+        // When
+        // Magenta, orange and a middle grey on white
+        val readabilities = listOf(0xFFFF00FF, 0xFFFF8000, 0xFF808080).map { darkColor ->
+            CodeStyle(darkColor = darkColor).readability()
+        }
+
+        // Then
+        assertEquals(
+            expected = List(3) { CodeReadability.LOW_CONTRAST },
+            actual = readabilities,
+        )
+    }
+
+    @Test
+    fun `the warning starts at half the luminance of the background`() {
+        // When
+        // Greys of a luminance of 126 and 127, half the white background of 255 in whole numbers
+        val readabilities = listOf(0xFF7E7E7E, 0xFF7F7F7F).map { darkColor ->
+            CodeStyle(darkColor = darkColor).readability()
+        }
+
+        // Then
+        assertEquals(
+            expected = listOf(CodeReadability.GOOD, CodeReadability.LOW_CONTRAST),
+            actual = readabilities,
+        )
+    }
+
+    @Test
+    fun `light grey or yellow dots on a white background stand out too little`() {
+        // When
+        val readabilities = listOf(0xFFDDDDDD, 0xFFFFFF00).map { darkColor ->
+            CodeStyle(
+                darkColor = darkColor,
+                lightColor = 0xFFFFFFFF,
+            ).readability()
+        }
+
+        // Then
+        assertEquals(
+            expected = listOf(CodeReadability.LOW_CONTRAST, CodeReadability.LOW_CONTRAST),
+            actual = readabilities,
         )
     }
 

@@ -173,9 +173,18 @@ format, son style, sa date.
   eux, de la palette des points ou libre (la couleur des points n'y est offerte qu'une fois, comme la
   leur), aux points un dégradé vers une seconde couleur, et, une fois un logo posé, sa forme et sa
   marge. qrose ne donne de forme qu'à l'espace dégagé autour du logo : le logo est découpé à sa
-  forme par `ShapedLogoPainter`. Sans marge, il est posé sur les points. L'avertissement de
-  lisibilité juge les coins et la seconde couleur comme les points : plus sombres que le fond, et
-  d'un contraste d'au moins 4,5:1 avec lui.
+  forme par `ShapedLogoPainter`. Sans marge, il est posé sur les points.
+- L'avertissement de lisibilité juge les points, les coins et la seconde couleur du dégradé : plus
+  sombres que le fond, et moins de moitié aussi lumineux que lui, dans la luminance que ZXing lit
+  (`scannerLuminance` : rouge, deux fois le vert et bleu, sur quatre, en nombres entiers). Le
+  binariseur de ZXing, le lecteur de la plupart des apps de scan sur Android, prend une zone claire
+  uniforme pour le fond et place son seuil à la moitié de sa luminance : un point aussi clair que
+  cette moitié se lit comme du fond. La règle dit exactement les couleurs que ZXing lit, quelles que
+  soient la teinte, la forme des points et le fond (`CodeImageReadabilityTest`). Le contraste de
+  4,5:1 que les règles d'accessibilité demandent d'un texte, d'abord retenu, avertissait de couleurs
+  que ZXing lit (un rouge, un vert, un turquoise vifs sur blanc) ; le contraste de symbole de la
+  norme ISO/IEC 15415, mesuré en réflectance, en laissait passer qu'il ne lit pas (un gris moyen, un
+  orange, un magenta).
 - Une couleur libre se choisit sur la palette des teintes, ou se saisit en hexadécimal (six chiffres,
   avec ou sans `#`) ou en rouge, vert et bleu de 0 à 255 (`hexToArgb`, `rgbToArgb`). Les champs et la
   palette se suivent ; une saisie ne change la couleur qu'une fois complète et valide. La couleur
