@@ -24,22 +24,31 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.code_family
 import fr.skyle.scanny.resources.content_type
 import fr.skyle.scanny.resources.create
+import fr.skyle.scanny.resources.format
 import fr.skyle.scanny.resources.next
+import fr.skyle.scanny.ui.core.code.mapper.toMatrixEncoder
+import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.format
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toText
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationFamily
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ErrorCorrectionChoice
 import org.jetbrains.compose.resources.stringResource
 
+// The codes in two dimensions other than the QR code, which Scanny draws from their modules
+private val matrixFormats = BarcodeFormat.entries.filter { format -> format.toMatrixEncoder() != null }
+
 /**
- * The first step of the editor: what the code holds, and the code it makes. A QR code goes on to its
- * customization, a barcode is created from here: it stays dark on white.
+ * The first step of the editor: the family of the code, what it holds, and the code it makes. A QR
+ * code goes on to its customization; another code in two dimensions, or a barcode, is created from
+ * here: it stays dark on white.
  */
 @Composable
 fun CreationContentStep(
@@ -75,18 +84,45 @@ fun CreationContentStep(
                 vertical = 8.dp,
             ),
     ) {
-        SCDropdownField(
+        SegmentedChoice(
             modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.content_type),
-            placeholder = stringResource(Res.string.content_type),
-            options = CreationKind.entries,
-            selectedOption = form.kind,
-            optionText = { kind -> stringResource(kind.toText()) },
-            onOptionSelected = { kind -> onFormChanged(form.copy(kind = kind)) },
-            style = SCTextFieldDefaults.Style.LIGHT,
+            label = stringResource(Res.string.code_family),
+            options = CreationFamily.entries,
+            selectedOption = form.family,
+            optionText = { family -> stringResource(family.toText()) },
+            onOptionSelected = { family -> onFormChanged(form.copy(family = family)) },
         )
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        if (form.family == CreationFamily.TWO_DIMENSIONAL) {
+            SegmentedChoice(
+                modifier = Modifier.fillMaxWidth(),
+                label = stringResource(Res.string.format),
+                options = matrixFormats,
+                selectedOption = form.matrixFormat,
+                optionText = { format -> stringResource(format.toText()) },
+                onOptionSelected = { format -> onFormChanged(form.copy(matrixFormat = format)) },
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        // A barcode holds a value, chosen with its format
+        if (form.family != CreationFamily.BARCODE) {
+            SCDropdownField(
+                modifier = Modifier.fillMaxWidth(),
+                label = stringResource(Res.string.content_type),
+                placeholder = stringResource(Res.string.content_type),
+                options = CreationKind.entries,
+                selectedOption = form.kind,
+                optionText = { kind -> stringResource(kind.toText()) },
+                onOptionSelected = { kind -> onFormChanged(form.copy(kind = kind)) },
+                style = SCTextFieldDefaults.Style.LIGHT,
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         CreationFormFields(
             modifier = Modifier.fillMaxWidth(),

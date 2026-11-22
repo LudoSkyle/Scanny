@@ -19,6 +19,7 @@ import fr.skyle.scanny.domain.model.WifiTransitionMode
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactAddressField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactEntryField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationFamily
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.RecurrenceEnd
@@ -877,7 +878,7 @@ class CreationFormMapperTest {
     fun `a barcode holds its value as a text in the format chosen and the others are qr codes`() {
         // Given
         val barcode = CreationForm(
-            kind = CreationKind.BARCODE,
+            family = CreationFamily.BARCODE,
             barcodeFormat = BarcodeFormat.CODE_128,
             barcodeValue = " SCANNY-128 ",
         )

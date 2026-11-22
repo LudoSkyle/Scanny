@@ -1,6 +1,6 @@
 package fr.skyle.scanny.ui.screen.createcode.ui.model
 
-/** What the user creates: a QR code holding one of these contents, or a barcode. */
+/** What a QR code or another code in two dimensions holds. */
 enum class CreationKind {
     TEXT,
     LINK,
@@ -15,5 +15,4 @@ enum class CreationKind {
     OTP,
     BITCOIN,
     EVENT,
-    BARCODE,
 }

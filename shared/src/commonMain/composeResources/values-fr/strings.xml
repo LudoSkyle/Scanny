@@ -44,6 +44,7 @@
     <string name="carbon_copy">Cc</string>
     <string name="categories">Catégories</string>
     <string name="change_logo">Changer le logo</string>
+    <string name="characters_not_held">Ce format ne peut pas tenir certains caractères de ce contenu, comme €, œ ou les emojis. Un QR code ou un PDF417 les tient.</string>
     <string name="choose">Choisir</string>
     <string name="choose_color">Choisir une couleur</string>
     <string name="choose_subject">Choisissez un sujet</string>
@@ -56,6 +57,7 @@
     <string name="clear_history">Effacer l'historique</string>
     <string name="clear_history_question">Effacer l'historique ?</string>
     <string name="code_count">%1$d codes</string>
+    <string name="code_family">Code</string>
     <string name="code_formats">Formats de codes</string>
     <string name="code_inverted">Ses couleurs sont plus claires que son fond : beaucoup de lecteurs lisent mal un tel code.</string>
     <string name="code_low_contrast">Ses couleurs et son fond ressortent trop peu : certains lecteurs pourraient ne pas lire ce code.</string>
@@ -89,6 +91,7 @@
     <string name="content_size">Taille du contenu</string>
     <string name="content_size_wide_characters">Un accent ou un emoji compte pour plusieurs.</string>
     <string name="content_too_long">Ce contenu est trop long pour un QR code.</string>
+    <string name="content_too_long_for_format">Ce contenu est trop long pour ce format. Un QR code en tient davantage.</string>
     <string name="content_too_long_for_logo">Ce contenu est trop long pour un logo, qui demande la correction maximale.</string>
     <string name="content_type">Type</string>
     <string name="coordinates">Coordonnées</string>
@@ -400,6 +403,7 @@
     <string name="today">Aujourd'hui</string>
     <string name="turn_off_torch">Éteindre la lampe</string>
     <string name="turn_on_torch">Allumer la lampe</string>
+    <string name="two_dimensional_code">Code 2D</string>
     <string name="two_dimensional_codes">Codes en deux dimensions</string>
     <string name="type_home">Domicile</string>
     <string name="type_other">Autre</string>

@@ -71,8 +71,8 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
       astérisque : la clé à usage unique, l'e-mail (plusieurs destinataires, copie, copie cachée), la
       position (altitude, incertitude), le contact (vCard et MeCard complets) et le Wi-Fi (modes sans
       repli, SAE, SAE-PK et Enhanced Open de la spécification WPA3, réseaux d'entreprise)
-- [ ] Création de Data Matrix, Aztec et PDF417, l'éditeur partagé entre QR code, code 2D et
-      code-barres
+- [x] Création de Data Matrix, Aztec et PDF417, l'éditeur partagé entre QR code, code 2D et
+      code-barres *(Data Matrix et Aztec : latin-1 seulement, encodeurs corrigés, voir ADR-0004)*
 - Pistes, non engagées : avis et mise à jour depuis l'app.
 
 ## Lots techniques
@@ -213,7 +213,7 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     et des codes-barres.
     - [x] Le code d'un scan redessiné (qrose, qrose-oned) dans une boîte de dialogue, depuis la barre
           du `ScanDetail` ; pas de bouton pour un Data Matrix, un Aztec ou un PDF417, que qrose ne
-          dessine pas
+          dessine pas *(depuis dessinés par Scanny, voir ADR-0004)*
     - [x] Donnée et domaine des créations : table (base en version 3), encodage du contenu,
           enregistrement ou non dans l'historique (réglage, activé par défaut), durée de conservation
     - [x] L'éditeur : le « + » du scan, le type, les champs de chacun, l'aperçu en direct, la

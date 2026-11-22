@@ -336,6 +336,14 @@ pas relue par ZXing à la création : l'avertissement, qui n'empêche pas de cr�
 correction choisie pour un logo se vérifie donc directement, sur les options données à qrose
 (`CodeStyleMapperTest`).
 
+Un Data Matrix, un code Aztec et un PDF417 sont relus de même depuis leur image, sombres sur clair
+quel que soit le style, pour un lien, un texte accentué, un contact et un contenu long. Leurs
+encodeurs sont relus à part, sans image (`MatrixEncoderReadBackTest`), sur des textes aléatoires
+toujours les mêmes, de chaque alphabet qui fait changer de mode un encodeur (majuscules, minuscules,
+chiffres, ponctuation, tout le latin-1), et sur les plus grands symboles : ceux de qrose écrivaient un
+code faux sur dix environ sans le dire
+([ADR-0004](../adr/0004-encodeurs-data-matrix-et-aztec-corriges.md)).
+
 La réduction d'une image en logo se teste sur chaque plateforme : Robolectric en rendu natif sur la
 JVM, y compris le chemin d'avant Android 9 (`@Config(sdk = [27])`), et le simulateur iOS, qui sait
 dessiner une image.

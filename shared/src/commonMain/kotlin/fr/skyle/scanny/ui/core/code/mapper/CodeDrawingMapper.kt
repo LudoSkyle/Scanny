@@ -13,6 +13,9 @@ import io.github.alexzhirkevich.qrose.oned.BarcodeType
 // A row of a PDF417 is several modules high, as with ZXing: one module high, a scanner loses its rows
 private const val PDF417_ROW_HEIGHT = 4
 
+// The last character of ISO 8859-1, the charset scanners read a Data Matrix and an Aztec code in
+private const val LATIN_1_MAX = 255
+
 /** The type of barcode qrose draws for this format, null for a code in two dimensions. */
 internal fun BarcodeFormat.toBarcodeType(): BarcodeType? =
     when (this) {
@@ -25,6 +28,7 @@ internal fun BarcodeFormat.toBarcodeType(): BarcodeType? =
         BarcodeFormat.CODE_128 -> BarcodeType.Code128
         BarcodeFormat.ITF -> BarcodeType.ITF
         BarcodeFormat.CODABAR -> BarcodeType.Codabar
+        // The codes in two dimensions
         BarcodeFormat.QR_CODE,
         BarcodeFormat.DATA_MATRIX,
         BarcodeFormat.AZTEC,
@@ -60,6 +64,20 @@ internal val BarcodeFormat.matrixRowHeight: Int
     get() = if (this == BarcodeFormat.PDF417) PDF417_ROW_HEIGHT else 1
 
 /**
+ * Whether a code of this format can hold every character of [rawValue]: a Data Matrix and an Aztec
+ * code hold ISO 8859-1 only, which scanners read them in. A barcode's characters are tried by its
+ * encoder, with its length and its check digit.
+ */
+internal fun BarcodeFormat.holdsCharactersOf(rawValue: String): Boolean =
+    when (this) {
+        BarcodeFormat.DATA_MATRIX,
+        BarcodeFormat.AZTEC,
+        -> rawValue.all { c -> c.code <= LATIN_1_MAX }
+
+        else -> true
+    }
+
+/**
  * Whether a code of this format can hold [rawValue], tried with the encoder that draws it: a barcode
  * refuses a wrong length or a wrong check digit, a code in two dimensions a text too long for it, a QR
  * code for [errorCorrection].
@@ -69,7 +87,7 @@ internal fun BarcodeFormat.canHold(
     rawValue: String,
     errorCorrection: QrErrorCorrection = QrErrorCorrection.L,
 ): Boolean {
-    if (rawValue.isEmpty()) {
+    if (rawValue.isEmpty() || !holdsCharactersOf(rawValue)) {
         return false
     }
 

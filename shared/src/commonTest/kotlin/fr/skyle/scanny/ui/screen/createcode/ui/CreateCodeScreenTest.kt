@@ -5,8 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -20,25 +22,34 @@ import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.add_logo
 import fr.skyle.scanny.resources.advanced_options
+import fr.skyle.scanny.resources.aztec
+import fr.skyle.scanny.resources.barcode_value
+import fr.skyle.scanny.resources.characters_not_held
 import fr.skyle.scanny.resources.content
 import fr.skyle.scanny.resources.content_size
 import fr.skyle.scanny.resources.content_size_count
 import fr.skyle.scanny.resources.content_size_wide_characters
+import fr.skyle.scanny.resources.content_type
 import fr.skyle.scanny.resources.create
 import fr.skyle.scanny.resources.create_code
 import fr.skyle.scanny.resources.customization
+import fr.skyle.scanny.resources.data_matrix
 import fr.skyle.scanny.resources.error_correction_auto
 import fr.skyle.scanny.resources.error_correction_high
 import fr.skyle.scanny.resources.error_correction_medium
 import fr.skyle.scanny.resources.error_correction_too_high_for_content
 import fr.skyle.scanny.resources.logo_needs_highest_correction
 import fr.skyle.scanny.resources.next
+import fr.skyle.scanny.resources.pdf417
 import fr.skyle.scanny.resources.reset_customization
 import fr.skyle.scanny.resources.step_of
 import fr.skyle.scanny.resources.the_code
+import fr.skyle.scanny.resources.two_dimensional_code
 import fr.skyle.scanny.resources.value_not_for_format
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeRefusal
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationFamily
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
@@ -109,7 +120,7 @@ internal class CreateCodeScreenTest : ComposeTest() {
         setContent {
             createCodeScreen(
                 form = CreationForm(
-                    kind = CreationKind.BARCODE,
+                    family = CreationFamily.BARCODE,
                     barcodeFormat = BarcodeFormat.EAN_13,
                     barcodeValue = "4006381333931",
                 ),
@@ -122,6 +133,92 @@ internal class CreateCodeScreenTest : ComposeTest() {
         onNodeWithText(getString(Res.string.create_code)).assertExists()
         onNodeWithText(getString(Res.string.create)).assertExists()
         onNodeWithText(getString(Res.string.next)).assertDoesNotExist()
+    }
+
+    @Test
+    fun `a code in two dimensions offers its formats and its contents and is created in a single step`() = runComposeUiTest {
+        // When
+        setContent {
+            createCodeScreen(
+                form = CreationForm(
+                    family = CreationFamily.TWO_DIMENSIONAL,
+                    kind = CreationKind.LINK,
+                    url = "scanny.app",
+                ),
+                preview = CodePreview.Code(rawValue = "https://scanny.app", format = BarcodeFormat.DATA_MATRIX),
+                step = CreationStep.CONTENT,
+            )
+        }
+
+        // Then
+        onNodeWithText(getString(Res.string.data_matrix)).assertIsSelected()
+        onNodeWithText(getString(Res.string.aztec)).assertExists()
+        onNodeWithText(getString(Res.string.pdf417)).assertExists()
+        onNodeWithText("scanny.app").assertExists()
+        onNodeWithText(getString(Res.string.create)).performScrollTo().assertExists()
+        onNodeWithText(getString(Res.string.next)).assertDoesNotExist()
+    }
+
+    @Test
+    fun `the family of the code is chosen above its content`() = runComposeUiTest {
+        // Given
+        var changedForm: CreationForm? = null
+        setContent {
+            createCodeScreen(
+                form = CreationForm(),
+                preview = CodePreview.Incomplete,
+                step = CreationStep.CONTENT,
+                onFormChanged = { form -> changedForm = form },
+            )
+        }
+
+        // When
+        onNodeWithText(getString(Res.string.two_dimensional_code)).performClick()
+
+        // Then
+        assertEquals(
+            expected = CreationForm(family = CreationFamily.TWO_DIMENSIONAL),
+            actual = changedForm,
+        )
+    }
+
+    @Test
+    fun `a barcode has a format and a value but no content type`() = runComposeUiTest {
+        // When
+        setContent {
+            createCodeScreen(
+                form = CreationForm(family = CreationFamily.BARCODE),
+                preview = CodePreview.Incomplete,
+                step = CreationStep.CONTENT,
+            )
+        }
+
+        // Then
+        // Marked as required
+        onNodeWithText(getString(Res.string.barcode_value), substring = true).assertExists()
+        onAllNodesWithText(getString(Res.string.content_type)).assertCountEquals(0)
+    }
+
+    @Test
+    fun `a character a format does not hold says so and offers the formats that hold it`() = runComposeUiTest {
+        // When
+        setContent {
+            createCodeScreen(
+                form = CreationForm(
+                    family = CreationFamily.TWO_DIMENSIONAL,
+                    text = "Prix : 5 €",
+                ),
+                preview = CodePreview.Refused(
+                    format = BarcodeFormat.DATA_MATRIX,
+                    reason = CodeRefusal.CHARACTERS_NOT_HELD,
+                ),
+                step = CreationStep.CONTENT,
+            )
+        }
+
+        // Then
+        onNodeWithText(getString(Res.string.characters_not_held)).performScrollTo().assertExists()
+        onNodeWithText(getString(Res.string.create)).performScrollTo().assertIsNotEnabled()
     }
 
     @Test
@@ -164,11 +261,14 @@ internal class CreateCodeScreenTest : ComposeTest() {
         setContent {
             createCodeScreen(
                 form = CreationForm(
-                    kind = CreationKind.BARCODE,
+                    family = CreationFamily.BARCODE,
                     barcodeFormat = BarcodeFormat.EAN_13,
                     barcodeValue = "4006381333932",
                 ),
-                preview = CodePreview.Refused(format = BarcodeFormat.EAN_13),
+                preview = CodePreview.Refused(
+                    format = BarcodeFormat.EAN_13,
+                    reason = CodeRefusal.VALUE_NOT_FOR_FORMAT,
+                ),
                 step = CreationStep.CONTENT,
             )
         }
@@ -282,7 +382,7 @@ internal class CreateCodeScreenTest : ComposeTest() {
         setContent {
             createCodeScreen(
                 form = CreationForm(
-                    kind = CreationKind.BARCODE,
+                    family = CreationFamily.BARCODE,
                     barcodeFormat = BarcodeFormat.EAN_13,
                     barcodeValue = "4006381333931",
                 ),
@@ -371,6 +471,7 @@ internal class CreateCodeScreenTest : ComposeTest() {
         },
         logoBlocker: LogoBlocker? = null,
         canResetStyle: Boolean = false,
+        onFormChanged: (CreationForm) -> Unit = {},
         onStyleChanged: (CodeStyle) -> Unit = {},
         onResetStyleClicked: () -> Unit = {},
         onNextClicked: () -> Unit = {},
@@ -389,7 +490,7 @@ internal class CreateCodeScreenTest : ComposeTest() {
                 isCreating = false,
                 snackbarState = rememberSCSnackbarState(),
                 onBackClicked = {},
-                onFormChanged = {},
+                onFormChanged = onFormChanged,
                 onStyleChanged = onStyleChanged,
                 onResetStyleClicked = onResetStyleClicked,
                 onAddLogoClicked = {},
