@@ -12,6 +12,7 @@
     <string name="background_color">Couleur du fond</string>
     <string name="barcode">Code-barres</string>
     <string name="barcode_value">Valeur</string>
+    <string name="barcodes">Codes-barres</string>
     <string name="beep_after_scan">Bip après un scan</string>
     <string name="camera_blocked">La caméra est bloquée pour Scanny. Autorisez-la dans les réglages de votre appareil pour scanner des codes.</string>
     <string name="camera_needed">Scanny a besoin de la caméra pour scanner des codes.</string>
@@ -25,6 +26,7 @@
     <string name="clear_history">Effacer l'historique</string>
     <string name="clear_history_question">Effacer l'historique ?</string>
     <string name="code_count">%1$d codes</string>
+    <string name="code_formats">Formats de codes</string>
     <string name="code_inverted">Ses couleurs sont plus claires que son fond : beaucoup de lecteurs lisent mal un tel code.</string>
     <string name="code_low_contrast">Ses couleurs et son fond ressortent trop peu : certains lecteurs pourraient ne pas lire ce code.</string>
     <string name="code_not_deleted">Le code n'a pas pu être supprimé</string>
@@ -138,6 +140,8 @@
     <string name="format_qr_code_example">« https://scanny.app », 18 caractères, tient dans un carré de 25 × 25 modules à la correction la plus faible.</string>
     <string name="format_qr_code_structure">Un carré de modules noirs et blancs, de 21 × 21 à 177 × 177. Trois carrés dans ses coins permettent au lecteur de le trouver et de le remettre droit. Le contenu y est écrit en binaire, répété en partie par sa correction d'erreur : le code se lit encore abîmé.</string>
     <string name="format_qr_code_use">Le code le plus répandu : liens, paiements, menus, billets, réseaux Wi-Fi.</string>
+    <string name="format_read_and_created">Scanny le lit et le crée.</string>
+    <string name="format_read_only">Scanny le lit.</string>
     <string name="format_structure">Comment il est formé</string>
     <string name="format_upc_a_example">036000291452 : 0 pour le système, 36000 pour l'entreprise, 29145 pour le produit, 2 pour le contrôle.</string>
     <string name="format_upc_a_structure">12 chiffres : un système de numérotation, 0 pour la plupart des produits, 5 chiffres pour l'entreprise, 5 pour le produit, puis un chiffre de contrôle. C'est un EAN-13 qui commence par 0.</string>
@@ -146,6 +150,7 @@
     <string name="format_upc_e_structure">Un UPC-A raccourci à 8 chiffres en retirant ses zéros : le système de numérotation, 6 chiffres qui tiennent l'entreprise et le produit, puis le chiffre de contrôle.</string>
     <string name="format_upc_e_use">Les petits produits vendus en Amérique du Nord.</string>
     <string name="format_use">Son usage</string>
+    <string name="formats_intro">Scanny lit tous les formats ci-dessous. Il crée les QR codes et les codes-barres.</string>
     <string name="give_feedback">Donner votre avis</string>
     <string name="gradient">Dégradé</string>
     <string name="gradient_color">Seconde couleur du dégradé</string>
@@ -253,6 +258,7 @@
     <string name="today">Aujourd'hui</string>
     <string name="turn_off_torch">Éteindre la lampe</string>
     <string name="turn_on_torch">Allumer la lampe</string>
+    <string name="two_dimensional_codes">Codes en deux dimensions</string>
     <string name="undo">Annuler</string>
     <string name="use_front_camera">Utiliser la caméra avant</string>
     <string name="value_not_for_format">Cette valeur ne convient pas à ce format.</string>

@@ -13,6 +13,9 @@ fun EntryProviderScope<Route>.settingsRouteEntry(
             navigateToFeedback = {
                 backStack.add(Route.Feedback)
             },
+            navigateToFormats = {
+                backStack.add(Route.Formats)
+            },
             navigateBack = {
                 backStack.removeLastOrNull()
             },

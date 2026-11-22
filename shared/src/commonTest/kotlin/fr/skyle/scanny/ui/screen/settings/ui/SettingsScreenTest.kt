@@ -23,6 +23,8 @@ import fr.skyle.scanny.resources.retention_forever
 import fr.skyle.scanny.resources.retention_one_month
 import fr.skyle.scanny.resources.scan_preferences
 import fr.skyle.scanny.resources.version_and_build
+import fr.skyle.scanny.resources.code_formats
+import fr.skyle.scanny.resources.faq
 import fr.skyle.scanny.ui.test.ComposeTest
 import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
@@ -104,6 +106,25 @@ internal class SettingsScreenTest : ComposeTest() {
     }
 
     @Test
+    fun `the formats of codes open from the faq`() = runComposeUiTest {
+        // Given
+        var formatsCount = 0
+        setContent {
+            settingsScreen(onFormatsClicked = { formatsCount++ })
+        }
+
+        // When
+        onNodeWithText(getString(Res.string.code_formats)).performScrollTo().performClick()
+
+        // Then
+        onNodeWithText(getString(Res.string.faq)).assertExists()
+        assertEquals(
+            expected = 1,
+            actual = formatsCount,
+        )
+    }
+
+    @Test
     fun `the retention of the history is chosen in a menu`() = runComposeUiTest {
         // Given
         val retentions = mutableListOf<HistoryRetention>()
@@ -128,6 +149,7 @@ internal class SettingsScreenTest : ComposeTest() {
         onSettingChanged: (ScanSetting, Boolean) -> Unit = { _, _ -> },
         onHistoryRetentionChanged: (HistoryRetention) -> Unit = {},
         onFeedbackClicked: () -> Unit = {},
+        onFormatsClicked: () -> Unit = {},
     ) {
         SCTheme {
             SettingsScreen(
@@ -155,6 +177,7 @@ internal class SettingsScreenTest : ComposeTest() {
                 onHistoryRetentionChanged = onHistoryRetentionChanged,
                 onStarProjectClicked = {},
                 onFeedbackClicked = onFeedbackClicked,
+                onFormatsClicked = onFormatsClicked,
                 onRateAppClicked = {},
                 onPrivacyPolicyClicked = {},
                 onOpeniumClicked = {},

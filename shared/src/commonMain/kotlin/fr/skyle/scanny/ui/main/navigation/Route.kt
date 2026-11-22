@@ -33,4 +33,7 @@ sealed interface Route : NavKey {
 
     @Serializable
     data object Feedback : Route
+
+    @Serializable
+    data object Formats : Route
 }
