@@ -48,6 +48,11 @@ internal data class CreationEntity(
     // A PNG of a few hundred pixels a side at most, null for none
     @ColumnInfo(name = "logo", typeAffinity = ColumnInfo.BLOB)
     val logo: ByteArray?,
+    // The names of a CodeShape and of a CodeLogoMargin value of domain, as drawn before the version 9
+    @ColumnInfo(name = "logo_shape", defaultValue = "SQUARE")
+    val logoShape: String,
+    @ColumnInfo(name = "logo_margin", defaultValue = "NORMAL")
+    val logoMargin: String,
     // The name of a CodeErrorCorrection value of domain, left to Scanny by default as before the version 6
     @ColumnInfo(name = "error_correction", defaultValue = "AUTO")
     val errorCorrection: String,
@@ -71,6 +76,8 @@ internal data class CreationEntity(
             dotShape == other.dotShape &&
             cornerShape == other.cornerShape &&
             logo.contentEquals(other.logo) &&
+            logoShape == other.logoShape &&
+            logoMargin == other.logoMargin &&
             errorCorrection == other.errorCorrection &&
             isInHistory == other.isInHistory
 
@@ -87,6 +94,8 @@ internal data class CreationEntity(
         result = 31 * result + dotShape.hashCode()
         result = 31 * result + cornerShape.hashCode()
         result = 31 * result + logo.contentHashCode()
+        result = 31 * result + logoShape.hashCode()
+        result = 31 * result + logoMargin.hashCode()
         result = 31 * result + errorCorrection.hashCode()
         result = 31 * result + isInHistory.hashCode()
         return result

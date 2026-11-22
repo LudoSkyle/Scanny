@@ -129,8 +129,13 @@
     <string name="keep_history">Keep the history</string>
     <string name="link">Link</string>
     <string name="logo">Logo</string>
+    <string name="logo_margin">Margin around the logo</string>
+    <string name="logo_margin_large">Large</string>
+    <string name="logo_margin_none">None</string>
+    <string name="logo_margin_normal">Normal</string>
     <string name="logo_needs_highest_correction">A logo needs the automatic or the highest correction, in the advanced options of the content.</string>
     <string name="logo_not_read">The image could not be read</string>
+    <string name="logo_shape">Shape of the logo</string>
     <string name="made_by_skyle">Made by Skyle with ❤️ at Openium</string>
     <string name="mail_app_opens_with_message">Your mail app opens with your message, ready to be sent.</string>
     <string name="message">Message</string>

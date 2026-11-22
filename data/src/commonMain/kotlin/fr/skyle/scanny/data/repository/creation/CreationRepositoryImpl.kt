@@ -37,6 +37,8 @@ internal class CreationRepositoryImpl(
                 dotShape = style.dotShape,
                 cornerShape = style.cornerShape,
                 logo = style.logo,
+                logoShape = style.logoShape,
+                logoMargin = style.logoMargin,
                 errorCorrection = style.errorCorrection,
                 isInHistory = isInHistory,
             ),

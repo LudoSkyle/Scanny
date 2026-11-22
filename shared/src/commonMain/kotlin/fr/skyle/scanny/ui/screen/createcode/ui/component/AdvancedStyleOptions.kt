@@ -14,11 +14,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.card.SCCardDefaults
 import fr.skyle.scanny.designsystem.core.card.SCExpandableCardStructure
-import fr.skyle.scanny.designsystem.core.segmentedcontrol.SCSegmentedControl
-import fr.skyle.scanny.designsystem.core.segmentedcontrol.SCSegmentedControlDefaults
-import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.CodeGradient
+import fr.skyle.scanny.domain.model.CodeLogoMargin
+import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.advanced_options
@@ -26,6 +25,8 @@ import fr.skyle.scanny.resources.corner_color
 import fr.skyle.scanny.resources.corner_color_like_dots
 import fr.skyle.scanny.resources.gradient
 import fr.skyle.scanny.resources.gradient_color
+import fr.skyle.scanny.resources.logo_margin
+import fr.skyle.scanny.resources.logo_shape
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toText
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeDotColor
@@ -34,7 +35,8 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * The customization few need, folded under its title: the color of the three corners, the one of the
- * dots unless chosen apart, and a gradient of the dots to a second color.
+ * dots unless chosen apart, a gradient of the dots to a second color, and the shape and the margin of
+ * the logo, once there is one.
  */
 @Composable
 fun AdvancedStyleOptions(
@@ -96,25 +98,12 @@ fun AdvancedStyleOptions(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        SCText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp),
-            text = stringResource(Res.string.gradient),
-            style = SCTheme.typography.body2,
-            color = SCTheme.colors.text,
-        )
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        SCSegmentedControl(
-            modifier = Modifier.fillMaxWidth(),
+        SegmentedChoice(
+            label = stringResource(Res.string.gradient),
             options = CodeGradient.entries,
             selectedOption = style.gradient,
             optionText = { gradient -> stringResource(gradient.toText()) },
             onOptionSelected = { gradient -> onStyleChanged(style.copy(gradient = gradient)) },
-            style = SCSegmentedControlDefaults.Style.PRIMARY,
-            size = SCSegmentedControlDefaults.Size.MEDIUM,
         )
 
         // The color the dots go to, from their own
@@ -133,6 +122,28 @@ fun AdvancedStyleOptions(
                 onCustomColorClicked = onCustomGradientColorClicked,
             )
         }
+
+        if (style.logo != null) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            SegmentedChoice(
+                label = stringResource(Res.string.logo_shape),
+                options = CodeShape.entries,
+                selectedOption = style.logoShape,
+                optionText = { shape -> stringResource(shape.toText()) },
+                onOptionSelected = { shape -> onStyleChanged(style.copy(logoShape = shape)) },
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            SegmentedChoice(
+                label = stringResource(Res.string.logo_margin),
+                options = CodeLogoMargin.entries,
+                selectedOption = style.logoMargin,
+                optionText = { margin -> stringResource(margin.toText()) },
+                onOptionSelected = { margin -> onStyleChanged(style.copy(logoMargin = margin)) },
+            )
+        }
     }
 }
 
@@ -147,6 +158,8 @@ private fun PreviewAdvancedStyleOptions() {
             style = CodeStyle(
                 cornerColor = CodeDotColor.RED.argb,
                 gradient = CodeGradient.LINEAR,
+                logo = byteArrayOf(1, 2, 3),
+                logoShape = CodeShape.CIRCLE,
             ),
             onStyleChanged = {},
             onCustomCornerColorClicked = {},

@@ -3,12 +3,13 @@ package fr.skyle.scanny.ui.core.code.mapper
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeGradient
+import fr.skyle.scanny.domain.model.CodeLogoMargin
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
+import fr.skyle.scanny.ui.core.code.image.ShapedLogoPainter
 import fr.skyle.scanny.ui.core.code.model.CodeReadability
 import io.github.alexzhirkevich.qrose.matrix.qr.QrErrorCorrection
 import io.github.alexzhirkevich.qrose.options.QrBallShape
@@ -18,6 +19,7 @@ import io.github.alexzhirkevich.qrose.options.QrErrorCorrectionLevel
 import io.github.alexzhirkevich.qrose.options.QrFrameShape
 import io.github.alexzhirkevich.qrose.options.QrLogo
 import io.github.alexzhirkevich.qrose.options.QrLogoPadding
+import io.github.alexzhirkevich.qrose.options.QrLogoShape
 import io.github.alexzhirkevich.qrose.options.QrOptions
 import io.github.alexzhirkevich.qrose.options.QrPixelShape
 import io.github.alexzhirkevich.qrose.options.QrShapes
@@ -41,7 +43,8 @@ private const val HALF_DIAGONAL = 0.7071f
 // Of the side of the code: the logo and the blank around it hide less than the highest correction
 // makes up for
 private const val LOGO_SIZE = 0.2f
-private const val LOGO_PADDING = 0.1f
+private const val LOGO_NORMAL_MARGIN = 0.1f
+private const val LOGO_LARGE_MARGIN = 0.25f
 
 /**
  * The options qrose draws a QR code with in this style. qrose compares the shapes by identity: they
@@ -173,11 +176,28 @@ private fun CodeStyle.toQrLogo(): QrLogo {
         return QrLogo()
     }
     return QrLogo(
-        painter = BitmapPainter(image = image),
+        painter = ShapedLogoPainter(
+            image = image,
+            shape = logoShape,
+            cornerRadius = CORNER_RADIUS,
+        ),
         size = LOGO_SIZE,
-        padding = QrLogoPadding.Accurate(size = LOGO_PADDING),
+        // The dots under the logo and around it cleared, in its shape
+        padding = when (logoMargin) {
+            CodeLogoMargin.NONE -> QrLogoPadding.Empty
+            CodeLogoMargin.NORMAL -> QrLogoPadding.Accurate(size = LOGO_NORMAL_MARGIN)
+            CodeLogoMargin.LARGE -> QrLogoPadding.Accurate(size = LOGO_LARGE_MARGIN)
+        },
+        shape = logoShape.toLogoShape(),
     )
 }
+
+private fun CodeShape.toLogoShape(): QrLogoShape =
+    when (this) {
+        CodeShape.SQUARE -> QrLogoShape.Default
+        CodeShape.ROUNDED -> QrLogoShape.roundCorners(radius = CORNER_RADIUS)
+        CodeShape.CIRCLE -> QrLogoShape.circle()
+    }
 
 private fun QrErrorCorrection.toQrErrorCorrectionLevel(): QrErrorCorrectionLevel =
     when (this) {

@@ -20,6 +20,8 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.v2.runComposeUiTest
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.CodeGradient
+import fr.skyle.scanny.domain.model.CodeLogoMargin
+import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.advanced_options
@@ -33,10 +35,14 @@ import fr.skyle.scanny.resources.color_red
 import fr.skyle.scanny.resources.corner_color_like_dots
 import fr.skyle.scanny.resources.gradient_color
 import fr.skyle.scanny.resources.gradient_radial
+import fr.skyle.scanny.resources.logo_margin_large
+import fr.skyle.scanny.resources.logo_shape
 import fr.skyle.scanny.resources.other_color
+import fr.skyle.scanny.resources.shape_circle
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeBackgroundColor
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeDotColor
 import fr.skyle.scanny.ui.test.ComposeTest
+import fr.skyle.scanny.ui.test.RED_PNG
 import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -193,6 +199,35 @@ internal class CodeStyleFieldsTest : ComposeTest() {
         // The indigo of the dots, not again in the corners
         onAllNodesWithContentDescription(getString(Res.string.color_indigo)).assertCountEquals(1)
         onNodeWithContentDescription(getString(Res.string.corner_color_like_dots)).performScrollTo().assertIsSelected()
+    }
+
+    @Test
+    fun `the shape and the margin of the logo are chosen in the advanced options once there is one`() = runComposeUiTest {
+        // Given
+        var style by mutableStateOf(CodeStyle())
+        setContent {
+            codeStyleFields(
+                style = style,
+                onStyleChanged = { changed -> style = changed },
+            )
+        }
+        onNodeWithText(getString(Res.string.advanced_options)).performScrollTo().performClick()
+        onNodeWithText(getString(Res.string.logo_shape)).assertDoesNotExist()
+
+        // When
+        style = CodeStyle(logo = RED_PNG)
+        onNodeWithText(getString(Res.string.shape_circle)).performScrollTo().performClick()
+        onNodeWithText(getString(Res.string.logo_margin_large)).performScrollTo().performClick()
+
+        // Then
+        assertEquals(
+            expected = CodeStyle(
+                logo = RED_PNG,
+                logoShape = CodeShape.CIRCLE,
+                logoMargin = CodeLogoMargin.LARGE,
+            ),
+            actual = style,
+        )
     }
 
     @Composable

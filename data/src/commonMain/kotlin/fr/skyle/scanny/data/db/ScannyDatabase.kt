@@ -21,7 +21,7 @@ import kotlinx.coroutines.IO
         ScannedCodeEntity::class,
         CreationEntity::class,
     ],
-    version = 8,
+    version = 9,
     autoMigrations = [
         // The flag of a capture kept out of the history
         AutoMigration(from = 1, to = 2),
@@ -37,6 +37,8 @@ import kotlinx.coroutines.IO
         AutoMigration(from = 6, to = 7),
         // The gradient of the dots of a creation
         AutoMigration(from = 7, to = 8),
+        // The shape and the margin of the logo of a creation
+        AutoMigration(from = 8, to = 9),
     ],
 )
 internal abstract class ScannyDatabase : RoomDatabase() {

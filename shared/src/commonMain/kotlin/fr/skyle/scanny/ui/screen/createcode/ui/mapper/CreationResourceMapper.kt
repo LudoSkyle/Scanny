@@ -2,6 +2,7 @@ package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeGradient
+import fr.skyle.scanny.domain.model.CodeLogoMargin
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.resources.Res
@@ -37,6 +38,9 @@ import fr.skyle.scanny.resources.gradient_linear
 import fr.skyle.scanny.resources.gradient_none
 import fr.skyle.scanny.resources.gradient_radial
 import fr.skyle.scanny.resources.link
+import fr.skyle.scanny.resources.logo_margin_large
+import fr.skyle.scanny.resources.logo_margin_none
+import fr.skyle.scanny.resources.logo_margin_normal
 import fr.skyle.scanny.resources.logo_needs_highest_correction
 import fr.skyle.scanny.resources.shape_circle
 import fr.skyle.scanny.resources.shape_rounded
@@ -136,4 +140,11 @@ internal fun CodeGradient.toText(): StringResource =
         CodeGradient.NONE -> Res.string.gradient_none
         CodeGradient.LINEAR -> Res.string.gradient_linear
         CodeGradient.RADIAL -> Res.string.gradient_radial
+    }
+
+internal fun CodeLogoMargin.toText(): StringResource =
+    when (this) {
+        CodeLogoMargin.NONE -> Res.string.logo_margin_none
+        CodeLogoMargin.NORMAL -> Res.string.logo_margin_normal
+        CodeLogoMargin.LARGE -> Res.string.logo_margin_large
     }

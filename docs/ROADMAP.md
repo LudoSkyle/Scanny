@@ -253,7 +253,7 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
           le suivent ; un logo n'est possible qu'en correction automatique ou maximale
     - [x] Les options avancées de la personnalisation : la couleur des coins
     - [x] Un dégradé, dans les options avancées de la personnalisation
-    - [ ] La forme et la marge du logo, dans les options avancées de la personnalisation
+    - [x] La forme et la marge du logo, dans les options avancées de la personnalisation
     - [ ] Une couleur saisie en hexadécimal ou en RVB
     - [ ] La snackbar « Voir » après l'enregistrement d'une image
     - [ ] Le contenu brut plus visible replié, et son réglage pour la feuille d'un scan

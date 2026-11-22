@@ -19,6 +19,8 @@ internal fun CreationEntity.toStoredCreation(): StoredCreation =
             dotShape = dotShape,
             cornerShape = cornerShape,
             logo = logo,
+            logoShape = logoShape,
+            logoMargin = logoMargin,
             errorCorrection = errorCorrection,
         ),
         createdAt = Instant.fromEpochMilliseconds(createdAt),

@@ -7,6 +7,7 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeGradient
+import fr.skyle.scanny.domain.model.CodeLogoMargin
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.Creation
@@ -34,6 +35,8 @@ class WatchCreationsUseCaseTest {
                     dotShape = "CIRCLE",
                     cornerShape = "ROUNDED",
                     logo = byteArrayOf(1, 2, 3),
+                    logoShape = "CIRCLE",
+                    logoMargin = "LARGE",
                     errorCorrection = "QUARTILE",
                 ),
                 createdAt = CREATED_AT,
@@ -63,6 +66,8 @@ class WatchCreationsUseCaseTest {
                         dotShape = CodeShape.CIRCLE,
                         cornerShape = CodeShape.ROUNDED,
                         logo = byteArrayOf(1, 2, 3),
+                        logoShape = CodeShape.CIRCLE,
+                        logoMargin = CodeLogoMargin.LARGE,
                         errorCorrection = CodeErrorCorrection.QUARTILE,
                     ),
                     createdAt = CREATED_AT,
@@ -73,7 +78,7 @@ class WatchCreationsUseCaseTest {
     }
 
     @Test
-    fun `a shape a gradient or a correction this version does not know is drawn square plain and left to scanny`() = runTest {
+    fun `values this version does not know are read as the defaults`() = runTest {
         // Given
         val creationRepository = FakeCreationRepository(
             storedCreations = listOf(
@@ -90,6 +95,8 @@ class WatchCreationsUseCaseTest {
                         dotShape = "STAR",
                         cornerShape = "HEART",
                         logo = null,
+                        logoShape = "HEXAGON",
+                        logoMargin = "HUGE",
                         errorCorrection = "EXTREME",
                     ),
                     createdAt = CREATED_AT,
