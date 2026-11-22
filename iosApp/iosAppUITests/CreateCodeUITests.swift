@@ -30,6 +30,7 @@ final class CreateCodeUITests: XCTestCase {
         XCTAssertTrue(app.images["The code"].waitForExistence(timeout: 5))
         keepScreenshot(named: "editor-with-a-link", of: app)
 
+        goToTheCustomization(in: app)
         let createButton = app.buttons["Create"]
         scroll(to: createButton, in: app)
         XCTAssertTrue(createButton.isEnabled)
@@ -62,6 +63,7 @@ final class CreateCodeUITests: XCTestCase {
         let preview = app.images["The code"]
         XCTAssertTrue(preview.waitForExistence(timeout: 5))
         preview.tap()
+        goToTheCustomization(in: app)
         let createButton = app.buttons["Create"]
         scroll(to: createButton, in: app)
         createButton.tap()
@@ -101,6 +103,7 @@ final class CreateCodeUITests: XCTestCase {
         preview.tap()
 
         // A color is a disc, the chosen one selected
+        goToTheCustomization(in: app)
         let indigo = element(labelled: "Indigo", in: app)
         scroll(to: indigo, in: app)
         indigo.tap()
@@ -150,6 +153,7 @@ final class CreateCodeUITests: XCTestCase {
         preview.tap()
 
         // The first "Other color" is the one of the dots
+        goToTheCustomization(in: app)
         let otherDotColor = element(labelled: "Other color", in: app)
         scroll(to: otherDotColor, in: app)
         otherDotColor.tap()
@@ -188,6 +192,7 @@ final class CreateCodeUITests: XCTestCase {
         XCTAssertTrue(preview.waitForExistence(timeout: 5))
         preview.tap()
 
+        goToTheCustomization(in: app)
         let addLogo = app.buttons["Add a logo"]
         scroll(to: addLogo, in: app)
         addLogo.tap()
@@ -220,6 +225,57 @@ final class CreateCodeUITests: XCTestCase {
         // Touched at its place: the picker runs in another process, where XCUITest cannot always tell
         // whether a photo can be touched
         photo.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+    }
+
+    func testTheCustomizationIsKeptBackAndForthBetweenTheSteps() throws {
+        let app = launchApp()
+        app.buttons["Create a code"].tap()
+        typeATextAndCloseTheKeyboard("Back and forth", in: app)
+        XCTAssertTrue(app.staticTexts["Step 1 of 2"].exists)
+
+        goToTheCustomization(in: app)
+        XCTAssertTrue(app.staticTexts["Step 2 of 2"].exists)
+        let green = element(labelled: "Green", in: app)
+        scroll(to: green, in: app)
+        green.tap()
+        XCTAssertTrue(green.isSelected)
+
+        // Back from the top bar returns to the content, the customization kept
+        app.buttons["Back"].tap()
+        XCTAssertTrue(app.staticTexts["Step 1 of 2"].waitForExistence(timeout: 5))
+        goToTheCustomization(in: app)
+        XCTAssertTrue(element(labelled: "Green", in: app).isSelected)
+
+        // The back gesture from the edge as well
+        let edge = app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.5))
+        edge.press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5)))
+        XCTAssertTrue(app.staticTexts["Step 1 of 2"].waitForExistence(timeout: 5))
+        keepScreenshot(named: "editor-back-on-the-content", of: app)
+
+        // Leaving the editor from the content leaves its customization with it
+        app.buttons["Back"].tap()
+        XCTAssertTrue(app.buttons["Create a code"].waitForExistence(timeout: 5))
+        app.buttons["Create a code"].tap()
+        typeATextAndCloseTheKeyboard("Started again", in: app)
+        goToTheCustomization(in: app)
+        let black = element(labelled: "Black", in: app)
+        scroll(to: black, in: app)
+        XCTAssertTrue(black.isSelected)
+    }
+
+    private func typeATextAndCloseTheKeyboard(
+        _ text: String,
+        in app: XCUIApplication,
+    ) {
+        let textField = textInput(labelled: "Text", in: app)
+        XCTAssertTrue(textField.waitForExistence(timeout: 5))
+        waitUntilStill(textField)
+        textField.tap()
+        textField.typeText(text)
+        // A touch out of the fields closes the keyboard, over the button
+        let preview = app.images["The code"]
+        XCTAssertTrue(preview.waitForExistence(timeout: 5))
+        preview.tap()
     }
 
     func testABarcodeWithAWrongCheckDigitCannotBeCreated() throws {

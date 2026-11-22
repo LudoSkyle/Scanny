@@ -18,6 +18,12 @@ intermédiaire.
   (`Route.CreateCode(scannedCodeId)`). Créer remplace l'éditeur par l'écran de la création
   (`Route.CreationDetail(creationId)`) : le retour depuis elle revient à l'écran qui a ouvert
   l'éditeur.
+- L'éditeur d'un QR code a deux étapes sur la même route : le contenu et son aperçu, puis la
+  personnalisation (le titre de l'étape, « Étape 1 sur 2 » en sous-titre ; un code-barres n'a que la
+  première). L'étape vit dans le ViewModel : revenir au contenu garde la personnalisation, quitter
+  l'éditeur la perd avec lui. Le retour de la personnalisation, de la barre comme du système (bouton,
+  geste), ramène au contenu : un `NavigationBackHandler` (navigationevent) l'intercepte tant qu'elle
+  est montrée, sans toucher au back stack.
 - L'historique (`Route.History`) montre les scans ou les créations, sur le même écran : une bascule
   sous sa barre (`SCSegmentedControl`), ou un glissement entre les deux vues (`HorizontalPager`),
   choisit la vue, sans toucher au back stack. La page posée et la bascule se suivent : le ViewModel

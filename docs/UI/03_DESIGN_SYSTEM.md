@@ -61,7 +61,7 @@ designSystem/src/commonMain/
 │       ├── tag/               (SCTag : un court libellé dans une pastille, non cliquable)
 │       ├── text/              (SCText : un texte dans un style du thème)
 │       ├── textfield/         (SCTextField : un texte que l'utilisateur écrit)
-│       └── topappbar/         (SCTopAppBar : retour, titre, actions)
+│       └── topappbar/         (SCTopAppBar : retour, titre et son sous-titre, actions)
 └── composeResources/
     ├── drawable/              (icônes des composants)
     ├── font/                  (lato_*.ttf)

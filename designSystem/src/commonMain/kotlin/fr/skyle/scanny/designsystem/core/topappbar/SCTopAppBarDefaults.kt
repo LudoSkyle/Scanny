@@ -25,6 +25,13 @@ object SCTopAppBarDefaults {
                 TRANSPARENT -> SCTheme.colors.textLight
             }
 
+        val subtitleColor: Color
+            @Composable
+            get() = when (this) {
+                BACKGROUND -> SCTheme.colors.text
+                TRANSPARENT -> SCTheme.colors.textLight
+            }
+
         internal val iconButtonStyle: SCIconButtonDefaults.Style
             get() = when (this) {
                 BACKGROUND -> SCIconButtonDefaults.Style.DARK

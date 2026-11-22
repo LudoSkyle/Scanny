@@ -17,6 +17,8 @@ composeMultiplatformMaterial3 = "1.12.0-alpha03" # Built on Compose Multiplatfor
 
 # Navigation 3
 navigation3Multiplatform = "1.2.0"
+# The one Navigation 3 brings: the back gesture and the back button of the platforms
+navigationEventMultiplatform = "1.1.0"
 
 # Lifecycle
 lifecycleMultiplatform = "2.11.0" # androidx.lifecycle 2.11.0 on Android
@@ -72,6 +74,7 @@ composeMultiplatform-ui-tooling = { module = "org.jetbrains.compose.ui:ui-toolin
 
 # Navigation 3
 navigation3Multiplatform-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3Multiplatform" }
+navigationEventMultiplatform-compose = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version.ref = "navigationEventMultiplatform" }
 
 # Lifecycle
 lifecycleMultiplatform-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleMultiplatform" }

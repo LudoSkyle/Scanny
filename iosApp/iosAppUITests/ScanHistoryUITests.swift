@@ -46,6 +46,7 @@ final class ScanHistoryUITests: XCTestCase {
         textField.typeText(text)
         // A touch out of the fields closes the keyboard, over the button
         app.images["The code"].tap()
+        goToTheCustomization(in: app)
         let createButton = app.buttons["Create"]
         scroll(to: createButton, in: app)
         createButton.tap()
@@ -94,6 +95,7 @@ final class ScanHistoryUITests: XCTestCase {
         XCTAssertEqual(linkField.value as? String, url)
         keepScreenshot(named: "editor-from-a-scan", of: app)
 
+        goToTheCustomization(in: app)
         let createButton = app.buttons["Create"]
         scroll(to: createButton, in: app)
         createButton.tap()

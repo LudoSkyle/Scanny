@@ -7,11 +7,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.platform.gallery.rememberLogoPicker
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.creation_not_saved
 import fr.skyle.scanny.resources.logo_not_read
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
@@ -52,16 +56,30 @@ fun CreateCodeRoute(
         }
     }
 
+    // Back from the customization returns to the content, the editor kept: the system back too
+    NavigationBackHandler(
+        state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
+        isBackEnabled = uiState.step == CreationStep.STYLE,
+        onBackCompleted = viewModel::onBackToContentClicked,
+    )
+
     CreateCodeScreen(
         form = uiState.form,
         preview = uiState.preview,
         style = uiState.style,
+        step = uiState.step,
         isCreating = uiState.isCreating,
         snackbarState = snackbarState,
-        onBackClicked = navigateBack,
+        onBackClicked = {
+            when (uiState.step) {
+                CreationStep.CONTENT -> navigateBack()
+                CreationStep.STYLE -> viewModel.onBackToContentClicked()
+            }
+        },
         onFormChanged = viewModel::onFormChanged,
         onStyleChanged = viewModel::onStyleChanged,
         onAddLogoClicked = pickLogo,
+        onNextClicked = viewModel::onNextClicked,
         onCreateClicked = viewModel::onCreateClicked,
     )
 }

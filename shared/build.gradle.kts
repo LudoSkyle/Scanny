@@ -40,6 +40,7 @@ kotlin {
 
             // Navigation and lifecycle
             implementation(libs.navigation3Multiplatform.ui)
+            implementation(libs.navigationEventMultiplatform.compose)
             implementation(libs.lifecycleMultiplatform.runtime.compose)
             implementation(libs.lifecycleMultiplatform.viewmodel)
             implementation(libs.lifecycleMultiplatform.viewmodel.navigation3)

@@ -12,11 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.dropdownfield.SCDropdownField
-import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.core.textfield.SCTextFieldDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.CodeShape
@@ -24,7 +21,6 @@ import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.background_color
 import fr.skyle.scanny.resources.corner_shape
-import fr.skyle.scanny.resources.customize_code
 import fr.skyle.scanny.resources.dot_color
 import fr.skyle.scanny.resources.dot_shape
 import fr.skyle.scanny.ui.core.code.mapper.readability
@@ -34,7 +30,7 @@ import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeBackgroundColor
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeDotColor
 import org.jetbrains.compose.resources.stringResource
 
-/** The colors and the shapes of a QR code, chosen among those any scanner reads, and its logo. */
+/** The colors and the shapes of a QR code, the palette or any color, and its logo. */
 @Composable
 fun CodeStyleFields(
     style: CodeStyle,
@@ -49,18 +45,6 @@ fun CodeStyleFields(
     val customBackgroundColor = style.lightColor.takeIf { argb -> CodeBackgroundColor.entries.none { color -> color.argb == argb } }
 
     Column(modifier = modifier) {
-        SCText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .semantics { heading() }
-                .padding(horizontal = 4.dp),
-            text = stringResource(Res.string.customize_code),
-            style = SCTheme.typography.subtitle1,
-            color = SCTheme.colors.text,
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
         ColorChoiceRow(
             modifier = Modifier.fillMaxWidth(),
             label = stringResource(Res.string.dot_color),

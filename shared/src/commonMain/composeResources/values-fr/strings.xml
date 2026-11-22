@@ -59,7 +59,7 @@
     <string name="created_codes_appear_here">Les codes que vous créez, avec le + du scan, apparaissent ici.</string>
     <string name="creation_not_saved">Le code n'a pas pu être créé</string>
     <string name="creations">Créations</string>
-    <string name="customize_code">Personnaliser le code</string>
+    <string name="customization">Personnalisation</string>
     <string name="day_date">%1$d %2$s %3$d</string>
     <string name="delete">Supprimer</string>
     <string name="delete_code_question">Supprimer ce code ?</string>
@@ -114,6 +114,7 @@
     <string name="multiple_scan">Scan multiple</string>
     <string name="name">Nom</string>
     <string name="network">Réseau</string>
+    <string name="next">Suivant</string>
     <string name="no_app_to_open">Aucune app de cet appareil ne peut l'ouvrir</string>
     <string name="no_code_in_image">Aucun code trouvé dans cette image</string>
     <string name="no_creation_yet">Aucune création pour l'instant</string>
@@ -160,6 +161,7 @@
     <string name="show_code">Afficher le code</string>
     <string name="skip_consecutive_duplicates">Ignorer un code scanné de nouveau aussitôt</string>
     <string name="star_project">Mettre une étoile au projet sur GitHub</string>
+    <string name="step_of">Étape %1$d sur %2$d</string>
     <string name="subject">Objet</string>
     <string name="support">Support</string>
     <string name="text">Texte</string>
