@@ -11,7 +11,9 @@ import fr.skyle.scanny.domain.usecase.creation.WatchCreationUseCase
 import fr.skyle.scanny.domain.usecase.scan.WatchScannedCodeUseCase
 import fr.skyle.scanny.platform.gallery.LogoPickResult
 import fr.skyle.scanny.ui.core.code.mapper.canHold
+import fr.skyle.scanny.ui.core.code.mapper.holdsCharactersOf
 import fr.skyle.scanny.ui.core.code.mapper.qrErrorCorrection
+import fr.skyle.scanny.ui.core.code.mapper.toBarcodeType
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.errorCorrectionChoices
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.format
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.logoBlocker
@@ -19,6 +21,7 @@ import fr.skyle.scanny.ui.screen.createcode.ui.mapper.qrContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toBarcodeContent
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toCreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeRefusal
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
@@ -229,14 +232,22 @@ class CreateCodeViewModel(
             rawValue = rawValue,
             errorCorrection = errorCorrection,
         )
-        return if (isHeld) {
-            CodePreview.Code(
+        if (isHeld) {
+            return CodePreview.Code(
                 rawValue = rawValue,
                 format = format,
             )
-        } else {
-            CodePreview.Refused(format = format)
         }
+
+        val reason = when {
+            format.toBarcodeType() != null -> CodeRefusal.VALUE_NOT_FOR_FORMAT
+            !format.holdsCharactersOf(rawValue) -> CodeRefusal.CHARACTERS_NOT_HELD
+            else -> CodeRefusal.TOO_LONG
+        }
+        return CodePreview.Refused(
+            format = format,
+            reason = reason,
+        )
     }
 
     data class CreateCodeUIState(

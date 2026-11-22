@@ -202,8 +202,8 @@ format, son style, sa date.
   points, dégradé compris, par défaut), la forme des points et celle des trois coins (`CodeShape` :
   carré, arrondi, rond), le logo posé en son centre (un PNG, ou aucun) avec sa forme (`CodeShape`,
   carré par défaut) et sa marge (`CodeLogoMargin` : aucune, normale par défaut, large), et sa
-  correction d'erreur (`CodeErrorCorrection` : automatique, faible, moyenne, élevée, maximale). Un code-barres garde le
-  style par défaut. Une forme inconnue, écrite par une version plus récente, se lit carrée, un
+  correction d'erreur (`CodeErrorCorrection` : automatique, faible, moyenne, élevée, maximale). Un
+  code-barres, un Data Matrix, un code Aztec et un PDF417 gardent le style par défaut. Une forme inconnue, écrite par une version plus récente, se lit carrée, un
   dégradé inconnu se lit sans dégradé, une marge inconnue normale, et une correction inconnue se
   lit automatique.
 - La correction automatique est la plus faible, et la plus forte sous un logo. Un logo est toujours
@@ -215,7 +215,8 @@ format, son style, sa date.
   (`toRawValue`, l'encodeur, l'exact inverse du parseur), l'enregistre, hors de l'historique quand
   l'utilisateur n'en garde pas des créations, et rend la création relue.
 - `toRawValue` est publique : l'éditeur en tire l'aperçu du code avant tout enregistrement.
-- Pour un code-barres, le contenu est un `Text` de ses chiffres ou de ses caractères.
+- Pour un code-barres, le contenu est un `Text` de ses chiffres ou de ses caractères. Un Data
+  Matrix, un code Aztec et un PDF417 tiennent les mêmes contenus qu'un QR code.
 - L'éditeur offre **chaque champ de la spec du format** d'un contenu, pas un sous-ensemble : pour une
   clé à usage unique, le type, l'émetteur, le compte, la clé, l'algorithme, le nombre de chiffres, et
   la période (TOTP) ou le compteur (HOTP). Un champ sans lequel le code n'existe pas porte un
@@ -236,7 +237,11 @@ format, son style, sa date.
   passe des méthodes qui en prennent un (PEAP, TTLS, PWD), la phase 2 n'étant offerte qu'à PEAP et TTLS, le compte et la clé d'une clé à usage unique (en base32, 16 caractères au moins, tapée en
   groupes et en minuscules comme les services la montrent), sa période (TOTP) ou son compteur (HOTP). Le format juge ensuite le texte (`canHold`), avec l'encodeur qui le dessine : un
   code-barres refuse une mauvaise longueur ou un mauvais chiffre de contrôle, un QR code un texte
-  trop long pour la correction avec laquelle il sera encodé (`qrErrorCorrection`). qrose encode un QR code
+  trop long pour la correction avec laquelle il sera encodé (`qrErrorCorrection`), un Data Matrix, un
+  code Aztec ou un PDF417 un texte trop long pour son plus grand symbole. Un Data Matrix et un code
+  Aztec refusent aussi un caractère hors du latin-1 (`holdsCharactersOf`), comme « € », « œ » ou un
+  emoji : l'aperçu en dit la raison (`CodeRefusal`) et propose un QR code ou un PDF417, qui le
+  tiennent ([ADR-0004](../adr/0004-encodeurs-data-matrix-et-aztec-corriges.md)). qrose encode un QR code
   en le dessinant, sans moyen d'en rattraper l'échec : un texte n'est dessiné qu'une fois accepté.
 - Sous les champs d'un QR code, un compteur (`qrContentSize`) dit ce que le contenu entier prend du
   code, contre ce que le code tient à cette même correction. qrose écrit tout le texte dans un seul
@@ -275,8 +280,9 @@ format, son style, sa date.
   seconde étape, dit de même ce qui l'empêche (`logoBlocker`) : une correction choisie plus faible
   que la maximale, ou un contenu trop long pour elle.
 - À l'inverse, un code scanné ou créé remplit le formulaire (`CodeFormMapper`) pour être modifié et
-  créé comme un nouveau code ; une création apporte aussi son style : un code-barres d'un format que l'éditeur dessine reste un code-barres de sa
-  valeur, tout autre code devient un QR code de son contenu, et un contact garde le premier de ses
+  créé comme un nouveau code ; une création apporte aussi son style : un code-barres reste un
+  code-barres de sa valeur, un Data Matrix, un code Aztec ou un PDF417 un code de son format qui
+  tient son contenu, un code d'un format inconnu devient un QR code de son contenu, et un contact garde le premier de ses
   numéros, e-mails, adresses et sites. Un contenu complet, rempli puis relu, revient tel quel.
 - La purge de l'historique (`PurgeHistoryUseCase`) vaut pour les créations comme pour les captures,
   avec la même durée de conservation.

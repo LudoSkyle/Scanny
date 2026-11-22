@@ -1,5 +1,6 @@
 package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
 import fr.skyle.scanny.domain.model.CodeGradient
 import fr.skyle.scanny.domain.model.CodeLogoMargin
@@ -12,6 +13,7 @@ import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.barcode
 import fr.skyle.scanny.resources.bitcoin
 import fr.skyle.scanny.resources.bookmark
+import fr.skyle.scanny.resources.characters_not_held
 import fr.skyle.scanny.resources.color_black
 import fr.skyle.scanny.resources.color_brown
 import fr.skyle.scanny.resources.color_cream
@@ -25,6 +27,8 @@ import fr.skyle.scanny.resources.color_purple
 import fr.skyle.scanny.resources.color_red
 import fr.skyle.scanny.resources.color_white
 import fr.skyle.scanny.resources.contact
+import fr.skyle.scanny.resources.content_too_long
+import fr.skyle.scanny.resources.content_too_long_for_format
 import fr.skyle.scanny.resources.content_too_long_for_logo
 import fr.skyle.scanny.resources.email
 import fr.skyle.scanny.resources.error_correction_auto
@@ -55,14 +59,17 @@ import fr.skyle.scanny.resources.mms
 import fr.skyle.scanny.resources.mobile
 import fr.skyle.scanny.resources.otp
 import fr.skyle.scanny.resources.phone
+import fr.skyle.scanny.resources.qr_code
 import fr.skyle.scanny.resources.shape_circle
 import fr.skyle.scanny.resources.shape_rounded
 import fr.skyle.scanny.resources.shape_square
 import fr.skyle.scanny.resources.sms
 import fr.skyle.scanny.resources.text
+import fr.skyle.scanny.resources.two_dimensional_code
 import fr.skyle.scanny.resources.type_home
 import fr.skyle.scanny.resources.type_other
 import fr.skyle.scanny.resources.type_work
+import fr.skyle.scanny.resources.value_not_for_format
 import fr.skyle.scanny.resources.vcard
 import fr.skyle.scanny.resources.wifi
 import fr.skyle.scanny.resources.wifi_security_none
@@ -71,6 +78,9 @@ import fr.skyle.scanny.resources.wifi_security_wpa
 import fr.skyle.scanny.resources.wifi_security_wpa_enterprise
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeBackgroundColor
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeDotColor
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeRefusal
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationFamily
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ErrorCorrectionBlocker
 import fr.skyle.scanny.ui.screen.createcode.ui.model.LogoBlocker
@@ -91,7 +101,21 @@ internal fun CreationKind.toText(): StringResource =
         CreationKind.OTP -> Res.string.otp
         CreationKind.BITCOIN -> Res.string.bitcoin
         CreationKind.EVENT -> Res.string.event
-        CreationKind.BARCODE -> Res.string.barcode
+    }
+
+// A QR code holds the most: a content too long for another format is offered it
+internal fun CodePreview.Refused.toText(): StringResource =
+    when (reason) {
+        CodeRefusal.TOO_LONG -> if (format == BarcodeFormat.QR_CODE) Res.string.content_too_long else Res.string.content_too_long_for_format
+        CodeRefusal.CHARACTERS_NOT_HELD -> Res.string.characters_not_held
+        CodeRefusal.VALUE_NOT_FOR_FORMAT -> Res.string.value_not_for_format
+    }
+
+internal fun CreationFamily.toText(): StringResource =
+    when (this) {
+        CreationFamily.QR_CODE -> Res.string.qr_code
+        CreationFamily.TWO_DIMENSIONAL -> Res.string.two_dimensional_code
+        CreationFamily.BARCODE -> Res.string.barcode
     }
 
 internal fun ContactFormat.toText(): StringResource =

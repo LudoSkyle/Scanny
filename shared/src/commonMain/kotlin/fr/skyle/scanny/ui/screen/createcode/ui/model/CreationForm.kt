@@ -15,11 +15,15 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 
 /**
- * What the user typed in the editor, the fields of every kind together: switching to another kind
- * and back loses nothing.
+ * What the user typed in the editor, the fields of every family and every kind together: switching to
+ * another and back loses nothing.
  */
 data class CreationForm(
+    val family: CreationFamily = CreationFamily.QR_CODE,
+    // The content of a QR code or of another code in two dimensions
     val kind: CreationKind = CreationKind.TEXT,
+    // The format of another code in two dimensions
+    val matrixFormat: BarcodeFormat = BarcodeFormat.DATA_MATRIX,
     val text: String = "",
     val url: String = "",
     // As typed: addresses separated by commas

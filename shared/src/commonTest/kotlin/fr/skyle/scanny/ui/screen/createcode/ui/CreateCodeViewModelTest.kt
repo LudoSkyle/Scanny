@@ -12,7 +12,9 @@ import fr.skyle.scanny.fake.FakeWatchCreationUseCase
 import fr.skyle.scanny.fake.FakeWatchScannedCodeUseCase
 import fr.skyle.scanny.platform.gallery.LogoPickResult
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeRefusal
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContentSize
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationFamily
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationSource
@@ -98,7 +100,7 @@ class CreateCodeViewModelTest {
         // When
         viewModel.onFormChanged(
             form = CreationForm(
-                kind = CreationKind.BARCODE,
+                family = CreationFamily.BARCODE,
                 barcodeFormat = BarcodeFormat.EAN_13,
                 barcodeValue = "4006381333932",
             ),
@@ -106,7 +108,10 @@ class CreateCodeViewModelTest {
 
         // Then
         assertEquals(
-            expected = CodePreview.Refused(format = BarcodeFormat.EAN_13),
+            expected = CodePreview.Refused(
+                format = BarcodeFormat.EAN_13,
+                reason = CodeRefusal.VALUE_NOT_FOR_FORMAT,
+            ),
             actual = viewModel.uiState.value.preview,
         )
     }
@@ -150,7 +155,10 @@ class CreateCodeViewModelTest {
             actual = viewModel.uiState.value.contentSize?.isOverLimit,
         )
         assertEquals(
-            expected = CodePreview.Refused(format = BarcodeFormat.QR_CODE),
+            expected = CodePreview.Refused(
+                format = BarcodeFormat.QR_CODE,
+                reason = CodeRefusal.TOO_LONG,
+            ),
             actual = viewModel.uiState.value.preview,
         )
     }
@@ -174,7 +182,10 @@ class CreateCodeViewModelTest {
             actual = viewModel.uiState.value.contentSize,
         )
         assertEquals(
-            expected = CodePreview.Refused(format = BarcodeFormat.QR_CODE),
+            expected = CodePreview.Refused(
+                format = BarcodeFormat.QR_CODE,
+                reason = CodeRefusal.TOO_LONG,
+            ),
             actual = viewModel.uiState.value.preview,
         )
     }
@@ -324,7 +335,7 @@ class CreateCodeViewModelTest {
         // When
         viewModel.onFormChanged(
             form = CreationForm(
-                kind = CreationKind.BARCODE,
+                family = CreationFamily.BARCODE,
                 barcodeFormat = BarcodeFormat.EAN_13,
                 barcodeValue = "4006381333931",
             ),
@@ -342,7 +353,7 @@ class CreateCodeViewModelTest {
         val events = collectEvents(viewModel = viewModel)
         viewModel.onFormChanged(
             form = CreationForm(
-                kind = CreationKind.BARCODE,
+                family = CreationFamily.BARCODE,
                 barcodeFormat = BarcodeFormat.EAN_13,
                 barcodeValue = "4006381333931",
             ),
@@ -400,7 +411,7 @@ class CreateCodeViewModelTest {
         viewModel.onStyleChanged(style = STYLE)
         viewModel.onFormChanged(
             form = CreationForm(
-                kind = CreationKind.BARCODE,
+                family = CreationFamily.BARCODE,
                 barcodeFormat = BarcodeFormat.EAN_13,
                 barcodeValue = "4006381333931",
             ),
@@ -475,7 +486,7 @@ class CreateCodeViewModelTest {
         val viewModel = createCodeViewModel()
         viewModel.onFormChanged(
             form = CreationForm(
-                kind = CreationKind.BARCODE,
+                family = CreationFamily.BARCODE,
                 barcodeFormat = BarcodeFormat.EAN_13,
                 barcodeValue = "4006381333931",
             ),
@@ -488,6 +499,107 @@ class CreateCodeViewModelTest {
         assertEquals(
             expected = CreationStep.CONTENT,
             actual = viewModel.uiState.value.step,
+        )
+    }
+
+    @Test
+    fun `a code in two dimensions is created from its content in its format dark on white`() = runTest(testDispatcher) {
+        // Given
+        val recordCreationUseCase = FakeRecordCreationUseCase()
+        val viewModel = createCodeViewModel(recordCreationUseCase = recordCreationUseCase)
+        viewModel.onStyleChanged(style = STYLE)
+        viewModel.onFormChanged(
+            form = CreationForm(
+                family = CreationFamily.TWO_DIMENSIONAL,
+                matrixFormat = BarcodeFormat.AZTEC,
+                kind = CreationKind.LINK,
+                url = "scanny.app",
+            ),
+        )
+
+        // When
+        viewModel.onNextClicked()
+        viewModel.onCreateClicked()
+
+        // Then
+        assertEquals(
+            expected = CreationStep.CONTENT,
+            actual = viewModel.uiState.value.step,
+        )
+        assertEquals(
+            expected = listOf(
+                FakeRecordCreationUseCase.RecordedCreation(
+                    content = BarcodeContent.Url(url = "https://scanny.app"),
+                    format = BarcodeFormat.AZTEC,
+                    style = CodeStyle(),
+                ),
+            ),
+            actual = recordCreationUseCase.recordedCreations,
+        )
+    }
+
+    @Test
+    fun `a code in two dimensions is not counted`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel()
+
+        // When
+        viewModel.onFormChanged(
+            form = CreationForm(
+                family = CreationFamily.TWO_DIMENSIONAL,
+                text = "Scanny",
+            ),
+        )
+
+        // Then
+        assertNull(viewModel.uiState.value.contentSize)
+    }
+
+    @Test
+    fun `a character a data matrix does not hold is told as refused for it`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel()
+
+        // When
+        viewModel.onFormChanged(
+            form = CreationForm(
+                family = CreationFamily.TWO_DIMENSIONAL,
+                matrixFormat = BarcodeFormat.DATA_MATRIX,
+                text = "Prix : 5 €",
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = CodePreview.Refused(
+                format = BarcodeFormat.DATA_MATRIX,
+                reason = CodeRefusal.CHARACTERS_NOT_HELD,
+            ),
+            actual = viewModel.uiState.value.preview,
+        )
+    }
+
+    @Test
+    fun `a content too long for a pdf417 is told as too long`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel()
+
+        // When
+        viewModel.onFormChanged(
+            form = CreationForm(
+                family = CreationFamily.TWO_DIMENSIONAL,
+                matrixFormat = BarcodeFormat.PDF417,
+                text = "a".repeat(4_000),
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = CodePreview.Refused(
+                format = BarcodeFormat.PDF417,
+                reason = CodeRefusal.TOO_LONG,
+            ),
+            actual = viewModel.uiState.value.preview,
         )
     }
 
@@ -521,7 +633,7 @@ class CreateCodeViewModelTest {
         viewModel.onCreateClicked()
         viewModel.onFormChanged(
             form = CreationForm(
-                kind = CreationKind.BARCODE,
+                family = CreationFamily.BARCODE,
                 barcodeValue = "letters",
             ),
         )

@@ -16,12 +16,11 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
-import fr.skyle.scanny.resources.content_too_long
 import fr.skyle.scanny.resources.fill_content_to_see_code
 import fr.skyle.scanny.resources.the_code
-import fr.skyle.scanny.resources.value_not_for_format
 import fr.skyle.scanny.ui.core.code.component.CodeImage
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
+import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toText
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
 import org.jetbrains.compose.resources.stringResource
 
@@ -64,9 +63,7 @@ fun CodePreviewCard(
 
                 is CodePreview.Refused -> SCText(
                     modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(
-                        if (preview.format == BarcodeFormat.QR_CODE) Res.string.content_too_long else Res.string.value_not_for_format,
-                    ),
+                    text = stringResource(preview.toText()),
                     style = SCTheme.typography.body2,
                     color = SCTheme.colors.text,
                     textAlign = TextAlign.Center,

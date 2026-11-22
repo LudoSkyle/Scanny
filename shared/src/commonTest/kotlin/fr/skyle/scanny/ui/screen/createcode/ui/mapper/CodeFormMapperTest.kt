@@ -24,6 +24,7 @@ import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.model.WifiTransitionMode
 import fr.skyle.scanny.domain.payload.toRawValue
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationFamily
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import kotlinx.datetime.DayOfWeek
@@ -220,7 +221,7 @@ class CodeFormMapperTest {
         // Then
         assertEquals(
             expected = CreationForm(
-                kind = CreationKind.BARCODE,
+                family = CreationFamily.BARCODE,
                 barcodeFormat = BarcodeFormat.EAN_13,
                 barcodeValue = "4006381333931",
             ),
@@ -229,9 +230,12 @@ class CodeFormMapperTest {
     }
 
     @Test
-    fun `a code the editor does not draw becomes a qr code of its content`() {
+    fun `a data matrix an aztec code or a pdf417 stays a code of its format holding its content`() {
+        // Given
+        val formats = listOf(BarcodeFormat.DATA_MATRIX, BarcodeFormat.AZTEC, BarcodeFormat.PDF417)
+
         // When
-        val forms = listOf(BarcodeFormat.DATA_MATRIX, null).map { format ->
+        val forms = formats.map { format ->
             scannedCode(
                 content = BarcodeContent.Url(url = "https://scanny.app"),
                 format = format,
@@ -240,13 +244,33 @@ class CodeFormMapperTest {
 
         // Then
         assertEquals(
-            expected = List(2) {
+            expected = formats.map { format ->
                 CreationForm(
+                    family = CreationFamily.TWO_DIMENSIONAL,
                     kind = CreationKind.LINK,
+                    matrixFormat = format,
                     url = "https://scanny.app",
                 )
             },
             actual = forms,
+        )
+    }
+
+    @Test
+    fun `a code of an unknown format becomes a qr code of its content`() {
+        // When
+        val form = scannedCode(
+            content = BarcodeContent.Url(url = "https://scanny.app"),
+            format = null,
+        ).toCreationForm()
+
+        // Then
+        assertEquals(
+            expected = CreationForm(
+                kind = CreationKind.LINK,
+                url = "https://scanny.app",
+            ),
+            actual = form,
         )
     }
 

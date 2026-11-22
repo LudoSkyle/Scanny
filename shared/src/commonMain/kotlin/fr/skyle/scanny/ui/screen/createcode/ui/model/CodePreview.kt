@@ -9,7 +9,10 @@ sealed interface CodePreview {
     data object Incomplete : CodePreview
 
     /** The content is complete, but its format cannot hold it: too long a text, a wrong check digit… */
-    data class Refused(val format: BarcodeFormat) : CodePreview
+    data class Refused(
+        val format: BarcodeFormat,
+        val reason: CodeRefusal,
+    ) : CodePreview
 
     data class Code(
         val rawValue: String,

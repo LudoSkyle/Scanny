@@ -47,6 +47,7 @@
     <string name="carbon_copy">Cc</string>
     <string name="categories">Categories</string>
     <string name="change_logo">Change the logo</string>
+    <string name="characters_not_held">This format cannot hold some characters of this content, such as €, œ or emoji. A QR code or a PDF417 holds them.</string>
     <string name="choose">Choose</string>
     <string name="choose_color">Choose a color</string>
     <string name="choose_subject">Choose a subject</string>
@@ -63,6 +64,7 @@
     <string name="code_39" translatable="false">Code 39</string>
     <string name="code_93" translatable="false">Code 93</string>
     <string name="code_count">%1$d codes</string>
+    <string name="code_family">Code</string>
     <string name="code_formats">Code formats</string>
     <string name="code_inverted">Its colors are lighter than its background: many scanners read such a code poorly.</string>
     <string name="code_low_contrast">Its colors and its background stand out too little: some scanners may not read this code.</string>
@@ -97,6 +99,7 @@
     <string name="content_size_count" translatable="false">%1$d / %2$d</string>
     <string name="content_size_wide_characters">An accent or an emoji counts for several.</string>
     <string name="content_too_long">This content is too long for a QR code.</string>
+    <string name="content_too_long_for_format">This content is too long for this format. A QR code holds more.</string>
     <string name="content_too_long_for_logo">This content is too long for a logo, which needs the highest correction.</string>
     <string name="content_type">Type</string>
     <string name="coordinates">Coordinates</string>
@@ -420,6 +423,7 @@
     <string name="today">Today</string>
     <string name="turn_off_torch">Turn off the torch</string>
     <string name="turn_on_torch">Turn on the torch</string>
+    <string name="two_dimensional_code">2D code</string>
     <string name="two_dimensional_codes">Codes in two dimensions</string>
     <string name="type_home">Home</string>
     <string name="type_other">Other</string>

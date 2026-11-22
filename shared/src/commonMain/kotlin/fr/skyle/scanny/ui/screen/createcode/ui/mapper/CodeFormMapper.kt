@@ -9,9 +9,11 @@ import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.model.WifiTransitionMode
 import fr.skyle.scanny.domain.payload.toCoordinateText
 import fr.skyle.scanny.ui.core.code.mapper.toBarcodeType
+import fr.skyle.scanny.ui.core.code.mapper.toMatrixEncoder
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactAddressField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactEntryField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationFamily
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.RecurrenceEnd
@@ -33,24 +35,24 @@ internal fun Creation.toCreationForm(): CreationForm =
     )
 
 /**
- * The form a code fills. A barcode of a format the editor draws stays a barcode of its value; any other
- * code becomes a QR code holding its content.
+ * The form a code fills. A barcode stays a barcode of its value; a Data Matrix, an Aztec code or a
+ * PDF417 a code of its format holding its content; any other code, of a format unknown, becomes a QR
+ * code holding its content.
  * A parameter a one-time password leaves to its default shows its default.
  */
 private fun BarcodeContent.toCreationForm(
     rawValue: String,
     format: BarcodeFormat?,
 ): CreationForm {
-    val barcodeFormat = format?.takeIf { format -> format.toBarcodeType() != null }
-    if (barcodeFormat != null) {
+    if (format != null && format.toBarcodeType() != null) {
         return CreationForm(
-            kind = CreationKind.BARCODE,
-            barcodeFormat = barcodeFormat,
+            family = CreationFamily.BARCODE,
+            barcodeFormat = format,
             barcodeValue = rawValue,
         )
     }
 
-    return when (val content = this) {
+    val form = when (val content = this) {
         is BarcodeContent.Text -> CreationForm(
             kind = CreationKind.TEXT,
             text = content.text,
@@ -220,6 +222,14 @@ private fun BarcodeContent.toCreationForm(
             bitcoinLabel = content.label.orEmpty(),
             bitcoinMessage = content.message.orEmpty(),
         )
+    }
+    return if (format != null && format.toMatrixEncoder() != null) {
+        form.copy(
+            family = CreationFamily.TWO_DIMENSIONAL,
+            matrixFormat = format,
+        )
+    } else {
+        form
     }
 }
 

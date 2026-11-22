@@ -15,6 +15,7 @@ import fr.skyle.scanny.domain.model.EventRecurrence
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.model.WifiTransitionMode
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationFamily
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.screen.createcode.ui.model.RecurrenceEnd
@@ -39,16 +40,27 @@ private val BITCOIN_AMOUNT = Regex("""[0-9]+(\.[0-9]{1,8})?""")
 private const val HTTP = "http://"
 private const val HTTPS = "https://"
 
-/** The format of the code created: a QR code, or the barcode chosen. */
+/** The format of the code created: a QR code, or the code in two dimensions or the barcode chosen. */
 internal val CreationForm.format: BarcodeFormat
-    get() = if (kind == CreationKind.BARCODE) barcodeFormat else BarcodeFormat.QR_CODE
+    get() = when (family) {
+        CreationFamily.QR_CODE -> BarcodeFormat.QR_CODE
+        CreationFamily.TWO_DIMENSIONAL -> matrixFormat
+        CreationFamily.BARCODE -> barcodeFormat
+    }
 
 /**
  * The content of the code the form describes, null while a field it needs is missing or wrong. A link
  * typed without its scheme gets `https://`: without it, a scanner would read a plain text.
+ * A barcode holds its value as a text: whether its format accepts it is told by the drawing of the code.
  */
-internal fun CreationForm.toBarcodeContent(): BarcodeContent? =
-    when (kind) {
+internal fun CreationForm.toBarcodeContent(): BarcodeContent? {
+    if (family == CreationFamily.BARCODE) {
+        return barcodeValue.trim().takeIf { value -> value.isNotEmpty() }?.let { value ->
+            BarcodeContent.Text(text = value)
+        }
+    }
+
+    return when (kind) {
         CreationKind.TEXT -> text.takeIf { text -> text.isNotBlank() }?.let { text ->
             BarcodeContent.Text(text = text)
         }
@@ -103,12 +115,8 @@ internal fun CreationForm.toBarcodeContent(): BarcodeContent? =
         CreationKind.BITCOIN -> toBitcoin()
 
         CreationKind.EVENT -> toEvent()
-
-        // Whether its format accepts it is told by the drawing of the code
-        CreationKind.BARCODE -> barcodeValue.trim().takeIf { value -> value.isNotEmpty() }?.let { value ->
-            BarcodeContent.Text(text = value)
-        }
     }
+}
 
 // A vCard needs a name to show: the one typed, else the parts of the name, else the organization. A
 // MeCard needs a last or a first name. The fields a MeCard does not hold (the other parts of the name, the
