@@ -56,7 +56,7 @@ designSystem/src/commonMain/
 │       │   └── SCIconButtonDefaults.kt
 │       ├── screenstructure/   (SCScreenStructure, et la couleur des icônes système par plateforme)
 │       ├── segmentedcontrol/  (SCSegmentedControl : un choix entre quelques options côte à côte)
-│       ├── snackbar/          (SCSnackbarState : les messages courts d'un écran)
+│       ├── snackbar/          (SCSnackbarState, SCSnackbarHost : les messages courts d'un écran ou d'une feuille)
 │       ├── switch/            (SCSwitch : un réglage allumé ou éteint)
 │       ├── tag/               (SCTag : un court libellé dans une pastille, non cliquable)
 │       ├── text/              (SCText : un texte dans un style du thème)
@@ -122,7 +122,10 @@ object SCTheme {
   bottom sheet). Une forme
   s'ajoute avec le composant qui en a besoin.
 - Un écran affiche un texte avec `SCText` et un message court par un `SCSnackbarState` donné à
-  `SCScreenStructure` : il ne voit jamais `Text` ni `SnackbarHostState` de Material.
+  `SCScreenStructure` : il ne voit jamais `Text` ni `SnackbarHostState` de Material. Une feuille qui
+  cache l'écran a ses propres messages (`snackbarState` de `SCBottomSheet`), vidés à sa fermeture
+  (`dismiss`) : sans hôte, un message attendrait sa réouverture. Un message peut porter une action ;
+  `show` dit alors si elle a été touchée.
 - `SCTheme` fournit aussi le style de texte par défaut (`body1`) et le ripple de Material comme
   retour au toucher de tout élément cliquable.
 - Tant que l'app n'a qu'un thème, on n'en prévoit qu'un. Le second viendra avec son besoin.
