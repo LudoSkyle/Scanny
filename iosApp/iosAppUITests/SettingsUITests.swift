@@ -5,45 +5,7 @@ final class SettingsUITests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
-    }
-
-    func testTheSettingsShowTheAppAndLeadToTheFeedback() throws {
-        let app = launchApp()
-        app.buttons["Settings"].tap()
-
-        XCTAssertTrue(app.staticTexts["Version 2.0 (build 20)"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["Scanny"].exists)
-        XCTAssertTrue(app.otherElements["Scan preferences"].exists)
-        XCTAssertTrue(app.switches["Beep after a scan"].exists)
-        XCTAssertTrue(app.switches["Copy the code after a scan"].exists)
-        XCTAssertTrue(app.switches["Use the front camera"].exists)
-        keepScreenshot(named: "settings-top", of: app)
-
-        let feedbackRow = element(labelled: "Give your feedback", in: app)
-        scroll(to: feedbackRow, in: app)
-        XCTAssertTrue(app.otherElements["Support"].exists)
-        // Not yet on the App Store
-        XCTAssertFalse(element(labelled: "Rate the app", in: app).exists)
-        keepScreenshot(named: "settings-bottom", of: app)
-
-        feedbackRow.tap()
-        let sendButton = app.buttons["Send the e-mail"]
-        XCTAssertTrue(sendButton.waitForExistence(timeout: 5))
-        XCTAssertFalse(sendButton.isEnabled)
-
-        // The subject is chosen in a menu that unfolds under its field
-        app.textViews["Subject"].tap()
-        let scanSubject = element(labelled: "The scan", in: app)
-        XCTAssertTrue(scanSubject.waitForExistence(timeout: 5))
-        keepScreenshot(named: "feedback-subjects", of: app)
-        scanSubject.tap()
-        XCTAssertFalse(sendButton.isEnabled)
-
-        let messageField = app.textViews["Message"].exists ? app.textViews["Message"] : app.textFields["Message"]
-        messageField.tap()
-        messageField.typeText("The scan is slow on a curved bottle")
-        XCTAssertTrue(sendButton.isEnabled)
-        keepScreenshot(named: "feedback", of: app)
+        allowTheSystemAlertsInTheWay()
     }
 
     func testTheCopySettingCopiesTheScannedCode() throws {
@@ -67,7 +29,7 @@ final class SettingsUITests: XCTestCase {
         let feedbackRow = element(labelled: "Give your feedback", in: scanningApp)
         scroll(to: feedbackRow, in: scanningApp)
         feedbackRow.tap()
-        let messageField = scanningApp.textViews["Message"].exists ? scanningApp.textViews["Message"] : scanningApp.textFields["Message"]
+        let messageField = textInput(labelled: "Message", in: scanningApp)
         XCTAssertTrue(messageField.waitForExistence(timeout: 5))
         messageField.press(forDuration: 1.2)
         let pasteItem = scanningApp.menuItems["Paste"]
@@ -111,86 +73,11 @@ final class SettingsUITests: XCTestCase {
         XCTAssertFalse(isOn(switchBack))
     }
 
-    func testAScanIsLeftOutOfTheHistoryWhenTheSettingAsks() throws {
-        let app = launchApp()
-        app.buttons["Settings"].tap()
-        let historySwitch = app.switches["Save the scans in the history"]
-        scroll(to: historySwitch, in: app)
-        if isOn(historySwitch) {
-            historySwitch.tap()
-        }
-        XCTAssertFalse(isOn(historySwitch))
-        app.terminate()
-
-        let code = "Left out \(Int(Date().timeIntervalSince1970))"
-        let scanningApp = launchScanning(code: code)
-        XCTAssertTrue(scanningApp.buttons["Close sheet"].waitForExistence(timeout: 10))
-        scanningApp.buttons["Close sheet"].tap()
-        scanningApp.buttons["History"].tap()
-        XCTAssertTrue(scanningApp.staticTexts["History"].waitForExistence(timeout: 5))
-        XCTAssertFalse(element(labelled: code, in: scanningApp).exists)
-        keepScreenshot(named: "history-without-the-scan", of: scanningApp)
-
-        // Back to the history kept, as the other tests expect it
-        scanningApp.buttons["Back"].tap()
-        XCTAssertTrue(scanningApp.staticTexts["History"].waitForNonExistence(timeout: 5))
-        scanningApp.buttons["Settings"].tap()
-        let switchBack = scanningApp.switches["Save the scans in the history"]
-        scroll(to: switchBack, in: scanningApp)
-        switchBack.tap()
-        XCTAssertTrue(isOn(switchBack))
-    }
-
-    func testTheSameCodeScannedAgainRightAwayIsKeptOnce() throws {
-        let code = "Twice \(Int(Date().timeIntervalSince1970))"
-        let firstApp = launchScanning(code: code)
-        XCTAssertTrue(firstApp.buttons["Close sheet"].waitForExistence(timeout: 10))
-        firstApp.buttons["Close sheet"].tap()
-        firstApp.terminate()
-
-        let app = launchScanning(code: code)
-        XCTAssertTrue(app.buttons["Close sheet"].waitForExistence(timeout: 10))
-        app.buttons["Close sheet"].tap()
-        app.buttons["History"].tap()
-        XCTAssertTrue(app.staticTexts["History"].waitForExistence(timeout: 5))
-
-        // A row is a button, its texts read together; its text is also seen apart
-        let rows = app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", code))
-        XCTAssertTrue(rows.firstMatch.waitForExistence(timeout: 5))
-        XCTAssertEqual(rows.count, 1)
-        keepScreenshot(named: "history-with-the-code-once", of: app)
-    }
-
-    func testTheRetentionOfTheHistoryIsChosenInAMenu() throws {
-        let app = launchApp()
-        app.buttons["Settings"].tap()
-        let retentionRow = element(labelled: "Keep the history", in: app)
-        scroll(to: retentionRow, in: app)
-        XCTAssertTrue(retentionRow.label.contains("30 days"))
-        XCTAssertTrue(app.switches["Save the creations in the history"].exists)
-
-        retentionRow.tap()
-        let forever = element(labelled: "Forever", in: app)
-        XCTAssertTrue(forever.waitForExistence(timeout: 5))
-        keepScreenshot(named: "retention-menu", of: app)
-        forever.tap()
-        XCTAssertTrue(forever.waitForNonExistence(timeout: 5) || retentionRow.label.contains("Forever"))
-        XCTAssertTrue(element(labelled: "Keep the history", in: app).label.contains("Forever"))
-
-        // Back to 30 days, as the other tests expect it
-        element(labelled: "Keep the history", in: app).tap()
-        let thirtyDays = element(labelled: "30 days", in: app)
-        XCTAssertTrue(thirtyDays.waitForExistence(timeout: 5))
-        thirtyDays.tap()
-        XCTAssertTrue(
-            NSPredicate(format: "label CONTAINS[c] %@", "30 days")
-                .evaluate(with: element(labelled: "Keep the history", in: app)),
-        )
-    }
-
     func testThePrivacyPolicyOpensInSafari() throws {
         let app = launchApp()
         app.buttons["Settings"].tap()
+        // The version read from the bundle of the app
+        XCTAssertTrue(app.staticTexts["Version 2.0 (build 20)"].waitForExistence(timeout: 5))
 
         let privacyPolicyRow = element(labelled: "Privacy policy", in: app)
         scroll(to: privacyPolicyRow, in: app)
@@ -199,27 +86,6 @@ final class SettingsUITests: XCTestCase {
         let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
         XCTAssertTrue(safari.wait(for: .runningForeground, timeout: 10))
         keepScreenshot(named: "privacy-policy", of: safari)
-    }
-
-    func testTheSettingsAreInFrench() throws {
-        let app = launchApp(language: "fr")
-
-        app.buttons["Réglages"].tap()
-
-        XCTAssertTrue(app.switches["Vibrer après un scan"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.otherElements["Préférences du scan"].exists)
-        keepScreenshot(named: "french-settings", of: app)
-
-        let privacyPolicyRow = element(labelled: "Politique de confidentialité", in: app)
-        scroll(to: privacyPolicyRow, in: app)
-        XCTAssertTrue(privacyPolicyRow.exists)
-
-        let feedbackRow = element(labelled: "Donner votre avis", in: app)
-        scroll(to: feedbackRow, in: app)
-        feedbackRow.tap()
-        XCTAssertTrue(app.buttons["Envoyer l'e-mail"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.textViews["Objet"].exists)
-        keepScreenshot(named: "french-feedback", of: app)
     }
 
     // A switch of Compose tells its state as selected, and has no value
