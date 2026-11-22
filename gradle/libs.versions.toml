@@ -119,6 +119,7 @@ okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
 qrose-oned = { module = "io.github.alexzhirkevich:qrose-oned", version.ref = "qrose" }
+qrose-encoder-matrix = { module = "io.github.alexzhirkevich:qrose-encoder-matrix", version.ref = "qrose" }
 
 # Firebase
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }

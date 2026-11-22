@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
@@ -16,8 +17,10 @@ import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.code_not_drawable
+import fr.skyle.scanny.ui.core.code.image.MatrixCodePainter
 import fr.skyle.scanny.ui.core.code.mapper.backgroundColor
 import fr.skyle.scanny.ui.core.code.mapper.canHold
+import fr.skyle.scanny.ui.core.code.mapper.dotColor
 import fr.skyle.scanny.ui.core.code.mapper.qrErrorCorrection
 import fr.skyle.scanny.ui.core.code.mapper.toBarcodeType
 import fr.skyle.scanny.ui.core.code.mapper.toQrOptions
@@ -33,6 +36,8 @@ private const val BARCODE_ASPECT_RATIO = 2.5f
  * A code drawn again from its text, dark on white whatever the theme, for any scanner to read it, or
  * in the [style] the user chose for a QR code. A text its format refuses, a barcode with a wrong check
  * digit for instance, is said instead.
+ * A barcode is drawn wider than high, a QR code square, any other code in two dimensions in the
+ * proportions of its modules.
  */
 @Composable
 fun CodeImage(
@@ -43,8 +48,9 @@ fun CodeImage(
     style: CodeStyle = CodeStyle(),
 ) {
     val barcodeType = format.toBarcodeType()
-    // A barcode stays dark on white
-    val drawnStyle = if (barcodeType != null) CodeStyle() else style
+    val isQrCode = format == BarcodeFormat.QR_CODE
+    // Only a QR code is customized
+    val drawnStyle = if (isQrCode) style else CodeStyle()
 
     // Tried before drawing, with the encoder and the correction that draw it: a QR code too dense for
     // qrose would fail while drawn, with no way to catch it
@@ -65,22 +71,37 @@ fun CodeImage(
         return
     }
 
+    val painter: Painter = when {
+        barcodeType != null -> rememberBarcodePainter(
+            data = rawValue,
+            type = barcodeType,
+        )
+
+        isQrCode -> rememberQrCodePainter(
+            data = rawValue,
+            options = remember(drawnStyle) { drawnStyle.toQrOptions() },
+        )
+
+        else -> remember(rawValue, format) {
+            MatrixCodePainter(
+                rawValue = rawValue,
+                format = format,
+                color = drawnStyle.dotColor(),
+            )
+        }
+    }
+    val aspectRatio = when {
+        barcodeType != null -> BARCODE_ASPECT_RATIO
+        isQrCode -> 1f
+        else -> painter.intrinsicSize.width / painter.intrinsicSize.height
+    }
+
     Image(
         modifier = modifier
             .background(color = drawnStyle.backgroundColor())
             .padding(all = 16.dp)
-            .aspectRatio(if (barcodeType != null) BARCODE_ASPECT_RATIO else 1f),
-        painter = if (barcodeType != null) {
-            rememberBarcodePainter(
-                data = rawValue,
-                type = barcodeType,
-            )
-        } else {
-            rememberQrCodePainter(
-                data = rawValue,
-                options = remember(drawnStyle) { drawnStyle.toQrOptions() },
-            )
-        },
+            .aspectRatio(aspectRatio),
+        painter = painter,
         contentDescription = contentDescription,
     )
 }
@@ -94,6 +115,19 @@ private fun PreviewCodeImage() {
             rawValue = "https://scanny.app",
             format = BarcodeFormat.QR_CODE,
             contentDescription = "QR code",
+        )
+    }
+}
+
+@AppPreviewWithBackground
+@Composable
+private fun PreviewCodeImagePdf417() {
+    SCTheme {
+        CodeImage(
+            modifier = Modifier.fillMaxWidth(),
+            rawValue = "https://scanny.app",
+            format = BarcodeFormat.PDF417,
+            contentDescription = "PDF417",
         )
     }
 }

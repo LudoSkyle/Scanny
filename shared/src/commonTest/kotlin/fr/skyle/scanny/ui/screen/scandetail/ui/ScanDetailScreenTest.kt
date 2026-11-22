@@ -152,15 +152,26 @@ internal class ScanDetailScreenTest : ComposeTest() {
     }
 
     @Test
-    fun `a code that cannot be drawn again has no button to show it`() = runComposeUiTest {
+    fun `a code of an unknown format has no button to show it`() = runComposeUiTest {
+        // When
+        setContent {
+            scanDetailScreen(code = EMAIL.copy(format = null))
+        }
+
+        // Then
+        onNodeWithContentDescription(getString(Res.string.share)).assertExists()
+        onNodeWithContentDescription(getString(Res.string.show_code)).assertDoesNotExist()
+    }
+
+    @Test
+    fun `a data matrix has a button to show it`() = runComposeUiTest {
         // When
         setContent {
             scanDetailScreen(code = EMAIL.copy(format = BarcodeFormat.DATA_MATRIX))
         }
 
         // Then
-        onNodeWithContentDescription(getString(Res.string.share)).assertExists()
-        onNodeWithContentDescription(getString(Res.string.show_code)).assertDoesNotExist()
+        onNodeWithContentDescription(getString(Res.string.show_code)).assertExists()
     }
 
     @Composable

@@ -221,7 +221,6 @@
     <string name="format_qr_code_structure">A square of black and white modules, from 21 × 21 to 177 × 177. Three squares in its corners let a scanner find it and turn it the right way. The content is written in binary, partly repeated by its error correction, so the code still reads when damaged.</string>
     <string name="format_qr_code_use">The most common code: links, payments, menus, tickets, Wi-Fi networks.</string>
     <string name="format_read_and_created">Scanny reads it and creates it.</string>
-    <string name="format_read_only">Scanny reads it.</string>
     <string name="format_structure">How it is made</string>
     <string name="format_upc_a_example">036000291452: 0 for the system, 36000 for the company, 29145 for the product, 2 for the check.</string>
     <string name="format_upc_a_structure">12 digits: a number system, 0 for most products, 5 digits for the company, 5 for the product, then a check digit. It is an EAN-13 that starts with 0.</string>

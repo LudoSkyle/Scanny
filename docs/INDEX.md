@@ -31,6 +31,7 @@ Les documents sont répartis par périmètre :
 | [adr/0001-le-domaine-depend-de-la-donnee.md](./adr/0001-le-domaine-depend-de-la-donnee.md) | `shared` → `domain` → `data`, exceptions typées | Toute intervention sur `data` ou `domain` |
 | [adr/0002-ui-commune-en-compose-multiplatform.md](./adr/0002-ui-commune-en-compose-multiplatform.md) | UI 100 % Compose Multiplatform, natif derrière une frontière | Toute question « commun ou natif ? » |
 | [adr/0003-les-ecrans-se-testent-en-compose.md](./adr/0003-les-ecrans-se-testent-en-compose.md) | Écrans testés en Compose, XCUITest réservé aux parcours système | Tout test d'écran |
+| [adr/0004-encodeurs-data-matrix-et-aztec-corriges.md](./adr/0004-encodeurs-data-matrix-et-aztec-corriges.md) | Encodeurs Data Matrix et Aztec copiés de qrose et corrigés, latin-1 seulement | Tout travail sur le dessin d'un code en deux dimensions |
 
 ## Résumé rapide des modules
 

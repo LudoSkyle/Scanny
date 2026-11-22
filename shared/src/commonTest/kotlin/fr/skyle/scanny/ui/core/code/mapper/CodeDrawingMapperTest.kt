@@ -11,14 +11,28 @@ import kotlin.test.assertTrue
 class CodeDrawingMapperTest {
 
     @Test
-    fun `a qr code and every barcode can be drawn again`() {
+    fun `every format is drawn as a qr code or a barcode or from a matrix`() {
         // When
-        val drawableFormats = BarcodeFormat.entries.filter { format -> format.isDrawable }
+        val undrawnFormats = BarcodeFormat.entries.filter { format ->
+            format != BarcodeFormat.QR_CODE && format.toBarcodeType() == null && format.toMatrixEncoder() == null
+        }
 
         // Then
         assertEquals(
-            expected = BarcodeFormat.entries - setOf(BarcodeFormat.DATA_MATRIX, BarcodeFormat.AZTEC, BarcodeFormat.PDF417),
-            actual = drawableFormats,
+            expected = emptyList(),
+            actual = undrawnFormats,
+        )
+    }
+
+    @Test
+    fun `only the codes in two dimensions other than the qr code are drawn from a matrix`() {
+        // When
+        val matrixFormats = BarcodeFormat.entries.filter { format -> format.toMatrixEncoder() != null }
+
+        // Then
+        assertEquals(
+            expected = listOf(BarcodeFormat.DATA_MATRIX, BarcodeFormat.AZTEC, BarcodeFormat.PDF417),
+            actual = matrixFormats,
         )
     }
 
@@ -78,13 +92,49 @@ class CodeDrawingMapperTest {
     }
 
     @Test
-    fun `an empty text or a format qrose cannot draw holds nothing`() {
+    fun `a code in two dimensions holds a text and refuses one too long for it`() {
+        // Given
+        // Longer than the largest Data Matrix, Aztec code and PDF417 hold
+        val longText = "a".repeat(4_000)
+
         // Then
         assertEquals(
-            expected = listOf(false, false),
+            expected = listOf(true, true, true, false, false, false),
+            actual = listOf(
+                BarcodeFormat.DATA_MATRIX.canHold(rawValue = "Hello"),
+                BarcodeFormat.AZTEC.canHold(rawValue = "Hello"),
+                BarcodeFormat.PDF417.canHold(rawValue = "Hello"),
+                BarcodeFormat.DATA_MATRIX.canHold(rawValue = longText),
+                BarcodeFormat.AZTEC.canHold(rawValue = longText),
+                BarcodeFormat.PDF417.canHold(rawValue = longText),
+            ),
+        )
+    }
+
+    @Test
+    fun `a data matrix and an aztec code refuse a character beyond latin-1 that a pdf417 holds`() {
+        // Then
+        assertEquals(
+            expected = listOf(true, true, false, false, true),
+            actual = listOf(
+                BarcodeFormat.DATA_MATRIX.canHold(rawValue = "Café à l'été"),
+                BarcodeFormat.AZTEC.canHold(rawValue = "Café à l'été"),
+                BarcodeFormat.DATA_MATRIX.canHold(rawValue = "Prix : 5 €"),
+                BarcodeFormat.AZTEC.canHold(rawValue = "Prix : 5 €"),
+                BarcodeFormat.PDF417.canHold(rawValue = "Prix : 5 €"),
+            ),
+        )
+    }
+
+    @Test
+    fun `an empty text holds nothing`() {
+        // Then
+        assertEquals(
+            expected = listOf(false, false, false),
             actual = listOf(
                 BarcodeFormat.QR_CODE.canHold(rawValue = ""),
-                BarcodeFormat.DATA_MATRIX.canHold(rawValue = "Hello"),
+                BarcodeFormat.DATA_MATRIX.canHold(rawValue = ""),
+                BarcodeFormat.EAN_13.canHold(rawValue = ""),
             ),
         )
     }

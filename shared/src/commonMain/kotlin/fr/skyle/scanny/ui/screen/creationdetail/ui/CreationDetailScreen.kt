@@ -39,7 +39,6 @@ import fr.skyle.scanny.ui.core.code.component.CodeFieldRow
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
 import fr.skyle.scanny.ui.core.code.component.RawContentCard
 import fr.skyle.scanny.ui.core.code.component.codeFieldValueText
-import fr.skyle.scanny.ui.core.code.mapper.isDrawable
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeField
 import fr.skyle.scanny.ui.core.code.model.CodeType
@@ -74,7 +73,7 @@ fun CreationDetailScreen(
                 actions = {
                     if (creation != null) {
                         // As in the detail of a scan: the code in a sheet, with the actions on its image
-                        if (creation.format?.isDrawable == true) {
+                        if (creation.format != null) {
                             SCIconButton(
                                 modifier = Modifier.wrapContentSize(),
                                 icon = painterResource(Res.drawable.ic_qr_code),

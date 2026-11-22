@@ -14,7 +14,6 @@ import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.format_ean_13_example
 import fr.skyle.scanny.resources.format_ean_13_use
 import fr.skyle.scanny.resources.format_read_and_created
-import fr.skyle.scanny.resources.format_read_only
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.test.ComposeTest
 import org.jetbrains.compose.resources.getString
@@ -60,7 +59,7 @@ internal class FormatsScreenTest : ComposeTest() {
     }
 
     @Test
-    fun `a format scanny does not create says it reads it only`() = runComposeUiTest {
+    fun `a code in two dimensions other than the qr code says scanny creates it too`() = runComposeUiTest {
         // Given
         setContent {
             SCTheme {
@@ -72,6 +71,6 @@ internal class FormatsScreenTest : ComposeTest() {
         onNodeWithText(getString(BarcodeFormat.AZTEC.toText())).performScrollTo().performClick()
 
         // Then
-        onNodeWithText(getString(Res.string.format_read_only)).assertExists()
+        onNodeWithText(getString(Res.string.format_read_and_created)).assertExists()
     }
 }
