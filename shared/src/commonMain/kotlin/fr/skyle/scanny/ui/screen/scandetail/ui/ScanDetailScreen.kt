@@ -60,6 +60,7 @@ fun ScanDetailScreen(
     snackbarState: SCSnackbarState,
     onBackClicked: () -> Unit,
     onShowCodeClicked: () -> Unit,
+    onInfoClicked: () -> Unit,
     onEditClicked: () -> Unit,
     onShareClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
@@ -138,6 +139,7 @@ fun ScanDetailScreen(
                         .padding(horizontal = 4.dp),
                     type = code.type,
                     format = code.format,
+                    onInfoClicked = onInfoClicked,
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -221,6 +223,7 @@ private fun PreviewScanDetailScreen() {
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
             onShowCodeClicked = {},
+            onInfoClicked = {},
             onEditClicked = {},
             onShareClicked = {},
             onDeleteClicked = {},
@@ -254,6 +257,7 @@ private fun PreviewScanDetailScreen_Text() {
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
             onShowCodeClicked = {},
+            onInfoClicked = {},
             onEditClicked = {},
             onShareClicked = {},
             onDeleteClicked = {},
@@ -273,6 +277,7 @@ private fun PreviewScanDetailScreen_Loading() {
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
             onShowCodeClicked = {},
+            onInfoClicked = {},
             onEditClicked = {},
             onShareClicked = {},
             onDeleteClicked = {},

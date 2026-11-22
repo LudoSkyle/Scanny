@@ -14,9 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.iconbadge.SCIconBadge
 import fr.skyle.scanny.designsystem.core.iconbadge.SCIconBadgeDefaults
+import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButton
+import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButtonDefaults
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.about_code
+import fr.skyle.scanny.resources.ic_info
 import fr.skyle.scanny.ui.core.code.mapper.toIcon
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeType
@@ -30,6 +35,8 @@ fun CodeHeader(
     type: CodeType,
     format: BarcodeFormat?,
     modifier: Modifier = Modifier,
+    // What the type and the format are, in a sheet: none when null
+    onInfoClicked: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier,
@@ -63,6 +70,19 @@ fun CodeHeader(
                     color = SCTheme.colors.text,
                 )
             }
+        }
+
+        if (onInfoClicked != null) {
+            Spacer(modifier = Modifier.width(8.dp))
+
+            SCIconButton(
+                modifier = Modifier.wrapContentSize(),
+                icon = painterResource(Res.drawable.ic_info),
+                contentDescription = stringResource(Res.string.about_code),
+                onClick = onInfoClicked,
+                style = SCIconButtonDefaults.Style.DARK,
+                size = SCIconButtonDefaults.Size.MEDIUM,
+            )
         }
     }
 }

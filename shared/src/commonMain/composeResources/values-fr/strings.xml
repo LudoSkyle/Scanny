@@ -1,4 +1,5 @@
 <resources>
+    <string name="about_code">À propos de ce code</string>
     <string name="add_contact">Ajouter le contact</string>
     <string name="add_logo">Ajouter un logo</string>
     <string name="address">Adresse</string>
@@ -102,6 +103,19 @@
     <string name="fill_content_to_see_code">Remplissez le contenu pour voir le code.</string>
     <string name="finish">Terminer</string>
     <string name="format">Format</string>
+    <string name="format_aztec_info">Un code carré en deux dimensions, bâti autour d'une cible en son centre. Utilisé pour les billets de train et d'avion.</string>
+    <string name="format_codabar_info">Un ancien code-barres de chiffres et de quelques signes. Encore utilisé par les bibliothèques, les banques du sang et les services de colis.</string>
+    <string name="format_code_128_info">Un code-barres dense pour tout caractère. Sur les étiquettes d'expédition et en logistique.</string>
+    <string name="format_code_39_info">Un code-barres de majuscules, de chiffres et de quelques signes. Utilisé dans l'industrie, la logistique et sur les badges.</string>
+    <string name="format_code_93_info">Un Code 39 plus dense, avec des caractères de contrôle. Utilisé en logistique et par les services postaux.</string>
+    <string name="format_data_matrix_info">Un petit code carré en deux dimensions, bordé d'un L. Imprimé en tout petit sur les composants électroniques, les médicaments et le courrier.</string>
+    <string name="format_ean_13_info">Un code-barres de 13 chiffres, le dernier de contrôle. Sur les produits vendus presque partout dans le monde.</string>
+    <string name="format_ean_8_info">Un code-barres court de 8 chiffres, pour les petits produits sans place pour un EAN-13.</string>
+    <string name="format_itf_info">Un code-barres de chiffres par paires, 2 parmi 5 entrelacé. Sur les cartons et les palettes, en ITF-14.</string>
+    <string name="format_pdf417_info">Un code de rangées empilées, qui tient beaucoup de données. Sur les cartes d'identité, les permis de conduire et les cartes d'embarquement.</string>
+    <string name="format_qr_code_info">Un code carré en deux dimensions, reconnaissable à ses trois coins. Il tient jusqu'à quelques milliers de caractères, et se lit encore abîmé en partie. Le plus répandu : liens, paiements, menus, billets.</string>
+    <string name="format_upc_a_info">Un code-barres de 12 chiffres, sur les produits vendus en Amérique du Nord.</string>
+    <string name="format_upc_e_info">Un UPC-A raccourci à 8 chiffres, pour les petits produits vendus en Amérique du Nord.</string>
     <string name="give_feedback">Donner votre avis</string>
     <string name="gradient">Dégradé</string>
     <string name="gradient_color">Seconde couleur du dégradé</string>
@@ -208,6 +222,12 @@
     <string name="today">Aujourd'hui</string>
     <string name="turn_off_torch">Éteindre la lampe</string>
     <string name="turn_on_torch">Allumer la lampe</string>
+    <string name="type_contact_info">Une carte de visite, en vCard ou en MeCard : nom, téléphones, e-mails, adresse… Scanny l'ajoute à vos contacts.</string>
+    <string name="type_email_info">Un e-mail à écrire : son destinataire, parfois son objet et son message. Scanny ouvre votre messagerie avec eux.</string>
+    <string name="type_link_info">L'adresse d'une page web. Scanny l'ouvre dans votre navigateur.</string>
+    <string name="type_sms_info">Un SMS à envoyer : son numéro, parfois son message. Scanny ouvre vos messages avec eux.</string>
+    <string name="type_text_info">Un texte brut, lu tel quel. Scanny l'affiche et le copie.</string>
+    <string name="type_wifi_info">Le nom, la sécurité et le mot de passe d'un réseau Wi-Fi, pour le rejoindre sans les saisir.</string>
     <string name="use_front_camera">Utiliser la caméra avant</string>
     <string name="value_not_for_format">Cette valeur ne convient pas à ce format.</string>
     <string name="version_and_build">Version %1$s (build %2$s)</string>
