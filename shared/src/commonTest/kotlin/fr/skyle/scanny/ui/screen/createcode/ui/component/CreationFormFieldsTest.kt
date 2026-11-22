@@ -22,6 +22,8 @@ import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.account
+import fr.skyle.scanny.resources.blind_carbon_copy
+import fr.skyle.scanny.resources.carbon_copy
 import fr.skyle.scanny.resources.counter
 import fr.skyle.scanny.resources.issuer
 import fr.skyle.scanny.resources.latitude
@@ -30,6 +32,7 @@ import fr.skyle.scanny.resources.longitude
 import fr.skyle.scanny.resources.mecard
 import fr.skyle.scanny.resources.period_in_seconds
 import fr.skyle.scanny.resources.place
+import fr.skyle.scanny.resources.recipients
 import fr.skyle.scanny.resources.required_field
 import fr.skyle.scanny.resources.secret_key
 import fr.skyle.scanny.resources.title
@@ -174,6 +177,37 @@ internal class CreationFormFieldsTest : ComposeTest() {
                 algorithm = OtpAlgorithm.SHA256,
                 digits = 8,
                 counter = 5,
+            ),
+            actual = form.toBarcodeContent(),
+        )
+    }
+
+    @Test
+    fun `the fields of an e-mail take several addresses for its recipients and its copies`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(CreationForm(kind = CreationKind.EMAIL))
+        setContent {
+            SCTheme {
+                Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+                    CreationFormFields(
+                        form = form,
+                        onFormChanged = { changedForm -> form = changedForm },
+                    )
+                }
+            }
+        }
+
+        // When
+        onNode(hasSetTextAction() and hasText(getString(Res.string.recipients))).performTextInput("a@doe.fr, b@doe.fr")
+        onNode(hasSetTextAction() and hasText(getString(Res.string.carbon_copy))).performTextInput("c@doe.fr")
+        onNode(hasSetTextAction() and hasText(getString(Res.string.blind_carbon_copy))).performTextInput("d@doe.fr")
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Email(
+                to = listOf("a@doe.fr", "b@doe.fr"),
+                cc = listOf("c@doe.fr"),
+                bcc = listOf("d@doe.fr"),
             ),
             actual = form.toBarcodeContent(),
         )

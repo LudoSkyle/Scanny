@@ -20,7 +20,7 @@ internal fun FeedbackSubject.toText(): StringResource =
 /** The e-mail of a feedback, to Scanny, its tag as its subject: the mail app of the device sends it. */
 internal fun FeedbackSubject.toFeedbackMailtoLink(message: String): String =
     BarcodeContent.Email(
-        address = ScannyLinks.CONTACT_EMAIL,
+        to = listOf(ScannyLinks.CONTACT_EMAIL),
         subject = tag,
         body = message,
     ).toMailtoLink()

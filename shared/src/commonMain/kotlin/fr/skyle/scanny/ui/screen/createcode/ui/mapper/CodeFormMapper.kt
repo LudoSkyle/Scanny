@@ -55,7 +55,9 @@ private fun BarcodeContent.toCreationForm(
 
         is BarcodeContent.Email -> CreationForm(
             kind = CreationKind.EMAIL,
-            emailAddress = content.address.orEmpty(),
+            emailTo = content.to.joinToString(separator = ", "),
+            emailCc = content.cc.joinToString(separator = ", "),
+            emailBcc = content.bcc.joinToString(separator = ", "),
             emailSubject = content.subject.orEmpty(),
             emailBody = content.body.orEmpty(),
         )
@@ -101,6 +103,8 @@ private fun BarcodeContent.toCreationForm(
             kind = CreationKind.LOCATION,
             locationLatitude = content.latitude.toCoordinateText(),
             locationLongitude = content.longitude.toCoordinateText(),
+            locationAltitude = content.altitude?.toCoordinateText().orEmpty(),
+            locationUncertainty = content.uncertainty?.toCoordinateText().orEmpty(),
             locationLabel = content.label.orEmpty(),
         )
 

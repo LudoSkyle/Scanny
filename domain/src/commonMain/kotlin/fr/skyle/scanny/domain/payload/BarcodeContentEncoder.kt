@@ -85,6 +85,8 @@ internal object BarcodeContentEncoder {
 
     private fun encodeEmail(email: BarcodeContent.Email): String {
         val parameters = listOfNotNull(
+            email.cc.takeIf { cc -> cc.isNotEmpty() }?.let { cc -> "cc=${encodeAddresses(addresses = cc)}" },
+            email.bcc.takeIf { bcc -> bcc.isNotEmpty() }?.let { bcc -> "bcc=${encodeAddresses(addresses = bcc)}" },
             email.subject?.let { subject ->
                 "subject=${percentEncode(value = subject, allowed = URI_UNRESERVED)}"
             },
@@ -95,18 +97,22 @@ internal object BarcodeContentEncoder {
 
         return buildString {
             append(PayloadSyntax.MAILTO)
-            append(
-                percentEncode(
-                    value = email.address.orEmpty(),
-                    allowed = MAILTO_ADDRESS_ALLOWED,
-                ),
-            )
+            append(encodeAddresses(addresses = email.to))
             if (parameters.isNotEmpty()) {
                 append('?')
                 append(parameters.joinToString(separator = "&"))
             }
         }
     }
+
+    // Each address percent-encoded, the commas between them as is
+    private fun encodeAddresses(addresses: List<String>): String =
+        addresses.joinToString(separator = ",") { address ->
+            percentEncode(
+                value = address,
+                allowed = MAILTO_ADDRESS_ALLOWED,
+            )
+        }
 
     private fun encodeSms(sms: BarcodeContent.Sms): String =
         buildString {
@@ -207,6 +213,14 @@ internal object BarcodeContentEncoder {
         buildString {
             append(PayloadSyntax.GEO)
             append(location.coordinates())
+            location.altitude?.let { altitude ->
+                append(',')
+                append(altitude.toCoordinateText())
+            }
+            location.uncertainty?.let { uncertainty ->
+                append(";u=")
+                append(uncertainty.toCoordinateText())
+            }
             if (location.label != null) {
                 append("?q=")
                 append(location.place())

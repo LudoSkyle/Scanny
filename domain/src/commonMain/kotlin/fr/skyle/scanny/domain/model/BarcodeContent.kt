@@ -11,8 +11,11 @@ sealed interface BarcodeContent {
         val url: String,
     ) : BarcodeContent
 
+    /** An e-mail of RFC 6068: its recipients, in copy and in blind copy, its subject and its message. */
     data class Email(
-        val address: String? = null,
+        val to: List<String> = emptyList(),
+        val cc: List<String> = emptyList(),
+        val bcc: List<String> = emptyList(),
         val subject: String? = null,
         val body: String? = null,
     ) : BarcodeContent
@@ -26,10 +29,15 @@ sealed interface BarcodeContent {
         val phoneNumber: String,
     ) : BarcodeContent
 
-    /** A place on the map, in decimal degrees, with the name the code gives it if any. */
+    /**
+     * A place on the map of RFC 5870, in decimal degrees: its altitude and its uncertainty in meters, and
+     * the name the code gives it, if any.
+     */
     data class Location(
         val latitude: Double,
         val longitude: Double,
+        val altitude: Double? = null,
+        val uncertainty: Double? = null,
         val label: String? = null,
     ) : BarcodeContent
 

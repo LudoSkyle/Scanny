@@ -73,7 +73,7 @@ internal object BarcodeContentParser {
         val fields = parseFields(text = fieldsText)
 
         return BarcodeContent.Email(
-            address = fields.valueOf(key = "TO").nullIfBlank(),
+            to = listOfNotNull(fields.valueOf(key = "TO").nullIfBlank()),
             subject = fields.valueOf(key = "SUB").nullIfBlank(),
             body = fields.valueOf(key = "BODY").nullIfBlank(),
         ).takeUnless { it == BarcodeContent.Email() }
@@ -87,12 +87,24 @@ internal object BarcodeContentParser {
             ),
         )
 
+        // The addresses are separated by commas, in the path as in the "to", "cc" and "bcc" fields
+        val addresses = uri.substringBefore('?')
+            .split(',')
+            .map { address -> percentDecode(value = address) }
+
         return BarcodeContent.Email(
-            address = percentDecode(value = uri.substringBefore('?')).nullIfBlank(),
+            to = addresses.mapNotNull { address -> address.trim().nullIfBlank() } + splitAddresses(text = parameters["to"]),
+            cc = splitAddresses(text = parameters["cc"]),
+            bcc = splitAddresses(text = parameters["bcc"]),
             subject = parameters["subject"].nullIfBlank(),
             body = parameters["body"].nullIfBlank(),
         ).takeUnless { it == BarcodeContent.Email() }
     }
+
+    private fun splitAddresses(text: String?): List<String> =
+        text.orEmpty()
+            .split(',')
+            .mapNotNull { address -> address.trim().nullIfBlank() }
 
     private fun parseSmsTo(text: String): BarcodeContent.Sms? =
         BarcodeContent.Sms(
@@ -226,15 +238,25 @@ internal object BarcodeContentParser {
             BarcodeContent.Phone(phoneNumber = phoneNumber)
         }
 
-    // "lat,lon[,alt][;parameters][?q=…]" of RFC 5870. Android puts the place in the query, with its name:
-    // "q=lat,lon(name)", or a search around the position: "q=name". A search around 0,0 has no position
+    // "lat,lon[,alt][;crs=…][;u=…][?q=…]" of RFC 5870. Android puts the place in the query, with its name:
+    // "q=lat,lon(name)", or a search around the position: "q=name". A search around 0,0 has no position.
+    // The coordinates of another reference system than WGS84 would not be placed on the maps
     private fun parseGeo(uri: String): BarcodeContent.Location? {
-        val coordinates = uri.substringBefore('?')
-            .substringBefore(';')
-            .split(',')
+        val path = uri.substringBefore('?').split(';')
+        val coordinates = path.first().split(',')
         val latitude = coordinates.getOrNull(0)?.trim()?.toDoubleOrNull() ?: return null
         val longitude = coordinates.getOrNull(1)?.trim()?.toDoubleOrNull() ?: return null
         val isAtZero = latitude == 0.0 && longitude == 0.0
+        val pathParameters = path.drop(1).associate { parameter ->
+            val value = parameter.substringAfter(
+                delimiter = '=',
+                missingDelimiterValue = "",
+            )
+            parameter.substringBefore('=').trim().lowercase() to value.trim()
+        }
+        if (pathParameters["crs"]?.equals(other = "wgs84", ignoreCase = true) == false) {
+            return null
+        }
 
         val search = parseQuery(
             query = uri.substringAfter(
@@ -252,6 +274,8 @@ internal object BarcodeContentParser {
         val location = BarcodeContent.Location(
             latitude = if (isAtZero && placeLatitude != null) placeLatitude else latitude,
             longitude = if (isAtZero && placeLongitude != null) placeLongitude else longitude,
+            altitude = coordinates.getOrNull(2)?.trim()?.toDoubleOrNull(),
+            uncertainty = pathParameters["u"]?.toDoubleOrNull()?.takeIf { uncertainty -> uncertainty >= 0 },
             label = if (place != null) place.groupValues[3].nullIfBlank() else search,
         )
 

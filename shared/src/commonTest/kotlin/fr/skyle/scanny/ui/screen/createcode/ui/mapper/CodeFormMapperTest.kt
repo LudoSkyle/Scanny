@@ -25,7 +25,7 @@ class CodeFormMapperTest {
             BarcodeContent.Text(text = "Hello"),
             BarcodeContent.Url(url = "https://scanny.app"),
             BarcodeContent.Email(
-                address = "hello@scanny.app",
+                to = listOf("hello@scanny.app"),
                 subject = "Hello",
                 body = "From Scanny",
             ),
@@ -61,7 +61,15 @@ class CodeFormMapperTest {
             BarcodeContent.Location(
                 latitude = 0.00001,
                 longitude = -122.4194155,
+                altitude = -12.5,
+                uncertainty = 35.0,
                 label = "Scanny",
+            ),
+            BarcodeContent.Email(
+                to = listOf("a@scanny.app", "b@scanny.app"),
+                cc = listOf("c@scanny.app"),
+                bcc = listOf("d@scanny.app"),
+                subject = "Hello",
             ),
             BarcodeContent.Bookmark(
                 url = "https://scanny.app",

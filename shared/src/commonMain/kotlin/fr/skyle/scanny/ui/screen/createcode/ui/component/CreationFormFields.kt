@@ -24,8 +24,11 @@ import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.account
 import fr.skyle.scanny.resources.address
 import fr.skyle.scanny.resources.algorithm
+import fr.skyle.scanny.resources.altitude_in_meters
 import fr.skyle.scanny.resources.amount_in_bitcoins
 import fr.skyle.scanny.resources.barcode_value
+import fr.skyle.scanny.resources.blind_carbon_copy
+import fr.skyle.scanny.resources.carbon_copy
 import fr.skyle.scanny.resources.counter
 import fr.skyle.scanny.resources.digits
 import fr.skyle.scanny.resources.email
@@ -45,11 +48,13 @@ import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.phone_number
 import fr.skyle.scanny.resources.place
 import fr.skyle.scanny.resources.recipient
+import fr.skyle.scanny.resources.recipients
 import fr.skyle.scanny.resources.secret_key
 import fr.skyle.scanny.resources.security
 import fr.skyle.scanny.resources.subject
 import fr.skyle.scanny.resources.text
 import fr.skyle.scanny.resources.title
+import fr.skyle.scanny.resources.uncertainty_in_meters
 import fr.skyle.scanny.resources.website
 import fr.skyle.scanny.ui.core.code.mapper.toBarcodeType
 import fr.skyle.scanny.ui.core.code.mapper.toText
@@ -96,12 +101,26 @@ fun CreationFormFields(
             )
 
             CreationKind.EMAIL -> {
+                // Several addresses each, separated by commas
                 CreationTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = form.emailAddress,
-                    onValueChange = { address -> onFormChanged(form.copy(emailAddress = address)) },
-                    label = stringResource(Res.string.recipient),
-                    isRequired = true,
+                    value = form.emailTo,
+                    onValueChange = { to -> onFormChanged(form.copy(emailTo = to)) },
+                    label = stringResource(Res.string.recipients),
+                    keyboardType = KeyboardType.Email,
+                )
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.emailCc,
+                    onValueChange = { cc -> onFormChanged(form.copy(emailCc = cc)) },
+                    label = stringResource(Res.string.carbon_copy),
+                    keyboardType = KeyboardType.Email,
+                )
+                CreationTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.emailBcc,
+                    onValueChange = { bcc -> onFormChanged(form.copy(emailBcc = bcc)) },
+                    label = stringResource(Res.string.blind_carbon_copy),
                     keyboardType = KeyboardType.Email,
                 )
                 CreationTextField(
@@ -278,6 +297,25 @@ fun CreationFormFields(
                         label = stringResource(Res.string.longitude),
                         isRequired = true,
                         keyboardType = coordinateKeyboardType,
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
+                ) {
+                    CreationTextField(
+                        modifier = Modifier.weight(1f),
+                        value = form.locationAltitude,
+                        onValueChange = { altitude -> onFormChanged(form.copy(locationAltitude = altitude)) },
+                        label = stringResource(Res.string.altitude_in_meters),
+                        keyboardType = coordinateKeyboardType,
+                    )
+                    CreationTextField(
+                        modifier = Modifier.weight(1f),
+                        value = form.locationUncertainty,
+                        onValueChange = { uncertainty -> onFormChanged(form.copy(locationUncertainty = uncertainty)) },
+                        label = stringResource(Res.string.uncertainty_in_meters),
+                        keyboardType = KeyboardType.Decimal,
                     )
                 }
                 CreationTextField(

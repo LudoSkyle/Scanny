@@ -10,6 +10,8 @@
     <string name="all_creations_deleted">Every creation will be deleted.</string>
     <string name="all_scans_deleted">Every scan will be deleted.</string>
     <string name="allow_camera">Allow the camera</string>
+    <string name="altitude">Altitude</string>
+    <string name="altitude_in_meters">Altitude in meters</string>
     <string name="amount">Amount</string>
     <string name="amount_in_bitcoins">Amount in BTC</string>
     <string name="app_description">Scanny scans QR codes and barcodes, with the latest technologies and without advertising, while staying light and reliable.</string>
@@ -22,12 +24,14 @@
     <string name="barcodes">Barcodes</string>
     <string name="beep_after_scan">Beep after a scan</string>
     <string name="bitcoin" translatable="false">Bitcoin</string>
+    <string name="blind_carbon_copy">Bcc</string>
     <string name="bookmark">Bookmark</string>
     <string name="call">Call</string>
     <string name="camera_blocked">The camera is blocked for Scanny. Allow it in the settings of your device to scan codes.</string>
     <string name="camera_needed">Scanny needs the camera to scan codes.</string>
     <string name="camera_unavailable">No camera is available on this device. You can still scan a code in an image.</string>
     <string name="cancel">Cancel</string>
+    <string name="carbon_copy">Cc</string>
     <string name="change_logo">Change the logo</string>
     <string name="choose">Choose</string>
     <string name="choose_color">Choose a color</string>
@@ -258,6 +262,7 @@
     <string name="raw_content">Raw content</string>
     <string name="raw_content_after_scan">Show the raw content after a scan</string>
     <string name="recipient">Recipient</string>
+    <string name="recipients">Recipients</string>
     <string name="remove_logo">Remove the logo</string>
     <string name="required_field">%1$s *</string>
     <string name="reset_customization">Reset the customization</string>
@@ -303,6 +308,8 @@
     <string name="turn_off_torch">Turn off the torch</string>
     <string name="turn_on_torch">Turn on the torch</string>
     <string name="two_dimensional_codes">Codes in two dimensions</string>
+    <string name="uncertainty">Uncertainty</string>
+    <string name="uncertainty_in_meters">Uncertainty in meters</string>
     <string name="undo">Undo</string>
     <string name="upc_a" translatable="false">UPC-A</string>
     <string name="upc_e" translatable="false">UPC-E</string>

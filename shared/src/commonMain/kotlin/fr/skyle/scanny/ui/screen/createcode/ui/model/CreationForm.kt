@@ -15,7 +15,10 @@ data class CreationForm(
     val kind: CreationKind = CreationKind.TEXT,
     val text: String = "",
     val url: String = "",
-    val emailAddress: String = "",
+    // As typed: addresses separated by commas
+    val emailTo: String = "",
+    val emailCc: String = "",
+    val emailBcc: String = "",
     val emailSubject: String = "",
     val emailBody: String = "",
     // The number and the message of an SMS or of an MMS, kept from one to the other
@@ -37,6 +40,8 @@ data class CreationForm(
     // As typed: a decimal comma or point
     val locationLatitude: String = "",
     val locationLongitude: String = "",
+    val locationAltitude: String = "",
+    val locationUncertainty: String = "",
     val locationLabel: String = "",
     val bookmarkUrl: String = "",
     val bookmarkTitle: String = "",

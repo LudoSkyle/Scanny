@@ -7,11 +7,14 @@ import fr.skyle.scanny.resources.add_contact
 import fr.skyle.scanny.resources.add_to_authenticator
 import fr.skyle.scanny.resources.address
 import fr.skyle.scanny.resources.algorithm
+import fr.skyle.scanny.resources.altitude
 import fr.skyle.scanny.resources.amount
 import fr.skyle.scanny.resources.aztec
 import fr.skyle.scanny.resources.bitcoin
+import fr.skyle.scanny.resources.blind_carbon_copy
 import fr.skyle.scanny.resources.bookmark
 import fr.skyle.scanny.resources.call
+import fr.skyle.scanny.resources.carbon_copy
 import fr.skyle.scanny.resources.codabar
 import fr.skyle.scanny.resources.code_128
 import fr.skyle.scanny.resources.code_39
@@ -105,6 +108,7 @@ import fr.skyle.scanny.resources.sms
 import fr.skyle.scanny.resources.subject
 import fr.skyle.scanny.resources.text
 import fr.skyle.scanny.resources.title
+import fr.skyle.scanny.resources.uncertainty
 import fr.skyle.scanny.resources.upc_a
 import fr.skyle.scanny.resources.upc_e
 import fr.skyle.scanny.resources.website
@@ -173,6 +177,8 @@ internal fun CodeFieldLabel.toText(): StringResource =
         CodeFieldLabel.SECURITY -> Res.string.security
         CodeFieldLabel.PASSWORD -> Res.string.password
         CodeFieldLabel.RECIPIENT -> Res.string.recipient
+        CodeFieldLabel.CARBON_COPY -> Res.string.carbon_copy
+        CodeFieldLabel.BLIND_CARBON_COPY -> Res.string.blind_carbon_copy
         CodeFieldLabel.SUBJECT -> Res.string.subject
         CodeFieldLabel.MESSAGE -> Res.string.message
         CodeFieldLabel.PHONE_NUMBER -> Res.string.phone_number
@@ -185,6 +191,8 @@ internal fun CodeFieldLabel.toText(): StringResource =
         CodeFieldLabel.WEBSITE -> Res.string.website
         CodeFieldLabel.PLACE -> Res.string.place
         CodeFieldLabel.COORDINATES -> Res.string.coordinates
+        CodeFieldLabel.ALTITUDE -> Res.string.altitude
+        CodeFieldLabel.UNCERTAINTY -> Res.string.uncertainty
         CodeFieldLabel.TITLE -> Res.string.title
         CodeFieldLabel.LINK -> Res.string.link
         CodeFieldLabel.ISSUER -> Res.string.issuer

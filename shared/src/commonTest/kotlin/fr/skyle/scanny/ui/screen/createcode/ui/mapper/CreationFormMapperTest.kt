@@ -44,23 +44,45 @@ class CreationFormMapperTest {
     }
 
     @Test
-    fun `an e-mail needs its recipient and leaves out a blank subject and body`() {
+    fun `an e-mail takes several addresses in each of its recipients copies and blind copies`() {
         // When
-        val withoutRecipient = CreationForm(
+        val content = CreationForm(
             kind = CreationKind.EMAIL,
-            emailSubject = "Hello",
-        ).toBarcodeContent()
-        val withRecipient = CreationForm(
-            kind = CreationKind.EMAIL,
-            emailAddress = " hello@scanny.app ",
+            emailTo = " hello@scanny.app, team@scanny.app ",
+            emailCc = "a@scanny.app; b@scanny.app",
+            emailBcc = "c@scanny.app",
             emailSubject = " ",
         ).toBarcodeContent()
 
         // Then
-        assertNull(withoutRecipient)
         assertEquals(
-            expected = BarcodeContent.Email(address = "hello@scanny.app"),
-            actual = withRecipient,
+            expected = BarcodeContent.Email(
+                to = listOf("hello@scanny.app", "team@scanny.app"),
+                cc = listOf("a@scanny.app", "b@scanny.app"),
+                bcc = listOf("c@scanny.app"),
+            ),
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `an e-mail needs one field at least but no field in particular`() {
+        // When
+        val contents = listOf(
+            CreationForm(kind = CreationKind.EMAIL),
+            CreationForm(
+                kind = CreationKind.EMAIL,
+                emailSubject = "Hello",
+            ),
+        ).map { form -> form.toBarcodeContent() }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                null,
+                BarcodeContent.Email(subject = "Hello"),
+            ),
+            actual = contents,
         )
     }
 
@@ -264,6 +286,39 @@ class CreationFormMapperTest {
                     latitude = -33.8568,
                     longitude = 151.2153,
                 ),
+            ),
+            actual = contents,
+        )
+    }
+
+    @Test
+    fun `a location takes an altitude and an uncertainty in meters`() {
+        // When
+        val contents = listOf(
+            "-12,5" to "0.5",
+            "abc" to "",
+            "" to "-1",
+        ).map { (altitude, uncertainty) ->
+            CreationForm(
+                kind = CreationKind.LOCATION,
+                locationLatitude = "27.988",
+                locationLongitude = "86.925",
+                locationAltitude = altitude,
+                locationUncertainty = uncertainty,
+            ).toBarcodeContent()
+        }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                BarcodeContent.Location(
+                    latitude = 27.988,
+                    longitude = 86.925,
+                    altitude = -12.5,
+                    uncertainty = 0.5,
+                ),
+                null,
+                null,
             ),
             actual = contents,
         )

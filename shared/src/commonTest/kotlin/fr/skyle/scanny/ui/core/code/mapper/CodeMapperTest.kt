@@ -99,7 +99,7 @@ class CodeMapperTest {
     fun `an email only shows the parts it has`() {
         // Given
         val content = BarcodeContent.Email(
-            address = "john@doe.fr",
+            to = listOf("john@doe.fr"),
             body = "Hello",
         )
 
@@ -486,7 +486,7 @@ class CodeMapperTest {
         // Given
         val contents = listOf(
             BarcodeContent.Url(url = "https://scanny.app"),
-            BarcodeContent.Email(address = "john@doe.fr"),
+            BarcodeContent.Email(to = listOf("john@doe.fr")),
             BarcodeContent.Sms(
                 phoneNumber = "+33600000000",
                 message = "Hello",

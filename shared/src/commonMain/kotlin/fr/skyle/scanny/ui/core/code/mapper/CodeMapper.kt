@@ -23,8 +23,9 @@ import fr.skyle.scanny.ui.core.code.model.CodeType
 // The symbol of the bitcoin, the same in every language
 private const val BITCOIN_UNIT = "BTC"
 
-// The symbol of the second, the same in every language
+// The symbols of the second and of the meter, the same in every language
 private const val SECOND_UNIT = "s"
+private const val METER_UNIT = "m"
 
 internal fun BarcodeContent.toCodeType(): CodeType =
     when (this) {
@@ -78,7 +79,7 @@ private fun BarcodeContent.toSummary(rawValue: String): String =
     when (this) {
         is BarcodeContent.Text -> text
         is BarcodeContent.Url -> url
-        is BarcodeContent.Email -> address ?: subject ?: body
+        is BarcodeContent.Email -> to.firstOrNull() ?: cc.firstOrNull() ?: bcc.firstOrNull() ?: subject ?: body
         is BarcodeContent.Sms -> phoneNumber ?: message
         is BarcodeContent.Mms -> phoneNumber ?: subject ?: message
         is BarcodeContent.Wifi -> ssid
@@ -111,11 +112,16 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
             ),
         )
 
-        is BarcodeContent.Email -> listOfNotNull(
-            codeField(
-                label = CodeFieldLabel.RECIPIENT,
-                value = address,
-            ),
+        is BarcodeContent.Email -> codeFields(
+            label = CodeFieldLabel.RECIPIENT,
+            values = to,
+        ) + codeFields(
+            label = CodeFieldLabel.CARBON_COPY,
+            values = cc,
+        ) + codeFields(
+            label = CodeFieldLabel.BLIND_CARBON_COPY,
+            values = bcc,
+        ) + listOfNotNull(
             codeField(
                 label = CodeFieldLabel.SUBJECT,
                 value = subject,
@@ -211,6 +217,14 @@ internal fun BarcodeContent.toCodeFields(): List<CodeField> =
             CodeField(
                 label = CodeFieldLabel.COORDINATES,
                 value = coordinates(),
+            ),
+            codeField(
+                label = CodeFieldLabel.ALTITUDE,
+                value = altitude?.let { altitude -> "${altitude.toCoordinateText()} $METER_UNIT" },
+            ),
+            codeField(
+                label = CodeFieldLabel.UNCERTAINTY,
+                value = uncertainty?.let { uncertainty -> "± ${uncertainty.toCoordinateText()} $METER_UNIT" },
             ),
         )
 

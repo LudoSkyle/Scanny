@@ -43,13 +43,14 @@ internal fun CreationForm.toBarcodeContent(): BarcodeContent? =
             BarcodeContent.Url(url = url.withScheme())
         }
 
-        CreationKind.EMAIL -> emailAddress.trim().takeIf { address -> address.isNotEmpty() }?.let { address ->
-            BarcodeContent.Email(
-                address = address,
-                subject = emailSubject.ifBlank { null },
-                body = emailBody.ifBlank { null },
-            )
-        }
+        // RFC 6068 asks for no field in particular, but a code holds at least one
+        CreationKind.EMAIL -> BarcodeContent.Email(
+            to = emailTo.toAddresses(),
+            cc = emailCc.toAddresses(),
+            bcc = emailBcc.toAddresses(),
+            subject = emailSubject.ifBlank { null },
+            body = emailBody.ifBlank { null },
+        ).takeUnless { email -> email == BarcodeContent.Email() }
 
         CreationKind.SMS -> smsPhoneNumber.trim().takeIf { phoneNumber -> phoneNumber.isNotEmpty() }?.let { phoneNumber ->
             BarcodeContent.Sms(
@@ -103,19 +104,30 @@ internal fun CreationForm.toBarcodeContent(): BarcodeContent? =
         }
     }
 
+// Separated by commas, semicolons or spaces, which no address holds
+private fun String.toAddresses(): List<String> =
+    split(',', ';', ' ', '\n').map { address -> address.trim() }.filter { address -> address.isNotEmpty() }
+
 private fun String.withScheme(): String {
     val hasScheme = startsWith(prefix = HTTP, ignoreCase = true) || startsWith(prefix = HTTPS, ignoreCase = true)
     return if (hasScheme) this else "$HTTPS$this"
 }
 
-// A latitude and a longitude on the map, typed with a decimal comma or point
+// A latitude and a longitude on the map; an altitude and an uncertainty in meters if any. Each typed with
+// a decimal comma or point
 private fun CreationForm.toLocation(): BarcodeContent.Location? {
     val latitude = locationLatitude.toCoordinate()?.takeIf { latitude -> latitude in LATITUDES } ?: return null
     val longitude = locationLongitude.toCoordinate()?.takeIf { longitude -> longitude in LONGITUDES } ?: return null
+    val altitude = locationAltitude.ifBlank { null }?.let { altitude -> altitude.toCoordinate() ?: return null }
+    val uncertainty = locationUncertainty.ifBlank { null }?.let { uncertainty ->
+        uncertainty.toCoordinate()?.takeIf { meters -> meters >= 0 } ?: return null
+    }
 
     return BarcodeContent.Location(
         latitude = latitude,
         longitude = longitude,
+        altitude = altitude,
+        uncertainty = uncertainty,
         label = locationLabel.trim().ifEmpty { null },
     )
 }
