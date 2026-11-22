@@ -285,6 +285,11 @@
     <string name="vibrate_after_scan">Vibrate after a scan</string>
     <string name="website">Website</string>
     <string name="wifi" translatable="false">Wi-Fi</string>
+    <string name="wifi_already_saved">“%1$s” is already saved on this device.</string>
+    <string name="wifi_choose_in_settings">Choose “%1$s” in the list.</string>
+    <string name="wifi_not_saved">“%1$s” could not be saved.</string>
+    <string name="wifi_password_copied">Password copied: choose “%1$s” in the list.</string>
+    <string name="wifi_saved">“%1$s” saved: the device joins it when in range.</string>
     <string name="wifi_security_none">None</string>
     <string name="wifi_security_wep" translatable="false">WEP</string>
     <string name="wifi_security_wpa" translatable="false">WPA/WPA2</string>

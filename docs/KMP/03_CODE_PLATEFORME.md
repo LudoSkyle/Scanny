@@ -194,6 +194,10 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   anciennes. Quand aucune app ne l'ouvre, Android lève une exception : l'échec est journalisé, et
   l'écran du détail le dit. Le `LocalUriHandler` d'iOS, lui, ne signale aucun échec : sans app pour
   le lien (Mail absent), rien ne se passe.
+- La feuille du résultat a ses propres messages (`resultSnackbarState` de la `Route` du scan), au
+  bas de la feuille : ceux de l'écran du scan seraient cachés dessous. Ce qui suit la jonction d'un
+  réseau Wi-Fi va à la feuille quand elle est ouverte, à l'écran sinon (ouverture automatique du
+  contenu).
 - Copier passe par `LocalClipboard` et `textClipEntry(text)`, un `expect` : l'API commune de Compose
   ne sait pas construire l'entrée d'un texte. Depuis Android 13, le système montre lui-même ce qui a
   été copié : l'app ne le redit pas (`isCopyConfirmedBySystem`). Sous la feuille du résultat, où un
@@ -253,12 +257,24 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   enregistre (constaté sur le simulateur : contact enregistré avec tous ses champs, sans
   `NSContactsUsageDescription`).
 - Rejoindre un WiFi est en deux morceaux. `WifiNetworkSupport` (interface, ViewModel) dit si
-  l'appareil peut rejoindre le réseau ; l'action n'est proposée que dans ce cas. Android : à partir
-  d'Android 11, ni WEP ni mot de passe que le système refuserait (8 à 63 caractères ASCII
-  imprimables). iOS : jamais, tant qu'il manque l'entitlement *Hotspot Configuration*.
-  `rememberWifiNetworkJoiner()` (`expect` composable, appelé par la `Route`) ouvre l'écran des
-  réglages `ACTION_WIFI_ADD_NETWORKS` : les réglages ne s'affichent qu'à une app qui attend leur
-  résultat, d'où `rememberLauncherForActivityResult` et non un `startActivity` depuis le ViewModel.
+  l'appareil peut rejoindre le réseau ; l'action n'est proposée que dans ce cas : toujours sur
+  Android, jamais sur iOS tant qu'il manque l'entitlement *Hotspot Configuration*.
+  `rememberWifiNetworkJoiner()` (`expect` composable, appelé par la `Route`) fait ce que le système
+  permet à une app, et dit ce qui en est sorti (`WifiJoinResult`) :
+  - À partir d'Android 11, pour un réseau ouvert ou un WPA dont le système accepte le mot de passe
+    (8 à 63 caractères ASCII imprimables), l'écran du système qui enregistre un réseau
+    (`ACTION_WIFI_ADD_NETWORKS`). Il ne s'affiche qu'à une app qui attend son résultat, d'où
+    `rememberLauncherForActivityResult`. Son résultat est une `ArrayList<Integer>`
+    (`getIntegerArrayListExtra`, pas `getIntArrayExtra`) : enregistré, déjà enregistré (l'écran se
+    ferme aussitôt, sans rien montrer), refusé ; sans résultat, l'utilisateur a annulé.
+  - Sinon (avant Android 11, où `WifiManager.addNetwork` échoue toujours pour une app qui vise
+    Android 10 et plus ; un WEP ; un mot de passe que l'écran refuserait), le mot de passe est copié,
+    marqué sensible, et les réglages Wi-Fi s'ouvrent : le panneau par-dessus l'app à partir
+    d'Android 10, l'écran des réglages avant.
+  - Le message suit : « enregistré », ou « déjà enregistré » et « refusé » avec une action qui ouvre
+    les réglages Wi-Fi. Rien pour une annulation. Quand les réglages s'ouvrent, un message de l'app
+    serait caché dessous : la consigne (« Mot de passe copié : choisissez « … » dans la liste »)
+    passe par un `Toast`, le seul message d'une app que le système dessine par-dessus une autre.
 
 ### Signaler un scan
 
@@ -300,7 +316,7 @@ livrée ; le tableau est mis à jour dans le même commit.
 | Partager un texte | ✅ (émulateur : feuille de partage) — `ACTION_SEND` | ✅ (simulateur : feuille de partage) — `UIActivityViewController` | interface |
 | Partager, enregistrer un QR code | ✅ (émulateur : feuille de partage, image dans `Pictures/Scanny`, relue) — `FileProvider` + `ACTION_SEND`, `MediaStore`, Android 10 et plus | ✅ (simulateur : feuille de partage, image ajoutée aux photos, relue) — `UIActivityViewController`, `PHPhotoLibrary` | interfaces (`ImageSharer`, `ImageSaver`) |
 | Ajouter un contact | ✅ (émulateur : Contacts prérempli, tous les champs) — `ACTION_INSERT_OR_EDIT` | ✅ (simulateur : contact enregistré, tous les champs) — `CNContactViewController` | interface |
-| Rejoindre un réseau WiFi | ✅ (émulateur : réseau WPA2 enregistré par l'écran des réglages ; non proposé pour un mot de passe invalide) — `Settings.ACTION_WIFI_ADD_NETWORKS`, Android 11 et plus | Reporté (`NEHotspotConfigurationManager` exige l'entitlement *Hotspot Configuration*, donc un compte payant) : action non proposée | `expect` composable + interface |
+| Rejoindre un réseau WiFi | ✅ (émulateurs Android 9, 10, 11 et 17 : réseau enregistré, déjà enregistré, annulé ; réglages et consigne avant Android 11) — `Settings.ACTION_WIFI_ADD_NETWORKS` à partir d'Android 11, sinon panneau ou réglages Wi-Fi et mot de passe copié | Reporté (`NEHotspotConfigurationManager` exige l'entitlement *Hotspot Configuration*, donc un compte payant) : action non proposée | `expect` composable + interface |
 | Ouvrir les réglages de l'app | ✅ `ACTION_APPLICATION_DETAILS_SETTINGS` | `UIApplicationOpenSettingsURLString` | dans l'état de permission caméra |
 | Noter l'app | ✅ (émulateur : Play Store) — `market://`, sinon le site du Play Store | Pas encore sur l'App Store : l'entrée n'est pas proposée | `expect val rateAppLinks` |
 | Version de l'app | ✅ — `PackageManager` (`versionName`, `longVersionCode`) | ✅ (simulateur) — `CFBundleShortVersionString`, `CFBundleVersion` | interface (`AppVersion`) |

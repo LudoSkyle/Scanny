@@ -28,7 +28,8 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [x] Contenu formaté et contenu brut (le brut selon le réglage), chaque partie copiable, le code
       partageable (sa valeur brute)
 - [x] Action selon le type : URL → ouvrir ; email → écrire le mail ; SMS → écrire le SMS ;
-      WiFi → rejoindre le réseau (Android 11 et plus, pas en WEP ; iOS plus tard) ; contact →
+      WiFi → rejoindre le réseau (Android : l'écran du système à partir d'Android 11, les réglages
+      Wi-Fi et le mot de passe copié sinon, avec un message dans tous les cas ; iOS plus tard) ; contact →
       l'ajouter aux contacts
 
 ### Réglages, Feedback, À propos

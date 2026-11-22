@@ -18,6 +18,7 @@ import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.platform.clipboard.isCopyConfirmedBySystem
 import fr.skyle.scanny.platform.clipboard.textClipEntry
 import fr.skyle.scanny.platform.image.rememberSavedImageOpener
+import fr.skyle.scanny.platform.wifi.WifiNetworkJoiner
 import fr.skyle.scanny.platform.wifi.rememberWifiNetworkJoiner
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.code_not_deleted
@@ -31,6 +32,7 @@ import fr.skyle.scanny.ui.core.code.action.open
 import fr.skyle.scanny.ui.core.code.component.CodeImageSheet
 import fr.skyle.scanny.ui.core.code.component.CodeInfoSheet
 import fr.skyle.scanny.ui.core.code.component.DeleteCodeDialog
+import fr.skyle.scanny.ui.core.code.mapper.showWifiJoinResult
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -48,7 +50,6 @@ fun ScanDetailRoute(
     val uriHandler = LocalUriHandler.current
     val clipboard = LocalClipboard.current
     val coroutineScope = rememberCoroutineScope()
-    val joinWifiNetwork = rememberWifiNetworkJoiner()
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -56,6 +57,14 @@ fun ScanDetailRoute(
     // The messages about the image of the code, in its sheet
     val sheetSnackbarState = rememberSCSnackbarState()
     val openSavedImage = rememberSavedImageOpener()
+    lateinit var wifiNetworkJoiner: WifiNetworkJoiner
+    wifiNetworkJoiner = rememberWifiNetworkJoiner { wifi, result ->
+        coroutineScope.launch {
+            if (snackbarState.showWifiJoinResult(wifi = wifi, result = result)) {
+                wifiNetworkJoiner.joinFromSettings(wifi = wifi)
+            }
+        }
+    }
 
     var isDeleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     var isCodeSheetVisible by rememberSaveable { mutableStateOf(false) }
@@ -140,7 +149,7 @@ fun ScanDetailRoute(
                 }
 
                 is CodeAction.AddContact -> viewModel.onAddContactClicked(contact = action.contact)
-                is CodeAction.JoinWifi -> joinWifiNetwork(action.wifi)
+                is CodeAction.JoinWifi -> wifiNetworkJoiner.join(wifi = action.wifi)
             }
         },
     )
