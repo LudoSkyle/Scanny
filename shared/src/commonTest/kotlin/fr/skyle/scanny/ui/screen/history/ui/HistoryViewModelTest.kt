@@ -79,7 +79,12 @@ class HistoryViewModelTest {
                         ),
                         code(
                             id = 4,
-                            rawValue = "Second",
+                            rawValue = "https://scanny.app/second",
+                            content = BarcodeContent.Url(url = "https://scanny.app/second"),
+                        ),
+                        code(
+                            id = 6,
+                            rawValue = "Third",
                         ),
                     ),
                 ),
@@ -122,6 +127,7 @@ class HistoryViewModelTest {
                             summary = "https://scanny.app",
                             time = "21:48",
                             codeCount = 1,
+                            codeTypes = listOf(CodeType.LINK),
                         ),
                         ScanHistoryItem(
                             scanId = 3,
@@ -129,7 +135,9 @@ class HistoryViewModelTest {
                             type = CodeType.TEXT,
                             summary = "First",
                             time = "09:05",
-                            codeCount = 2,
+                            codeCount = 3,
+                            // Each type once, in the order of the codes
+                            codeTypes = listOf(CodeType.TEXT, CodeType.LINK),
                         ),
                     ),
                 ),
@@ -466,5 +474,6 @@ class HistoryViewModelTest {
             summary = summary,
             time = time,
             codeCount = 1,
+            codeTypes = listOf(CodeType.TEXT),
         )
 }

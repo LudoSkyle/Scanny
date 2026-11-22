@@ -34,6 +34,7 @@
         <item quantity="other">%1$d codes trouvés</item>
     </plurals>
     <string name="codes_not_saved">Ils ne seront pas enregistrés.</string>
+    <string name="codes_of_group">Codes du groupe</string>
     <string name="color_black">Noir</string>
     <string name="color_brown">Marron</string>
     <string name="color_component_blue">Bleu</string>
@@ -110,7 +111,7 @@
     <string name="group">Groupe</string>
     <string name="group_codes_removed_from_history">Ses codes seront retirés de l'historique.</string>
     <string name="group_not_deleted">Le groupe n'a pas pu être supprimé</string>
-    <string name="group_of_codes">Groupe · %1$d codes</string>
+    <string name="group_of_n_codes">Groupe de %1$d codes</string>
     <string name="hidden_network">Réseau masqué</string>
     <string name="history">Historique</string>
     <string name="history_not_cleared">L'historique n'a pas pu être effacé</string>

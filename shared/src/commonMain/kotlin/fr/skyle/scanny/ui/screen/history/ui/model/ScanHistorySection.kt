@@ -17,4 +17,6 @@ data class ScanHistoryItem(
     val summary: String,
     val time: String,
     val codeCount: Int,
+    // The types of its codes, each once, in their order: a group shows them
+    val codeTypes: List<CodeType>,
 )

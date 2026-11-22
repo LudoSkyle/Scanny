@@ -84,6 +84,7 @@ private fun PreviewScanHistoryList() {
                             summary = "https://scanny.app",
                             time = "21:48",
                             codeCount = 1,
+                            codeTypes = listOf(CodeType.LINK),
                         ),
                     ),
                 ),
