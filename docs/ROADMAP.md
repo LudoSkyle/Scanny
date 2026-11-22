@@ -230,6 +230,23 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] Une couleur libre, avec un avertissement de lisibilité (contraste trop faible ou code clair
           sur fond sombre), qui n'empêche pas de créer
     - [ ] L'export en SVG *(décidé, non engagé)*
+11 ter. **Deuxièmes retours** : l'éditeur en deux étapes ; modifier une création ; un compteur de la
+    taille du contenu ; une couleur saisie en hexadécimal ou en RVB ; une snackbar « Voir » après
+    l'enregistrement d'une image ; le contenu brut plus visible replié, et un réglage pour l'afficher
+    dans la feuille d'un scan ; la ligne et le détail d'un groupe ; une fiche « i » sur le type et le
+    format d'un code. Décidé : modifier une création en crée une nouvelle, comme pour un code scanné ;
+    pas de notification après l'enregistrement d'une image ; un groupe montre « Groupe de 3 codes »
+    et les types de ses codes ; « Étape 1 sur 2 » en sous-titre.
+    - [x] L'éditeur en deux étapes : le contenu et son aperçu, puis la personnalisation ; le retour,
+          de la barre comme du système, ramène au contenu sans perdre la personnalisation, perdue en
+          quittant l'éditeur ; un code-barres n'a qu'une étape
+    - [ ] Modifier une création
+    - [ ] Le compteur de la taille du contenu
+    - [ ] Une couleur saisie en hexadécimal ou en RVB
+    - [ ] La snackbar « Voir » après l'enregistrement d'une image
+    - [ ] Le contenu brut plus visible replié, et son réglage pour la feuille d'un scan
+    - [ ] La ligne d'un groupe dans l'historique, et la séparation dans son détail
+    - [ ] Les fiches « i » du type et du format
 12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI. Deux remarques
     d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton galerie le temps
     de son affichage, et le Photo Picker range les images de la plus récente à la plus ancienne.

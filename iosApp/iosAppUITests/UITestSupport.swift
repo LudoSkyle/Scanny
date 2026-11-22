@@ -121,6 +121,17 @@ extension XCTestCase {
         button.tap()
     }
 
+    /// Goes from the content of a QR code being created to its customization, the second step.
+    func goToTheCustomization(in app: XCUIApplication) {
+        let nextButton = app.buttons["Next"]
+        scroll(to: nextButton, in: app)
+        XCTAssertTrue(nextButton.isEnabled)
+        nextButton.tap()
+        let title = app.staticTexts["Customization"]
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        waitUntilStill(title)
+    }
+
     /// Opens the sheet of the code from a detail, and waits for the code drawn in it to stop rising.
     func showTheCode(in app: XCUIApplication) {
         let showCodeButton = app.buttons["Show the code"]

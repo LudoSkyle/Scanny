@@ -11,6 +11,7 @@ import fr.skyle.scanny.platform.gallery.LogoPickResult
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -215,6 +216,66 @@ class CreateCodeViewModelTest {
         assertEquals(
             expected = CodeStyle(logo = byteArrayOf(1, 2, 3)) to listOf(CreateCodeViewModel.CreateCodeEvent.LogoNotRead),
             actual = viewModel.uiState.value.style to events,
+        )
+    }
+
+    @Test
+    fun `a qr code goes on to its customization once its content holds`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel()
+
+        // When
+        viewModel.onNextClicked()
+        val stepWhileIncomplete = viewModel.uiState.value.step
+        viewModel.onFormChanged(form = CreationForm(text = "Hello"))
+        viewModel.onNextClicked()
+
+        // Then
+        assertEquals(
+            expected = CreationStep.CONTENT to CreationStep.STYLE,
+            actual = stepWhileIncomplete to viewModel.uiState.value.step,
+        )
+    }
+
+    @Test
+    fun `a barcode has no customization step`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel()
+        viewModel.onFormChanged(
+            form = CreationForm(
+                kind = CreationKind.BARCODE,
+                barcodeFormat = BarcodeFormat.EAN_13,
+                barcodeValue = "4006381333931",
+            ),
+        )
+
+        // When
+        viewModel.onNextClicked()
+
+        // Then
+        assertEquals(
+            expected = CreationStep.CONTENT,
+            actual = viewModel.uiState.value.step,
+        )
+    }
+
+    @Test
+    fun `back to the content keeps the customization`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel()
+        viewModel.onFormChanged(form = CreationForm(text = "Hello"))
+        viewModel.onNextClicked()
+        viewModel.onStyleChanged(style = STYLE)
+
+        // When
+        viewModel.onBackToContentClicked()
+        val stepBack = viewModel.uiState.value.step
+        viewModel.onNextClicked()
+
+        // Then
+        assertEquals(
+            expected = Triple(CreationStep.CONTENT, CreationStep.STYLE, STYLE),
+            actual = Triple(stepBack, viewModel.uiState.value.step, viewModel.uiState.value.style),
         )
     }
 

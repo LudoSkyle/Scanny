@@ -1,5 +1,6 @@
 package fr.skyle.scanny.designsystem.core.topappbar
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +28,8 @@ fun SCTopAppBar(
     style: SCTopAppBarDefaults.Style,
     modifier: Modifier = Modifier,
     title: String? = null,
+    // Under the title: where the screen stands in a flow, for instance
+    subtitle: String? = null,
     onBackClicked: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
@@ -34,13 +37,26 @@ fun SCTopAppBar(
         modifier = modifier,
         title = {
             if (title != null) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = title,
-                    style = SCTheme.typography.h3,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = title,
+                        style = SCTheme.typography.h3,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                    )
+
+                    if (subtitle != null) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = subtitle,
+                            style = SCTheme.typography.subtitle2,
+                            color = style.subtitleColor,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                        )
+                    }
+                }
             }
         },
         navigationIcon = {
@@ -81,6 +97,7 @@ private fun PreviewSCTopAppBar(
             modifier = Modifier.fillMaxWidth(),
             style = style,
             title = "Scanny",
+            subtitle = "Step 1 of 2",
             onBackClicked = {},
         )
     }

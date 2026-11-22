@@ -15,6 +15,7 @@ import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toBarcodeContent
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toCreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodePreview
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationStep
 import io.github.alexzhirkevich.qrose.matrix.qr.QrErrorCorrection
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
@@ -61,6 +62,23 @@ class CreateCodeViewModel(
                 form = form,
                 preview = form.toCodePreview(),
             )
+        }
+    }
+
+    // A QR code only, once its content holds: a barcode is created from the content
+    fun onNextClicked() {
+        val uiState = _uiState.value
+        if (uiState.preview is CodePreview.Code && uiState.form.format == BarcodeFormat.QR_CODE) {
+            _uiState.update { state ->
+                state.copy(step = CreationStep.STYLE)
+            }
+        }
+    }
+
+    // The customization is kept until the editor is left: back on it, it is as it was
+    fun onBackToContentClicked() {
+        _uiState.update { uiState ->
+            uiState.copy(step = CreationStep.CONTENT)
         }
     }
 
@@ -135,6 +153,7 @@ class CreateCodeViewModel(
         val form: CreationForm = CreationForm(),
         val preview: CodePreview = CodePreview.Incomplete,
         val style: CodeStyle = CodeStyle(),
+        val step: CreationStep = CreationStep.CONTENT,
         val isCreating: Boolean = false,
     )
 

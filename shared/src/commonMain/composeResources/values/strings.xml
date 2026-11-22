@@ -65,7 +65,7 @@
     <string name="created_codes_appear_here">The codes you create, with the + of the scan, appear here.</string>
     <string name="creation_not_saved">The code could not be created</string>
     <string name="creations">Creations</string>
-    <string name="customize_code">Customize the code</string>
+    <string name="customization">Customization</string>
     <string name="data_matrix" translatable="false">Data Matrix</string>
     <string name="day_date">%2$s %1$d, %3$d</string>
     <string name="delete">Delete</string>
@@ -124,6 +124,7 @@
     <string name="multiple_scan">Multiple scan</string>
     <string name="name">Name</string>
     <string name="network">Network</string>
+    <string name="next">Next</string>
     <string name="no_app_to_open">No app on this device can open it</string>
     <string name="no_code_in_image">No code found in this image</string>
     <string name="no_creation_yet">No creation yet</string>
@@ -174,6 +175,7 @@
     <string name="skip_consecutive_duplicates">Skip a code scanned again right away</string>
     <string name="sms" translatable="false">SMS</string>
     <string name="star_project">Star the project on GitHub</string>
+    <string name="step_of">Step %1$d of %2$d</string>
     <string name="subject">Subject</string>
     <string name="support">Support</string>
     <string name="text">Text</string>
