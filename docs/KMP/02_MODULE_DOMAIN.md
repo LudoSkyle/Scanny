@@ -222,6 +222,14 @@ format, son style, sa date.
   la période (TOTP) ou le compteur (HOTP). Un champ sans lequel le code n'existe pas porte un
   astérisque (`isRequired` de `CreationTextField`). Un paramètre laissé à son défaut n'est pas écrit :
   le code est plus petit et se lit pareil.
+- Les champs de l'éditeur vont par sections, des cartes titrées (`CreationSection`) : le code (sa
+  famille, son format, le type de son contenu), puis les groupes du contenu (pour un contact : nom,
+  travail, coordonnées, adresses, autres). Les champs que peu remplissent sont repliés sous « Plus
+  d'options » dans leur carte : les copies d'un e-mail, l'algorithme et les chiffres d'une clé, les
+  parties rares d'un nom, le statut ou la priorité d'un événement… Un champ obligatoire ne se replie
+  jamais. Une carte se déplie seule dès qu'un de ses champs repliés tient une valeur (lue d'un code
+  scanné ou créé, le formulaire étant rempli après sa composition), et reste dépliée ensuite, même
+  vidée, pour que le champ en cours de saisie ne disparaisse pas.
 - Le formulaire de l'éditeur (`CreationFormMapper`, dans `shared`) rend un contenu seulement quand ce
   qu'il exige est là : un texte, un lien (sans schéma, il reçoit `https://`, sans quoi un lecteur le
   lirait comme un texte), un champ au moins d'un e-mail (la RFC 6068 n'en exige aucun), une altitude et

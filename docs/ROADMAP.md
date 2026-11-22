@@ -73,6 +73,9 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
       repli, SAE, SAE-PK et Enhanced Open de la spécification WPA3, réseaux d'entreprise)
 - [x] Création de Data Matrix, Aztec et PDF417, l'éditeur partagé entre QR code, code 2D et
       code-barres *(Data Matrix et Aztec : latin-1 seulement, encodeurs corrigés, voir ADR-0004)*
+- [x] Un éditeur plus lisible : une barre fixée en bas avec le code en miniature et le bouton, les
+      champs en cartes titrées, les plus rares repliés, un exemple sous la valeur d'un code-barres,
+      les valeurs des exemples de la FAQ en police à chasse fixe
 - Pistes, non engagées : avis et mise à jour depuis l'app.
 
 ## Lots techniques

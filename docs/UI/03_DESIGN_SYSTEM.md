@@ -14,7 +14,8 @@ On y trouve :
 - les composants génériques : `SCScreenStructure` (fond, insets, barre du haut, barre fixée en bas qui se tient elle-même hors des barres système et du clavier, messages, couleur
   des icônes système), `SCTopAppBar`, `SCIconButton`, `SCIconBadge`, `SCButton`, `SCText`,
   `SCTextWithCode` (un texte dont les parties entre accents graves sont du code), `SCCard`
-  et `SCCardStructure` (une carte et son titre), `SCExpandableCardStructure` (une carte repliée
+  et `SCCardStructure` (une carte et son titre), `SCExpandableContent` (une partie d'un formulaire repliée sous une rangée « Plus d'options », dans une
+  carte), `SCExpandableCardStructure` (une carte repliée
   sous son titre, titre compris dans la carte pour qu'elle se lise touchable, jusqu'à un toucher), `SCDialog`, `SCBottomSheet`, `SCSnackbarState`,
   `SCSwitch`, `SCTextField`, `SCDropdownField` (un choix dans un menu qui se déplie sous le champ),
   `SCDropdownMenu` (le menu seul, sous l'élément où il est placé), `SCDivider` (une ligne entre deux
@@ -66,6 +67,7 @@ designSystem/src/commonMain/
 │       ├── snackbar/          (SCSnackbarState, SCSnackbarHost : les messages courts d'un écran ou d'une feuille)
 │       ├── switch/            (SCSwitch : un réglage allumé ou éteint)
 │       ├── tag/               (SCTag : un court libellé dans une pastille, non cliquable)
+│       ├── expandablecontent/ (SCExpandableContent : une partie repliée sous une rangée)
 │       ├── text/              (SCText : un texte dans un style du thème ; SCTextWithCode : ses valeurs en code)
 │       ├── textfield/         (SCTextField : un texte que l'utilisateur écrit)
 │       └── topappbar/         (SCTopAppBar : retour, titre et son sous-titre, actions)
