@@ -13,7 +13,9 @@ targets:
     platform: iOS
     scheme:
       testTargets:
-        - iosAppUITests
+        # Spread over clones of the simulator, a test class each (see docs/Common/03_TESTS.md)
+        - name: iosAppUITests
+          parallelizable: true
     configFiles:
       Debug: Configuration/Scanny.xcconfig
       Release: Configuration/Scanny.xcconfig

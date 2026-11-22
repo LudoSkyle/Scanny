@@ -7,6 +7,7 @@ final class ScanFlowUITests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+        allowTheSystemAlertsInTheWay()
     }
 
     func testALinkOpensInSafari() throws {
@@ -24,7 +25,7 @@ final class ScanFlowUITests: XCTestCase {
         keepScreenshot(named: "link-safari", of: safari)
     }
 
-    func testTheDetailCopiesSharesAndGoesBackToTheScan() throws {
+    func testTheDetailCopiesSharesAndDeletesTheCode() throws {
         let app = launchScanning(code: "https://scanny.app/detail")
 
         openTheDetail(in: app)
@@ -46,7 +47,11 @@ final class ScanFlowUITests: XCTestCase {
         app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.4)).tap()
         XCTAssertTrue(shareSheet.waitForNonExistence(timeout: 5))
 
-        app.buttons["Back"].tap()
+        // Deleted, the code leaves its detail for the scan
+        app.buttons["Delete"].tap()
+        XCTAssertTrue(app.staticTexts["Delete this code?"].waitForExistence(timeout: 5))
+        // The confirmation of the dialog, the last of the buttons named so
+        app.buttons.matching(identifier: "Delete").allElementsBoundByIndex.last?.tap()
 
         // The code was read once: back on the scan, nothing more is shown
         XCTAssertTrue(app.staticTexts["Place a code in the frame"].waitForExistence(timeout: 5))
@@ -76,19 +81,6 @@ final class ScanFlowUITests: XCTestCase {
         sleep(2)
         keepScreenshot(named: "sms-messages", of: messages)
         XCTAssertEqual(messageField.value as? String, "See you at 10:30 & bring été")
-    }
-
-    // The simulator has no Mail app: the e-mail is checked up to the button that writes it
-    func testAnEmailShowsItsRecipientAndItsSubject() throws {
-        let app = launchScanning(code: "mailto:john@doe.fr?subject=Hello%20Scanny")
-
-        openTheDetail(in: app)
-
-        XCTAssertTrue(app.staticTexts["Recipient"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["john@doe.fr"].exists)
-        XCTAssertTrue(app.staticTexts["Hello Scanny"].exists)
-        XCTAssertTrue(app.buttons["Write an e-mail"].exists)
-        keepScreenshot(named: "email-detail", of: app)
     }
 
     func testAContactIsAddedToTheContacts() throws {
@@ -133,91 +125,6 @@ final class ScanFlowUITests: XCTestCase {
             XCTAssertTrue(element(labelled: value, in: contacts).waitForExistence(timeout: 5), value)
         }
         keepScreenshot(named: "contact-saved-bottom", of: contacts)
-    }
-
-    func testAWifiNetworkIsNotOfferedToJoin() throws {
-        let app = launchScanning(code: "WIFI:T:WPA;S:ScannyNet;P:secret123;;")
-
-        XCTAssertTrue(app.buttons["See the detail"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["ScannyNet"].exists)
-        XCTAssertFalse(app.buttons["Join the network"].exists)
-        keepScreenshot(named: "wifi-sheet", of: app)
-
-        openTheDetail(in: app)
-        XCTAssertTrue(app.staticTexts["Password"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["secret123"].exists)
-
-        // The raw content is folded under its title, unfolded by a touch
-        let rawContent = "WIFI:T:WPA;S:ScannyNet;P:secret123;;"
-        let rawContentTitle = element(labelled: "Raw content", in: app)
-        XCTAssertTrue(rawContentTitle.exists)
-        XCTAssertFalse(app.staticTexts[rawContent].exists)
-        rawContentTitle.tap()
-        XCTAssertTrue(app.staticTexts[rawContent].waitForExistence(timeout: 5))
-        keepScreenshot(named: "wifi-detail", of: app)
-    }
-
-    func testAUpcAReadAsAnEan13IsShownAsAUpcA() throws {
-        let app = launchScanning(
-            code: "0123456789012",
-            format: "EAN_13",
-        )
-
-        XCTAssertTrue(app.staticTexts["UPC-A"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["123456789012"].exists)
-        keepScreenshot(named: "upc-a-sheet", of: app)
-    }
-
-    func testTheDetailShowsTheQrCodeDrawnAgain() throws {
-        let app = launchScanning(code: "https://ludoskyle.github.io/scanny.github.io/")
-        openTheDetail(in: app)
-
-        // In a sheet, with the actions on its image
-        showTheCode(in: app)
-        XCTAssertTrue(app.buttons["Share the image"].exists)
-        XCTAssertTrue(app.buttons["Save the image"].exists)
-        keepScreenshot(named: "qr-code-drawn-again", of: app)
-
-        closeTheSheet(of: app)
-        XCTAssertTrue(app.images["The code"].waitForNonExistence(timeout: 5))
-    }
-
-    func testTheDetailShowsABarcodeDrawnAgain() throws {
-        let app = launchScanning(
-            code: "4006381333931",
-            format: "EAN_13",
-        )
-        openTheDetail(in: app)
-
-        showTheCode(in: app)
-        keepScreenshot(named: "barcode-drawn-again", of: app)
-        closeTheSheet(of: app)
-    }
-
-    func testACodeThatCannotBeDrawnAgainHasNoButtonToShowIt() throws {
-        let app = launchScanning(
-            code: "In a matrix",
-            format: "DATA_MATRIX",
-        )
-        openTheDetail(in: app)
-
-        XCTAssertTrue(app.buttons["Share"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.buttons["Show the code"].exists)
-    }
-
-    func testADeletedCodeGoesBackToTheScan() throws {
-        let app = launchScanning(code: "A code to delete")
-
-        openTheDetail(in: app)
-        XCTAssertTrue(app.buttons["Delete"].waitForExistence(timeout: 5))
-
-        app.buttons["Delete"].tap()
-        XCTAssertTrue(app.staticTexts["Delete this code?"].waitForExistence(timeout: 5))
-        keepScreenshot(named: "delete-dialog", of: app)
-        // The confirmation of the dialog, the last of the buttons named so
-        app.buttons.matching(identifier: "Delete").allElementsBoundByIndex.last?.tap()
-
-        XCTAssertTrue(app.staticTexts["Place a code in the frame"].waitForExistence(timeout: 5))
     }
 
     func testTheTextsAreInFrench() throws {

@@ -16,6 +16,7 @@
 		6B2031D9196667F65FD358E5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 37A6BA4C5AAF06904D9C889E /* InfoPlist.strings */; };
 		77070BD11FD3CBB458CE2CDB /* MultipleScanUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5ED9606FFD0D24F04AF179 /* MultipleScanUITests.swift */; };
 		CB0EF950945238B2E30F6269 /* SettingsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46046658C8BE76C5FE2E83D4 /* SettingsUITests.swift */; };
+		FD8B8CF2CF07B8D4384AA30B /* EditCodeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61394D03A839FE81731FD23 /* EditCodeUITests.swift */; };
 		FE7AC234EC3B815795A82EC6 /* UITestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2AF7D2D9475CB6237C289A /* UITestSupport.swift */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +46,7 @@
 		CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DA2AF7D2D9475CB6237C289A /* UITestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestSupport.swift; sourceTree = "<group>"; };
 		F543015C899423D4B01CEB2E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F61394D03A839FE81731FD23 /* EditCodeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCodeUITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -91,6 +93,7 @@
 			isa = PBXGroup;
 			children = (
 				3BDDF881BDC8407BFFF557BC /* CreateCodeUITests.swift */,
+				F61394D03A839FE81731FD23 /* EditCodeUITests.swift */,
 				0D5ED9606FFD0D24F04AF179 /* MultipleScanUITests.swift */,
 				84B180779BE417DB513FDBAE /* ScanFlowUITests.swift */,
 				9AA7C512CC348A8D6D112C34 /* ScanHistoryUITests.swift */,
@@ -219,6 +222,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				672CD9217AA4C7ED4CCBB851 /* CreateCodeUITests.swift in Sources */,
+				FD8B8CF2CF07B8D4384AA30B /* EditCodeUITests.swift in Sources */,
 				77070BD11FD3CBB458CE2CDB /* MultipleScanUITests.swift in Sources */,
 				4D0C5921699BC6E54DF36A80 /* ScanFlowUITests.swift in Sources */,
 				2EC1EB7A046940760F4B33FC /* ScanHistoryUITests.swift in Sources */,
