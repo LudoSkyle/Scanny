@@ -262,6 +262,9 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
   qu'un objet embarqué par Compose Multiplatform est compilé pour 18.5. Pas encore de compte Apple : le
   développement se fait sur simulateur, un Apple ID gratuit suffit pour un iPhone, le programme
   payant n'est nécessaire que pour TestFlight, l'App Store et le WiFi.
+- **Tests d'écran** : en Compose (`runComposeUiTest`), sur la JVM et le simulateur iOS ; XCUITest
+  ne garde que les parcours qui passent par le système, en parallèle
+  ([ADR-0003](./adr/0003-les-ecrans-se-testent-en-compose.md)).
 - **Crashlytics sur iOS** : oui, par SPM dans `iosApp`, dès que le `GoogleService-Info.plist` iOS est fourni.
 - **WiFi sur iOS** : reporté jusqu'à l'obtention d'un compte développeur payant (l'entitlement
   *Hotspot Configuration* l'exige). En attendant, l'action WiFi n'est pas proposée sur iOS.

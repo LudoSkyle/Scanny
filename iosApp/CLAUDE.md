@@ -27,6 +27,9 @@ natif iOS des écrans (dans `shared/src/iosMain`, voir
   passent par `launchEnvironment` ; à la main :
   `SIMCTL_CHILD_SCANNY_SIMULATED_CODE='https://scanny.app' xcrun simctl launch booted fr.skyle.scanny`.
   Un build Release ne la lit jamais.
+  Le schéma marque la cible `parallelizable` : Xcode répartit les classes de test sur des clones du
+  simulateur. Sans ce réglage, l'option `-parallel-testing-enabled` de la ligne de commande ne suffit
+  pas toujours : il lui est arrivé de tout lancer sur un seul clone.
 - La phase de build « Compile Kotlin Framework » lance
   `./gradlew :shared:embedAndSignAppleFrameworkForXcode` : elle construit le framework statique
   `Shared` et copie les Compose Resources dans le bundle (`compose-resources/`). Elle a besoin de
@@ -51,7 +54,8 @@ cd iosApp && xcodegen generate     # après toute modification de project.yml
 xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -sdk iphonesimulator \
   -destination 'platform=iOS Simulator,name=iPhone 17' build   # depuis la racine du dépôt
 xcodebuild test -project iosApp/iosApp.xcodeproj -scheme iosApp \
-  -destination 'platform=iOS Simulator,name=iPhone 17' -resultBundlePath /tmp/scanny-ui.xcresult
+  -destination 'platform=iOS Simulator,name=iPhone 17' -parallel-testing-worker-count 3 \
+  -resultBundlePath /tmp/scanny-ui.xcresult    # ajouter OS=… à la destination si deux simulateurs portent ce nom
 xcrun xcresulttool export attachments --path /tmp/scanny-ui.xcresult \
   --output-path /tmp/scanny-ui        # captures d'écran gardées par les tests (manifest.json)
 ```
