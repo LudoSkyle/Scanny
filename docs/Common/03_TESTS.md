@@ -327,11 +327,10 @@ dans les couleurs de la palette qui ressortent le moins, et chaque paire de coul
 qui couvrent le moins le code, chaque forme avec un logo, des coins de chaque couleur de la palette,
 chaque dégradé vers chaque couleur de la palette, un logo de chaque forme à chaque marge,
 chaque correction d'erreur, et le contenu
-le plus long qu'un QR code tient, dans le code le plus dense. Chaque paire de la palette se lit
-aussi bien par la règle de l'avertissement (`readability` : des points plus sombres que le fond, et
-un contraste d'au moins 4,5:1, celui que les règles d'accessibilité demandent d'un texte). Une
-couleur libre n'est pas relue par ZXing : l'avertissement, qui n'empêche pas de créer, est sa seule
-garde. ZXing relit encore un code à la correction la plus faible sous un logo de cette taille : la
+le plus long qu'un QR code tient, dans le code le plus dense. La règle de l'avertissement
+(`readability`) y est confrontée à ZXing : sur des couleurs de chaque teinte et des gris aux seuils,
+sur deux fonds, elle avertit exactement des couleurs que ZXing ne lit pas. Une couleur libre n'est
+pas relue par ZXing à la création : l'avertissement, qui n'empêche pas de créer, est sa garde. ZXing relit encore un code à la correction la plus faible sous un logo de cette taille : la
 correction choisie pour un logo se vérifie donc directement, sur les options données à qrose
 (`CodeStyleMapperTest`).
 

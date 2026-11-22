@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
@@ -15,6 +17,8 @@ import fr.skyle.scanny.domain.model.CodeLogoMargin
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.platform.gallery.LOGO_MAX_SIDE
+import fr.skyle.scanny.ui.core.code.mapper.readability
+import fr.skyle.scanny.ui.core.code.model.CodeReadability
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeBackgroundColor
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeDotColor
 import kotlinx.coroutines.test.runTest
@@ -181,6 +185,40 @@ class CodeImageReadabilityTest {
         assertEquals(
             expected = emptyList(),
             actual = unreadStyles,
+        )
+    }
+
+    @Test
+    fun `the warning tells exactly the colors zxing cannot read`() = runTest {
+        // Given
+        // Vivid and paler colors of every hue, and greys around the threshold, on white and on lavender,
+        // in the dots that cover the code the least
+        val darkColors = (0 until 360 step 60).flatMap { hue ->
+            listOf(0.5f, 0.7f, 0.9f).map { value ->
+                Color.hsv(hue = hue.toFloat(), saturation = 1f, value = value).toArgb().toLong() and 0xFFFFFFFF
+            }
+        // The thresholds: 118 on lavender, 127 on white
+        } + listOf(0xFF757575, 0xFF767676, 0xFF7E7E7E, 0xFF7F7F7F)
+        val styles = listOf(0xFFFFFFFF, CodeBackgroundColor.LAVENDER.argb).flatMap { lightColor ->
+            darkColors.map { darkColor ->
+                CodeStyle(
+                    darkColor = darkColor,
+                    lightColor = lightColor,
+                    dotShape = CodeShape.CIRCLE,
+                )
+            }
+        }
+
+        // When
+        val wrongStyles = styles.filter { style ->
+            val isRead = renderQrCode(style = style).readQrCode() == TEXT
+            isRead != (style.readability() == CodeReadability.GOOD)
+        }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = wrongStyles.map { style -> style.darkColor.toString(radix = 16) to style.lightColor.toString(radix = 16) },
         )
     }
 

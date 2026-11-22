@@ -29,10 +29,6 @@ import io.github.alexzhirkevich.qrose.options.roundCorners
 import io.github.alexzhirkevich.qrose.options.solid
 import io.github.alexzhirkevich.qrose.options.square
 import org.jetbrains.compose.resources.decodeToImageBitmap
-import kotlin.math.pow
-
-// The contrast the WCAG asks of a text: a scanner reads a code as well
-private const val MIN_CONTRAST_RATIO = 4.5
 
 // Of the side of a corner: rounded, still far from a circle
 private const val CORNER_RADIUS = 0.25f
@@ -103,10 +99,13 @@ internal fun CodeStyle.cornerColor(): Color =
 internal fun CodeStyle.backgroundColor(): Color =
     Color(color = lightColor)
 
-// The dots under the logo and around it cleared, for the background to show there
 /**
- * How well a scanner reads a code in this style: its dots and its corners darker than its background,
- * and enough apart from it.
+ * How well a scanner reads a code in this style: its dots, its corners and the second color of its
+ * gradient darker than its background, and less than half as light. The binarizer of ZXing, the reader
+ * of most scanning apps on Android, takes a uniform light area for the background and sets its
+ * threshold at half of it: a dot as light as that half reads as background. The rule tells exactly which
+ * colors ZXing reads (CodeImageReadabilityTest), where the 4.5:1 the WCAG asks of a text warned about
+ * many it reads, a vivid red on white for one.
  */
 internal fun CodeStyle.readability(): CodeReadability {
     val colors = listOfNotNull(
@@ -114,31 +113,20 @@ internal fun CodeStyle.readability(): CodeReadability {
         cornerColor,
         gradientColor.takeIf { gradient != CodeGradient.NONE },
     )
+    val lightLuminance = scannerLuminance(lightColor)
     return when {
-        colors.any { argb -> relativeLuminance(argb) > relativeLuminance(lightColor) } -> CodeReadability.INVERTED
-        colors.any { argb -> contrastRatio(argb, lightColor) < MIN_CONTRAST_RATIO } -> CodeReadability.LOW_CONTRAST
+        colors.any { argb -> scannerLuminance(argb) > lightLuminance } -> CodeReadability.INVERTED
+        colors.any { argb -> scannerLuminance(argb) >= lightLuminance / 2 } -> CodeReadability.LOW_CONTRAST
         else -> CodeReadability.GOOD
     }
 }
 
-/** The contrast ratio of the WCAG between two ARGB colors, from 1 for the same color to 21 for black and white. */
-internal fun contrastRatio(
-    firstArgb: Long,
-    secondArgb: Long,
-): Double {
-    val firstLuminance = relativeLuminance(firstArgb)
-    val secondLuminance = relativeLuminance(secondArgb)
-    return (maxOf(firstLuminance, secondLuminance) + 0.05) / (minOf(firstLuminance, secondLuminance) + 0.05)
-}
-
-// The relative luminance of the WCAG: how light a color looks, from 0 for black to 1 for white
-private fun relativeLuminance(argb: Long): Double {
-    fun channel(shift: Int): Double {
-        val value = ((argb shr shift) and 0xFF) / 255.0
-        return if (value <= 0.03928) value / 12.92 else ((value + 0.055) / 1.055).pow(2.4)
-    }
-    return 0.2126 * channel(shift = 16) + 0.7152 * channel(shift = 8) + 0.0722 * channel(shift = 0)
-}
+/**
+ * The luminance ZXing reads in an image, from 0 for black to 255 for white, in whole numbers as it
+ * counts it: its green counts twice.
+ */
+internal fun scannerLuminance(argb: Long): Int =
+    ((((argb shr 16) and 0xFF) + 2 * ((argb shr 8) and 0xFF) + (argb and 0xFF)) / 4).toInt()
 
 private fun CodeStyle.dotBrush(): QrBrush {
     val colors = listOf(Color(color = darkColor), Color(color = gradientColor))
