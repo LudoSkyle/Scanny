@@ -6,10 +6,9 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
-import fr.skyle.scanny.resources.format
-import fr.skyle.scanny.resources.format_ean_13_info
-import fr.skyle.scanny.resources.type_wifi_info
-import fr.skyle.scanny.ui.core.code.model.CodeType
+import fr.skyle.scanny.resources.format_ean_13_example
+import fr.skyle.scanny.resources.format_ean_13_structure
+import fr.skyle.scanny.resources.format_ean_13_use
 import fr.skyle.scanny.ui.test.ComposeTest
 import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
@@ -18,12 +17,11 @@ import kotlin.test.Test
 internal class CodeInfoSheetTest : ComposeTest() {
 
     @Test
-    fun `the sheet tells what the type and the format of the code are`() = runComposeUiTest {
+    fun `the sheet of a format tells its use how it is made and an example of it`() = runComposeUiTest {
         // When
         setContent {
             SCTheme {
                 CodeInfoSheet(
-                    type = CodeType.WIFI,
                     format = BarcodeFormat.EAN_13,
                     onDismissRequest = {},
                 )
@@ -31,25 +29,8 @@ internal class CodeInfoSheetTest : ComposeTest() {
         }
 
         // Then
-        onNodeWithText(getString(Res.string.type_wifi_info)).assertExists()
-        onNodeWithText(getString(Res.string.format_ean_13_info)).assertExists()
-    }
-
-    @Test
-    fun `a code with no format known tells its type only`() = runComposeUiTest {
-        // When
-        setContent {
-            SCTheme {
-                CodeInfoSheet(
-                    type = CodeType.WIFI,
-                    format = null,
-                    onDismissRequest = {},
-                )
-            }
-        }
-
-        // Then
-        onNodeWithText(getString(Res.string.type_wifi_info)).assertExists()
-        onNodeWithText(getString(Res.string.format)).assertDoesNotExist()
+        onNodeWithText(getString(Res.string.format_ean_13_use)).assertExists()
+        onNodeWithText(getString(Res.string.format_ean_13_structure)).assertExists()
+        onNodeWithText(getString(Res.string.format_ean_13_example)).assertExists()
     }
 }

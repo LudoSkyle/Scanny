@@ -12,7 +12,7 @@ import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
-import fr.skyle.scanny.resources.about_code
+import fr.skyle.scanny.resources.about_format
 import fr.skyle.scanny.resources.copy
 import fr.skyle.scanny.resources.edit_code
 import fr.skyle.scanny.resources.password
@@ -120,24 +120,35 @@ internal class ScanDetailScreenTest : ComposeTest() {
     }
 
     @Test
-    fun `the info button tells what the type and the format of the code are`() = runComposeUiTest {
+    fun `the i next to the format opens what the format is`() = runComposeUiTest {
         // Given
         var infoClickCount = 0
         setContent {
             scanDetailScreen(
                 code = EMAIL,
-                onInfoClicked = { infoClickCount++ },
+                onFormatInfoClicked = { infoClickCount++ },
             )
         }
 
         // When
-        onNodeWithContentDescription(getString(Res.string.about_code)).performClick()
+        onNodeWithContentDescription(getString(Res.string.about_format)).performClick()
 
         // Then
         assertEquals(
             expected = 1,
             actual = infoClickCount,
         )
+    }
+
+    @Test
+    fun `a code with no format known has no i`() = runComposeUiTest {
+        // When
+        setContent {
+            scanDetailScreen(code = EMAIL.copy(format = null))
+        }
+
+        // Then
+        onNodeWithContentDescription(getString(Res.string.about_format)).assertDoesNotExist()
     }
 
     @Test
@@ -156,7 +167,7 @@ internal class ScanDetailScreenTest : ComposeTest() {
     private fun scanDetailScreen(
         code: ScanDetailItem,
         onShowCodeClicked: () -> Unit = {},
-        onInfoClicked: () -> Unit = {},
+        onFormatInfoClicked: () -> Unit = {},
         onEditClicked: () -> Unit = {},
         onCopyClicked: (String) -> Unit = {},
         onActionClicked: (CodeAction) -> Unit = {},
@@ -168,7 +179,7 @@ internal class ScanDetailScreenTest : ComposeTest() {
                 snackbarState = rememberSCSnackbarState(),
                 onBackClicked = {},
                 onShowCodeClicked = onShowCodeClicked,
-                onInfoClicked = onInfoClicked,
+                onFormatInfoClicked = onFormatInfoClicked,
                 onEditClicked = onEditClicked,
                 onShareClicked = {},
                 onDeleteClicked = {},

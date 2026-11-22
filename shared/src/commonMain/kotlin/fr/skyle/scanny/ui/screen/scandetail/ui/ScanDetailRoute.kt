@@ -114,7 +114,7 @@ fun ScanDetailRoute(
         onShowCodeClicked = {
             isCodeSheetVisible = true
         },
-        onInfoClicked = {
+        onFormatInfoClicked = {
             isInfoSheetVisible = true
         },
         onEditClicked = navigateToCreateCode,
@@ -164,11 +164,10 @@ fun ScanDetailRoute(
         )
     }
 
-    val infoItem = uiState.code
-    if (isInfoSheetVisible && infoItem != null) {
+    val infoFormat = uiState.code?.format
+    if (isInfoSheetVisible && infoFormat != null) {
         CodeInfoSheet(
-            type = infoItem.type,
-            format = infoItem.format,
+            format = infoFormat,
             onDismissRequest = {
                 isInfoSheetVisible = false
             },
