@@ -14,6 +14,7 @@
     <string name="background_color">Color of the background</string>
     <string name="barcode">Barcode</string>
     <string name="barcode_value">Value</string>
+    <string name="barcodes">Barcodes</string>
     <string name="beep_after_scan">Beep after a scan</string>
     <string name="camera_blocked">The camera is blocked for Scanny. Allow it in the settings of your device to scan codes.</string>
     <string name="camera_needed">Scanny needs the camera to scan codes.</string>
@@ -31,6 +32,7 @@
     <string name="code_39" translatable="false">Code 39</string>
     <string name="code_93" translatable="false">Code 93</string>
     <string name="code_count">%1$d codes</string>
+    <string name="code_formats">Code formats</string>
     <string name="code_inverted">Its colors are lighter than its background: many scanners read such a code poorly.</string>
     <string name="code_low_contrast">Its colors and its background stand out too little: some scanners may not read this code.</string>
     <string name="code_not_deleted">The code could not be deleted</string>
@@ -107,6 +109,7 @@
     <string name="error_correction_quartile_description">About 25% of the code</string>
     <string name="error_correction_too_high_for_content">Too high for this content</string>
     <string name="error_correction_too_low_for_logo">Too low for the logo</string>
+    <string name="faq" translatable="false">FAQ</string>
     <string name="feedback">Feedback</string>
     <string name="feedback_about_other">Something else</string>
     <string name="feedback_about_scan">The scan</string>
@@ -148,6 +151,8 @@
     <string name="format_qr_code_example">“https://scanny.app”, 18 characters, fits in a square of 25 × 25 modules at the lowest correction.</string>
     <string name="format_qr_code_structure">A square of black and white modules, from 21 × 21 to 177 × 177. Three squares in its corners let a scanner find it and turn it the right way. The content is written in binary, partly repeated by its error correction, so the code still reads when damaged.</string>
     <string name="format_qr_code_use">The most common code: links, payments, menus, tickets, Wi-Fi networks.</string>
+    <string name="format_read_and_created">Scanny reads it and creates it.</string>
+    <string name="format_read_only">Scanny reads it.</string>
     <string name="format_structure">How it is made</string>
     <string name="format_upc_a_example">036000291452: 0 for the system, 36000 for the company, 29145 for the product, 2 for the check.</string>
     <string name="format_upc_a_structure">12 digits: a number system, 0 for most products, 5 digits for the company, 5 for the product, then a check digit. It is an EAN-13 that starts with 0.</string>
@@ -156,6 +161,7 @@
     <string name="format_upc_e_structure">A UPC-A shortened to 8 digits by leaving out its zeros: the number system, 6 digits that hold the company and the product, then the check digit.</string>
     <string name="format_upc_e_use">The small products sold in North America.</string>
     <string name="format_use">Its use</string>
+    <string name="formats_intro">Scanny reads every format below. It creates QR codes and barcodes.</string>
     <string name="give_feedback">Give your feedback</string>
     <string name="gradient">Gradient</string>
     <string name="gradient_color">Second color of the gradient</string>
@@ -269,6 +275,7 @@
     <string name="today">Today</string>
     <string name="turn_off_torch">Turn off the torch</string>
     <string name="turn_on_torch">Turn on the torch</string>
+    <string name="two_dimensional_codes">Codes in two dimensions</string>
     <string name="undo">Undo</string>
     <string name="upc_a" translatable="false">UPC-A</string>
     <string name="upc_e" translatable="false">UPC-E</string>

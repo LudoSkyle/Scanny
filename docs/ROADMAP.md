@@ -260,6 +260,7 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] La ligne d'un groupe dans l'historique, et la séparation dans son détail
     - [x] Les fiches « i » du format, juste à côté de lui : son usage, comment il est formé, et un
           exemple décortiqué
+    - [x] Une FAQ des formats de codes dans les réglages, avec les textes de ces fiches
     - [x] Réinitialiser la personnalisation depuis sa barre du haut, avec une annulation
     - [x] L'avertissement de lisibilité calé sur ce que ZXing lit, plutôt que sur le contraste d'un
           texte

@@ -29,7 +29,9 @@ import fr.skyle.scanny.domain.model.ScanSetting
 import fr.skyle.scanny.domain.model.ScanSettings
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.beep_after_scan
+import fr.skyle.scanny.resources.code_formats
 import fr.skyle.scanny.resources.copy_after_scan
+import fr.skyle.scanny.resources.faq
 import fr.skyle.scanny.resources.give_feedback
 import fr.skyle.scanny.resources.history
 import fr.skyle.scanny.resources.ic_auto_delete
@@ -88,6 +90,7 @@ fun SettingsScreen(
     onHistoryRetentionChanged: (retention: HistoryRetention) -> Unit,
     onStarProjectClicked: () -> Unit,
     onFeedbackClicked: () -> Unit,
+    onFormatsClicked: () -> Unit,
     onRateAppClicked: () -> Unit,
     onPrivacyPolicyClicked: () -> Unit,
     onOpeniumClicked: () -> Unit,
@@ -243,6 +246,22 @@ fun SettingsScreen(
 
             SCCardStructure(
                 modifier = Modifier.fillMaxWidth(),
+                title = stringResource(Res.string.faq),
+                style = SCCardDefaults.Style.LIGHT,
+            ) {
+                SettingsActionRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    icon = painterResource(Res.drawable.ic_qr_code),
+                    title = stringResource(Res.string.code_formats),
+                    trailingIcon = painterResource(Res.drawable.ic_chevron_right),
+                    onClick = onFormatsClicked,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            SCCardStructure(
+                modifier = Modifier.fillMaxWidth(),
                 title = stringResource(Res.string.support),
                 style = SCCardDefaults.Style.LIGHT,
             ) {
@@ -339,6 +358,7 @@ private fun PreviewSettingsScreen() {
             onHistoryRetentionChanged = {},
             onStarProjectClicked = {},
             onFeedbackClicked = {},
+            onFormatsClicked = {},
             onRateAppClicked = {},
             onPrivacyPolicyClicked = {},
             onOpeniumClicked = {},

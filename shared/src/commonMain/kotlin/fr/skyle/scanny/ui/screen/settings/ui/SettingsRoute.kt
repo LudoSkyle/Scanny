@@ -23,6 +23,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun SettingsRoute(
     navigateToFeedback: () -> Unit,
+    navigateToFormats: () -> Unit,
     navigateBack: () -> Unit,
     viewModel: SettingsViewModel = koinViewModel(),
 ) {
@@ -68,6 +69,7 @@ fun SettingsRoute(
         onHistoryRetentionChanged = viewModel::onHistoryRetentionChanged,
         onStarProjectClicked = { openLinks(listOf(ScannyLinks.GITHUB)) },
         onFeedbackClicked = navigateToFeedback,
+        onFormatsClicked = navigateToFormats,
         onRateAppClicked = { openLinks(rateAppLinks) },
         onPrivacyPolicyClicked = { openLinks(listOf(ScannyLinks.PRIVACY_POLICY)) },
         onOpeniumClicked = { openLinks(listOf(ScannyLinks.OPENIUM)) },

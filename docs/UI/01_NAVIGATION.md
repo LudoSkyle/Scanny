@@ -33,6 +33,10 @@ intermédiaire.
   une navigation par onglets : chaque vue ouvre ses écrans par-dessus l'historique, qui garde la vue
   choisie au retour. Depuis la première vue, le geste retour depuis le bord quitte l'historique.
   Effacer ne vide que la vue montrée.
+- Les réglages ouvrent le retour utilisateur (`Route.Feedback`) et, depuis leur section FAQ, les
+  formats de codes (`Route.Formats`) : tous les formats que Scanny lit, chacun replié sous son nom
+  avec son usage, comment il est formé et un exemple décortiqué, les textes de la fiche du format d'un
+  détail. Un écran sans logique, comme celui-ci, n'a pas de ViewModel.
 - Une route implémente `NavKey` et est annotée `@Serializable` : le back stack est sauvegardé et
   restauré (recréation de l'activité, mort du process sur Android).
 - Le back stack se crée avec `rememberSerializable` et un `NavBackStackSerializer` construit sur le
