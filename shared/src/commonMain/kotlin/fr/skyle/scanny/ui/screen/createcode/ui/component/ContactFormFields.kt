@@ -27,8 +27,10 @@ import fr.skyle.scanny.resources.add_address
 import fr.skyle.scanny.resources.add_email
 import fr.skyle.scanny.resources.add_phone
 import fr.skyle.scanny.resources.add_website
+import fr.skyle.scanny.resources.addresses
 import fr.skyle.scanny.resources.birthday
 import fr.skyle.scanny.resources.city
+import fr.skyle.scanny.resources.contact_details
 import fr.skyle.scanny.resources.content_type
 import fr.skyle.scanny.resources.country
 import fr.skyle.scanny.resources.department
@@ -41,11 +43,13 @@ import fr.skyle.scanny.resources.ic_delete
 import fr.skyle.scanny.resources.job_title
 import fr.skyle.scanny.resources.last_name
 import fr.skyle.scanny.resources.middle_name
+import fr.skyle.scanny.resources.name
 import fr.skyle.scanny.resources.name_prefix
 import fr.skyle.scanny.resources.name_suffix
 import fr.skyle.scanny.resources.nickname
 import fr.skyle.scanny.resources.note
 import fr.skyle.scanny.resources.organization
+import fr.skyle.scanny.resources.other
 import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.po_box
 import fr.skyle.scanny.resources.postal_code
@@ -53,6 +57,7 @@ import fr.skyle.scanny.resources.region
 import fr.skyle.scanny.resources.remove
 import fr.skyle.scanny.resources.street
 import fr.skyle.scanny.resources.website
+import fr.skyle.scanny.resources.work
 import fr.skyle.scanny.ui.core.date.component.calendarDayText
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
@@ -87,181 +92,218 @@ fun ContactFormFields(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(space = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(space = 24.dp),
     ) {
-        // A MeCard is shorter, and so a smaller code: its size shows under the fields
-        SegmentedChoice(
+        // The parts of the name few need, folded: a MeCard holds the nickname only
+        CreationSection(
             modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.format),
-            options = ContactFormat.entries,
-            selectedOption = form.contactFormat,
-            optionText = { format -> stringResource(format.toText()) },
-            onOptionSelected = { format -> onFormChanged(form.copy(contactFormat = format)) },
-        )
-        if (isVcard) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
-            ) {
+            title = stringResource(Res.string.name),
+            moreOptions = {
+                if (isVcard) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
+                    ) {
+                        CreationTextField(
+                            modifier = Modifier.weight(1f),
+                            value = form.contactNamePrefix,
+                            onValueChange = { prefix -> onFormChanged(form.copy(contactNamePrefix = prefix)) },
+                            label = stringResource(Res.string.name_prefix),
+                        )
+                        CreationTextField(
+                            modifier = Modifier.weight(1f),
+                            value = form.contactNameSuffix,
+                            onValueChange = { suffix -> onFormChanged(form.copy(contactNameSuffix = suffix)) },
+                            label = stringResource(Res.string.name_suffix),
+                        )
+                    }
+                    CreationTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = form.contactMiddleName,
+                        onValueChange = { middleName -> onFormChanged(form.copy(contactMiddleName = middleName)) },
+                        label = stringResource(Res.string.middle_name),
+                    )
+                    // Made of the parts of the name when left empty
+                    CreationTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = form.contactDisplayName,
+                        onValueChange = { displayName -> onFormChanged(form.copy(contactDisplayName = displayName)) },
+                        label = stringResource(Res.string.display_name),
+                    )
+                }
                 CreationTextField(
-                    modifier = Modifier.weight(1f),
-                    value = form.contactNamePrefix,
-                    onValueChange = { prefix -> onFormChanged(form.copy(contactNamePrefix = prefix)) },
-                    label = stringResource(Res.string.name_prefix),
+                    modifier = Modifier.fillMaxWidth(),
+                    value = form.contactNickname,
+                    onValueChange = { nickname -> onFormChanged(form.copy(contactNickname = nickname)) },
+                    label = stringResource(Res.string.nickname),
                 )
-                CreationTextField(
-                    modifier = Modifier.weight(1f),
-                    value = form.contactNameSuffix,
-                    onValueChange = { suffix -> onFormChanged(form.copy(contactNameSuffix = suffix)) },
-                    label = stringResource(Res.string.name_suffix),
+            },
+            hasMoreOptionsSet = listOf(
+                form.contactNamePrefix,
+                form.contactNameSuffix,
+                form.contactMiddleName,
+                form.contactDisplayName,
+                form.contactNickname,
+            ).any { field -> field.isNotBlank() },
+        ) {
+            // A MeCard is shorter, and so a smaller code: its size shows under the fields
+            SegmentedChoice(
+                modifier = Modifier.fillMaxWidth(),
+                label = stringResource(Res.string.format),
+                options = ContactFormat.entries,
+                selectedOption = form.contactFormat,
+                optionText = { format -> stringResource(format.toText()) },
+                onOptionSelected = { format -> onFormChanged(form.copy(contactFormat = format)) },
+            )
+            CreationTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = form.contactFirstName,
+                onValueChange = { firstName -> onFormChanged(form.copy(contactFirstName = firstName)) },
+                label = stringResource(Res.string.first_name),
+            )
+            CreationTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = form.contactLastName,
+                onValueChange = { lastName -> onFormChanged(form.copy(contactLastName = lastName)) },
+                label = stringResource(Res.string.last_name),
+            )
+        }
+
+        // A MeCard holds the organization only
+        CreationSection(
+            modifier = Modifier.fillMaxWidth(),
+            title = stringResource(Res.string.work),
+            moreOptions = if (isVcard) {
+                {
+                    CreationTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = form.contactDepartment,
+                        onValueChange = { department -> onFormChanged(form.copy(contactDepartment = department)) },
+                        label = stringResource(Res.string.department),
+                    )
+                    CreationTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = form.contactTitle,
+                        onValueChange = { title -> onFormChanged(form.copy(contactTitle = title)) },
+                        label = stringResource(Res.string.job_title),
+                    )
+                }
+            } else {
+                null
+            },
+            hasMoreOptionsSet = form.contactDepartment.isNotBlank() || form.contactTitle.isNotBlank(),
+        ) {
+            CreationTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = form.contactOrganization,
+                onValueChange = { organization -> onFormChanged(form.copy(contactOrganization = organization)) },
+                label = stringResource(Res.string.organization),
+            )
+        }
+
+        CreationSection(
+            modifier = Modifier.fillMaxWidth(),
+            title = stringResource(Res.string.contact_details),
+        ) {
+            form.contactPhones.forEachIndexed { index, phone ->
+                EntryRow(
+                    value = phone.number,
+                    onValueChange = { number -> onFormChanged(form.copy(contactPhones = form.contactPhones.replaced(index, phone.copy(number = number)))) },
+                    label = stringResource(Res.string.phone),
+                    keyboardType = KeyboardType.Phone,
+                    types = ContactPhoneType.entries.takeIf { isVcard },
+                    selectedType = phone.type,
+                    typeText = { type -> stringResource(type.toText()) },
+                    onTypeSelected = { type -> onFormChanged(form.copy(contactPhones = form.contactPhones.replaced(index, phone.copy(type = type)))) },
+                    onRemoveClicked = { onFormChanged(form.copy(contactPhones = form.contactPhones.removed(index))) },
                 )
             }
-        }
-        CreationTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = form.contactFirstName,
-            onValueChange = { firstName -> onFormChanged(form.copy(contactFirstName = firstName)) },
-            label = stringResource(Res.string.first_name),
-        )
-        if (isVcard) {
-            CreationTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = form.contactMiddleName,
-                onValueChange = { middleName -> onFormChanged(form.copy(contactMiddleName = middleName)) },
-                label = stringResource(Res.string.middle_name),
+            AddButton(
+                text = stringResource(Res.string.add_phone),
+                onClick = { onFormChanged(form.copy(contactPhones = form.contactPhones + ContactPhoneField())) },
             )
-        }
-        CreationTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = form.contactLastName,
-            onValueChange = { lastName -> onFormChanged(form.copy(contactLastName = lastName)) },
-            label = stringResource(Res.string.last_name),
-        )
-        if (isVcard) {
-            // Made of the parts of the name when left empty
-            CreationTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = form.contactDisplayName,
-                onValueChange = { displayName -> onFormChanged(form.copy(contactDisplayName = displayName)) },
-                label = stringResource(Res.string.display_name),
+
+            form.contactEmails.forEachIndexed { index, email ->
+                EntryRow(
+                    value = email.value,
+                    onValueChange = { address -> onFormChanged(form.copy(contactEmails = form.contactEmails.replaced(index, email.copy(value = address)))) },
+                    label = stringResource(Res.string.email),
+                    keyboardType = KeyboardType.Email,
+                    types = ContactEntryType.entries.takeIf { isVcard },
+                    selectedType = email.type,
+                    typeText = { type -> stringResource(type.toText()) },
+                    onTypeSelected = { type -> onFormChanged(form.copy(contactEmails = form.contactEmails.replaced(index, email.copy(type = type)))) },
+                    onRemoveClicked = { onFormChanged(form.copy(contactEmails = form.contactEmails.removed(index))) },
+                )
+            }
+            AddButton(
+                text = stringResource(Res.string.add_email),
+                onClick = { onFormChanged(form.copy(contactEmails = form.contactEmails + ContactEntryField())) },
             )
-        }
-        CreationTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = form.contactNickname,
-            onValueChange = { nickname -> onFormChanged(form.copy(contactNickname = nickname)) },
-            label = stringResource(Res.string.nickname),
-        )
-        CreationTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = form.contactOrganization,
-            onValueChange = { organization -> onFormChanged(form.copy(contactOrganization = organization)) },
-            label = stringResource(Res.string.organization),
-        )
-        if (isVcard) {
-            CreationTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = form.contactDepartment,
-                onValueChange = { department -> onFormChanged(form.copy(contactDepartment = department)) },
-                label = stringResource(Res.string.department),
-            )
-            CreationTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = form.contactTitle,
-                onValueChange = { title -> onFormChanged(form.copy(contactTitle = title)) },
-                label = stringResource(Res.string.job_title),
+            form.contactWebsites.forEachIndexed { index, website ->
+                EntryRow(
+                    value = website.value,
+                    onValueChange = { url -> onFormChanged(form.copy(contactWebsites = form.contactWebsites.replaced(index, website.copy(value = url)))) },
+                    label = stringResource(Res.string.website),
+                    keyboardType = KeyboardType.Uri,
+                    types = ContactEntryType.entries.takeIf { isVcard },
+                    selectedType = website.type,
+                    typeText = { type -> stringResource(type.toText()) },
+                    onTypeSelected = { type -> onFormChanged(form.copy(contactWebsites = form.contactWebsites.replaced(index, website.copy(type = type)))) },
+                    onRemoveClicked = { onFormChanged(form.copy(contactWebsites = form.contactWebsites.removed(index))) },
+                )
+            }
+            AddButton(
+                text = stringResource(Res.string.add_website),
+                onClick = { onFormChanged(form.copy(contactWebsites = form.contactWebsites + ContactEntryField())) },
             )
         }
 
-        form.contactPhones.forEachIndexed { index, phone ->
-            EntryRow(
-                value = phone.number,
-                onValueChange = { number -> onFormChanged(form.copy(contactPhones = form.contactPhones.replaced(index, phone.copy(number = number)))) },
-                label = stringResource(Res.string.phone),
-                keyboardType = KeyboardType.Phone,
-                types = ContactPhoneType.entries.takeIf { isVcard },
-                selectedType = phone.type,
-                typeText = { type -> stringResource(type.toText()) },
-                onTypeSelected = { type -> onFormChanged(form.copy(contactPhones = form.contactPhones.replaced(index, phone.copy(type = type)))) },
-                onRemoveClicked = { onFormChanged(form.copy(contactPhones = form.contactPhones.removed(index))) },
+        CreationSection(
+            modifier = Modifier.fillMaxWidth(),
+            title = stringResource(Res.string.addresses),
+        ) {
+            form.contactAddresses.forEachIndexed { index, address ->
+                AddressFields(
+                    address = address,
+                    isTypeShown = isVcard,
+                    onAddressChange = { changedAddress ->
+                        onFormChanged(form.copy(contactAddresses = form.contactAddresses.replaced(index, changedAddress)))
+                    },
+                    onRemoveClicked = { onFormChanged(form.copy(contactAddresses = form.contactAddresses.removed(index))) },
+                )
+            }
+            AddButton(
+                text = stringResource(Res.string.add_address),
+                onClick = { onFormChanged(form.copy(contactAddresses = form.contactAddresses + ContactAddressField())) },
             )
         }
-        AddButton(
-            text = stringResource(Res.string.add_phone),
-            onClick = { onFormChanged(form.copy(contactPhones = form.contactPhones + ContactPhoneField())) },
-        )
 
-        form.contactEmails.forEachIndexed { index, email ->
-            EntryRow(
-                value = email.value,
-                onValueChange = { address -> onFormChanged(form.copy(contactEmails = form.contactEmails.replaced(index, email.copy(value = address)))) },
-                label = stringResource(Res.string.email),
-                keyboardType = KeyboardType.Email,
-                types = ContactEntryType.entries.takeIf { isVcard },
-                selectedType = email.type,
-                typeText = { type -> stringResource(type.toText()) },
-                onTypeSelected = { type -> onFormChanged(form.copy(contactEmails = form.contactEmails.replaced(index, email.copy(type = type)))) },
-                onRemoveClicked = { onFormChanged(form.copy(contactEmails = form.contactEmails.removed(index))) },
-            )
-        }
-        AddButton(
-            text = stringResource(Res.string.add_email),
-            onClick = { onFormChanged(form.copy(contactEmails = form.contactEmails + ContactEntryField())) },
-        )
-
-        form.contactAddresses.forEachIndexed { index, address ->
-            AddressFields(
-                address = address,
-                isTypeShown = isVcard,
-                onAddressChange = { changedAddress ->
-                    onFormChanged(form.copy(contactAddresses = form.contactAddresses.replaced(index, changedAddress)))
+        CreationSection(
+            modifier = Modifier.fillMaxWidth(),
+            title = stringResource(Res.string.other),
+        ) {
+            val birthday = form.contactBirthday.ifEmpty { null }?.let { birthday -> LocalDate.parse(birthday) }
+            SCDateField(
+                modifier = Modifier.fillMaxWidth(),
+                label = stringResource(Res.string.birthday),
+                dateText = birthday?.let { date -> calendarDayText(day = CalendarDay.Date(date = date)) }.orEmpty(),
+                selectedDateMillis = birthday?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds(),
+                // The calendar gives the day at midnight UTC
+                onDateSelected = { millis ->
+                    val date = millis?.let { Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.UTC).date }
+                    onFormChanged(form.copy(contactBirthday = date?.toString().orEmpty()))
                 },
-                onRemoveClicked = { onFormChanged(form.copy(contactAddresses = form.contactAddresses.removed(index))) },
+                style = SCTextFieldDefaults.Style.LIGHT,
+            )
+            CreationTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = form.contactNote,
+                onValueChange = { note -> onFormChanged(form.copy(contactNote = note)) },
+                label = stringResource(Res.string.note),
+                minLines = 3,
             )
         }
-        AddButton(
-            text = stringResource(Res.string.add_address),
-            onClick = { onFormChanged(form.copy(contactAddresses = form.contactAddresses + ContactAddressField())) },
-        )
-
-        form.contactWebsites.forEachIndexed { index, website ->
-            EntryRow(
-                value = website.value,
-                onValueChange = { url -> onFormChanged(form.copy(contactWebsites = form.contactWebsites.replaced(index, website.copy(value = url)))) },
-                label = stringResource(Res.string.website),
-                keyboardType = KeyboardType.Uri,
-                types = ContactEntryType.entries.takeIf { isVcard },
-                selectedType = website.type,
-                typeText = { type -> stringResource(type.toText()) },
-                onTypeSelected = { type -> onFormChanged(form.copy(contactWebsites = form.contactWebsites.replaced(index, website.copy(type = type)))) },
-                onRemoveClicked = { onFormChanged(form.copy(contactWebsites = form.contactWebsites.removed(index))) },
-            )
-        }
-        AddButton(
-            text = stringResource(Res.string.add_website),
-            onClick = { onFormChanged(form.copy(contactWebsites = form.contactWebsites + ContactEntryField())) },
-        )
-
-        val birthday = form.contactBirthday.ifEmpty { null }?.let { birthday -> LocalDate.parse(birthday) }
-        SCDateField(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.birthday),
-            dateText = birthday?.let { date -> calendarDayText(day = CalendarDay.Date(date = date)) }.orEmpty(),
-            selectedDateMillis = birthday?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds(),
-            // The calendar gives the day at midnight UTC
-            onDateSelected = { millis ->
-                val date = millis?.let { Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.UTC).date }
-                onFormChanged(form.copy(contactBirthday = date?.toString().orEmpty()))
-            },
-            style = SCTextFieldDefaults.Style.LIGHT,
-        )
-        CreationTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = form.contactNote,
-            onValueChange = { note -> onFormChanged(form.copy(contactNote = note)) },
-            label = stringResource(Res.string.note),
-            minLines = 3,
-        )
     }
 }
 

@@ -9,8 +9,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isPopup
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -192,7 +194,8 @@ internal class CreationFormFieldsTest : ComposeTest() {
         onNodeWithText(getString(Res.string.add_phone)).performScrollTo().performClick()
         onAllNodes(hasSetTextAction() and hasText(getString(Res.string.phone)))[1].performScrollTo().performTextInput("+33100000000")
         onAllNodesWithText(getString(Res.string.mobile))[1].performScrollTo().performClick()
-        onNodeWithText(getString(Res.string.type_work)).performClick()
+        // In the menu, not the section of the work, of the same name
+        onNode(hasText(getString(Res.string.type_work)) and hasAnyAncestor(isPopup())).performClick()
         // The e-mail row, empty, taken out
         onAllNodesWithContentDescription(getString(Res.string.remove))[2].performScrollTo().performClick()
 
