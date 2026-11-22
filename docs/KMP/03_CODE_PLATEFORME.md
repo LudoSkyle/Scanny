@@ -205,9 +205,9 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
 - Le code se montre dans une feuille (`CodeImageSheet`), ouverte par « Afficher le code » du détail
   d'un scan comme de celui d'une création, en grand pour qu'un autre téléphone le scanne, avec les
   actions sur son image : la partager, l'enregistrer dans les photos (`CodeImageExporter`, qui la
-  dessine puis la confie à `ImageSharer` ou `ImageSaver`). Enregistrée, le bouton le dit jusqu'à la
-  fermeture de la feuille : un message de l'écran passerait sous elle ; un échec la ferme, pour que
-  le message se lise. Un code scanné y est redessiné sombre sur blanc, une création dans son style.
+  dessine puis la confie à `ImageSharer` ou `ImageSaver`). Enregistrée, un message le dit dans la
+  feuille, avec « Voir » pour l'ouvrir dans les photos : un message de l'écran passerait sous elle ;
+  un échec la ferme, pour que le message se lise. Un code scanné y est redessiné sombre sur blanc, une création dans son style.
 - L'image d'un code se dessine en commun (`CodeImageRenderer`, hors du fil principal) : un PNG
   de 1024 pixels de côté pour un QR code, dans son style, 1200 × 480 pour un code-barres, sombre sur
   blanc, avec la marge dont un lecteur a besoin autour d'un code, de la couleur du fond.
@@ -230,7 +230,11 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   sans permission à partir d'Android 10 ; en dessous, l'action n'est pas proposée (`canSave`), la
   feuille de partage gardant l'image ailleurs. iOS l'ajoute aux photos par `PHPhotoLibrary`, en accès
   ajout seul : la clé `NSPhotoLibraryAddUsageDescription` de l'`Info.plist` dit pourquoi, en anglais
-  et en français.
+  et en français. L'image enregistrée revient en `SavedImage` : son URI de contenu sur Android,
+  l'identifiant local de son asset sur iOS.
+- La voir passe par `rememberSavedImageOpener`. Android ouvre l'image elle-même dans la galerie
+  (`ACTION_VIEW`, avec le droit de la lire). iOS ne laisse aucune app ouvrir une photo donnée : il
+  ouvre l'app Photos (`photos-redirect://`), où l'image est la plus récente.
 - Partager passe par `TextSharer`, une interface, et partage la valeur brute du code : c'est ce
   qu'une autre app, ou un autre scanner, sait relire. Le module Koin de plateforme
   (`platformSharedModule`) fournit son implémentation.

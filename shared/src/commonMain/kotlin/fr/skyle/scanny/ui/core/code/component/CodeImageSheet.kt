@@ -12,12 +12,13 @@ import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.bottomsheet.SCBottomSheet
 import fr.skyle.scanny.designsystem.core.button.SCButton
 import fr.skyle.scanny.designsystem.core.button.SCButtonDefaults
+import fr.skyle.scanny.designsystem.core.snackbar.SCSnackbarState
+import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
-import fr.skyle.scanny.resources.image_saved_short
 import fr.skyle.scanny.resources.save_image
 import fr.skyle.scanny.resources.share_image
 import fr.skyle.scanny.resources.the_code
@@ -29,8 +30,8 @@ private const val CODE_WIDTH_FRACTION = 0.8f
 
 /**
  * A code drawn again, in its [style], for another phone to scan it from the screen, with the actions
- * on its image: share it, keep it in the photos. Once saved, the button says so until the sheet
- * closes: a message of the screen would show under the sheet.
+ * on its image: share it, keep it in the photos. The messages about the image show in the sheet
+ * ([snackbarState]): a message of the screen would show under it.
  */
 @Composable
 fun CodeImageSheet(
@@ -38,7 +39,7 @@ fun CodeImageSheet(
     format: BarcodeFormat,
     style: CodeStyle,
     canSave: Boolean,
-    isSaved: Boolean,
+    snackbarState: SCSnackbarState,
     onShareClicked: () -> Unit,
     onSaveClicked: () -> Unit,
     onDismissRequest: () -> Unit,
@@ -47,6 +48,7 @@ fun CodeImageSheet(
     SCBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
+        snackbarState = snackbarState,
     ) {
         Column(
             modifier = Modifier
@@ -78,7 +80,7 @@ fun CodeImageSheet(
 
                 SCButton(
                     modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(if (isSaved) Res.string.image_saved_short else Res.string.save_image),
+                    text = stringResource(Res.string.save_image),
                     onClick = onSaveClicked,
                     style = SCButtonDefaults.Style.SECONDARY,
                     size = SCButtonDefaults.Size.MEDIUM,
@@ -100,7 +102,7 @@ private fun PreviewCodeImageSheet() {
                 dotShape = CodeShape.ROUNDED,
             ),
             canSave = true,
-            isSaved = false,
+            snackbarState = rememberSCSnackbarState(),
             onShareClicked = {},
             onSaveClicked = {},
             onDismissRequest = {},

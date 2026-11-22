@@ -11,6 +11,7 @@ import fr.skyle.scanny.fake.FakeImageSaver
 import fr.skyle.scanny.fake.FakeImageSharer
 import fr.skyle.scanny.fake.FakeWatchCreationUseCase
 import fr.skyle.scanny.fake.FixedClock
+import fr.skyle.scanny.platform.image.SavedImage
 import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
 import fr.skyle.scanny.ui.core.code.model.CodeField
 import fr.skyle.scanny.ui.core.code.model.CodeType
@@ -192,7 +193,7 @@ class CreationDetailViewModelTest {
             actual = imageSaver.savedImages,
         )
         assertEquals(
-            expected = listOf(CreationDetailViewModel.CreationDetailEvent.ImageSaved),
+            expected = listOf(CreationDetailViewModel.CreationDetailEvent.ImageSaved(savedImage = SavedImage(id = "saved/scanny-3.png"))),
             actual = events,
         )
     }

@@ -116,7 +116,7 @@
     <string name="history_not_cleared">L'historique n'a pas pu être effacé</string>
     <string name="image_not_saved">L'image n'a pas pu être enregistrée</string>
     <string name="image_not_shared">L'image n'a pas pu être partagée</string>
-    <string name="image_saved_short">Image enregistrée</string>
+    <string name="image_saved">Image enregistrée dans les photos</string>
     <string name="job_title">Fonction</string>
     <string name="join_network">Rejoindre le réseau</string>
     <string name="keep_history">Conserver l'historique</string>
@@ -183,6 +183,7 @@
     <string name="scanned_codes_appear_here">Les codes que vous scannez apparaissent ici.</string>
     <string name="scans">Scans</string>
     <string name="security">Sécurité</string>
+    <string name="see">Voir</string>
     <string name="see_detail">Voir le détail</string>
     <string name="see_group">Voir le groupe</string>
     <string name="send_email">Envoyer l'e-mail</string>

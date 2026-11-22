@@ -3,6 +3,7 @@ package fr.skyle.scanny.ui.core.code.image
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.platform.image.ImageSaver
+import fr.skyle.scanny.platform.image.SavedImage
 import fr.skyle.scanny.platform.share.ImageSharer
 
 /** Draws the image of a code, then lends it to another app or keeps it in the photos. */
@@ -33,13 +34,13 @@ class CodeImageExporter(
         )
     }
 
-    /** Throws when the image cannot be drawn or saved, the photos refused for instance. */
+    /** Returns where the image is kept; throws when it cannot be drawn or saved, the photos refused for instance. */
     suspend fun save(
         rawValue: String,
         format: BarcodeFormat,
         style: CodeStyle,
         fileName: String,
-    ) {
+    ): SavedImage =
         imageSaver.saveImage(
             png = codeImageRenderer.renderPng(
                 rawValue = rawValue,
@@ -48,5 +49,4 @@ class CodeImageExporter(
             ),
             fileName = fileName,
         )
-    }
 }
