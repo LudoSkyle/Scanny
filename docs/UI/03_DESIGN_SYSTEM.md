@@ -19,7 +19,7 @@ On y trouve :
   `SCDropdownMenu` (le menu seul, sous l'élément où il est placé), `SCDivider` (une ligne entre deux
   rangées d'une carte), `SCSegmentedControl` (un choix entre quelques options côte à côte, chacune
   lue comme un onglet), `SCTag` (un court libellé dans une pastille, qui classe ce qu'il
-  accompagne : un type, un groupe ; `FILLED` ressort parmi les `LIGHT`) et `SCColorPicker`
+  accompagne : le type d'un code, les types des codes d'un groupe) et `SCColorPicker`
   (n'importe quelle couleur, par sa teinte sur une barre puis sa saturation et sa luminosité sur un
   carré, en HSV que l'appelant garde).
   Les autres arrivent avec le premier écran qui en a besoin ;

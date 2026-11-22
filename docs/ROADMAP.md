@@ -257,7 +257,7 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] Une couleur saisie en hexadécimal ou en RVB
     - [x] La snackbar « Voir » après l'enregistrement d'une image
     - [x] Le contenu brut plus visible replié, et son réglage pour la feuille d'un scan
-    - [ ] La ligne d'un groupe dans l'historique, et la séparation dans son détail
+    - [x] La ligne d'un groupe dans l'historique, et la séparation dans son détail
     - [ ] Les fiches « i » du type et du format
 12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI. Deux remarques
     d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton galerie le temps
