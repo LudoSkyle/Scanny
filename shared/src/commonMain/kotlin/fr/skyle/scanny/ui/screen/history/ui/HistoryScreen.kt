@@ -166,6 +166,7 @@ private fun PreviewHistoryScreen() {
                             summary = "https://scanny.app",
                             time = "21:48",
                             codeCount = 1,
+                            codeTypes = listOf(CodeType.LINK),
                         ),
                         ScanHistoryItem(
                             scanId = 2,
@@ -174,6 +175,7 @@ private fun PreviewHistoryScreen() {
                             summary = "Scanny",
                             time = "09:05",
                             codeCount = 1,
+                            codeTypes = listOf(CodeType.WIFI),
                         ),
                     ),
                 ),
@@ -193,6 +195,7 @@ private fun PreviewHistoryScreen() {
                             summary = "John Doe",
                             time = "18:30",
                             codeCount = 1,
+                            codeTypes = listOf(CodeType.CONTACT),
                         ),
                     ),
                 ),

@@ -52,10 +52,16 @@ final class MultipleScanUITests: XCTestCase {
         // The group is in the history, and opens from there
         XCTAssertTrue(app.buttons["History"].waitForExistence(timeout: 5))
         app.buttons["History"].tap()
-        let groupRow = element(labelled: link, in: app)
+        // A group is told by its number of codes and their types, not by its first code. The newest,
+        // first of the list
+        let groupRows = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Group of 3 codes"))
+        let groupRow = groupRows.firstMatch
         XCTAssertTrue(groupRow.waitForExistence(timeout: 5))
-        // A group says so in its pill, apart from the single codes
-        XCTAssertTrue(groupRow.label.contains("Group · 3 codes"))
+        XCTAssertTrue(groupRow.label.contains("Wi-Fi"))
+        // Told apart from the groups of the earlier runs by its time, its last text. The label of the
+        // row joins its first five texts only: the time is found among its children
+        let groupTime = try XCTUnwrap(groupRow.staticTexts.allElementsBoundByIndex.last?.label)
+        let thisGroupRow = groupRows.containing(NSPredicate(format: "label == %@", groupTime)).firstMatch
         keepScreenshot(named: "history-with-group", of: app)
         groupRow.tap()
         XCTAssertTrue(app.staticTexts["Group"].waitForExistence(timeout: 5))
@@ -66,7 +72,7 @@ final class MultipleScanUITests: XCTestCase {
         // The confirmation of the dialog, the last of the buttons named so
         app.buttons.matching(identifier: "Delete").allElementsBoundByIndex.last?.tap()
         XCTAssertTrue(app.staticTexts["History"].waitForExistence(timeout: 5))
-        XCTAssertTrue(element(labelled: link, in: app).waitForNonExistence(timeout: 5))
+        XCTAssertTrue(thisGroupRow.waitForNonExistence(timeout: 5))
     }
 
     // Touched once enabled and still: a touch as it turns on, while the bar settles, is lost

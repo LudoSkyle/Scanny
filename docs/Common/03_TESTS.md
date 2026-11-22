@@ -266,7 +266,8 @@ greffe de préférence à un test existant plutôt qu'à un nouveau lancement de
   avec une capture récente (la purge du démarrage supprimerait une capture ancienne), remplace celle
   de l'app ; l'app lancée, la base est à la nouvelle version et la capture toujours là.
 - Une ligne cliquable est un bouton dont le texte est aussi vu à part : pour compter des lignes, on
-  compte les boutons (`app.buttons`).
+  compte les boutons (`app.buttons`). Son libellé ne réunit que ses cinq premiers textes : un texte
+  au-delà (l'heure d'un groupe à trois types) se cherche parmi ses enfants (`staticTexts`).
 - Une demande du système s'accepte quand son alerte gêne un toucher (`allowTheSystemAlertsInTheWay`,
   posé dans le `setUp` de chaque classe), sans rien coûter quand aucune ne s'affiche : demandée une
   fois, le simulateur garde la réponse. Une alerte qu'aucun toucher ne rencontre (l'ajout aux photos,

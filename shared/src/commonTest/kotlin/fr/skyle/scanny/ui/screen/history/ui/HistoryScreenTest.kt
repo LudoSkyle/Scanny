@@ -22,11 +22,14 @@ import fr.skyle.scanny.resources.all_scans_deleted
 import fr.skyle.scanny.resources.clear
 import fr.skyle.scanny.resources.clear_history
 import fr.skyle.scanny.resources.clear_history_question
+import fr.skyle.scanny.resources.contact
 import fr.skyle.scanny.resources.creations
-import fr.skyle.scanny.resources.group_of_codes
+import fr.skyle.scanny.resources.group_of_n_codes
+import fr.skyle.scanny.resources.more_count
 import fr.skyle.scanny.resources.no_creation_yet
 import fr.skyle.scanny.resources.no_scan_yet
 import fr.skyle.scanny.resources.scans
+import fr.skyle.scanny.resources.wifi
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.screen.history.ui.component.ClearHistoryDialog
@@ -44,7 +47,7 @@ import kotlin.test.assertEquals
 internal class HistoryScreenTest : ComposeTest() {
 
     @Test
-    fun `a scan opens from its row and a group tells its number of codes`() = runComposeUiTest {
+    fun `a scan opens from its row and a group tells its number of codes and their types`() = runComposeUiTest {
         // Given
         val clicked = mutableListOf<ScanHistoryItem>()
         setContent {
@@ -58,11 +61,45 @@ internal class HistoryScreenTest : ComposeTest() {
         onNodeWithText(LINK.summary).performClick()
 
         // Then
-        onNodeWithText(getString(Res.string.group_of_codes, 3)).assertExists()
+        onNodeWithText(getString(Res.string.group_of_n_codes, 3)).assertExists()
+        onNodeWithText(getString(Res.string.wifi)).assertExists()
         assertEquals(
             expected = listOf(LINK),
             actual = clicked,
         )
+    }
+
+    @Test
+    fun `a group shows three types of its codes and counts the others`() = runComposeUiTest {
+        // When
+        setContent {
+            historyScreen(
+                selectedView = HistoryView.SCANS,
+                scanSections = listOf(
+                    ScanHistorySection(
+                        day = CalendarDay.Today,
+                        items = listOf(
+                            ScanHistoryItem(
+                                scanId = 1,
+                                firstCodeId = 1,
+                                type = CodeType.TEXT,
+                                summary = "First of six",
+                                time = "09:05",
+                                codeCount = 6,
+                                codeTypes = listOf(CodeType.TEXT, CodeType.LINK, CodeType.WIFI, CodeType.CONTACT, CodeType.SMS),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+        }
+
+        // Then
+        onNodeWithText(getString(Res.string.wifi)).assertExists()
+        onNodeWithText(getString(Res.string.contact)).assertDoesNotExist()
+        onNodeWithText(getString(Res.string.more_count, 2)).assertExists()
+        // Told by its number, not by its first code
+        onNodeWithText("First of six").assertDoesNotExist()
     }
 
     @Test
@@ -198,6 +235,7 @@ internal class HistoryScreenTest : ComposeTest() {
             summary = "https://scanny.app",
             time = "21:48",
             codeCount = 1,
+            codeTypes = listOf(CodeType.LINK),
         )
         val SCAN_SECTIONS = listOf(
             ScanHistorySection(
@@ -211,6 +249,7 @@ internal class HistoryScreenTest : ComposeTest() {
                         summary = "First of three",
                         time = "09:05",
                         codeCount = 3,
+                        codeTypes = listOf(CodeType.TEXT, CodeType.WIFI),
                     ),
                 ),
             ),

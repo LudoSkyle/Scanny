@@ -40,6 +40,7 @@
         <item quantity="other">%1$d codes found</item>
     </plurals>
     <string name="codes_not_saved">They will not be saved.</string>
+    <string name="codes_of_group">Codes of the group</string>
     <string name="color_black">Black</string>
     <string name="color_brown">Brown</string>
     <string name="color_component_blue">Blue</string>
@@ -120,7 +121,7 @@
     <string name="group">Group</string>
     <string name="group_codes_removed_from_history">Its codes will be removed from the history.</string>
     <string name="group_not_deleted">The group could not be deleted</string>
-    <string name="group_of_codes">Group · %1$d codes</string>
+    <string name="group_of_n_codes">Group of %1$d codes</string>
     <string name="hidden_network">Hidden network</string>
     <string name="history">History</string>
     <string name="history_not_cleared">The history could not be cleared</string>
@@ -157,6 +158,7 @@
         <item>November</item>
         <item>December</item>
     </string-array>
+    <string name="more_count" translatable="false">+%1$d</string>
     <string name="multiple_scan">Multiple scan</string>
     <string name="name">Name</string>
     <string name="network">Network</string>
