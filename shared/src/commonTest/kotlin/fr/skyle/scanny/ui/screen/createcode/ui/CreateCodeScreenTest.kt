@@ -1,6 +1,9 @@
 package fr.skyle.scanny.ui.screen.createcode.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsSelected
@@ -30,6 +33,7 @@ import fr.skyle.scanny.resources.error_correction_medium
 import fr.skyle.scanny.resources.error_correction_too_high_for_content
 import fr.skyle.scanny.resources.logo_needs_highest_correction
 import fr.skyle.scanny.resources.next
+import fr.skyle.scanny.resources.reset_customization
 import fr.skyle.scanny.resources.step_of
 import fr.skyle.scanny.resources.the_code
 import fr.skyle.scanny.resources.value_not_for_format
@@ -308,6 +312,51 @@ internal class CreateCodeScreenTest : ComposeTest() {
         onNodeWithText(getString(Res.string.logo_needs_highest_correction)).assertExists()
     }
 
+    @Test
+    fun `the customization is reset from the top bar of its step`() = runComposeUiTest {
+        // Given
+        var resetCount = 0
+        setContent {
+            createCodeScreen(
+                form = CreationForm(text = "Hello"),
+                preview = CodePreview.Code(rawValue = "Hello", format = BarcodeFormat.QR_CODE),
+                step = CreationStep.STYLE,
+                canResetStyle = true,
+                onResetStyleClicked = { resetCount++ },
+            )
+        }
+
+        // When
+        onNodeWithContentDescription(getString(Res.string.reset_customization)).performClick()
+
+        // Then
+        assertEquals(
+            expected = 1,
+            actual = resetCount,
+        )
+    }
+
+    @Test
+    fun `a default customization has nothing to reset and the content has no reset`() = runComposeUiTest {
+        // Given
+        var step by mutableStateOf(CreationStep.STYLE)
+        setContent {
+            createCodeScreen(
+                form = CreationForm(text = "Hello"),
+                preview = CodePreview.Code(rawValue = "Hello", format = BarcodeFormat.QR_CODE),
+                step = step,
+                canResetStyle = false,
+            )
+        }
+        onNodeWithContentDescription(getString(Res.string.reset_customization)).assertIsNotEnabled()
+
+        // When
+        step = CreationStep.CONTENT
+
+        // Then
+        onNodeWithContentDescription(getString(Res.string.reset_customization)).assertDoesNotExist()
+    }
+
     @Composable
     private fun createCodeScreen(
         form: CreationForm,
@@ -321,7 +370,9 @@ internal class CreateCodeScreenTest : ComposeTest() {
             )
         },
         logoBlocker: LogoBlocker? = null,
+        canResetStyle: Boolean = false,
         onStyleChanged: (CodeStyle) -> Unit = {},
+        onResetStyleClicked: () -> Unit = {},
         onNextClicked: () -> Unit = {},
         onCreateClicked: () -> Unit = {},
     ) {
@@ -333,12 +384,14 @@ internal class CreateCodeScreenTest : ComposeTest() {
                 errorCorrectionChoices = errorCorrectionChoices,
                 logoBlocker = logoBlocker,
                 style = CodeStyle(),
+                canResetStyle = canResetStyle,
                 step = step,
                 isCreating = false,
                 snackbarState = rememberSCSnackbarState(),
                 onBackClicked = {},
                 onFormChanged = {},
                 onStyleChanged = onStyleChanged,
+                onResetStyleClicked = onResetStyleClicked,
                 onAddLogoClicked = {},
                 onNextClicked = onNextClicked,
                 onCreateClicked = onCreateClicked,

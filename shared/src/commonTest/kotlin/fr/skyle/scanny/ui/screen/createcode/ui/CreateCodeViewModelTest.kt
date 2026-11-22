@@ -33,8 +33,8 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.time.Instant
 
 // The test dispatchers of kotlinx-coroutines-test are still experimental
@@ -234,6 +234,80 @@ class CreateCodeViewModelTest {
         assertEquals(
             expected = listOf(CodeStyle(errorCorrection = CodeErrorCorrection.MEDIUM)),
             actual = recordCreationUseCase.recordedCreations.map(FakeRecordCreationUseCase.RecordedCreation::style),
+        )
+    }
+
+    @Test
+    fun `resetting the customization keeps the correction chosen with the content`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+        val events = mutableListOf<CreateCodeViewModel.CreateCodeEvent>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.event.toList(events)
+        }
+        viewModel.onStyleChanged(style = CUSTOMIZED_STYLE)
+
+        // When
+        viewModel.onResetStyleClicked()
+
+        // Then
+        assertEquals(
+            expected = Triple(CodeStyle(errorCorrection = CodeErrorCorrection.HIGH), false, listOf<CreateCodeViewModel.CreateCodeEvent>(CreateCodeViewModel.CreateCodeEvent.StyleReset)),
+            actual = Triple(viewModel.uiState.value.style, viewModel.uiState.value.canResetStyle, events.toList()),
+        )
+    }
+
+    @Test
+    fun `a reset customization comes back when the reset is undone`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+        viewModel.onStyleChanged(style = CUSTOMIZED_STYLE)
+        viewModel.onResetStyleClicked()
+
+        // When
+        viewModel.onUndoStyleResetClicked()
+
+        // Then
+        assertEquals(
+            expected = CUSTOMIZED_STYLE to true,
+            actual = viewModel.uiState.value.style to viewModel.uiState.value.canResetStyle,
+        )
+    }
+
+    @Test
+    fun `a customization changed after its reset is not undone by it`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+        viewModel.onStyleChanged(style = CUSTOMIZED_STYLE)
+        viewModel.onResetStyleClicked()
+        viewModel.onStyleChanged(style = CodeStyle(darkColor = 0xFF1B5E20))
+
+        // When
+        viewModel.onUndoStyleResetClicked()
+
+        // Then
+        assertEquals(
+            expected = CodeStyle(darkColor = 0xFF1B5E20),
+            actual = viewModel.uiState.value.style,
+        )
+    }
+
+    @Test
+    fun `a default customization is not reset`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createCodeViewModel(recordCreationUseCase = FakeRecordCreationUseCase())
+        val events = mutableListOf<CreateCodeViewModel.CreateCodeEvent>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.event.toList(events)
+        }
+
+        // When
+        viewModel.onResetStyleClicked()
+
+        // Then
+        assertEquals(
+            expected = false to emptyList<CreateCodeViewModel.CreateCodeEvent>(),
+            actual = viewModel.uiState.value.canResetStyle to events.toList(),
         )
     }
 
@@ -646,6 +720,16 @@ class CreateCodeViewModelTest {
     }
 
     private companion object {
+        // Every part of the customization changed, and the correction chosen with the content
+        val CUSTOMIZED_STYLE = CodeStyle(
+            darkColor = 0xFF3B43BE,
+            lightColor = 0xFFFFF8E1,
+            cornerColor = 0xFFB71C1C,
+            dotShape = CodeShape.CIRCLE,
+            logo = byteArrayOf(1, 2, 3),
+            errorCorrection = CodeErrorCorrection.HIGH,
+        )
+
         val STYLE = CodeStyle(
             darkColor = 0xFF3B43BE,
             lightColor = 0xFFFFF8E1,

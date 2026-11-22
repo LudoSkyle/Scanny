@@ -49,6 +49,9 @@ class CreateCodeViewModel(
     private val _event = Channel<CreateCodeEvent>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
 
+    // The customization before it was reset, until it changes again: undoing the reset brings it back
+    private var styleBeforeReset: CodeStyle? = null
+
     init {
         // Filled once with the code it opens on, then the user's
         if (source != CreationSource.New) {
@@ -105,16 +108,34 @@ class CreateCodeViewModel(
 
     // The correction and the logo change what the code holds
     fun onStyleChanged(style: CodeStyle) {
+        styleBeforeReset = null
         _uiState.update { uiState ->
             uiState.copy(style = style).withDerivedState()
         }
     }
 
+    // Back to the default customization: the correction, chosen with the content, stays
+    fun onResetStyleClicked() {
+        val style = _uiState.value.style
+        val defaultStyle = style.toDefaultCustomization()
+        if (style == defaultStyle) {
+            return
+        }
+
+        onStyleChanged(style = defaultStyle)
+        styleBeforeReset = style
+        _event.trySend(CreateCodeEvent.StyleReset)
+    }
+
+    fun onUndoStyleResetClicked() {
+        styleBeforeReset?.let { style ->
+            onStyleChanged(style = style)
+        }
+    }
+
     fun onLogoPicked(result: LogoPickResult) {
         when (result) {
-            is LogoPickResult.Picked -> _uiState.update { uiState ->
-                uiState.copy(style = uiState.style.copy(logo = result.png)).withDerivedState()
-            }
+            is LogoPickResult.Picked -> onStyleChanged(style = _uiState.value.style.copy(logo = result.png))
 
             LogoPickResult.Unreadable -> _event.trySend(CreateCodeEvent.LogoNotRead)
         }
@@ -181,8 +202,12 @@ class CreateCodeViewModel(
                 rawValue = rawValue,
                 style = style,
             ),
+            canResetStyle = style != style.toDefaultCustomization(),
         )
     }
+
+    private fun CodeStyle.toDefaultCustomization(): CodeStyle =
+        CodeStyle(errorCorrection = errorCorrection)
 
     // A QR code is tried with the correction it will be encoded with
     private fun CreationForm.toCodePreview(
@@ -214,6 +239,8 @@ class CreateCodeViewModel(
         val errorCorrectionChoices: List<ErrorCorrectionChoice> = emptyList(),
         // Null when a logo can be added
         val logoBlocker: LogoBlocker? = null,
+        // False when the customization is the default one
+        val canResetStyle: Boolean = false,
         val style: CodeStyle = CodeStyle(),
         val step: CreationStep = CreationStep.CONTENT,
         val isCreating: Boolean = false,
@@ -223,5 +250,6 @@ class CreateCodeViewModel(
         data class OpenCreationDetail(val creationId: Long) : CreateCodeEvent
         data object CreationNotSaved : CreateCodeEvent
         data object LogoNotRead : CreateCodeEvent
+        data object StyleReset : CreateCodeEvent
     }
 }
