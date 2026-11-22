@@ -2,6 +2,7 @@ package fr.skyle.scanny.ui.core.code.mapper
 
 import androidx.compose.ui.graphics.Color
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
+import fr.skyle.scanny.domain.model.CodeGradient
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.ui.core.code.model.CodeReadability
 import io.github.alexzhirkevich.qrose.matrix.qr.QrErrorCorrection
@@ -121,6 +122,23 @@ class CodeStyleMapperTest {
         assertEquals(
             expected = CodeReadability.INVERTED,
             actual = readability,
+        )
+    }
+
+    @Test
+    fun `a gradient whose second color stands out too little is told and an unused one is not`() {
+        // When
+        val readabilities = listOf(CodeGradient.LINEAR, CodeGradient.NONE).map { gradient ->
+            CodeStyle(
+                gradient = gradient,
+                gradientColor = 0xFFDDDDDD,
+            ).readability()
+        }
+
+        // Then
+        assertEquals(
+            expected = listOf(CodeReadability.LOW_CONTRAST, CodeReadability.GOOD),
+            actual = readabilities,
         )
     }
 

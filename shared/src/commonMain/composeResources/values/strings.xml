@@ -108,6 +108,11 @@
     <string name="finish">Finish</string>
     <string name="format">Format</string>
     <string name="give_feedback">Give your feedback</string>
+    <string name="gradient">Gradient</string>
+    <string name="gradient_color">Second color of the gradient</string>
+    <string name="gradient_linear">Linear</string>
+    <string name="gradient_none">None</string>
+    <string name="gradient_radial">Radial</string>
     <string name="group">Group</string>
     <string name="group_codes_removed_from_history">Its codes will be removed from the history.</string>
     <string name="group_not_deleted">The group could not be deleted</string>

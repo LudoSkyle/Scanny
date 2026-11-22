@@ -8,6 +8,7 @@ import fr.skyle.scanny.domain.fake.FixedClock
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
+import fr.skyle.scanny.domain.model.CodeGradient
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.Creation
@@ -38,6 +39,8 @@ class RecordCreationUseCaseTest {
                 darkColor = 0xFF1A237E,
                 lightColor = 0xFFFFF8E1,
                 cornerColor = 0xFFB71C1C,
+                gradient = CodeGradient.RADIAL,
+                gradientColor = 0xFF1B5E20,
                 dotShape = CodeShape.CIRCLE,
                 cornerShape = CodeShape.ROUNDED,
                 logo = byteArrayOf(1, 2, 3),
@@ -56,6 +59,8 @@ class RecordCreationUseCaseTest {
                         darkColor = 0xFF1A237E,
                         lightColor = 0xFFFFF8E1,
                         cornerColor = 0xFFB71C1C,
+                        gradient = "RADIAL",
+                        gradientColor = 0xFF1B5E20,
                         dotShape = "CIRCLE",
                         cornerShape = "ROUNDED",
                         logo = byteArrayOf(1, 2, 3),

@@ -127,6 +127,7 @@ fun CodeStyleFields(
             style = style,
             onStyleChanged = onStyleChanged,
             onCustomCornerColorClicked = { customColorTarget = CustomColorTarget.CORNERS },
+            onCustomGradientColorClicked = { customColorTarget = CustomColorTarget.GRADIENT },
         )
     }
 
@@ -136,6 +137,7 @@ fun CodeStyleFields(
                 CustomColorTarget.DOTS -> style.darkColor
                 CustomColorTarget.BACKGROUND -> style.lightColor
                 CustomColorTarget.CORNERS -> style.cornerColor ?: style.darkColor
+                CustomColorTarget.GRADIENT -> style.gradientColor
             },
             onColorChosen = { argb ->
                 customColorTarget = null
@@ -144,6 +146,7 @@ fun CodeStyleFields(
                         CustomColorTarget.DOTS -> style.copy(darkColor = argb)
                         CustomColorTarget.BACKGROUND -> style.copy(lightColor = argb)
                         CustomColorTarget.CORNERS -> style.copy(cornerColor = argb)
+                        CustomColorTarget.GRADIENT -> style.copy(gradientColor = argb)
                     },
                 )
             },
@@ -156,6 +159,7 @@ private enum class CustomColorTarget {
     DOTS,
     BACKGROUND,
     CORNERS,
+    GRADIENT,
 }
 
 @AppPreviewWithBackground

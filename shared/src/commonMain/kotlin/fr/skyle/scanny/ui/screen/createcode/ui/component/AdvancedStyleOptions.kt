@@ -1,6 +1,8 @@
 package fr.skyle.scanny.ui.screen.createcode.ui.component
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,12 +14,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.card.SCCardDefaults
 import fr.skyle.scanny.designsystem.core.card.SCExpandableCardStructure
+import fr.skyle.scanny.designsystem.core.segmentedcontrol.SCSegmentedControl
+import fr.skyle.scanny.designsystem.core.segmentedcontrol.SCSegmentedControlDefaults
+import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.CodeGradient
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.advanced_options
 import fr.skyle.scanny.resources.corner_color
 import fr.skyle.scanny.resources.corner_color_like_dots
+import fr.skyle.scanny.resources.gradient
+import fr.skyle.scanny.resources.gradient_color
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toText
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeDotColor
@@ -26,19 +34,24 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * The customization few need, folded under its title: the color of the three corners, the one of the
- * dots unless chosen apart.
+ * dots unless chosen apart, and a gradient of the dots to a second color.
  */
 @Composable
 fun AdvancedStyleOptions(
     style: CodeStyle,
     onStyleChanged: (CodeStyle) -> Unit,
     onCustomCornerColorClicked: () -> Unit,
+    onCustomGradientColorClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
-    val cornerColorOptions = listOf(CornerColorOption.LikeDots) + CodeDotColor.entries.map(CornerColorOption::Palette)
+    // The color of the dots is offered once, as theirs: a disc of the palette would look the same
+    val cornerColorOptions = listOf(CornerColorOption.LikeDots) +
+        CodeDotColor.entries.filter { color -> color.argb != style.darkColor }.map(CornerColorOption::Palette)
+    val cornerColor = style.cornerColor?.takeIf { argb -> argb != style.darkColor }
     // A color out of the palette shows on the last disc
-    val customCornerColor = style.cornerColor?.takeIf { argb -> CodeDotColor.entries.none { color -> color.argb == argb } }
+    val customCornerColor = cornerColor?.takeIf { argb -> CodeDotColor.entries.none { color -> color.argb == argb } }
+    val customGradientColor = style.gradientColor.takeIf { argb -> CodeDotColor.entries.none { color -> color.argb == argb } }
 
     SCExpandableCardStructure(
         modifier = modifier,
@@ -51,7 +64,7 @@ fun AdvancedStyleOptions(
             modifier = Modifier.fillMaxWidth(),
             label = stringResource(Res.string.corner_color),
             options = cornerColorOptions,
-            selectedOption = when (val cornerColor = style.cornerColor) {
+            selectedOption = when (cornerColor) {
                 null -> CornerColorOption.LikeDots
                 else -> CodeDotColor.entries.firstOrNull { color -> color.argb == cornerColor }?.let(CornerColorOption::Palette)
             },
@@ -80,6 +93,46 @@ fun AdvancedStyleOptions(
             customColor = customCornerColor?.let { argb -> Color(color = argb) },
             onCustomColorClicked = onCustomCornerColorClicked,
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        SCText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
+            text = stringResource(Res.string.gradient),
+            style = SCTheme.typography.body2,
+            color = SCTheme.colors.text,
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        SCSegmentedControl(
+            modifier = Modifier.fillMaxWidth(),
+            options = CodeGradient.entries,
+            selectedOption = style.gradient,
+            optionText = { gradient -> stringResource(gradient.toText()) },
+            onOptionSelected = { gradient -> onStyleChanged(style.copy(gradient = gradient)) },
+            style = SCSegmentedControlDefaults.Style.PRIMARY,
+            size = SCSegmentedControlDefaults.Size.MEDIUM,
+        )
+
+        // The color the dots go to, from their own
+        if (style.gradient != CodeGradient.NONE) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ColorChoiceRow(
+                modifier = Modifier.fillMaxWidth(),
+                label = stringResource(Res.string.gradient_color),
+                options = CodeDotColor.entries,
+                selectedOption = CodeDotColor.entries.firstOrNull { color -> color.argb == style.gradientColor },
+                optionColor = { color -> Color(color = color.argb) },
+                optionName = { color -> stringResource(color.toText()) },
+                onOptionSelected = { color -> onStyleChanged(style.copy(gradientColor = color.argb)) },
+                customColor = customGradientColor?.let { argb -> Color(color = argb) },
+                onCustomColorClicked = onCustomGradientColorClicked,
+            )
+        }
     }
 }
 
@@ -91,9 +144,13 @@ private fun PreviewAdvancedStyleOptions() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(all = 16.dp),
-            style = CodeStyle(cornerColor = CodeDotColor.RED.argb),
+            style = CodeStyle(
+                cornerColor = CodeDotColor.RED.argb,
+                gradient = CodeGradient.LINEAR,
+            ),
             onStyleChanged = {},
             onCustomCornerColorClicked = {},
+            onCustomGradientColorClicked = {},
         )
     }
 }

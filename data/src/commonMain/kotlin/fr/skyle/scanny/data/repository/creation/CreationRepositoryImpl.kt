@@ -32,6 +32,8 @@ internal class CreationRepositoryImpl(
                 darkColor = style.darkColor,
                 lightColor = style.lightColor,
                 cornerColor = style.cornerColor,
+                gradient = style.gradient,
+                gradientColor = style.gradientColor,
                 dotShape = style.dotShape,
                 cornerShape = style.cornerShape,
                 logo = style.logo,

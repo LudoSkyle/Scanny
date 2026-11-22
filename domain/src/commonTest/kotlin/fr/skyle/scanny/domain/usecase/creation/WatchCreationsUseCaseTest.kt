@@ -6,6 +6,7 @@ import fr.skyle.scanny.domain.fake.FakeCreationRepository
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
+import fr.skyle.scanny.domain.model.CodeGradient
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.model.Creation
@@ -28,6 +29,8 @@ class WatchCreationsUseCaseTest {
                     darkColor = 0xFF1A237E,
                     lightColor = 0xFFFFF8E1,
                     cornerColor = 0xFFB71C1C,
+                    gradient = "RADIAL",
+                    gradientColor = 0xFF1B5E20,
                     dotShape = "CIRCLE",
                     cornerShape = "ROUNDED",
                     logo = byteArrayOf(1, 2, 3),
@@ -55,6 +58,8 @@ class WatchCreationsUseCaseTest {
                         darkColor = 0xFF1A237E,
                         lightColor = 0xFFFFF8E1,
                         cornerColor = 0xFFB71C1C,
+                        gradient = CodeGradient.RADIAL,
+                        gradientColor = 0xFF1B5E20,
                         dotShape = CodeShape.CIRCLE,
                         cornerShape = CodeShape.ROUNDED,
                         logo = byteArrayOf(1, 2, 3),
@@ -68,7 +73,7 @@ class WatchCreationsUseCaseTest {
     }
 
     @Test
-    fun `a shape or a correction this version does not know is drawn square and left to scanny`() = runTest {
+    fun `a shape a gradient or a correction this version does not know is drawn square plain and left to scanny`() = runTest {
         // Given
         val creationRepository = FakeCreationRepository(
             storedCreations = listOf(
@@ -80,6 +85,8 @@ class WatchCreationsUseCaseTest {
                         darkColor = 0xFF000000,
                         lightColor = 0xFFFFFFFF,
                         cornerColor = null,
+                        gradient = "SPIRAL",
+                        gradientColor = 0xFF3B43BE,
                         dotShape = "STAR",
                         cornerShape = "HEART",
                         logo = null,
