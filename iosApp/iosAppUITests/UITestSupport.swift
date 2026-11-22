@@ -163,6 +163,15 @@ extension XCTestCase {
         waitUntilStill(code)
     }
 
+    /**
+     * Waits for the share sheet of iOS to leave. UIKit finishes its dismissal a moment after the sheet
+     * leaves the hierarchy, and the app ignores a touch meanwhile.
+     */
+    func waitForTheShareSheetToLeave(_ shareSheet: XCUIElement) {
+        XCTAssertTrue(shareSheet.waitForNonExistence(timeout: 5))
+        Thread.sleep(forTimeInterval: 1)
+    }
+
     /// Goes back by the gesture from the left edge of the screen, as iOS users do.
     func goBackByTheEdge(in app: XCUIApplication) {
         let edge = app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.5))

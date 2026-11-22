@@ -27,7 +27,7 @@ final class CreateCodeUITests: XCTestCase {
         // The share sheet has no button to close it: swiped down, it leaves the sheet of the code open,
         // where a touch above it would close both
         shareSheet.swipeDown(velocity: .fast)
-        XCTAssertTrue(shareSheet.waitForNonExistence(timeout: 5))
+        waitForTheShareSheetToLeave(shareSheet)
 
         app.buttons["Save the image"].tap()
         // The photos are asked for at the first save only. Saved, the button of the sheet says so
