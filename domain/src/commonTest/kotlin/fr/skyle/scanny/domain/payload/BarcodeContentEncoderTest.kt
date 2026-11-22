@@ -1,7 +1,13 @@
 package fr.skyle.scanny.domain.payload
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.ContactAddress
+import fr.skyle.scanny.domain.model.ContactEmail
+import fr.skyle.scanny.domain.model.ContactEntryType
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.ContactPhone
+import fr.skyle.scanny.domain.model.ContactPhoneType
+import fr.skyle.scanny.domain.model.ContactWebsite
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
@@ -193,14 +199,29 @@ class BarcodeContentEncoderTest {
     fun `a contact is written as a vcard 3`() {
         // Given
         val content = BarcodeContent.Contact(
-            formattedName = "John Doe",
+            formattedName = "Dr. John Doe",
+            namePrefix = "Dr.",
             firstName = "John",
             lastName = "Doe",
+            nickname = "Johnny",
             organization = "Doe, Smith & Co",
-            phones = listOf("+33600000000"),
-            emails = listOf("john@doe.fr"),
-            addresses = listOf("12 rue de la Paix, Paris"),
-            urls = listOf("https://doe.fr"),
+            department = "Mobile",
+            phones = listOf(
+                ContactPhone(number = "+33600000000", type = ContactPhoneType.MOBILE),
+                ContactPhone(number = "+33100000000"),
+            ),
+            emails = listOf(ContactEmail(address = "john@doe.fr", type = ContactEntryType.WORK)),
+            addresses = listOf(
+                ContactAddress(
+                    street = "12 rue de la Paix",
+                    city = "Paris",
+                    postalCode = "75002",
+                    type = ContactEntryType.HOME,
+                ),
+            ),
+            websites = listOf(ContactWebsite(url = "https://doe.fr")),
+            birthday = "1990-05-12",
+            note = "Line 1\nLine 2",
         )
 
         // When
@@ -211,13 +232,17 @@ class BarcodeContentEncoderTest {
             expected = listOf(
                 "BEGIN:VCARD",
                 "VERSION:3.0",
-                "N:Doe;John;;;",
-                "FN:John Doe",
-                "ORG:Doe\\, Smith & Co",
-                "TEL:+33600000000",
-                "EMAIL:john@doe.fr",
-                "ADR:;;12 rue de la Paix\\, Paris;;;;",
+                "N:Doe;John;;Dr.;",
+                "FN:Dr. John Doe",
+                "NICKNAME:Johnny",
+                "ORG:Doe\\, Smith & Co;Mobile",
+                "TEL;TYPE=CELL:+33600000000",
+                "TEL:+33100000000",
+                "EMAIL;TYPE=WORK:john@doe.fr",
+                "ADR;TYPE=HOME:;;12 rue de la Paix;Paris;;75002;",
                 "URL:https://doe.fr",
+                "BDAY:1990-05-12",
+                "NOTE:Line 1\\nLine 2",
                 "END:VCARD",
             ).joinToString(separator = "\n"),
             actual = payload,
@@ -399,8 +424,15 @@ class BarcodeContentEncoderTest {
             firstName = "John",
             lastName = "Doe; Smith",
             organization = "Scanny",
-            phones = listOf("+33600000000"),
-            emails = listOf("john@doe.fr"),
+            phones = listOf(ContactPhone(number = "+33600000000", type = ContactPhoneType.MOBILE)),
+            emails = listOf(ContactEmail(address = "john@doe.fr")),
+            addresses = listOf(
+                ContactAddress(
+                    street = "12 rue de la Paix",
+                    city = "Paris",
+                ),
+            ),
+            birthday = "1990-05-12",
             format = ContactFormat.MECARD,
         )
 
@@ -409,7 +441,9 @@ class BarcodeContentEncoderTest {
 
         // Then
         assertEquals(
-            expected = "MECARD:N:Doe\\; Smith,John;ORG:Scanny;TEL:+33600000000;EMAIL:john@doe.fr;;",
+            // A MeCard has no kind of telephone
+            expected = "MECARD:N:Doe\\; Smith,John;ORG:Scanny;TEL:+33600000000;EMAIL:john@doe.fr;" +
+                "ADR:,,12 rue de la Paix,Paris,,,;BDAY:19900512;;",
             actual = payload,
         )
     }
@@ -458,12 +492,33 @@ class BarcodeContentEncoderTest {
                 organization = "Doe, Smith & Co",
                 title = "Lead\\developer",
                 phones = listOf(
-                    "+33600000000",
-                    "+33100000000",
+                    ContactPhone(number = "+33600000000", type = ContactPhoneType.MOBILE),
+                    ContactPhone(number = "+33100000000", type = ContactPhoneType.FAX),
+                    ContactPhone(number = "+33200000000"),
                 ),
-                emails = listOf("john@doe.fr"),
-                addresses = listOf("12 rue de la Paix, 75002 Paris; France"),
-                urls = listOf("https://doe.fr"),
+                emails = listOf(ContactEmail(address = "john@doe.fr", type = ContactEntryType.HOME)),
+                addresses = listOf(
+                    ContactAddress(
+                        poBox = "BP 12",
+                        extended = "Apt 4; building B",
+                        street = "12 rue de la Paix, 2nd floor",
+                        city = "Paris",
+                        region = "Île-de-France",
+                        postalCode = "75002",
+                        country = "France",
+                        type = ContactEntryType.WORK,
+                    ),
+                ),
+                websites = listOf(ContactWebsite(url = "https://doe.fr", type = ContactEntryType.WORK)),
+            ),
+            BarcodeContent.Contact(
+                namePrefix = "Dr.",
+                middleName = "Quincy",
+                nameSuffix = "Jr.; Sr.",
+                nickname = "Johnny, the kid",
+                department = "Mobile; Android",
+                birthday = "1990-05-12",
+                note = "Line 1\nLine 2; with \\ and ,",
             ),
             BarcodeContent.Contact(firstName = "John"),
             BarcodeContent.Phone(phoneNumber = "+33 (0)6 00-00.00 00"),
@@ -525,11 +580,22 @@ class BarcodeContentEncoderTest {
             BarcodeContent.Mms(subject = "Only a subject"),
             BarcodeContent.Contact(
                 formattedName = "Doe, Jr: the \"second\"; really",
+                nickname = "Johnny; the kid",
                 organization = "Doe, Smith & Co",
-                phones = listOf("+33 6 00 00 00 00"),
-                emails = listOf("john@doe.fr"),
-                addresses = listOf("12 rue de la Paix, 75002 Paris"),
-                urls = listOf("https://doe.fr"),
+                phones = listOf(ContactPhone(number = "+33 6 00 00 00 00")),
+                emails = listOf(ContactEmail(address = "john@doe.fr")),
+                addresses = listOf(
+                    ContactAddress(street = "12 rue de la Paix, 75002 Paris"),
+                    ContactAddress(
+                        extended = "Apt 4",
+                        street = "12 rue de la Paix",
+                        city = "Paris, center",
+                        country = "France",
+                    ),
+                ),
+                websites = listOf(ContactWebsite(url = "https://doe.fr")),
+                birthday = "1990-05-12",
+                note = "See you; soon, ok: \\",
                 format = ContactFormat.MECARD,
             ),
             BarcodeContent.Contact(

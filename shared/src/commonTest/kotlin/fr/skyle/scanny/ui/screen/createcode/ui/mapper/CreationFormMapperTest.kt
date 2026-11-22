@@ -2,10 +2,18 @@ package fr.skyle.scanny.ui.screen.createcode.ui.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.ContactAddress
+import fr.skyle.scanny.domain.model.ContactEmail
+import fr.skyle.scanny.domain.model.ContactEntryType
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.ContactPhone
+import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactAddressField
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactEntryField
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import kotlin.test.Test
@@ -164,27 +172,128 @@ class CreationFormMapperTest {
     }
 
     @Test
-    fun `a contact needs a name and keeps only the fields filled in`() {
+    fun `a vcard contact keeps every field filled in and is shown by the parts of its name`() {
         // When
-        val withoutName = CreationForm(
+        val content = CreationForm(
             kind = CreationKind.CONTACT,
-            contactPhone = "+33600000000",
-        ).toBarcodeContent()
-        val withName = CreationForm(
-            kind = CreationKind.CONTACT,
-            contactName = " John Doe ",
-            contactPhone = "+33600000000",
-            contactEmail = " ",
+            contactNamePrefix = " Dr. ",
+            contactFirstName = "John",
+            contactMiddleName = "Quincy",
+            contactLastName = "Doe",
+            contactNameSuffix = "Jr.",
+            contactNickname = "Johnny",
+            contactOrganization = "Scanny",
+            contactDepartment = "Mobile",
+            contactTitle = "Lead",
+            contactPhones = listOf(
+                ContactPhoneField(number = " +33600000000 ", type = ContactPhoneType.MOBILE),
+                ContactPhoneField(number = " ", type = ContactPhoneType.WORK),
+            ),
+            contactEmails = listOf(ContactEntryField(value = "john@scanny.app", type = ContactEntryType.WORK)),
+            contactAddresses = listOf(
+                ContactAddressField(street = "12 rue de la Paix", postalCode = "75002", city = "Paris", type = ContactEntryType.WORK),
+                ContactAddressField(),
+            ),
+            contactWebsites = listOf(ContactEntryField(value = " ")),
+            contactBirthday = "1990-05-12",
+            contactNote = "Met at the fair",
         ).toBarcodeContent()
 
         // Then
-        assertNull(withoutName)
         assertEquals(
             expected = BarcodeContent.Contact(
-                formattedName = "John Doe",
-                phones = listOf("+33600000000"),
+                formattedName = "Dr. John Quincy Doe Jr.",
+                namePrefix = "Dr.",
+                firstName = "John",
+                middleName = "Quincy",
+                lastName = "Doe",
+                nameSuffix = "Jr.",
+                nickname = "Johnny",
+                organization = "Scanny",
+                department = "Mobile",
+                title = "Lead",
+                phones = listOf(ContactPhone(number = "+33600000000", type = ContactPhoneType.MOBILE)),
+                emails = listOf(ContactEmail(address = "john@scanny.app", type = ContactEntryType.WORK)),
+                addresses = listOf(
+                    ContactAddress(street = "12 rue de la Paix", city = "Paris", postalCode = "75002", type = ContactEntryType.WORK),
+                ),
+                birthday = "1990-05-12",
+                note = "Met at the fair",
             ),
-            actual = withName,
+            actual = content,
+        )
+    }
+
+    @Test
+    fun `a vcard contact needs a name shown typed made of its parts or of its organization`() {
+        // When
+        val contents = listOf(
+            CreationForm(
+                kind = CreationKind.CONTACT,
+                contactPhones = listOf(ContactPhoneField(number = "+33600000000")),
+            ),
+            CreationForm(
+                kind = CreationKind.CONTACT,
+                contactFirstName = "John",
+                contactDisplayName = " Johnny Doe ",
+            ),
+            CreationForm(
+                kind = CreationKind.CONTACT,
+                contactOrganization = "Scanny",
+            ),
+        ).map { form -> form.toBarcodeContent() }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                null,
+                BarcodeContent.Contact(
+                    formattedName = "Johnny Doe",
+                    firstName = "John",
+                ),
+                BarcodeContent.Contact(
+                    formattedName = "Scanny",
+                    organization = "Scanny",
+                ),
+            ),
+            actual = contents,
+        )
+    }
+
+    @Test
+    fun `a mecard contact needs a first or a last name and leaves out what a mecard does not hold`() {
+        // When
+        val contents = listOf(
+            CreationForm(
+                kind = CreationKind.CONTACT,
+                contactDisplayName = "John Doe",
+                contactFormat = ContactFormat.MECARD,
+            ),
+            CreationForm(
+                kind = CreationKind.CONTACT,
+                contactNamePrefix = "Dr.",
+                contactFirstName = "John",
+                contactLastName = "Doe",
+                contactDisplayName = "Johnny",
+                contactDepartment = "Mobile",
+                contactTitle = "Lead",
+                contactPhones = listOf(ContactPhoneField(number = "+33600000000", type = ContactPhoneType.MOBILE)),
+                contactFormat = ContactFormat.MECARD,
+            ),
+        ).map { form -> form.toBarcodeContent() }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                null,
+                BarcodeContent.Contact(
+                    firstName = "John",
+                    lastName = "Doe",
+                    phones = listOf(ContactPhone(number = "+33600000000")),
+                    format = ContactFormat.MECARD,
+                ),
+            ),
+            actual = contents,
         )
     }
 
@@ -222,14 +331,14 @@ class CreationFormMapperTest {
         // When
         val content = CreationForm(
             kind = CreationKind.CONTACT,
-            contactName = "John Doe",
+            contactFirstName = "John",
             contactFormat = ContactFormat.MECARD,
         ).toBarcodeContent()
 
         // Then
         assertEquals(
             expected = BarcodeContent.Contact(
-                formattedName = "John Doe",
+                firstName = "John",
                 format = ContactFormat.MECARD,
             ),
             actual = content,

@@ -10,6 +10,7 @@ import fr.skyle.scanny.resources.algorithm
 import fr.skyle.scanny.resources.altitude
 import fr.skyle.scanny.resources.amount
 import fr.skyle.scanny.resources.aztec
+import fr.skyle.scanny.resources.birthday
 import fr.skyle.scanny.resources.bitcoin
 import fr.skyle.scanny.resources.blind_carbon_copy
 import fr.skyle.scanny.resources.bookmark
@@ -23,10 +24,12 @@ import fr.skyle.scanny.resources.contact
 import fr.skyle.scanny.resources.coordinates
 import fr.skyle.scanny.resources.counter
 import fr.skyle.scanny.resources.data_matrix
+import fr.skyle.scanny.resources.department
 import fr.skyle.scanny.resources.digits
 import fr.skyle.scanny.resources.ean_13
 import fr.skyle.scanny.resources.ean_8
 import fr.skyle.scanny.resources.email
+import fr.skyle.scanny.resources.fax
 import fr.skyle.scanny.resources.format_aztec_example
 import fr.skyle.scanny.resources.format_aztec_structure
 import fr.skyle.scanny.resources.format_aztec_use
@@ -66,6 +69,10 @@ import fr.skyle.scanny.resources.format_upc_a_use
 import fr.skyle.scanny.resources.format_upc_e_example
 import fr.skyle.scanny.resources.format_upc_e_structure
 import fr.skyle.scanny.resources.format_upc_e_use
+import fr.skyle.scanny.resources.home_address
+import fr.skyle.scanny.resources.home_email
+import fr.skyle.scanny.resources.home_phone
+import fr.skyle.scanny.resources.home_website
 import fr.skyle.scanny.resources.ic_bookmark
 import fr.skyle.scanny.resources.ic_call
 import fr.skyle.scanny.resources.ic_currency_bitcoin
@@ -86,8 +93,11 @@ import fr.skyle.scanny.resources.link
 import fr.skyle.scanny.resources.location
 import fr.skyle.scanny.resources.message
 import fr.skyle.scanny.resources.mms
+import fr.skyle.scanny.resources.mobile
 import fr.skyle.scanny.resources.name
 import fr.skyle.scanny.resources.network
+import fr.skyle.scanny.resources.nickname
+import fr.skyle.scanny.resources.note
 import fr.skyle.scanny.resources.open_in_wallet
 import fr.skyle.scanny.resources.open_link
 import fr.skyle.scanny.resources.organization
@@ -113,6 +123,10 @@ import fr.skyle.scanny.resources.upc_a
 import fr.skyle.scanny.resources.upc_e
 import fr.skyle.scanny.resources.website
 import fr.skyle.scanny.resources.wifi
+import fr.skyle.scanny.resources.work_address
+import fr.skyle.scanny.resources.work_email
+import fr.skyle.scanny.resources.work_phone
+import fr.skyle.scanny.resources.work_website
 import fr.skyle.scanny.resources.write_email
 import fr.skyle.scanny.resources.write_mms
 import fr.skyle.scanny.resources.write_sms
@@ -183,12 +197,26 @@ internal fun CodeFieldLabel.toText(): StringResource =
         CodeFieldLabel.MESSAGE -> Res.string.message
         CodeFieldLabel.PHONE_NUMBER -> Res.string.phone_number
         CodeFieldLabel.NAME -> Res.string.name
+        CodeFieldLabel.NICKNAME -> Res.string.nickname
         CodeFieldLabel.ORGANIZATION -> Res.string.organization
+        CodeFieldLabel.DEPARTMENT -> Res.string.department
         CodeFieldLabel.JOB_TITLE -> Res.string.job_title
         CodeFieldLabel.PHONE -> Res.string.phone
+        CodeFieldLabel.MOBILE -> Res.string.mobile
+        CodeFieldLabel.HOME_PHONE -> Res.string.home_phone
+        CodeFieldLabel.WORK_PHONE -> Res.string.work_phone
+        CodeFieldLabel.FAX -> Res.string.fax
         CodeFieldLabel.EMAIL -> Res.string.email
+        CodeFieldLabel.HOME_EMAIL -> Res.string.home_email
+        CodeFieldLabel.WORK_EMAIL -> Res.string.work_email
         CodeFieldLabel.ADDRESS -> Res.string.address
+        CodeFieldLabel.HOME_ADDRESS -> Res.string.home_address
+        CodeFieldLabel.WORK_ADDRESS -> Res.string.work_address
         CodeFieldLabel.WEBSITE -> Res.string.website
+        CodeFieldLabel.HOME_WEBSITE -> Res.string.home_website
+        CodeFieldLabel.WORK_WEBSITE -> Res.string.work_website
+        CodeFieldLabel.BIRTHDAY -> Res.string.birthday
+        CodeFieldLabel.NOTE -> Res.string.note
         CodeFieldLabel.PLACE -> Res.string.place
         CodeFieldLabel.COORDINATES -> Res.string.coordinates
         CodeFieldLabel.ALTITUDE -> Res.string.altitude

@@ -1,9 +1,13 @@
 <resources>
     <string name="about_format">About this format</string>
     <string name="account">Account</string>
+    <string name="add_address">Add an address</string>
     <string name="add_contact">Add the contact</string>
+    <string name="add_email">Add an e-mail</string>
     <string name="add_logo">Add a logo</string>
+    <string name="add_phone">Add a phone</string>
     <string name="add_to_authenticator">Add to an authenticator</string>
+    <string name="add_website">Add a website</string>
     <string name="address">Address</string>
     <string name="advanced_options">Advanced options</string>
     <string name="algorithm">Algorithm</string>
@@ -23,6 +27,7 @@
     <string name="barcode_value">Value</string>
     <string name="barcodes">Barcodes</string>
     <string name="beep_after_scan">Beep after a scan</string>
+    <string name="birthday">Birthday</string>
     <string name="bitcoin" translatable="false">Bitcoin</string>
     <string name="blind_carbon_copy">Bcc</string>
     <string name="bookmark">Bookmark</string>
@@ -36,6 +41,7 @@
     <string name="choose">Choose</string>
     <string name="choose_color">Choose a color</string>
     <string name="choose_subject">Choose a subject</string>
+    <string name="city">City</string>
     <string name="clear">Clear</string>
     <string name="clear_history">Clear the history</string>
     <string name="clear_history_question">Clear the history?</string>
@@ -89,6 +95,7 @@
     <string name="corner_color_like_dots">Like the dots</string>
     <string name="corner_shape">Shape of the corners</string>
     <string name="counter">Counter</string>
+    <string name="country">Country</string>
     <string name="create">Create</string>
     <string name="create_code">Create a code</string>
     <string name="created_codes_appear_here">The codes you create, with the + of the scan, appear here.</string>
@@ -101,9 +108,11 @@
     <string name="delete">Delete</string>
     <string name="delete_code_question">Delete this code?</string>
     <string name="delete_group_question">Delete this group?</string>
+    <string name="department">Department</string>
     <string name="digits">Number of digits</string>
     <string name="discard">Discard</string>
     <string name="discard_codes_question">Discard the codes found?</string>
+    <string name="display_name">Display name</string>
     <string name="dot_color">Color of the dots</string>
     <string name="dot_shape">Shape of the dots</string>
     <string name="ean_13" translatable="false">EAN-13</string>
@@ -124,13 +133,16 @@
     <string name="error_correction_quartile_description">About 25% of the code</string>
     <string name="error_correction_too_high_for_content">Too high for this content</string>
     <string name="error_correction_too_low_for_logo">Too low for the logo</string>
+    <string name="extended_address">Apartment, building</string>
     <string name="faq" translatable="false">FAQ</string>
+    <string name="fax">Fax</string>
     <string name="feedback">Feedback</string>
     <string name="feedback_about_other">Something else</string>
     <string name="feedback_about_scan">The scan</string>
     <string name="feedback_about_type_detection">The detection of the type of a code</string>
     <string name="fill_content_to_see_code">Fill in the content to see the code.</string>
     <string name="finish">Finish</string>
+    <string name="first_name">First name</string>
     <string name="format">Format</string>
     <string name="format_aztec_example">A train ticket holds its booking, its journey and its passenger in an Aztec code of a few hundred characters.</string>
     <string name="format_aztec_structure">A target of squares at its center, which lets a scanner find it, wrapped in layers of modules, from 15 × 15 to 151 × 151. It needs no blank margin around it.</string>
@@ -190,6 +202,10 @@
     <string name="hidden_network">Hidden network</string>
     <string name="history">History</string>
     <string name="history_not_cleared">The history could not be cleared</string>
+    <string name="home_address">Home address</string>
+    <string name="home_email">Personal e-mail</string>
+    <string name="home_phone">Home phone</string>
+    <string name="home_website">Personal website</string>
     <string name="image_not_saved">The image could not be saved</string>
     <string name="image_not_shared">The image could not be shared</string>
     <string name="image_saved">Image saved to the photos</string>
@@ -198,6 +214,7 @@
     <string name="job_title">Job title</string>
     <string name="join_network">Join the network</string>
     <string name="keep_history">Keep the history</string>
+    <string name="last_name">Last name</string>
     <string name="latitude">Latitude</string>
     <string name="link">Link</string>
     <string name="location">Location</string>
@@ -228,16 +245,22 @@
         <item>November</item>
         <item>December</item>
     </string-array>
+    <string name="middle_name">Middle name</string>
     <string name="mms" translatable="false">MMS</string>
+    <string name="mobile">Mobile</string>
     <string name="more_count" translatable="false">+%1$d</string>
     <string name="multiple_scan">Multiple scan</string>
     <string name="name">Name</string>
+    <string name="name_prefix">Prefix</string>
+    <string name="name_suffix">Suffix</string>
     <string name="network">Network</string>
     <string name="next">Next</string>
+    <string name="nickname">Nickname</string>
     <string name="no_app_to_open">No app on this device can open it</string>
     <string name="no_code_in_image">No code found in this image</string>
     <string name="no_creation_yet">No creation yet</string>
     <string name="no_scan_yet">No scan yet</string>
+    <string name="note">Note</string>
     <string name="open_content_after_scan">Open the content after a scan</string>
     <string name="open_in_wallet">Open in a wallet</string>
     <string name="open_link">Open the link</string>
@@ -256,6 +279,8 @@
     <string name="phone_number">Phone number</string>
     <string name="place">Place</string>
     <string name="place_code_in_frame">Place a code in the frame</string>
+    <string name="po_box">PO box</string>
+    <string name="postal_code">Postal code</string>
     <string name="privacy_policy">Privacy policy</string>
     <string name="qr_code" translatable="false">QR Code</string>
     <string name="rate_app">Rate the app</string>
@@ -263,6 +288,8 @@
     <string name="raw_content_after_scan">Show the raw content after a scan</string>
     <string name="recipient">Recipient</string>
     <string name="recipients">Recipients</string>
+    <string name="region">Region</string>
+    <string name="remove">Remove</string>
     <string name="remove_logo">Remove the logo</string>
     <string name="required_field">%1$s *</string>
     <string name="reset_customization">Reset the customization</string>
@@ -298,6 +325,7 @@
     <string name="sms" translatable="false">SMS</string>
     <string name="star_project">Star the project on GitHub</string>
     <string name="step_of">Step %1$d of %2$d</string>
+    <string name="street">Street</string>
     <string name="subject">Subject</string>
     <string name="support">Support</string>
     <string name="text">Text</string>
@@ -308,6 +336,9 @@
     <string name="turn_off_torch">Turn off the torch</string>
     <string name="turn_on_torch">Turn on the torch</string>
     <string name="two_dimensional_codes">Codes in two dimensions</string>
+    <string name="type_home">Home</string>
+    <string name="type_other">Other</string>
+    <string name="type_work">Work</string>
     <string name="uncertainty">Uncertainty</string>
     <string name="uncertainty_in_meters">Uncertainty in meters</string>
     <string name="undo">Undo</string>
@@ -329,6 +360,10 @@
     <string name="wifi_security_wep" translatable="false">WEP</string>
     <string name="wifi_security_wpa" translatable="false">WPA/WPA2</string>
     <string name="wifi_security_wpa3" translatable="false">WPA3</string>
+    <string name="work_address">Work address</string>
+    <string name="work_email">Work e-mail</string>
+    <string name="work_phone">Work phone</string>
+    <string name="work_website">Work website</string>
     <string name="write_email">Write an e-mail</string>
     <string name="write_mms">Write an MMS</string>
     <string name="write_sms">Write an SMS</string>

@@ -15,7 +15,6 @@ import fr.skyle.scanny.designsystem.core.dropdownfield.SCDropdownField
 import fr.skyle.scanny.designsystem.core.textfield.SCTextFieldDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
-import fr.skyle.scanny.domain.model.ContactFormat
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
@@ -31,20 +30,16 @@ import fr.skyle.scanny.resources.blind_carbon_copy
 import fr.skyle.scanny.resources.carbon_copy
 import fr.skyle.scanny.resources.counter
 import fr.skyle.scanny.resources.digits
-import fr.skyle.scanny.resources.email
 import fr.skyle.scanny.resources.format
 import fr.skyle.scanny.resources.issuer
 import fr.skyle.scanny.resources.latitude
 import fr.skyle.scanny.resources.link
 import fr.skyle.scanny.resources.longitude
 import fr.skyle.scanny.resources.message
-import fr.skyle.scanny.resources.name
 import fr.skyle.scanny.resources.network
-import fr.skyle.scanny.resources.organization
 import fr.skyle.scanny.resources.otp_type
 import fr.skyle.scanny.resources.password
 import fr.skyle.scanny.resources.period_in_seconds
-import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.phone_number
 import fr.skyle.scanny.resources.place
 import fr.skyle.scanny.resources.recipient
@@ -55,7 +50,6 @@ import fr.skyle.scanny.resources.subject
 import fr.skyle.scanny.resources.text
 import fr.skyle.scanny.resources.title
 import fr.skyle.scanny.resources.uncertainty_in_meters
-import fr.skyle.scanny.resources.website
 import fr.skyle.scanny.ui.core.code.mapper.toBarcodeType
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
@@ -224,58 +218,11 @@ fun CreationFormFields(
                 )
             }
 
-            CreationKind.CONTACT -> {
-                CreationTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = form.contactName,
-                    onValueChange = { name -> onFormChanged(form.copy(contactName = name)) },
-                    label = stringResource(Res.string.name),
-                    isRequired = true,
-                )
-                CreationTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = form.contactPhone,
-                    onValueChange = { phone -> onFormChanged(form.copy(contactPhone = phone)) },
-                    label = stringResource(Res.string.phone),
-                    keyboardType = KeyboardType.Phone,
-                )
-                CreationTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = form.contactEmail,
-                    onValueChange = { email -> onFormChanged(form.copy(contactEmail = email)) },
-                    label = stringResource(Res.string.email),
-                    keyboardType = KeyboardType.Email,
-                )
-                CreationTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = form.contactOrganization,
-                    onValueChange = { organization -> onFormChanged(form.copy(contactOrganization = organization)) },
-                    label = stringResource(Res.string.organization),
-                )
-                CreationTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = form.contactAddress,
-                    onValueChange = { address -> onFormChanged(form.copy(contactAddress = address)) },
-                    label = stringResource(Res.string.address),
-                    minLines = 2,
-                )
-                CreationTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = form.contactWebsite,
-                    onValueChange = { website -> onFormChanged(form.copy(contactWebsite = website)) },
-                    label = stringResource(Res.string.website),
-                    keyboardType = KeyboardType.Uri,
-                )
-                // A MeCard is shorter, and so a smaller code: its size shows under the fields
-                SegmentedChoice(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = stringResource(Res.string.format),
-                    options = ContactFormat.entries,
-                    selectedOption = form.contactFormat,
-                    optionText = { format -> stringResource(format.toText()) },
-                    onOptionSelected = { format -> onFormChanged(form.copy(contactFormat = format)) },
-                )
-            }
+            CreationKind.CONTACT -> ContactFormFields(
+                modifier = Modifier.fillMaxWidth(),
+                form = form,
+                onFormChanged = onFormChanged,
+            )
 
             CreationKind.LOCATION -> {
                 Row(

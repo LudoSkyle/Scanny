@@ -260,8 +260,16 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   (`platformSharedModule`) fournit son implémentation.
 - Ajouter un contact passe par `ContactAdder`, une interface appelée par le ViewModel. Android ouvre
   l'app Contacts (`ACTION_INSERT_OR_EDIT`), qui laisse créer un contact ou compléter un contact
-  existant ; téléphones, e-mails, adresses et sites passent en lignes de données
-  (`Insert.DATA`), sans la limite de trois des extras `PHONE` ou `EMAIL`. iOS présente
+  existant ; chaque champ passe en ligne de données (`Insert.DATA`, `toDataRows()`) : le nom en
+  parties (`StructuredName`), le surnom, l'organisation, le service et la fonction, chaque
+  téléphone, e-mail, adresse et site avec son type, l'anniversaire (`Event`) et la note, sans la
+  limite de trois des extras `PHONE` ou `EMAIL`. Une adresse passe en parties **et** formatée
+  (`FORMATTED_ADDRESS`) : l'app Contacts de Google ne montre que la seconde (constaté sur
+  l'émulateur). iOS donne à `CNMutableContact` les parties du nom, le surnom, l'organisation, le
+  service, la fonction, les entrées sous les libellés de Contacts (`CNLabelPhoneNumberMobile`,
+  `CNLabelHome`, `CNLabelWork`…), l'adresse en parties (Contacts n'a ni boîte postale ni complément :
+  ils rejoignent la rue) et l'anniversaire, mais pas la note : y écrire demande un droit d'Apple
+  (`com.apple.developer.contacts.notes`). iOS présente
   `CNContactViewController.viewControllerForNewContact` dans un `UINavigationController`, pour ses
   boutons Annuler et OK ; son délégué ferme l'écran, et l'adder le garde, car le contrôleur ne le
   retient pas. Cet écran ne demande aucune autorisation d'accès aux contacts, c'est lui qui
@@ -339,7 +347,7 @@ livrée ; le tableau est mis à jour dans le même commit.
 | Copier | ✅ (émulateur : confirmation du système, Android 13 et plus) — `LocalClipboard`, `ClipData` | ✅ (simulateur : texte dans le presse-papiers, message de l'app ; copie après un scan collée dans un champ de l'app) — `LocalClipboard`, `ClipEntry.withPlainText` | Compose + `expect` pour créer le `ClipEntry` |
 | Partager un texte | ✅ (émulateur : feuille de partage) — `ACTION_SEND` | ✅ (simulateur : feuille de partage) — `UIActivityViewController` | interface |
 | Partager, enregistrer un QR code | ✅ (émulateur : feuille de partage, image dans `Pictures/Scanny`, relue) — `FileProvider` + `ACTION_SEND`, `MediaStore`, Android 10 et plus | ✅ (simulateur : feuille de partage, image ajoutée aux photos, relue) — `UIActivityViewController`, `PHPhotoLibrary` | interfaces (`ImageSharer`, `ImageSaver`) |
-| Ajouter un contact | ✅ (émulateur : Contacts prérempli, tous les champs) — `ACTION_INSERT_OR_EDIT` | ✅ (simulateur : contact enregistré, tous les champs) — `CNContactViewController` | interface |
+| Ajouter un contact | ✅ (émulateur : Contacts de Google prérempli de chaque champ, types compris) — `ACTION_INSERT_OR_EDIT` | ✅ avant le contact complet (simulateur : contact enregistré) ; les nouveaux champs restent à revoir sur le simulateur, les tests d'interface étant suspendus — `CNContactViewController` | interface |
 | Rejoindre un réseau WiFi | ✅ (émulateurs Android 9, 10, 11 et 17 : réseau enregistré, déjà enregistré, annulé ; réglages et consigne avant Android 11) — `Settings.ACTION_WIFI_ADD_NETWORKS` à partir d'Android 11, sinon panneau ou réglages Wi-Fi et mot de passe copié | Reporté (`NEHotspotConfigurationManager` exige l'entitlement *Hotspot Configuration*, donc un compte payant) : action non proposée | `expect` composable + interface |
 | Ouvrir les réglages de l'app | ✅ `ACTION_APPLICATION_DETAILS_SETTINGS` | `UIApplicationOpenSettingsURLString` | dans l'état de permission caméra |
 | Noter l'app | ✅ (émulateur : Play Store) — `market://`, sinon le site du Play Store | Pas encore sur l'App Store : l'entrée n'est pas proposée | `expect val rateAppLinks` |

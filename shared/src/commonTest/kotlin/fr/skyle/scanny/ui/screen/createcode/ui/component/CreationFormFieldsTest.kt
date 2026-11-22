@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -18,10 +20,12 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.ContactPhoneType
 import fr.skyle.scanny.domain.model.OtpAlgorithm
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.account
+import fr.skyle.scanny.resources.add_phone
 import fr.skyle.scanny.resources.blind_carbon_copy
 import fr.skyle.scanny.resources.carbon_copy
 import fr.skyle.scanny.resources.counter
@@ -30,13 +34,19 @@ import fr.skyle.scanny.resources.latitude
 import fr.skyle.scanny.resources.link
 import fr.skyle.scanny.resources.longitude
 import fr.skyle.scanny.resources.mecard
+import fr.skyle.scanny.resources.mobile
+import fr.skyle.scanny.resources.name_prefix
 import fr.skyle.scanny.resources.period_in_seconds
+import fr.skyle.scanny.resources.phone
 import fr.skyle.scanny.resources.place
 import fr.skyle.scanny.resources.recipients
+import fr.skyle.scanny.resources.remove
 import fr.skyle.scanny.resources.required_field
 import fr.skyle.scanny.resources.secret_key
 import fr.skyle.scanny.resources.title
+import fr.skyle.scanny.resources.type_work
 import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toBarcodeContent
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
 import fr.skyle.scanny.ui.test.ComposeTest
@@ -107,12 +117,14 @@ internal class CreationFormFieldsTest : ComposeTest() {
     }
 
     @Test
-    fun `a contact is written as a mecard once chosen`() = runComposeUiTest {
+    fun `a contact chosen as a mecard hides and leaves out what a mecard does not hold`() = runComposeUiTest {
         // Given
         var form by mutableStateOf(
             CreationForm(
                 kind = CreationKind.CONTACT,
-                contactName = "John Doe",
+                contactNamePrefix = "Dr.",
+                contactFirstName = "John",
+                contactLastName = "Doe",
             ),
         )
         setContent {
@@ -131,12 +143,57 @@ internal class CreationFormFieldsTest : ComposeTest() {
         onNodeWithText(getString(Res.string.mecard)).performScrollTo().performClick()
 
         // Then
+        onNode(hasSetTextAction() and hasText(getString(Res.string.name_prefix))).assertDoesNotExist()
         assertEquals(
             expected = BarcodeContent.Contact(
-                formattedName = "John Doe",
+                firstName = "John",
+                lastName = "Doe",
                 format = ContactFormat.MECARD,
             ),
             actual = form.toBarcodeContent(),
+        )
+    }
+
+    @Test
+    fun `a contact takes a second phone of its own kind and drops an entry removed`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(
+            CreationForm(
+                kind = CreationKind.CONTACT,
+                contactFirstName = "John",
+                contactPhones = listOf(ContactPhoneField(number = "+33600000000")),
+            ),
+        )
+        setContent {
+            SCTheme {
+                Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+                    CreationFormFields(
+                        form = form,
+                        onFormChanged = { changedForm -> form = changedForm },
+                    )
+                }
+            }
+        }
+
+        // When
+        onNodeWithText(getString(Res.string.add_phone)).performScrollTo().performClick()
+        onAllNodes(hasSetTextAction() and hasText(getString(Res.string.phone)))[1].performScrollTo().performTextInput("+33100000000")
+        onAllNodesWithText(getString(Res.string.mobile))[1].performScrollTo().performClick()
+        onNodeWithText(getString(Res.string.type_work)).performClick()
+        // The e-mail row, empty, taken out
+        onAllNodesWithContentDescription(getString(Res.string.remove))[2].performScrollTo().performClick()
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                ContactPhoneField(number = "+33600000000"),
+                ContactPhoneField(number = "+33100000000", type = ContactPhoneType.WORK),
+            ),
+            actual = form.contactPhones,
+        )
+        assertEquals(
+            expected = emptyList(),
+            actual = form.contactEmails,
         )
     }
 
