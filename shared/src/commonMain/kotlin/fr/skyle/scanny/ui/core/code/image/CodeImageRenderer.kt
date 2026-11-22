@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.ui.core.code.mapper.backgroundColor
+import fr.skyle.scanny.ui.core.code.mapper.dotColor
 import fr.skyle.scanny.ui.core.code.mapper.toBarcodeType
 import fr.skyle.scanny.ui.core.code.mapper.toQrOptions
 import io.github.alexzhirkevich.qrose.ImageFormat
@@ -19,13 +20,14 @@ import io.github.alexzhirkevich.qrose.oned.BarcodePainter
 import io.github.alexzhirkevich.qrose.toByteArray
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.math.roundToInt
 
 /** Draws a code into an image, for another app to show it or keep it. */
 interface CodeImageRenderer {
 
     /**
      * The code holding [rawValue] in [format], as a PNG, drawn away from the main thread: an image of a
-     * thousand pixels a side, a QR code in its [style]. Throws for a text its format refuses.
+     * thousand pixels a side or so, a QR code in its [style]. Throws for a text its format refuses.
      */
     suspend fun renderPng(
         rawValue: String,
@@ -61,21 +63,31 @@ internal class QroseCodeImageRenderer : CodeImageRenderer {
         style: CodeStyle,
     ): ByteArray {
         val barcodeType = format.toBarcodeType()
-        // A barcode stays dark on white, as on the screen
-        val drawnStyle = if (barcodeType != null) CodeStyle() else style
-        val painter: Painter = if (barcodeType != null) {
-            BarcodePainter(
+        val isQrCode = format == BarcodeFormat.QR_CODE
+        // Only a QR code is customized, as on the screen
+        val drawnStyle = if (isQrCode) style else CodeStyle()
+        val painter: Painter = when {
+            barcodeType != null -> BarcodePainter(
                 data = rawValue,
                 type = barcodeType,
             )
-        } else {
-            QrCodePainter(
+
+            isQrCode -> QrCodePainter(
                 data = rawValue,
                 options = drawnStyle.toQrOptions(),
             )
+
+            else -> MatrixCodePainter(
+                rawValue = rawValue,
+                format = format,
+                color = drawnStyle.dotColor(),
+            )
         }
-        val width = if (barcodeType != null) BARCODE_WIDTH else QR_CODE_SIZE
-        val height = if (barcodeType != null) BARCODE_HEIGHT else QR_CODE_SIZE
+        val (width, height) = when {
+            barcodeType != null -> BARCODE_WIDTH to BARCODE_HEIGHT
+            isQrCode -> QR_CODE_SIZE to QR_CODE_SIZE
+            else -> painter.imageSize()
+        }
 
         val bitmap = ImageBitmap(width = width, height = height)
         CanvasDrawScope().draw(
@@ -93,5 +105,18 @@ internal class QroseCodeImageRenderer : CodeImageRenderer {
             }
         }
         return bitmap.toByteArray(format = ImageFormat.PNG)
+    }
+
+    // In the proportions of the code's modules, its longer side as long as a QR code's, or a barcode's
+    // for a wide one
+    private fun Painter.imageSize(): Pair<Int, Int> {
+        val aspectRatio = intrinsicSize.width / intrinsicSize.height
+        return if (aspectRatio > 1f) {
+            val codeWidth = BARCODE_WIDTH - 2 * MARGIN
+            BARCODE_WIDTH to (codeWidth / aspectRatio + 2 * MARGIN).roundToInt()
+        } else {
+            val codeHeight = QR_CODE_SIZE - 2 * MARGIN
+            (codeHeight * aspectRatio + 2 * MARGIN).roundToInt() to QR_CODE_SIZE
+        }
     }
 }

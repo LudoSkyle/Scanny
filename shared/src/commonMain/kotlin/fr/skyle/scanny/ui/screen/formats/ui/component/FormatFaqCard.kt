@@ -20,11 +20,9 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.format_example
 import fr.skyle.scanny.resources.format_read_and_created
-import fr.skyle.scanny.resources.format_read_only
 import fr.skyle.scanny.resources.format_structure
 import fr.skyle.scanny.resources.format_use
 import fr.skyle.scanny.ui.core.code.component.CodeInfoSection
-import fr.skyle.scanny.ui.core.code.mapper.isDrawable
 import fr.skyle.scanny.ui.core.code.mapper.toExample
 import fr.skyle.scanny.ui.core.code.mapper.toStructure
 import fr.skyle.scanny.ui.core.code.mapper.toText
@@ -62,7 +60,7 @@ fun FormatFaqCard(
         ) {
             SCText(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(if (format.isDrawable) Res.string.format_read_and_created else Res.string.format_read_only),
+                text = stringResource(Res.string.format_read_and_created),
                 style = SCTheme.typography.subtitle2,
                 color = SCTheme.colors.textPrimary,
             )

@@ -81,7 +81,7 @@ Communes (`commonMain`) :
 | Fichiers | kotlinx-io |
 | Coroutines | kotlinx-coroutines |
 | Logs | Kermit (`Logger`). Sur Android, `ScannyApplication` envoie avertissements et erreurs à Crashlytics (`CrashlyticsLogWriter`), et le build debug ajoute logcat |
-| Génération de QR codes | qrose (rendu `Painter`, export PNG, personnalisation) et qrose-oned (les codes-barres d'une dimension), dans `shared` : un code se redessine depuis son texte par `CodeImage` (`ui/core/code`), et son image PNG, à partager ou enregistrer, par `CodeImageRenderer`, tous deux dans le style d'un QR code créé (`CodeStyleMapper`) |
+| Génération de codes | qrose (rendu `Painter`, export PNG, personnalisation), qrose-oned (les codes-barres d'une dimension) et qrose-encoder-matrix (l'encodeur PDF417), dans `shared` : un code se redessine depuis son texte par `CodeImage` (`ui/core/code`), et son image PNG, à partager ou enregistrer, par `CodeImageRenderer`, tous deux dans le style d'un QR code créé (`CodeStyleMapper`). qrose ne dessine ni Data Matrix, ni Aztec, ni PDF417 : `MatrixCodePainter` dessine leur matrice. Les encodeurs Data Matrix et Aztec de qrose écrivent des codes faux : Scanny en a une copie corrigée, dans `ui/core/code/encoder` (voir [ADR-0004](../adr/0004-encodeurs-data-matrix-et-aztec-corriges.md)) |
 
 Android (`androidMain`, `androidApp`) :
 

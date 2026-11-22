@@ -41,7 +41,6 @@ import fr.skyle.scanny.ui.core.code.component.CodeFieldRow
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
 import fr.skyle.scanny.ui.core.code.component.RawContentCard
 import fr.skyle.scanny.ui.core.code.component.codeFieldValueText
-import fr.skyle.scanny.ui.core.code.mapper.isDrawable
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
@@ -78,7 +77,7 @@ fun ScanDetailScreen(
                 onBackClicked = onBackClicked,
                 actions = {
                     if (code != null) {
-                        if (code.format?.isDrawable == true) {
+                        if (code.format != null) {
                             SCIconButton(
                                 modifier = Modifier.wrapContentSize(),
                                 icon = painterResource(Res.drawable.ic_qr_code),

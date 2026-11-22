@@ -8,7 +8,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.RGBLuminanceSource
+import com.google.zxing.Reader
+import com.google.zxing.aztec.AztecReader
 import com.google.zxing.common.HybridBinarizer
+import com.google.zxing.datamatrix.DataMatrixReader
+import com.google.zxing.pdf417.PDF417Reader
 import com.google.zxing.qrcode.QRCodeReader
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeErrorCorrection
@@ -261,6 +265,88 @@ class CodeImageReadabilityTest {
         )
     }
 
+    @Test
+    fun `each code in two dimensions other than the qr code is read back from its image`() = runTest {
+        // Given
+        val codes = MATRIX_FORMATS.flatMap { format ->
+            listOf(TEXT, ACCENTED_TEXT, CONTACT).map { text -> format to text }
+        }
+
+        // When
+        val unreadCodes = codes.filterNot { (format, text) ->
+            renderer.renderPng(
+                rawValue = text,
+                format = format,
+                style = CodeStyle(),
+            ).readCode(reader = format.reader()) == text
+        }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = unreadCodes,
+        )
+    }
+
+    @Test
+    fun `a long content of each code in two dimensions other than the qr code is read back from its image`() = runTest {
+        // Given
+        // Of hundreds of characters: the modules of the image are a few pixels only
+        val codes = mapOf(
+            BarcodeFormat.DATA_MATRIX to CONTACT.repeat(10),
+            BarcodeFormat.AZTEC to CONTACT.repeat(10),
+            BarcodeFormat.PDF417 to CONTACT.repeat(6),
+        )
+
+        // When
+        val unreadFormats = codes.filterNot { (format, text) ->
+            renderer.renderPng(
+                rawValue = text,
+                format = format,
+                style = CodeStyle(),
+            ).readCode(reader = format.reader()) == text
+        }.keys
+
+        // Then
+        assertEquals(
+            expected = emptySet(),
+            actual = unreadFormats,
+        )
+    }
+
+    @Test
+    fun `a code in two dimensions other than the qr code is drawn dark on white whatever the style`() = runTest {
+        // Given
+        val style = CodeStyle(
+            darkColor = CodeDotColor.RED.argb,
+            lightColor = CodeBackgroundColor.LAVENDER.argb,
+        )
+
+        // When
+        val png = renderer.renderPng(
+            rawValue = TEXT,
+            format = BarcodeFormat.DATA_MATRIX,
+            style = style,
+        )
+
+        // Then
+        // The corner of the margin, and the corner of the solid L of the code
+        val bitmap = BitmapFactory.decodeByteArray(png, 0, png.size)
+        val code = (MARGIN_PX until bitmap.height).first { y -> bitmap.getPixel(MARGIN_PX + 1, y) != android.graphics.Color.WHITE }
+        assertEquals(
+            expected = listOf(android.graphics.Color.WHITE, android.graphics.Color.BLACK),
+            actual = listOf(bitmap.getPixel(0, 0), bitmap.getPixel(MARGIN_PX + 1, code)),
+        )
+    }
+
+    private fun BarcodeFormat.reader(): Reader =
+        when (this) {
+            BarcodeFormat.DATA_MATRIX -> DataMatrixReader()
+            BarcodeFormat.AZTEC -> AztecReader()
+            BarcodeFormat.PDF417 -> PDF417Reader()
+            else -> QRCodeReader()
+        }
+
     private suspend fun renderQrCode(
         style: CodeStyle,
         rawValue: String = TEXT,
@@ -290,17 +376,31 @@ class CodeImageReadabilityTest {
         }
     }
 
-    private fun ByteArray.readQrCode(): String? {
+    private fun ByteArray.readQrCode(): String? =
+        readCode(reader = QRCodeReader())
+
+    private fun ByteArray.readCode(reader: Reader): String? {
         val bitmap = BitmapFactory.decodeByteArray(this, 0, size)
         val pixels = IntArray(bitmap.width * bitmap.height)
         bitmap.getPixels(pixels, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
         val image = BinaryBitmap(HybridBinarizer(RGBLuminanceSource(bitmap.width, bitmap.height, pixels)))
         // ZXing throws when it finds no code
-        return runCatching { QRCodeReader().decode(image).text }.getOrNull()
+        return runCatching { reader.decode(image).text }.getOrNull()
     }
 
     private companion object {
         // As long as a link a user would put in a code
         const val TEXT = "https://scanny.app/created/code?from=editor&style=custom"
+
+        // Accents of ISO 8859-1, the characters a Data Matrix and an Aztec code hold
+        const val ACCENTED_TEXT = "Café crème à l'été, Noël à Évian"
+
+        // Upper and lower case, digits and punctuation: the encoders switch modes along it
+        const val CONTACT = "BEGIN:VCARD\nVERSION:3.0\nN:Dupont;Jean\nFN:Jean Dupont\nTEL:+33600000000\nEND:VCARD\n"
+
+        // The blank margin of an image, in pixels
+        const val MARGIN_PX = 64
+
+        val MATRIX_FORMATS = listOf(BarcodeFormat.DATA_MATRIX, BarcodeFormat.AZTEC, BarcodeFormat.PDF417)
     }
 }

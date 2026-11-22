@@ -304,8 +304,10 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
   à jour et la plus riche des bibliothèques multiplateformes sans ZXing (vérifié le 2026-11-20). Elle
   rend un `Painter` en code commun, exporte en PNG sur Android et iOS, gère couleurs, dégradés,
   formes des points et des yeux, logo, niveau de correction, et sait aussi générer Data Matrix,
-  Aztec, PDF417 et les codes-barres 1D (`qrose-matrix`, `qrose-oned`). Ne jamais utiliser la 1.3.0,
-  qui produisait des QR codes inversés : 1.3.1 au minimum.
+  Aztec, PDF417 et les codes-barres 1D (`qrose-encoder-matrix`, `qrose-oned`). Ne jamais utiliser la
+  1.3.0, qui produisait des QR codes inversés : 1.3.1 au minimum. Ses encodeurs Data Matrix et Aztec
+  écrivent des codes faux : Scanny en garde une copie corrigée
+  ([ADR-0004](./adr/0004-encodeurs-data-matrix-et-aztec-corriges.md)).
 
 - **Material 3** : 1.12.0-alpha03, l'alpha compilée sur Compose Multiplatform 1.12 comme le reste de
   l'app (la dernière stable, 1.9.0, est compilée contre Compose 1.9). Seul `designSystem` en dépend,

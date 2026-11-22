@@ -209,7 +209,6 @@
     <string name="format_qr_code_structure">Un carré de modules noirs et blancs, de 21 × 21 à 177 × 177. Trois carrés dans ses coins permettent au lecteur de le trouver et de le remettre droit. Le contenu y est écrit en binaire, répété en partie par sa correction d'erreur : le code se lit encore abîmé.</string>
     <string name="format_qr_code_use">Le code le plus répandu : liens, paiements, menus, billets, réseaux Wi-Fi.</string>
     <string name="format_read_and_created">Scanny le lit et le crée.</string>
-    <string name="format_read_only">Scanny le lit.</string>
     <string name="format_structure">Comment il est formé</string>
     <string name="format_upc_a_example">036000291452 : 0 pour le système, 36000 pour l'entreprise, 29145 pour le produit, 2 pour le contrôle.</string>
     <string name="format_upc_a_structure">12 chiffres : un système de numérotation, 0 pour la plupart des produits, 5 chiffres pour l'entreprise, 5 pour le produit, puis un chiffre de contrôle. C'est un EAN-13 qui commence par 0.</string>
