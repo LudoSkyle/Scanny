@@ -1,0 +1,79 @@
+# Publishes the Android app to the Play Store in one click: Actions > Release Android > Run workflow,
+# from main. Builds the bundle signed with the keys of the private submodule, reached with a read-only
+# deploy key (secret PRIVATE_SUBMODULE_SSH_KEY), and uploads it to the track chosen with the service
+# account of the Play Console (secret PLAY_SERVICE_ACCOUNT_JSON). See docs/Common/04_BUILD.md.
+name: Release Android
+
+on:
+  workflow_dispatch:
+    inputs:
+      track:
+        description: Track of the Play Store
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+        default: internal
+      status:
+        description: Rolled out at once, or left as a draft to roll out from the Play Console
+        type: choice
+        options:
+          - completed
+          - draft
+        default: completed
+
+# One release at a time
+concurrency:
+  group: release-android
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Build and publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out the code and the private submodule
+        uses: actions/checkout@v7
+        with:
+          ssh-key: ${{ secrets.PRIVATE_SUBMODULE_SSH_KEY }}
+          submodules: true
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      # Above any version code given by hand so far, and higher at each run
+      - name: Number the version
+        id: version
+        run: echo "code=$((1000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
+
+      - name: Build the signed bundle
+        run: ./gradlew :androidApp:bundleRelease -Pscanny.versionCode=${{ steps.version.outputs.code }}
+
+      - name: Keep the bundle and its mapping
+        uses: actions/upload-artifact@v7
+        with:
+          name: scanny-release-${{ steps.version.outputs.code }}
+          path: |
+            androidApp/build/outputs/bundle/release/*.aab
+            androidApp/build/outputs/mapping/release/mapping.txt
+
+      - name: Publish to the Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: fr.skyle.scanny
+          releaseFiles: androidApp/build/outputs/bundle/release/androidApp-release.aab
+          mappingFile: androidApp/build/outputs/mapping/release/mapping.txt
+          track: ${{ inputs.track }}
+          status: ${{ inputs.status }}
