@@ -1,0 +1,432 @@
+package fr.skyle.scanny.ui.screen.scan.ui
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
+import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.DetectedBarcode
+import fr.skyle.scanny.domain.model.ScanSettings
+import fr.skyle.scanny.domain.usecase.scan.RecordScanUseCase
+import fr.skyle.scanny.domain.usecase.settings.WatchScanSettingsUseCase
+import fr.skyle.scanny.platform.calendar.EventAdder
+import fr.skyle.scanny.platform.camera.CameraCapabilities
+import fr.skyle.scanny.platform.camera.CameraLens
+import fr.skyle.scanny.platform.contact.ContactAdder
+import fr.skyle.scanny.platform.gallery.ImageScanResult
+import fr.skyle.scanny.platform.sound.ScanBeeper
+import fr.skyle.scanny.platform.wifi.WifiNetworkSupport
+import fr.skyle.scanny.ui.core.code.mapper.toCodeAction
+import fr.skyle.scanny.ui.core.code.model.CodeAction
+import fr.skyle.scanny.ui.screen.scan.ui.mapper.toScanResult
+import fr.skyle.scanny.ui.screen.scan.ui.mapper.toScanResultItem
+import fr.skyle.scanny.ui.screen.scan.ui.model.MultipleScanSession
+import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResult
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
+
+class ScanViewModel(
+    private val recordScanUseCase: RecordScanUseCase,
+    private val watchScanSettingsUseCase: WatchScanSettingsUseCase,
+    private val contactAdder: ContactAdder,
+    private val eventAdder: EventAdder,
+    private val wifiNetworkSupport: WifiNetworkSupport,
+    private val scanBeeper: ScanBeeper,
+    private val clock: Clock,
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(ScanUIState())
+    val uiState: StateFlow<ScanUIState> = _uiState.asStateFlow()
+
+    private val _event = Channel<ScanEvent>(Channel.BUFFERED)
+    val event = _event.receiveAsFlow()
+
+    private var isAwayFromScan = false
+
+    // Another app or a panel of the system in front: what the camera still sees is not for the scan
+    private var isScreenResumed = true
+
+    // Read again just after the detection resumed, the last code of a simple scan is ignored: still
+    // before the camera, it would open its result again as soon as the user closes it
+    private var lastSimpleScanBarcode: DetectedBarcode? = null
+    private var detectionResumedAt: Instant? = null
+
+    init {
+        viewModelScope.launch {
+            watchScanSettingsUseCase()
+                .catch { exception ->
+                    Logger.e(throwable = exception) { "Failed to read the settings" }
+                }
+                .collect { settings ->
+                    _uiState.update { uiState ->
+                        uiState.copy(cameraLens = if (settings.isFrontCameraUsed) CameraLens.FRONT else CameraLens.BACK)
+                    }
+                }
+        }
+    }
+
+    // The codes of the multiple scan in progress, in their order, each once
+    private val multipleScanBarcodes = mutableListOf<DetectedBarcode>()
+
+    // The codes the camera has read, not yet read steadily enough to be counted
+    private val multipleScanCandidates = mutableMapOf<DetectedBarcode, Candidate>()
+
+    fun onBarcodeDetected(barcode: DetectedBarcode) {
+        if (!isScreenResumed) {
+            return
+        }
+
+        if (_uiState.value.multipleScan != null) {
+            onMultipleScanBarcodeDetected(barcode = barcode)
+        } else if (!isReadAgainTooSoon(barcode = barcode)) {
+            recordSimpleScan(barcode = barcode)
+        }
+    }
+
+    private fun isReadAgainTooSoon(barcode: DetectedBarcode): Boolean {
+        val resumedAt = detectionResumedAt ?: return false
+        return barcode == lastSimpleScanBarcode && clock.now() - resumedAt < SAME_CODE_PAUSE
+    }
+
+    private fun recordSimpleScan(barcode: DetectedBarcode) {
+        // Paused before anything else: the camera reads the same code several times in a row
+        if (_uiState.value.isDetectionPaused) {
+            return
+        }
+        _uiState.update { uiState ->
+            uiState.copy(isDetectionPaused = true)
+        }
+        lastSimpleScanBarcode = barcode
+
+        viewModelScope.launch {
+            try {
+                val settings = watchScanSettingsUseCase().first()
+                signalScan(settings = settings)
+
+                // A simple scan is a capture of the one code read
+                val scannedCode = recordScanUseCase(barcodes = listOf(barcode)).codes.single()
+
+                if (settings.isCopyAfterScanEnabled) {
+                    _event.send(ScanEvent.CopyToClipboard(text = scannedCode.rawValue))
+                }
+
+                // Opened as by the main button of its result, when the device can: a network it cannot
+                // join, or a text, is shown instead
+                val action = scannedCode.content.toCodeAction(canJoinWifi = wifiNetworkSupport::canJoin)
+                if (action != null && settings.isOpenContentAfterScanEnabled) {
+                    _event.send(ScanEvent.OpenContent(action = action))
+                    // The app opened takes a moment to come up: meanwhile the camera would read the code again
+                    delay(CONTENT_OPENING_PAUSE)
+                    resumeDetection()
+                } else {
+                    _uiState.update { uiState ->
+                        uiState.copy(
+                            result = ScanResult.Code(
+                                item = scannedCode.toScanResultItem(
+                                    canJoinWifi = wifiNetworkSupport::canJoin,
+                                    isRawContentShown = settings.isRawContentShown,
+                                ),
+                            ),
+                        )
+                    }
+                }
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                Logger.e(throwable = exception) { "Failed to record the scan of a ${barcode.format}" }
+                _event.send(ScanEvent.ScanNotSaved)
+                resumeDetection()
+            }
+        }
+    }
+
+    /**
+     * The camera reads a code in front of it again and again, and a misreading of something else, such
+     * as a barcode decoded in the pattern of a QR code, once: a code counts once read steadily, and
+     * then once only.
+     */
+    private fun onMultipleScanBarcodeDetected(barcode: DetectedBarcode) {
+        val session = _uiState.value.multipleScan ?: return
+        if (session.isRecording || barcode in multipleScanBarcodes) {
+            return
+        }
+
+        val now = clock.now()
+        val candidate = multipleScanCandidates[barcode]
+            ?.takeIf { candidate -> now - candidate.firstReadingAt <= CONFIRMATION_WINDOW }
+            ?.let { candidate -> candidate.copy(readingCount = candidate.readingCount + 1) }
+            ?: Candidate(
+                firstReadingAt = now,
+                readingCount = 1,
+            )
+        if (candidate.readingCount < CONFIRMATION_READINGS) {
+            multipleScanCandidates[barcode] = candidate
+            return
+        }
+
+        multipleScanCandidates -= barcode
+        addToMultipleScan(barcode = barcode)
+    }
+
+    private fun addToMultipleScan(barcode: DetectedBarcode) {
+        val session = _uiState.value.multipleScan ?: return
+        if (session.isRecording || barcode in multipleScanBarcodes) {
+            return
+        }
+
+        multipleScanBarcodes += barcode
+        _uiState.update { uiState ->
+            uiState.copy(multipleScan = session.copy(codeCount = multipleScanBarcodes.size))
+        }
+        viewModelScope.launch {
+            signalScan(settings = watchScanSettingsUseCase().first())
+        }
+    }
+
+    // The vibration and the beep that tell a code is read, each as its setting asks
+    private suspend fun signalScan(settings: ScanSettings) {
+        if (settings.isVibrationAfterScanEnabled) {
+            _event.send(ScanEvent.Vibrate)
+        }
+        if (settings.isBeepAfterScanEnabled) {
+            scanBeeper.beep()
+        }
+    }
+
+    fun onMultipleScanClicked() {
+        val session = _uiState.value.multipleScan
+        when {
+            session == null -> {
+                multipleScanBarcodes.clear()
+                multipleScanCandidates.clear()
+                _uiState.update { uiState ->
+                    uiState.copy(
+                        multipleScan = MultipleScanSession(codeCount = 0),
+                        isDetectionPaused = false,
+                    )
+                }
+            }
+
+            session.isRecording -> Unit
+
+            // Codes would be lost: the user confirms first
+            session.codeCount > 0 -> viewModelScope.launch {
+                _event.send(ScanEvent.ConfirmCodesDiscard)
+            }
+
+            else -> onMultipleScanDiscarded()
+        }
+    }
+
+    fun onMultipleScanDiscarded() {
+        multipleScanBarcodes.clear()
+        multipleScanCandidates.clear()
+        _uiState.update { uiState ->
+            uiState.copy(multipleScan = null)
+        }
+    }
+
+    fun onMultipleScanFinished() {
+        val session = _uiState.value.multipleScan ?: return
+        if (session.isRecording || multipleScanBarcodes.isEmpty()) {
+            return
+        }
+
+        _uiState.update { uiState ->
+            uiState.copy(
+                multipleScan = session.copy(isRecording = true),
+                isDetectionPaused = true,
+            )
+        }
+
+        viewModelScope.launch {
+            try {
+                val scan = recordScanUseCase(barcodes = multipleScanBarcodes.toList())
+                val settings = watchScanSettingsUseCase().first()
+
+                multipleScanBarcodes.clear()
+                multipleScanCandidates.clear()
+                _uiState.update { uiState ->
+                    uiState.copy(
+                        multipleScan = null,
+                        result = scan.toScanResult(
+                            canJoinWifi = wifiNetworkSupport::canJoin,
+                            isRawContentShown = settings.isRawContentShown,
+                        ),
+                    )
+                }
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                Logger.e(throwable = exception) { "Failed to record a multiple scan of ${multipleScanBarcodes.size} codes" }
+                _event.send(ScanEvent.ScanNotSaved)
+                // The codes found stay, to try again
+                _uiState.update { uiState ->
+                    uiState.copy(
+                        multipleScan = session.copy(isRecording = false),
+                        isDetectionPaused = false,
+                    )
+                }
+            }
+        }
+    }
+
+    fun onImageScanned(result: ImageScanResult) {
+        when (result) {
+            // Read once on purpose, from a still image: counted at once by a multiple scan, and
+            // recorded even if just read by the camera
+            is ImageScanResult.Detected -> if (_uiState.value.multipleScan != null) {
+                addToMultipleScan(barcode = result.barcode)
+            } else {
+                recordSimpleScan(barcode = result.barcode)
+            }
+
+            ImageScanResult.NoBarcode -> viewModelScope.launch {
+                _event.send(ScanEvent.NoCodeInImage)
+            }
+        }
+    }
+
+    fun onResultDismissed() {
+        _uiState.update { uiState ->
+            uiState.copy(result = null)
+        }
+        resumeDetection()
+    }
+
+    fun onAddContactClicked(contact: BarcodeContent.Contact) {
+        try {
+            contactAdder.addContact(contact = contact)
+        } catch (exception: Exception) {
+            Logger.e(throwable = exception) { "Failed to open the addition of a scanned contact" }
+
+            viewModelScope.launch {
+                _event.send(ScanEvent.ContactNotAdded)
+            }
+        }
+    }
+
+    fun onAddEventClicked(event: BarcodeContent.Event) {
+        try {
+            eventAdder.addEvent(event = event)
+        } catch (exception: Exception) {
+            Logger.e(throwable = exception) { "Failed to open the addition of a scanned event" }
+
+            viewModelScope.launch {
+                _event.send(ScanEvent.EventNotAdded)
+            }
+        }
+    }
+
+    fun onSeeDetailClicked() {
+        val result = _uiState.value.result as? ScanResult.Code ?: return
+        leaveScan(event = ScanEvent.OpenScanDetail(codeId = result.item.codeId))
+    }
+
+    fun onResultCodeClicked(codeId: Long) {
+        leaveScan(event = ScanEvent.OpenScanDetail(codeId = codeId))
+    }
+
+    fun onSeeGroupClicked() {
+        val result = _uiState.value.result as? ScanResult.Group ?: return
+        leaveScan(event = ScanEvent.OpenScanGroup(scanId = result.scanId))
+    }
+
+    // Back from another screen of the app, from another app, or at the first display
+    fun onScreenResumed() {
+        isScreenResumed = true
+        if (isAwayFromScan) {
+            isAwayFromScan = false
+            resumeDetection()
+        } else {
+            detectionResumedAt = clock.now()
+        }
+    }
+
+    fun onScreenPaused() {
+        isScreenResumed = false
+    }
+
+    fun onTorchClicked() {
+        _uiState.update { uiState ->
+            uiState.copy(isTorchEnabled = !uiState.isTorchEnabled)
+        }
+    }
+
+    fun onCameraCapabilitiesChanged(capabilities: CameraCapabilities) {
+        _uiState.update { uiState ->
+            uiState.copy(cameraCapabilities = capabilities)
+        }
+    }
+
+    fun onCameraUnavailable() {
+        _uiState.update { uiState ->
+            uiState.copy(isCameraUnavailable = true)
+        }
+    }
+
+    // Still paused: the camera keeps reading during the transition to the next screen
+    private fun leaveScan(event: ScanEvent) {
+        isAwayFromScan = true
+        _uiState.update { uiState ->
+            uiState.copy(result = null)
+        }
+        viewModelScope.launch {
+            _event.send(event)
+        }
+    }
+
+    private fun resumeDetection() {
+        detectionResumedAt = clock.now()
+        _uiState.update { uiState ->
+            uiState.copy(isDetectionPaused = false)
+        }
+    }
+
+    data class ScanUIState(
+        val cameraLens: CameraLens = CameraLens.BACK,
+        val isDetectionPaused: Boolean = false,
+        val isTorchEnabled: Boolean = false,
+        val result: ScanResult? = null,
+        val cameraCapabilities: CameraCapabilities? = null,
+        val isCameraUnavailable: Boolean = false,
+        // Null outside of a multiple scan
+        val multipleScan: MultipleScanSession? = null,
+    )
+
+    sealed interface ScanEvent {
+        data object Vibrate : ScanEvent
+        data class CopyToClipboard(val text: String) : ScanEvent
+        data class OpenContent(val action: CodeAction) : ScanEvent
+        data object NoCodeInImage : ScanEvent
+        data object ScanNotSaved : ScanEvent
+        data object ContactNotAdded : ScanEvent
+        data object EventNotAdded : ScanEvent
+        data class OpenScanDetail(val codeId: Long) : ScanEvent
+        data class OpenScanGroup(val scanId: Long) : ScanEvent
+        data object ConfirmCodesDiscard : ScanEvent
+    }
+
+    private data class Candidate(
+        val firstReadingAt: Instant,
+        val readingCount: Int,
+    )
+
+    internal companion object {
+        val CONTENT_OPENING_PAUSE = 2.seconds
+        val SAME_CODE_PAUSE = 1.5.seconds
+        const val CONFIRMATION_READINGS = 3
+        val CONFIRMATION_WINDOW = 1.seconds
+    }
+}

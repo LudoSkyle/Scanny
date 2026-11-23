@@ -1,0 +1,164 @@
+[versions]
+
+# Android
+compileSdk = "37"
+targetSdk = "37"
+minSdk = "26"
+
+# Kotlin
+kotlin = "2.4.21"
+kotlinxCoroutines = "1.11.0"
+kotlinxDatetime = "0.8.0"
+kotlinxSerialization = "1.13.0"
+
+# Compose Multiplatform
+composeMultiplatform = "1.12.2"
+composeMultiplatformMaterial3 = "1.12.0-alpha03" # Built on Compose Multiplatform 1.12, where the latest stable (1.9.0) is built on Compose 1.9. No Expressive API in this project
+
+# Navigation 3
+navigation3Multiplatform = "1.2.0"
+# The one Navigation 3 brings: the back gesture and the back button of the platforms
+navigationEventMultiplatform = "1.1.0"
+
+# Lifecycle
+lifecycleMultiplatform = "2.11.0" # androidx.lifecycle 2.11.0 on Android
+
+# AndroidX
+activityCompose = "1.13.0"
+androidxCore = "1.19.1"
+coreSplashscreen = "1.2.0"
+profileinstaller = "1.4.1"
+
+# Koin
+koin = "4.2.2"
+
+# Camera and detection (Android)
+camerax = "1.7.0"
+mlkitBarcodeScanning = "17.3.0" # The bundled model: it works offline from the first launch
+
+# Room
+room = "2.8.5"
+sqlite = "2.6.2" # The version Room 2.8.5 requires
+
+# DataStore
+datastore = "1.3.0"
+okio = "3.18.2"
+
+# Logs
+kermit = "2.2.0"
+qrose = "1.3.1"
+
+# Firebase
+firebaseBom = "35.2.0"
+
+# Tests
+junit = "4.13.2"
+robolectric = "4.18.1"
+androidxTestCore = "1.7.0"
+# The androidx.compose.ui under Compose Multiplatform 1.12.2 on Android
+androidxComposeUi = "1.12.1"
+zxing = "3.5.4"
+# The generator of the baseline profiles
+benchmark = "1.5.0"
+uiautomator = "2.4.1"
+androidxTestExtJunit = "1.3.0"
+
+# Plugins
+agp = "9.5.2"
+ksp = "2.3.14"
+googleServices = "4.6.0"
+firebaseCrashlyticsPlugin = "3.0.8"
+firebaseAppdistributionPlugin = "5.3.1"
+easylauncherPlugin = "6.4.1"
+
+[libraries]
+# Compose Multiplatform
+composeMultiplatform-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
+composeMultiplatform-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
+composeMultiplatform-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMultiplatformMaterial3" }
+composeMultiplatform-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
+composeMultiplatform-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
+composeMultiplatform-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
+
+# Navigation 3
+navigation3Multiplatform-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3Multiplatform" }
+navigationEventMultiplatform-compose = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version.ref = "navigationEventMultiplatform" }
+
+# Lifecycle
+lifecycleMultiplatform-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleMultiplatform" }
+lifecycleMultiplatform-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleMultiplatform" }
+lifecycleMultiplatform-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleMultiplatform" }
+
+# Kotlinx
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutines" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerialization" }
+
+# AndroidX
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-core = { module = "androidx.core:core", version.ref = "androidxCore" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
+androidx-lifecycle-livedata-core = { module = "androidx.lifecycle:lifecycle-livedata-core", version.ref = "lifecycleMultiplatform" }
+
+# Koin
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+
+# Camera and detection (Android)
+camerax-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camerax" }
+camerax-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camerax" }
+camerax-compose = { module = "androidx.camera:camera-compose", version.ref = "camerax" }
+mlkit-barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkitBarcodeScanning" }
+
+# Room
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+sqlite-bundled-jvm = { module = "androidx.sqlite:sqlite-bundled-jvm", version.ref = "sqlite" }
+
+# DataStore
+datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+
+# Logs
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
+qrose-oned = { module = "io.github.alexzhirkevich:qrose-oned", version.ref = "qrose" }
+qrose-encoder-matrix = { module = "io.github.alexzhirkevich:qrose-encoder-matrix", version.ref = "qrose" }
+
+# Firebase
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+
+# Tests
+test-kotlin = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+test-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+test-okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
+test-junit = { module = "junit:junit", version.ref = "junit" }
+test-robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+test-androidx-core = { module = "androidx.test:core-ktx", version.ref = "androidxTestCore" }
+test-composeMultiplatform-ui = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "composeMultiplatform" }
+# The activity runComposeUiTest starts on Android, declared in the manifest of the host tests
+test-androidx-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidxComposeUi" }
+test-zxing = { module = "com.google.zxing:core", version.ref = "zxing" }
+# The generator of the baseline profiles, driving the app on a device
+test-androidx-benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
+test-androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
+test-androidx-ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidxTestExtJunit" }
+
+# Gradle plugins, put on the build classpath by buildSrc
+plugin-android = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+plugin-kotlinSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+plugin-composeCompiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+plugin-ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+plugin-room = { module = "androidx.room:room-gradle-plugin", version.ref = "room" }
+plugin-composeMultiplatform = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeMultiplatform" }
+plugin-googleServices = { module = "com.google.gms:google-services", version.ref = "googleServices" }
+plugin-firebaseCrashlytics = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsPlugin" }
+plugin-firebaseAppdistribution = { module = "com.google.firebase:firebase-appdistribution-gradle", version.ref = "firebaseAppdistributionPlugin" }
+plugin-easylauncher = { module = "com.project.starter:easylauncher", version.ref = "easylauncherPlugin" }
+plugin-baselineprofile = { module = "androidx.baselineprofile:androidx.baselineprofile.gradle.plugin", version.ref = "benchmark" }

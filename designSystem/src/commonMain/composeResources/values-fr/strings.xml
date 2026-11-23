@@ -1,0 +1,10 @@
+<resources>
+    <string name="back">Retour</string>
+    <string name="cancel">Annuler</string>
+    <string name="clear">Effacer</string>
+    <string name="collapsed">Replié</string>
+    <string name="expanded">Déplié</string>
+    <string name="hue">Teinte</string>
+    <string name="ok">OK</string>
+    <string name="saturation_brightness">Saturation et luminosité</string>
+</resources>

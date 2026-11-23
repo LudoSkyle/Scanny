@@ -1,0 +1,68 @@
+# Sends the Android app to the testers of Firebase App Distribution in one click: Actions > Distribute
+# Android > Run workflow. Builds the app signed with the keys of the private submodule, reached with a
+# read-only deploy key (secret PRIVATE_SUBMODULE_SSH_KEY), and uploads it with the service account of
+# the Firebase project (secret FIREBASE_SERVICE_ACCOUNT_JSON). See docs/Common/04_BUILD.md.
+name: Distribute Android
+
+on:
+  workflow_dispatch:
+    inputs:
+      variant:
+        description: Variant of the app
+        type: choice
+        options:
+          - release
+          - debug
+        default: release
+      groups:
+        description: Groups of testers, separated by commas
+        type: string
+        default: Internal
+      releaseNotes:
+        description: What the testers should try
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  distribute:
+    name: Build and distribute
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out the code and the private submodule
+        uses: actions/checkout@v7
+        with:
+          ssh-key: ${{ secrets.PRIVATE_SUBMODULE_SSH_KEY }}
+          submodules: true
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      # Where the build reads it, never committed
+      - name: Write the service account
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: printf '%s' "$SERVICE_ACCOUNT" > androidApp/google-services-account.json
+
+      - name: Build and upload
+        env:
+          VARIANT: ${{ inputs.variant }}
+          GROUPS: ${{ inputs.groups }}
+          RELEASE_NOTES: ${{ inputs.releaseNotes }}
+        run: |
+          TASK_VARIANT="$(tr '[:lower:]' '[:upper:]' <<< "${VARIANT:0:1}")${VARIANT:1}"
+          ./gradlew ":androidApp:assemble$TASK_VARIANT" ":androidApp:appDistributionUpload$TASK_VARIANT" \
+            --groups="$GROUPS" --releaseNotes="$RELEASE_NOTES"
+
+      - name: Forget the service account
+        if: always()
+        run: rm -f androidApp/google-services-account.json

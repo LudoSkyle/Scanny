@@ -1,0 +1,461 @@
+package fr.skyle.scanny.ui.screen.createcode.ui.component
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isPopup
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.v2.runComposeUiTest
+import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.ContactFormat
+import fr.skyle.scanny.domain.model.ContactPhoneType
+import fr.skyle.scanny.domain.model.EventFrequency
+import fr.skyle.scanny.domain.model.OtpAlgorithm
+import fr.skyle.scanny.domain.model.OtpType
+import fr.skyle.scanny.domain.model.WifiEncryption
+import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.account
+import fr.skyle.scanny.resources.add_phone
+import fr.skyle.scanny.resources.all_day
+import fr.skyle.scanny.resources.blind_carbon_copy
+import fr.skyle.scanny.resources.carbon_copy
+import fr.skyle.scanny.resources.counter
+import fr.skyle.scanny.resources.identity
+import fr.skyle.scanny.resources.issuer
+import fr.skyle.scanny.resources.latitude
+import fr.skyle.scanny.resources.link
+import fr.skyle.scanny.resources.longitude
+import fr.skyle.scanny.resources.mecard
+import fr.skyle.scanny.resources.mobile
+import fr.skyle.scanny.resources.more_options
+import fr.skyle.scanny.resources.name_prefix
+import fr.skyle.scanny.resources.password
+import fr.skyle.scanny.resources.period_in_seconds
+import fr.skyle.scanny.resources.phase2_method
+import fr.skyle.scanny.resources.phone
+import fr.skyle.scanny.resources.place
+import fr.skyle.scanny.resources.recipients
+import fr.skyle.scanny.resources.remove
+import fr.skyle.scanny.resources.required_field
+import fr.skyle.scanny.resources.secret_key
+import fr.skyle.scanny.resources.start_time
+import fr.skyle.scanny.resources.title
+import fr.skyle.scanny.resources.type_work
+import fr.skyle.scanny.resources.week_days
+import fr.skyle.scanny.ui.screen.createcode.ui.mapper.toBarcodeContent
+import fr.skyle.scanny.ui.screen.createcode.ui.model.ContactPhoneField
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
+import fr.skyle.scanny.ui.test.ComposeTest
+import kotlinx.datetime.DayOfWeek
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.getStringArray
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+@OptIn(ExperimentalTestApi::class)
+internal class CreationFormFieldsTest : ComposeTest() {
+
+    @Test
+    fun `the fields of a location fill its coordinates with a decimal comma and its place`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(CreationForm(kind = CreationKind.LOCATION))
+        setContent {
+            SCTheme {
+                CreationFormFields(
+                    form = form,
+                    onFormChanged = { changedForm -> form = changedForm },
+                )
+            }
+        }
+
+        // When
+        onNode(hasSetTextAction() and hasText(required(Res.string.latitude))).performTextInput("48,8584")
+        onNode(hasSetTextAction() and hasText(required(Res.string.longitude))).performTextInput("2.2945")
+        onNode(hasSetTextAction() and hasText(getString(Res.string.place))).performTextInput("Tour Eiffel")
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Location(
+                latitude = 48.8584,
+                longitude = 2.2945,
+                label = "Tour Eiffel",
+            ),
+            actual = form.toBarcodeContent(),
+        )
+    }
+
+    @Test
+    fun `the fields of an otp key fill its issuer its account and its secret`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(CreationForm(kind = CreationKind.OTP))
+        setContent {
+            SCTheme {
+                CreationFormFields(
+                    form = form,
+                    onFormChanged = { changedForm -> form = changedForm },
+                )
+            }
+        }
+
+        // When
+        onNode(hasSetTextAction() and hasText(getString(Res.string.issuer))).performTextInput("Scanny")
+        onNode(hasSetTextAction() and hasText(required(Res.string.account))).performTextInput("john@doe.fr")
+        onNode(hasSetTextAction() and hasText(required(Res.string.secret_key))).performTextInput("jbsw y3dp ehpk 3pxp")
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                issuer = "Scanny",
+                account = "john@doe.fr",
+            ),
+            actual = form.toBarcodeContent(),
+        )
+    }
+
+    @Test
+    fun `a contact chosen as a mecard hides and leaves out what a mecard does not hold`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(
+            CreationForm(
+                kind = CreationKind.CONTACT,
+                contactNamePrefix = "Dr.",
+                contactFirstName = "John",
+                contactLastName = "Doe",
+            ),
+        )
+        setContent {
+            SCTheme {
+                // The fields of a contact go beyond the screen of the test
+                Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+                    CreationFormFields(
+                        form = form,
+                        onFormChanged = { changedForm -> form = changedForm },
+                    )
+                }
+            }
+        }
+
+        // When
+        onNodeWithText(getString(Res.string.mecard)).performScrollTo().performClick()
+
+        // Then
+        onNode(hasSetTextAction() and hasText(getString(Res.string.name_prefix))).assertDoesNotExist()
+        assertEquals(
+            expected = BarcodeContent.Contact(
+                firstName = "John",
+                lastName = "Doe",
+                format = ContactFormat.MECARD,
+            ),
+            actual = form.toBarcodeContent(),
+        )
+    }
+
+    @Test
+    fun `a contact takes a second phone of its own kind and drops an entry removed`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(
+            CreationForm(
+                kind = CreationKind.CONTACT,
+                contactFirstName = "John",
+                contactPhones = listOf(ContactPhoneField(number = "+33600000000")),
+            ),
+        )
+        setContent {
+            SCTheme {
+                Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+                    CreationFormFields(
+                        form = form,
+                        onFormChanged = { changedForm -> form = changedForm },
+                    )
+                }
+            }
+        }
+
+        // When
+        onNodeWithText(getString(Res.string.add_phone)).performScrollTo().performClick()
+        onAllNodes(hasSetTextAction() and hasText(getString(Res.string.phone)))[1].performScrollTo().performTextInput("+33100000000")
+        onAllNodesWithText(getString(Res.string.mobile))[1].performScrollTo().performClick()
+        // In the menu, not the section of the work, of the same name
+        onNode(hasText(getString(Res.string.type_work)) and hasAnyAncestor(isPopup())).performClick()
+        // The e-mail row, empty, taken out
+        onAllNodesWithContentDescription(getString(Res.string.remove))[2].performScrollTo().performClick()
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                ContactPhoneField(number = "+33600000000"),
+                ContactPhoneField(number = "+33100000000", type = ContactPhoneType.WORK),
+            ),
+            actual = form.contactPhones,
+        )
+        assertEquals(
+            expected = emptyList(),
+            actual = form.contactEmails,
+        )
+    }
+
+    @Test
+    fun `a hotp key asks for its counter instead of a period`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(
+            CreationForm(
+                kind = CreationKind.OTP,
+                otpAccount = "john",
+                otpSecret = "JBSWY3DPEHPK3PXP",
+            ),
+        )
+        setContent {
+            SCTheme {
+                Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+                    CreationFormFields(
+                        form = form,
+                        onFormChanged = { changedForm -> form = changedForm },
+                    )
+                }
+            }
+        }
+
+        // When
+        onNodeWithText("HOTP").performClick()
+        // The algorithm and the digits, folded under more options
+        onNodeWithText(getString(Res.string.more_options)).performScrollTo().performClick()
+        onNodeWithText("SHA256").performScrollTo().performClick()
+        onNodeWithText("8").performScrollTo().performClick()
+        onNode(hasSetTextAction() and hasText(required(Res.string.counter))).performScrollTo().performTextInput("5")
+
+        // Then
+        onNode(hasSetTextAction() and hasText(required(Res.string.period_in_seconds))).assertDoesNotExist()
+        assertEquals(
+            expected = BarcodeContent.Otp(
+                secret = "JBSWY3DPEHPK3PXP",
+                type = OtpType.HOTP,
+                account = "john",
+                algorithm = OtpAlgorithm.SHA256,
+                digits = 8,
+                counter = 5,
+            ),
+            actual = form.toBarcodeContent(),
+        )
+    }
+
+    @Test
+    fun `a new link starts with https and goes on after it`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(CreationForm(kind = CreationKind.LINK))
+        setContent {
+            SCTheme {
+                CreationFormFields(
+                    form = form,
+                    onFormChanged = { changedForm -> form = changedForm },
+                )
+            }
+        }
+
+        // When
+        onNode(hasSetTextAction() and hasText(required(Res.string.link))).performTextInput("scanny.app")
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Url(url = "https://scanny.app"),
+            actual = form.toBarcodeContent(),
+        )
+    }
+
+    @Test
+    fun `the options few need are folded until asked for`() = runComposeUiTest {
+        // Given
+        setContent {
+            SCTheme {
+                CreationFormFields(
+                    form = CreationForm(kind = CreationKind.EMAIL),
+                    onFormChanged = {},
+                )
+            }
+        }
+        onNode(hasSetTextAction() and hasText(getString(Res.string.carbon_copy))).assertDoesNotExist()
+
+        // When
+        onNodeWithText(getString(Res.string.more_options)).performClick()
+
+        // Then
+        onNode(hasSetTextAction() and hasText(getString(Res.string.carbon_copy))).assertExists()
+    }
+
+    @Test
+    fun `a folded option holding a value shows unfolded`() = runComposeUiTest {
+        // When
+        // As read from a scanned key
+        setContent {
+            SCTheme {
+                Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+                    CreationFormFields(
+                        form = CreationForm(
+                            kind = CreationKind.OTP,
+                            otpAlgorithm = OtpAlgorithm.SHA256,
+                        ),
+                        onFormChanged = {},
+                    )
+                }
+            }
+        }
+
+        // Then
+        onNodeWithText("SHA256").performScrollTo().assertIsSelected()
+    }
+
+    @Test
+    fun `the fields of an e-mail take several addresses for its recipients and its copies`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(CreationForm(kind = CreationKind.EMAIL))
+        setContent {
+            SCTheme {
+                Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+                    CreationFormFields(
+                        form = form,
+                        onFormChanged = { changedForm -> form = changedForm },
+                    )
+                }
+            }
+        }
+
+        // When
+        onNode(hasSetTextAction() and hasText(getString(Res.string.recipients))).performTextInput("a@doe.fr, b@doe.fr")
+        // The copies, folded under more options
+        onNodeWithText(getString(Res.string.more_options)).performClick()
+        onNode(hasSetTextAction() and hasText(getString(Res.string.carbon_copy))).performTextInput("c@doe.fr")
+        onNode(hasSetTextAction() and hasText(getString(Res.string.blind_carbon_copy))).performTextInput("d@doe.fr")
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Email(
+                to = listOf("a@doe.fr", "b@doe.fr"),
+                cc = listOf("c@doe.fr"),
+                bcc = listOf("d@doe.fr"),
+            ),
+            actual = form.toBarcodeContent(),
+        )
+    }
+
+    @Test
+    fun `an enterprise network asks for its identity and drops the password for a method without one`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(
+            CreationForm(
+                kind = CreationKind.WIFI,
+                wifiSsid = "Corp",
+                wifiEncryption = WifiEncryption.WPA_ENTERPRISE,
+            ),
+        )
+        setContent {
+            SCTheme {
+                Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+                    CreationFormFields(
+                        form = form,
+                        onFormChanged = { changedForm -> form = changedForm },
+                    )
+                }
+            }
+        }
+
+        // When
+        onNode(hasSetTextAction() and hasText(required(Res.string.identity))).performTextInput("john@corp")
+        onNodeWithText("PEAP").performClick()
+        onNodeWithText("TLS").performClick()
+
+        // Then
+        onNode(hasSetTextAction() and hasText(required(Res.string.password))).assertDoesNotExist()
+        onNodeWithText(getString(Res.string.phase2_method)).assertDoesNotExist()
+        assertEquals(
+            expected = BarcodeContent.Wifi(
+                ssid = "Corp",
+                encryption = WifiEncryption.WPA_ENTERPRISE,
+                eapMethod = "TLS",
+                identity = "john@corp",
+            ),
+            actual = form.toBarcodeContent(),
+        )
+    }
+
+    @Test
+    fun `an event of whole days has no times and a weekly one asks for its days`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(
+            CreationForm(
+                kind = CreationKind.EVENT,
+                eventFrequency = EventFrequency.WEEKLY,
+            ),
+        )
+        setContent {
+            SCTheme {
+                Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+                    CreationFormFields(
+                        form = form,
+                        onFormChanged = { changedForm -> form = changedForm },
+                    )
+                }
+            }
+        }
+        onNodeWithContentDescription(required(Res.string.start_time)).assertExists()
+
+        // When
+        onNodeWithText(getString(Res.string.all_day)).performClick()
+        onNodeWithContentDescription(getStringArray(Res.array.week_days)[2]).performScrollTo().performClick()
+
+        // Then
+        onNodeWithContentDescription(required(Res.string.start_time)).assertDoesNotExist()
+        assertEquals(
+            expected = true to setOf(DayOfWeek.WEDNESDAY),
+            actual = form.isEventAllDay to form.eventDays,
+        )
+    }
+
+    @Test
+    fun `the fields of a bookmark fill its title and its link`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(CreationForm(kind = CreationKind.BOOKMARK))
+        setContent {
+            SCTheme {
+                CreationFormFields(
+                    form = form,
+                    onFormChanged = { changedForm -> form = changedForm },
+                )
+            }
+        }
+
+        // When
+        onNode(hasSetTextAction() and hasText(getString(Res.string.title))).performTextInput("Scanny")
+        onNode(hasSetTextAction() and hasText(required(Res.string.link))).performTextInput("scanny.app")
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Bookmark(
+                url = "https://scanny.app",
+                title = "Scanny",
+            ),
+            actual = form.toBarcodeContent(),
+        )
+    }
+
+    // The label of a field the code cannot do without
+    private suspend fun required(label: StringResource): String =
+        getString(Res.string.required_field, getString(label))
+}

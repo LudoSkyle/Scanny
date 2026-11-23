@@ -1,0 +1,482 @@
+<resources>
+    <string name="about_format">About this format</string>
+    <string name="account">Account</string>
+    <string name="add_address">Add an address</string>
+    <string name="add_contact">Add the contact</string>
+    <string name="add_email">Add an e-mail</string>
+    <string name="add_logo">Add a logo</string>
+    <string name="add_phone">Add a phone</string>
+    <string name="add_to_authenticator">Add to an authenticator</string>
+    <string name="add_to_calendar">Add to the calendar</string>
+    <string name="add_website">Add a website</string>
+    <string name="address">Address</string>
+    <string name="addresses">Addresses</string>
+    <string name="advanced_options">Advanced options</string>
+    <string name="algorithm">Algorithm</string>
+    <string name="all_creations_deleted">Every creation will be deleted.</string>
+    <string name="all_day">All day</string>
+    <string name="all_scans_deleted">Every scan will be deleted.</string>
+    <string name="allow_camera">Allow the camera</string>
+    <string name="altitude">Altitude</string>
+    <string name="altitude_in_meters">Altitude in meters</string>
+    <string name="amount">Amount</string>
+    <string name="amount_in_bitcoins">Amount in BTC</string>
+    <string name="anonymous_identity">Anonymous identity</string>
+    <string name="app_description">Scanny scans QR codes and barcodes, with the latest technologies and without advertising, while staying light and reliable.</string>
+    <string name="app_name" translatable="false">Scanny</string>
+    <string name="at_start">At the start</string>
+    <string name="at_time">%1$s at %2$s</string>
+    <string name="attendee">Attendee</string>
+    <string name="attendees">Attendees</string>
+    <string name="availability">Shows as</string>
+    <string name="aztec" translatable="false">Aztec</string>
+    <string name="background_color">Color of the background</string>
+    <string name="barcode">Barcode</string>
+    <string name="barcode_value">Value</string>
+    <string name="barcode_value_example">Example: `%1$s`</string>
+    <string name="barcodes">Barcodes</string>
+    <string name="beep_after_scan">Beep after a scan</string>
+    <string name="birthday">Birthday</string>
+    <string name="bitcoin" translatable="false">Bitcoin</string>
+    <string name="blind_carbon_copy">Bcc</string>
+    <string name="bookmark">Bookmark</string>
+    <string name="busy">Busy</string>
+    <string name="call">Call</string>
+    <string name="camera_blocked">The camera is blocked for Scanny. Allow it in the settings of your device to scan codes.</string>
+    <string name="camera_needed">Scanny needs the camera to scan codes.</string>
+    <string name="camera_unavailable">No camera is available on this device. You can still scan a code in an image.</string>
+    <string name="cancel">Cancel</string>
+    <string name="carbon_copy">Cc</string>
+    <string name="categories">Categories</string>
+    <string name="change_logo">Change the logo</string>
+    <string name="characters_not_held">This format cannot hold some characters of this content, such as €, œ or emoji. A QR code or a PDF417 holds them.</string>
+    <string name="choose">Choose</string>
+    <string name="choose_color">Choose a color</string>
+    <string name="choose_subject">Choose a subject</string>
+    <string name="city">City</string>
+    <string name="class_confidential">Confidential</string>
+    <string name="class_private">Private</string>
+    <string name="class_public">Public</string>
+    <string name="classification">Visibility</string>
+    <string name="clear">Clear</string>
+    <string name="clear_history">Clear the history</string>
+    <string name="clear_history_question">Clear the history?</string>
+    <string name="codabar" translatable="false">Codabar</string>
+    <string name="code_128" translatable="false">Code 128</string>
+    <string name="code_39" translatable="false">Code 39</string>
+    <string name="code_93" translatable="false">Code 93</string>
+    <string name="code_count">%1$d codes</string>
+    <string name="code_family">Code</string>
+    <string name="code_formats">Code formats</string>
+    <string name="code_inverted">Its colors are lighter than its background: many scanners read such a code poorly.</string>
+    <string name="code_low_contrast">Its colors and its background stand out too little: some scanners may not read this code.</string>
+    <string name="code_not_deleted">The code could not be deleted</string>
+    <string name="code_not_drawable">This code cannot be drawn again</string>
+    <string name="code_removed_from_history">It will be removed from the history.</string>
+    <plurals name="codes_found">
+        <item quantity="one">%1$d code found</item>
+        <item quantity="other">%1$d codes found</item>
+    </plurals>
+    <string name="codes_not_saved">They will not be saved.</string>
+    <string name="codes_of_group">Codes of the group</string>
+    <string name="color_black">Black</string>
+    <string name="color_brown">Brown</string>
+    <string name="color_component_blue">Blue</string>
+    <string name="color_component_green">Green</string>
+    <string name="color_component_red">Red</string>
+    <string name="color_cream">Cream</string>
+    <string name="color_green">Green</string>
+    <string name="color_hex">Hex</string>
+    <string name="color_indigo">Indigo</string>
+    <string name="color_lavender">Lavender</string>
+    <string name="color_light_blue">Light blue</string>
+    <string name="color_light_green">Light green</string>
+    <string name="color_pink">Pink</string>
+    <string name="color_purple">Purple</string>
+    <string name="color_red">Red</string>
+    <string name="color_white">White</string>
+    <string name="contact">Contact</string>
+    <string name="contact_details">Contact details</string>
+    <string name="content">Content</string>
+    <string name="content_size">Content size</string>
+    <string name="content_size_count" translatable="false">%1$d / %2$d</string>
+    <string name="content_size_wide_characters">An accent or an emoji counts for several.</string>
+    <string name="content_too_long">This content is too long for a QR code.</string>
+    <string name="content_too_long_for_format">This content is too long for this format. A QR code holds more.</string>
+    <string name="content_too_long_for_logo">This content is too long for a logo, which needs the highest correction.</string>
+    <string name="content_type">Type</string>
+    <string name="coordinates">Coordinates</string>
+    <string name="copied">Copied</string>
+    <string name="copied_to_clipboard">Copied to the clipboard</string>
+    <string name="copy">Copy</string>
+    <string name="copy_after_scan">Copy the code after a scan</string>
+    <string name="corner_color">Color of the corners</string>
+    <string name="corner_color_like_dots">Like the dots</string>
+    <string name="corner_shape">Shape of the corners</string>
+    <string name="counter">Counter</string>
+    <string name="country">Country</string>
+    <string name="create">Create</string>
+    <string name="create_code">Create a code</string>
+    <string name="created_codes_appear_here">The codes you create, with the + of the scan, appear here.</string>
+    <string name="creation_not_saved">The code could not be created</string>
+    <string name="creations">Creations</string>
+    <string name="customization">Customization</string>
+    <string name="customization_reset">Customization reset</string>
+    <string name="data_matrix" translatable="false">Data Matrix</string>
+    <string name="date_at_time">%1$s at %2$s</string>
+    <string name="day_date">%2$s %1$d, %3$d</string>
+    <plurals name="days_before">
+        <item quantity="one">%1$d day before</item>
+        <item quantity="other">%1$d days before</item>
+    </plurals>
+    <string name="delete">Delete</string>
+    <string name="delete_code_question">Delete this code?</string>
+    <string name="delete_group_question">Delete this group?</string>
+    <string name="department">Department</string>
+    <string name="description">Description</string>
+    <string name="details">Details</string>
+    <string name="digits">Number of digits</string>
+    <string name="discard">Discard</string>
+    <string name="discard_codes_question">Discard the codes found?</string>
+    <string name="display_name">Display name</string>
+    <string name="dot_color">Color of the dots</string>
+    <string name="dot_shape">Shape of the dots</string>
+    <string name="ean_13" translatable="false">EAN-13</string>
+    <string name="ean_8" translatable="false">EAN-8</string>
+    <string name="eap_method">EAP method</string>
+    <string name="edit_code">Edit the code</string>
+    <string name="email">E-mail</string>
+    <string name="end">End</string>
+    <string name="end_date">End date</string>
+    <string name="end_time">End time</string>
+    <string name="enhanced_open_only">Wi-Fi Enhanced Open only</string>
+    <string name="enlarge_code">Enlarge the code</string>
+    <string name="error_correction">Error correction</string>
+    <string name="error_correction_auto">Automatic</string>
+    <string name="error_correction_auto_description">The lowest, the highest under a logo</string>
+    <string name="error_correction_explanation">How much of the code can be damaged or hidden and still be read. The lower, the longer the content it holds, in a less dense code.</string>
+    <string name="error_correction_high">Highest</string>
+    <string name="error_correction_high_description">About 30% of the code, what a logo needs</string>
+    <string name="error_correction_low">Low</string>
+    <string name="error_correction_low_description">About 7% of the code</string>
+    <string name="error_correction_medium">Medium</string>
+    <string name="error_correction_medium_description">About 15% of the code</string>
+    <string name="error_correction_quartile">High</string>
+    <string name="error_correction_quartile_description">About 25% of the code</string>
+    <string name="error_correction_too_high_for_content">Too high for this content</string>
+    <string name="error_correction_too_low_for_logo">Too low for the logo</string>
+    <string name="event">Event</string>
+    <plurals name="every_days">
+        <item quantity="one">Every day</item>
+        <item quantity="other">Every %1$d days</item>
+    </plurals>
+    <plurals name="every_months">
+        <item quantity="one">Every month</item>
+        <item quantity="other">Every %1$d months</item>
+    </plurals>
+    <plurals name="every_weeks">
+        <item quantity="one">Every week</item>
+        <item quantity="other">Every %1$d weeks</item>
+    </plurals>
+    <plurals name="every_years">
+        <item quantity="one">Every year</item>
+        <item quantity="other">Every %1$d years</item>
+    </plurals>
+    <string name="extended_address">Apartment, building</string>
+    <string name="faq" translatable="false">FAQ</string>
+    <string name="fax">Fax</string>
+    <string name="feedback">Feedback</string>
+    <string name="feedback_about_other">Something else</string>
+    <string name="feedback_about_scan">The scan</string>
+    <string name="feedback_about_type_detection">The detection of the type of a code</string>
+    <string name="fill_content_to_see_code">Fill in the content to see the code.</string>
+    <string name="finish">Finish</string>
+    <string name="first_name">First name</string>
+    <string name="floating_time">Local time, wherever one is</string>
+    <string name="format">Format</string>
+    <string name="format_aztec_example">A train ticket holds its booking, its journey and its passenger in an Aztec code of a few hundred characters.</string>
+    <string name="format_aztec_structure">A target of squares at its center, which lets a scanner find it, wrapped in layers of modules, from 15 × 15 to 151 × 151. It needs no blank margin around it.</string>
+    <string name="format_aztec_use">Train and plane tickets.</string>
+    <string name="format_codabar_example">`A40156B`: the number `40156` between `A` and `B`.</string>
+    <string name="format_codabar_structure">Digits and six signs (- $ : / . +), framed by a start letter and a stop letter, A, B, C or D.</string>
+    <string name="format_codabar_use">Libraries, blood banks and parcel services.</string>
+    <string name="format_code_128_example">The parcel number `123456` is written in 3 characters of the digit set.</string>
+    <string name="format_code_128_structure">Each character is 11 modules of 3 bars and 3 spaces. Three sets of characters cover the capitals, the small letters and the digits, the last one writing two digits a character. A check character comes before the stop pattern.</string>
+    <string name="format_code_128_use">Shipping labels and logistics.</string>
+    <string name="format_code_39_example">`SCANNY` is written `*SCANNY*`, between its two asterisks.</string>
+    <string name="format_code_39_structure">Capital letters, digits and a few signs. Each character is 9 bars and spaces, 3 of them wide, hence its other name, Code 3 of 9. An asterisk opens the code and another closes it.</string>
+    <string name="format_code_39_use">Industry, logistics and badges.</string>
+    <string name="format_code_93_example">`SCANNY` reads as in Code 39, on a shorter width, with its two check characters before the end.</string>
+    <string name="format_code_93_structure">The characters of the Code 39, each in 9 modules of 3 bars and 3 spaces, followed by two check characters: denser than the Code 39, and safer.</string>
+    <string name="format_code_93_use">Logistics and postal services.</string>
+    <string name="format_data_matrix_example">A serial number of 10 digits fits in a square of 12 × 12 modules.</string>
+    <string name="format_data_matrix_structure">A square or a rectangle of modules, from 10 × 10 to 144 × 144. A solid L on two sides lets a scanner find it, a dotted line on the two others gives its size.</string>
+    <string name="format_data_matrix_use">Printed tiny on electronic parts, medicines and mail.</string>
+    <string name="format_ean_13_example">`4006381333931`: `400` for Germany, `6381` for the company, `33393` for the product, `1` for the check.</string>
+    <string name="format_ean_13_structure">13 digits: the prefix of the country where the company is registered, the number of the company, the number of the product, then a check digit computed from the other 12, which tells a misreading.</string>
+    <string name="format_ean_13_use">The products sold almost everywhere in the world.</string>
+    <string name="format_ean_8_example">`96385074`: `963` for the prefix, `8507` for the product, `4` for the check.</string>
+    <string name="format_ean_8_structure">8 digits: a prefix, the number of the product, given whole by the GS1 organization, then a check digit.</string>
+    <string name="format_ean_8_use">The small products with no room for an EAN-13.</string>
+    <string name="format_example">Example</string>
+    <string name="format_itf_example">`15400141288763`, on a carton: `1` for the packing, `540014128876` for the product it holds, `3` for the check.</string>
+    <string name="format_itf_structure">Digits in pairs, interleaved: the first in the bars, the second in the spaces between them. Each digit is 5 elements, 2 of them wide, hence its name, Interleaved 2 of 5.</string>
+    <string name="format_itf_use">Cartons and pallets, as the ITF-14.</string>
+    <string name="format_pdf417_example">The back of an American driving licence holds the name, the address and the birth date of its holder in a PDF417.</string>
+    <string name="format_pdf417_structure">Stacked rows, from 3 to 90, of code words. Each code word is 4 bars and 4 spaces over 17 modules, hence its name. A start pattern and a stop pattern frame each row.</string>
+    <string name="format_pdf417_use">Identity cards, driving licences and boarding passes.</string>
+    <string name="format_qr_code_example">`https://scanny.app`, 18 characters, fits in a square of 25 × 25 modules at the lowest correction.</string>
+    <string name="format_qr_code_structure">A square of black and white modules, from 21 × 21 to 177 × 177. Three squares in its corners let a scanner find it and turn it the right way. The content is written in binary, partly repeated by its error correction, so the code still reads when damaged.</string>
+    <string name="format_qr_code_use">The most common code: links, payments, menus, tickets, Wi-Fi networks.</string>
+    <string name="format_read_and_created">Scanny reads it and creates it.</string>
+    <string name="format_structure">How it is made</string>
+    <string name="format_upc_a_example">`036000291452`: `0` for the system, `36000` for the company, `29145` for the product, `2` for the check.</string>
+    <string name="format_upc_a_structure">12 digits: a number system, 0 for most products, 5 digits for the company, 5 for the product, then a check digit. It is an EAN-13 that starts with 0.</string>
+    <string name="format_upc_a_use">The products sold in North America.</string>
+    <string name="format_upc_e_example">`04252614` is the short form of the UPC-A `042100005264`.</string>
+    <string name="format_upc_e_structure">A UPC-A shortened to 8 digits by leaving out its zeros: the number system, 6 digits that hold the company and the product, then the check digit.</string>
+    <string name="format_upc_e_use">The small products sold in North America.</string>
+    <string name="format_use">Its use</string>
+    <string name="formats_intro">Scanny reads every format below. It creates QR codes and barcodes.</string>
+    <string name="free">Free</string>
+    <string name="frequency">Frequency</string>
+    <string name="frequency_daily">Daily</string>
+    <string name="frequency_monthly">Monthly</string>
+    <string name="frequency_weekly">Weekly</string>
+    <string name="frequency_yearly">Yearly</string>
+    <string name="give_feedback">Give your feedback</string>
+    <string name="gradient">Gradient</string>
+    <string name="gradient_color">Second color of the gradient</string>
+    <string name="gradient_linear">Linear</string>
+    <string name="gradient_none">None</string>
+    <string name="gradient_radial">Radial</string>
+    <string name="group">Group</string>
+    <string name="group_codes_removed_from_history">Its codes will be removed from the history.</string>
+    <string name="group_not_deleted">The group could not be deleted</string>
+    <string name="group_of_n_codes">Group of %1$d codes</string>
+    <string name="hidden_network">Hidden network</string>
+    <string name="history">History</string>
+    <string name="history_not_cleared">The history could not be cleared</string>
+    <string name="home_address">Home address</string>
+    <string name="home_email">Personal e-mail</string>
+    <string name="home_phone">Home phone</string>
+    <string name="home_website">Personal website</string>
+    <plurals name="hours_before">
+        <item quantity="one">%1$d hour before</item>
+        <item quantity="other">%1$d hours before</item>
+    </plurals>
+    <string name="identity">Identity</string>
+    <string name="image_not_saved">The image could not be saved</string>
+    <string name="image_not_shared">The image could not be shared</string>
+    <string name="image_saved">Image saved to the photos</string>
+    <string name="issuer">Issuer</string>
+    <string name="itf" translatable="false">ITF</string>
+    <string name="job_title">Job title</string>
+    <string name="join_network">Join the network</string>
+    <string name="keep_history">Keep the history</string>
+    <string name="key">Key</string>
+    <string name="last_name">Last name</string>
+    <string name="latitude">Latitude</string>
+    <string name="link">Link</string>
+    <string name="location">Location</string>
+    <string name="logo">Logo</string>
+    <string name="logo_margin">Margin around the logo</string>
+    <string name="logo_margin_large">Large</string>
+    <string name="logo_margin_none">None</string>
+    <string name="logo_margin_normal">Normal</string>
+    <string name="logo_needs_highest_correction">A logo needs the automatic or the highest correction, in the advanced options of the content.</string>
+    <string name="logo_not_read">The image could not be read</string>
+    <string name="logo_shape">Shape of the logo</string>
+    <string name="longitude">Longitude</string>
+    <string name="made_by_skyle">Made by Skyle with ❤️ at Openium</string>
+    <string name="mail_app_opens_with_message">Your mail app opens with your message, ready to be sent.</string>
+    <string name="mecard" translatable="false">MeCard</string>
+    <string name="message">Message</string>
+    <plurals name="minutes_before">
+        <item quantity="one">%1$d minute before</item>
+        <item quantity="other">%1$d minutes before</item>
+    </plurals>
+    <string-array name="months">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+    <string name="middle_name">Middle name</string>
+    <string name="mms" translatable="false">MMS</string>
+    <string name="mobile">Mobile</string>
+    <string name="more_count" translatable="false">+%1$d</string>
+    <string name="more_options">More options</string>
+    <string name="multiple_scan">Multiple scan</string>
+    <string name="name">Name</string>
+    <string name="name_prefix">Prefix</string>
+    <string name="name_suffix">Suffix</string>
+    <string name="network">Network</string>
+    <string name="next">Next</string>
+    <string name="nickname">Nickname</string>
+    <string name="no_app_to_open">No app on this device can open it</string>
+    <string name="no_code_in_image">No code found in this image</string>
+    <string name="no_creation_yet">No creation yet</string>
+    <string name="no_scan_yet">No scan yet</string>
+    <string name="not_set">Not set</string>
+    <string name="note">Note</string>
+    <string name="occurrences">Number of times</string>
+    <string name="open_content_after_scan">Open the content after a scan</string>
+    <string name="open_in_wallet">Open in a wallet</string>
+    <string name="open_link">Open the link</string>
+    <string name="open_settings">Open the settings</string>
+    <string name="openium" translatable="false">Openium</string>
+    <string name="organization">Organization</string>
+    <string name="organizer">Organizer</string>
+    <string name="other">Other</string>
+    <string name="other_color">Other color</string>
+    <string name="otp">One-time password</string>
+    <string name="otp_type">Key type</string>
+    <string name="pass_codes_in_front_of_camera">Pass the codes in front of the camera</string>
+    <string name="password">Password</string>
+    <string name="password_identifier">Password identifier</string>
+    <string name="payment">Payment</string>
+    <string name="pdf417" translatable="false">PDF417</string>
+    <string name="period">Period</string>
+    <string name="period_in_seconds">Period in seconds</string>
+    <string name="phase2_method">Phase 2 authentication</string>
+    <string name="phone">Phone</string>
+    <string name="phone_number">Phone number</string>
+    <string name="place">Place</string>
+    <string name="place_code_in_frame">Place a code in the frame</string>
+    <string name="po_box">PO box</string>
+    <string name="postal_code">Postal code</string>
+    <string name="priority">Priority</string>
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="qr_code" translatable="false">QR Code</string>
+    <string name="rate_app">Rate the app</string>
+    <string name="raw_content">Raw content</string>
+    <string name="raw_content_after_scan">Show the raw content after a scan</string>
+    <string name="recipient">Recipient</string>
+    <string name="recipients">Recipients</string>
+    <string name="recurrence">Repeats</string>
+    <string name="recurrence_after">After</string>
+    <string name="recurrence_end">Ends</string>
+    <string name="recurrence_never">Never</string>
+    <string name="recurrence_on">On</string>
+    <string name="recurrence_with">%1$s: %2$s</string>
+    <string name="region">Region</string>
+    <string name="reminder">Reminder</string>
+    <string name="remove">Remove</string>
+    <string name="remove_logo">Remove the logo</string>
+    <string name="repeat_interval">Every how many</string>
+    <string name="repeats_on">On</string>
+    <string name="required_field">%1$s *</string>
+    <string name="reset_customization">Reset the customization</string>
+    <string name="retention_forever">Forever</string>
+    <string name="retention_one_month">30 days</string>
+    <string name="retention_one_week">7 days</string>
+    <string name="retention_one_year">1 year</string>
+    <string name="retention_three_months">90 days</string>
+    <string name="sae_pk_public_key">SAE-PK public key</string>
+    <string name="save_creations_in_history">Save the creations in the history</string>
+    <string name="save_image">Save the image</string>
+    <string name="save_scans_in_history">Save the scans in the history</string>
+    <string name="scan_image">Scan an image</string>
+    <string name="scan_not_saved">The scan could not be saved</string>
+    <string name="scan_preferences">Scan preferences</string>
+    <string name="scanned_codes_appear_here">The codes you scan appear here.</string>
+    <string name="scans">Scans</string>
+    <string name="secret_key">Secret key</string>
+    <string name="security">Security</string>
+    <string name="see">See</string>
+    <string name="see_detail">See the detail</string>
+    <string name="see_group">See the group</string>
+    <string name="send_email">Send the e-mail</string>
+    <string name="setting_not_saved">The setting could not be saved</string>
+    <string name="settings">Settings</string>
+    <string name="shape_circle">Round</string>
+    <string name="shape_rounded">Rounded</string>
+    <string name="shape_square">Square</string>
+    <string name="share">Share</string>
+    <string name="share_image">Share the image</string>
+    <string name="show_code">Show the code</string>
+    <string name="show_on_map">Show on the map</string>
+    <string name="skip_consecutive_duplicates">Skip a code scanned again right away</string>
+    <string name="sms" translatable="false">SMS</string>
+    <string name="star_project">Star the project on GitHub</string>
+    <string name="start">Start</string>
+    <string name="start_date">Start date</string>
+    <string name="start_time">Start time</string>
+    <string name="status">Status</string>
+    <string name="status_cancelled">Cancelled</string>
+    <string name="status_confirmed">Confirmed</string>
+    <string name="status_tentative">Tentative</string>
+    <string name="step_of">Step %1$d of %2$d</string>
+    <string name="street">Street</string>
+    <string name="subject">Subject</string>
+    <string name="support">Support</string>
+    <string name="text">Text</string>
+    <string name="the_code">The code</string>
+    <string name="the_logo">The logo</string>
+    <string name="time_in_zone">%1$s (%2$s)</string>
+    <string name="time_zone">Time zone</string>
+    <plurals name="times_count">
+        <item quantity="one">%1$d time</item>
+        <item quantity="other">%1$d times</item>
+    </plurals>
+    <string name="title">Title</string>
+    <string name="today">Today</string>
+    <string name="turn_off_torch">Turn off the torch</string>
+    <string name="turn_on_torch">Turn on the torch</string>
+    <string name="two_dimensional_code">2D code</string>
+    <string name="two_dimensional_codes">Codes in two dimensions</string>
+    <string name="type_home">Home</string>
+    <string name="type_other">Other</string>
+    <string name="type_work">Work</string>
+    <string name="uncertainty">Uncertainty</string>
+    <string name="uncertainty_in_meters">Uncertainty in meters</string>
+    <string name="undo">Undo</string>
+    <string name="until_date">Last day</string>
+    <string name="until_day">until %1$s</string>
+    <string name="upc_a" translatable="false">UPC-A</string>
+    <string name="upc_e" translatable="false">UPC-E</string>
+    <string name="use_front_camera">Use the front camera</string>
+    <string name="value_not_for_format">This value does not suit this format.</string>
+    <string name="vcard" translatable="false">vCard</string>
+    <string name="version_and_build">Version %1$s (build %2$s)</string>
+    <string name="vibrate_after_scan">Vibrate after a scan</string>
+    <string name="website">Website</string>
+    <string-array name="week_days">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+    <string name="wifi" translatable="false">Wi-Fi</string>
+    <string name="wifi_choose_in_settings">Choose “%1$s” in the list.</string>
+    <string name="wifi_not_saved">“%1$s” could not be saved.</string>
+    <string name="wifi_password_copied">Password copied: choose “%1$s” in the list.</string>
+    <string name="wifi_saved">“%1$s” saved: the device joins it when in range.</string>
+    <string name="wifi_security_none">None</string>
+    <string name="wifi_security_wep" translatable="false">WEP</string>
+    <string name="wifi_security_wpa" translatable="false">WPA/WPA2/WPA3</string>
+    <string name="wifi_security_wpa_enterprise" translatable="false">WPA2/WPA3-Enterprise</string>
+    <string name="work">Work</string>
+    <string name="work_address">Work address</string>
+    <string name="work_email">Work e-mail</string>
+    <string name="work_phone">Work phone</string>
+    <string name="work_website">Work website</string>
+    <string name="wpa3_enterprise_only">WPA3-Enterprise only</string>
+    <string name="wpa3_only">WPA3 only</string>
+    <string name="write_email">Write an e-mail</string>
+    <string name="write_mms">Write an MMS</string>
+    <string name="write_sms">Write an SMS</string>
+    <string name="yesterday">Yesterday</string>
+</resources>

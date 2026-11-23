@@ -1,0 +1,406 @@
+package fr.skyle.scanny.ui.core.code.image
+
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Paint
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import com.google.zxing.BinaryBitmap
+import com.google.zxing.RGBLuminanceSource
+import com.google.zxing.Reader
+import com.google.zxing.aztec.AztecReader
+import com.google.zxing.common.HybridBinarizer
+import com.google.zxing.datamatrix.DataMatrixReader
+import com.google.zxing.pdf417.PDF417Reader
+import com.google.zxing.qrcode.QRCodeReader
+import fr.skyle.scanny.domain.model.BarcodeFormat
+import fr.skyle.scanny.domain.model.CodeErrorCorrection
+import fr.skyle.scanny.domain.model.CodeGradient
+import fr.skyle.scanny.domain.model.CodeLogoMargin
+import fr.skyle.scanny.domain.model.CodeShape
+import fr.skyle.scanny.domain.model.CodeStyle
+import fr.skyle.scanny.platform.gallery.LOGO_MAX_SIDE
+import fr.skyle.scanny.ui.core.code.mapper.readability
+import fr.skyle.scanny.ui.core.code.model.CodeReadability
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeBackgroundColor
+import fr.skyle.scanny.ui.screen.createcode.ui.model.CodeDotColor
+import kotlinx.coroutines.test.runTest
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.GraphicsMode
+import java.io.ByteArrayOutputStream
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+/**
+ * The images of the codes, drawn for real by the native graphics of Robolectric, read back by ZXing.
+ * Vision finds no code on the iOS simulator: the JVM checks that every style stays readable.
+ */
+@RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+class CodeImageReadabilityTest {
+
+    private val renderer = QroseCodeImageRenderer()
+
+    @Test
+    fun `a qr code is read back in every shape`() = runTest {
+        // Given
+        // In the colors of the palette that stand out the least: red on lavender
+        val styles = CodeShape.entries.flatMap { dotShape ->
+            CodeShape.entries.map { cornerShape ->
+                CodeStyle(
+                    darkColor = CodeDotColor.RED.argb,
+                    lightColor = CodeBackgroundColor.LAVENDER.argb,
+                    dotShape = dotShape,
+                    cornerShape = cornerShape,
+                )
+            }
+        }
+
+        // When
+        val unreadStyles = styles.filterNot { style -> renderQrCode(style = style).readQrCode() == TEXT }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = unreadStyles,
+        )
+    }
+
+    @Test
+    fun `a qr code is read back in every pair of colors of the palette`() = runTest {
+        // Given
+        // Round dots and corners: the shapes that cover the least of the code
+        val styles = CodeDotColor.entries.flatMap { dotColor ->
+            CodeBackgroundColor.entries.map { backgroundColor ->
+                CodeStyle(
+                    darkColor = dotColor.argb,
+                    lightColor = backgroundColor.argb,
+                    dotShape = CodeShape.CIRCLE,
+                    cornerShape = CodeShape.CIRCLE,
+                )
+            }
+        }
+
+        // When
+        val unreadStyles = styles.filterNot { style -> renderQrCode(style = style).readQrCode() == TEXT }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = unreadStyles,
+        )
+    }
+
+    @Test
+    fun `a qr code is read back with a logo in every shape`() = runTest {
+        // Given
+        // A logo as dark as the dots, in the colors that stand out the least
+        val logo = logoPng()
+        val styles = CodeShape.entries.flatMap { dotShape ->
+            CodeShape.entries.map { cornerShape ->
+                CodeStyle(
+                    darkColor = CodeDotColor.RED.argb,
+                    lightColor = CodeBackgroundColor.LAVENDER.argb,
+                    dotShape = dotShape,
+                    cornerShape = cornerShape,
+                    logo = logo,
+                )
+            }
+        }
+
+        // When
+        val unreadStyles = styles.filterNot { style -> renderQrCode(style = style).readQrCode() == TEXT }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = unreadStyles.map { style -> style.dotShape to style.cornerShape },
+        )
+    }
+
+    @Test
+    fun `a qr code is read back with its corners in every color of the palette`() = runTest {
+        // Given
+        // On the background of the palette that stands out the least
+        val styles = CodeDotColor.entries.map { color ->
+            CodeStyle(
+                lightColor = CodeBackgroundColor.LAVENDER.argb,
+                cornerColor = color.argb,
+            )
+        }
+
+        // When
+        val unreadStyles = styles.filterNot { style -> renderQrCode(style = style).readQrCode() == TEXT }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = unreadStyles,
+        )
+    }
+
+    @Test
+    fun `a qr code is read back with its logo in every shape and every margin`() = runTest {
+        // Given
+        // In the dots that cover the code the least, the colors that stand out the least
+        val logo = logoPng()
+        val styles = CodeShape.entries.flatMap { logoShape ->
+            CodeLogoMargin.entries.map { logoMargin ->
+                CodeStyle(
+                    darkColor = CodeDotColor.RED.argb,
+                    lightColor = CodeBackgroundColor.LAVENDER.argb,
+                    dotShape = CodeShape.CIRCLE,
+                    logo = logo,
+                    logoShape = logoShape,
+                    logoMargin = logoMargin,
+                )
+            }
+        }
+
+        // When
+        val unreadStyles = styles.filterNot { style -> renderQrCode(style = style).readQrCode() == TEXT }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = unreadStyles.map { style -> style.logoShape to style.logoMargin },
+        )
+    }
+
+    @Test
+    fun `a qr code is read back in every gradient to every color of the palette`() = runTest {
+        // Given
+        val styles = listOf(CodeGradient.LINEAR, CodeGradient.RADIAL).flatMap { gradient ->
+            CodeDotColor.entries.map { color ->
+                CodeStyle(
+                    lightColor = CodeBackgroundColor.LAVENDER.argb,
+                    gradient = gradient,
+                    gradientColor = color.argb,
+                )
+            }
+        }
+
+        // When
+        val unreadStyles = styles.filterNot { style -> renderQrCode(style = style).readQrCode() == TEXT }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = unreadStyles,
+        )
+    }
+
+    @Test
+    fun `the warning tells exactly the colors zxing cannot read`() = runTest {
+        // Given
+        // Vivid and paler colors of every hue, and greys around the threshold, on white and on lavender,
+        // in the dots that cover the code the least
+        val darkColors = (0 until 360 step 60).flatMap { hue ->
+            listOf(0.5f, 0.7f, 0.9f).map { value ->
+                Color.hsv(hue = hue.toFloat(), saturation = 1f, value = value).toArgb().toLong() and 0xFFFFFFFF
+            }
+        // The thresholds: 118 on lavender, 127 on white
+        } + listOf(0xFF757575, 0xFF767676, 0xFF7E7E7E, 0xFF7F7F7F)
+        val styles = listOf(0xFFFFFFFF, CodeBackgroundColor.LAVENDER.argb).flatMap { lightColor ->
+            darkColors.map { darkColor ->
+                CodeStyle(
+                    darkColor = darkColor,
+                    lightColor = lightColor,
+                    dotShape = CodeShape.CIRCLE,
+                )
+            }
+        }
+
+        // When
+        val wrongStyles = styles.filter { style ->
+            val isRead = renderQrCode(style = style).readQrCode() == TEXT
+            isRead != (style.readability() == CodeReadability.GOOD)
+        }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = wrongStyles.map { style -> style.darkColor.toString(radix = 16) to style.lightColor.toString(radix = 16) },
+        )
+    }
+
+    @Test
+    fun `a qr code is read back at every correction`() = runTest {
+        // Given
+        val styles = CodeErrorCorrection.entries.map { errorCorrection ->
+            CodeStyle(
+                dotShape = CodeShape.CIRCLE,
+                errorCorrection = errorCorrection,
+            )
+        }
+
+        // When
+        val unreadStyles = styles.filterNot { style -> renderQrCode(style = style).readQrCode() == TEXT }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = unreadStyles,
+        )
+    }
+
+    @Test
+    fun `the longest content a qr code holds is read back`() = runTest {
+        // Given
+        // The most at the lowest correction, in the densest code
+        val longest = "a".repeat(2953)
+
+        // When
+        val read = renderQrCode(
+            style = CodeStyle(),
+            rawValue = longest,
+        ).readQrCode()
+
+        // Then
+        assertEquals(
+            expected = longest,
+            actual = read,
+        )
+    }
+
+    @Test
+    fun `each code in two dimensions other than the qr code is read back from its image`() = runTest {
+        // Given
+        val codes = MATRIX_FORMATS.flatMap { format ->
+            listOf(TEXT, ACCENTED_TEXT, CONTACT).map { text -> format to text }
+        }
+
+        // When
+        val unreadCodes = codes.filterNot { (format, text) ->
+            renderer.renderPng(
+                rawValue = text,
+                format = format,
+                style = CodeStyle(),
+            ).readCode(reader = format.reader()) == text
+        }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = unreadCodes,
+        )
+    }
+
+    @Test
+    fun `a long content of each code in two dimensions other than the qr code is read back from its image`() = runTest {
+        // Given
+        // Of hundreds of characters: the modules of the image are a few pixels only
+        val codes = mapOf(
+            BarcodeFormat.DATA_MATRIX to CONTACT.repeat(10),
+            BarcodeFormat.AZTEC to CONTACT.repeat(10),
+            BarcodeFormat.PDF417 to CONTACT.repeat(6),
+        )
+
+        // When
+        val unreadFormats = codes.filterNot { (format, text) ->
+            renderer.renderPng(
+                rawValue = text,
+                format = format,
+                style = CodeStyle(),
+            ).readCode(reader = format.reader()) == text
+        }.keys
+
+        // Then
+        assertEquals(
+            expected = emptySet(),
+            actual = unreadFormats,
+        )
+    }
+
+    @Test
+    fun `a code in two dimensions other than the qr code is drawn dark on white whatever the style`() = runTest {
+        // Given
+        val style = CodeStyle(
+            darkColor = CodeDotColor.RED.argb,
+            lightColor = CodeBackgroundColor.LAVENDER.argb,
+        )
+
+        // When
+        val png = renderer.renderPng(
+            rawValue = TEXT,
+            format = BarcodeFormat.DATA_MATRIX,
+            style = style,
+        )
+
+        // Then
+        // The corner of the margin, and the corner of the solid L of the code
+        val bitmap = BitmapFactory.decodeByteArray(png, 0, png.size)
+        val code = (MARGIN_PX until bitmap.height).first { y -> bitmap.getPixel(MARGIN_PX + 1, y) != android.graphics.Color.WHITE }
+        assertEquals(
+            expected = listOf(android.graphics.Color.WHITE, android.graphics.Color.BLACK),
+            actual = listOf(bitmap.getPixel(0, 0), bitmap.getPixel(MARGIN_PX + 1, code)),
+        )
+    }
+
+    private fun BarcodeFormat.reader(): Reader =
+        when (this) {
+            BarcodeFormat.DATA_MATRIX -> DataMatrixReader()
+            BarcodeFormat.AZTEC -> AztecReader()
+            BarcodeFormat.PDF417 -> PDF417Reader()
+            else -> QRCodeReader()
+        }
+
+    private suspend fun renderQrCode(
+        style: CodeStyle,
+        rawValue: String = TEXT,
+    ): ByteArray =
+        renderer.renderPng(
+            rawValue = rawValue,
+            format = BarcodeFormat.QR_CODE,
+            style = style,
+        )
+
+    // A square of the size of a logo, half black, half red
+    private fun logoPng(): ByteArray {
+        val bitmap = Bitmap.createBitmap(LOGO_MAX_SIDE, LOGO_MAX_SIDE, Bitmap.Config.ARGB_8888)
+        Canvas(bitmap).apply {
+            drawColor(android.graphics.Color.BLACK)
+            drawRect(
+                0f,
+                LOGO_MAX_SIDE / 2f,
+                LOGO_MAX_SIDE.toFloat(),
+                LOGO_MAX_SIDE.toFloat(),
+                Paint().apply { color = android.graphics.Color.RED },
+            )
+        }
+        return ByteArrayOutputStream().use { stream ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            stream.toByteArray()
+        }
+    }
+
+    private fun ByteArray.readQrCode(): String? =
+        readCode(reader = QRCodeReader())
+
+    private fun ByteArray.readCode(reader: Reader): String? {
+        val bitmap = BitmapFactory.decodeByteArray(this, 0, size)
+        val pixels = IntArray(bitmap.width * bitmap.height)
+        bitmap.getPixels(pixels, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+        val image = BinaryBitmap(HybridBinarizer(RGBLuminanceSource(bitmap.width, bitmap.height, pixels)))
+        // ZXing throws when it finds no code
+        return runCatching { reader.decode(image).text }.getOrNull()
+    }
+
+    private companion object {
+        // As long as a link a user would put in a code
+        const val TEXT = "https://scanny.app/created/code?from=editor&style=custom"
+
+        // Accents of ISO 8859-1, the characters a Data Matrix and an Aztec code hold
+        const val ACCENTED_TEXT = "Café crème à l'été, Noël à Évian"
+
+        // Upper and lower case, digits and punctuation: the encoders switch modes along it
+        const val CONTACT = "BEGIN:VCARD\nVERSION:3.0\nN:Dupont;Jean\nFN:Jean Dupont\nTEL:+33600000000\nEND:VCARD\n"
+
+        // The blank margin of an image, in pixels
+        const val MARGIN_PX = 64
+
+        val MATRIX_FORMATS = listOf(BarcodeFormat.DATA_MATRIX, BarcodeFormat.AZTEC, BarcodeFormat.PDF417)
+    }
+}
