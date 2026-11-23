@@ -1,0 +1,30 @@
+Scanny, QR kodları ve barkodları tarar ve oluşturur. Hafif, hızlı, reklamsız ve hesap gerektirmez.
+
+Tarama
+• Kamerayla, tek kod veya aynı anda birkaç kod ya da galerideki bir görselden
+• 13 format: QR Code, Data Matrix, Aztec, PDF417, EAN-13, EAN-8, UPC-A, UPC-E, Code 39, Code 93, Code 128, ITF ve Codabar
+
+Anlayın ve harekete geçin
+Scanny, bir kodun içeriğini alan alan okur ve ona uygun işlemi sunar:
+• Bağlantı açma
+• Wi-Fi ağına katılma
+• Kişi ya da takvime etkinlik ekleme
+• E-posta veya SMS yazma, arama yapma
+• Bir yeri haritada gösterme
+• Doğrulayıcınıza tek kullanımlık şifre ekleme
+• Bitcoin cüzdanı açma
+
+Oluşturma
+• Her içeriğin tüm alanlarıyla QR kodlar, Data Matrix, Aztec kodlar, PDF417 ve barkodlar
+• Kod, siz yazarken çizilir
+• Özelleştirilmiş QR kodlar: renkler, gradyan, noktaların ve köşelerin şekli, logo, hata düzeltme
+• Kodu paylaşın veya görsel olarak kaydedin
+
+Geçmiş
+• Taramalarınız ve oluşturduklarınız, istediğiniz süre boyunca saklanır
+• Her kod yeniden çizilir, paylaşılmaya veya kaydedilmeye hazırdır
+
+Gizliliğiniz
+Reklam yok, hesap yok: kodlarınız iPhone'unuzda kalır.
+
+Scanny açık kaynaklıdır: https://github.com/LudoSkyle/Scanny

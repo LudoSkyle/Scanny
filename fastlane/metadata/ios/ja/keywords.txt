@@ -1,0 +1,1 @@
+qr,バーコード,スキャナー,リーダー,読み取り,jan,ean,upc,pdf417,aztec,wifi,作成
