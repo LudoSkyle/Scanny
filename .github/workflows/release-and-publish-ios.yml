@@ -40,8 +40,12 @@ jobs:
             if [ -z "${!name}" ]; then echo "::error::The secret $name is missing: see docs/Common/04_BUILD.md"; exit 1; fi
           done
 
-      - name: Check out the code
+      # The Firebase file of the private submodule, for Crashlytics, read with a read-only deploy key
+      - name: Check out the code and the private submodule
         uses: actions/checkout@v7
+        with:
+          ssh-key: ${{ secrets.PRIVATE_SUBMODULE_SSH_KEY }}
+          submodules: true
 
       # The distribution certificate of the team and the App Store profile of the app, kept in base64
       - name: Write the certificate and the profile
