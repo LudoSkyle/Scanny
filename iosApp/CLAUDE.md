@@ -43,6 +43,11 @@ natif iOS des écrans (dans `shared/src/iosMain`, voir
 - **Signature** : aucune équipe Apple dans le dépôt. Le simulateur signe localement, sans équipe.
   Pour un iPhone, l'équipe (`DEVELOPMENT_TEAM = ...`, un Apple ID gratuit suffit) se déclare dans
   `Configuration/Local.xcconfig`, ignoré par git, inclus par `Configuration/Scanny.xcconfig`.
+- **Crashlytics** : Firebase vient par Swift Package Manager (`packages` de `project.yml`), le seul
+  produit `FirebaseCrashlytics`. La phase « Copy the Firebase file » copie
+  `private/firebase/GoogleService-Info.plist` dans l'app s'il existe ; `iOSApp` ne démarre Firebase,
+  puis `startCrashReporting()`, que s'il y est. La phase « Upload the symbols to Crashlytics » envoie
+  le dSYM d'un build release.
 - Toute API qui demande une autorisation déclare sa clé d'usage dans `iosApp/Info.plist`, traduite en
   anglais et en français. `CADisableMinimumFrameDurationOnPhone` reste à `true` : Compose
   Multiplatform s'arrête sans elle.

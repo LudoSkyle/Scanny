@@ -5,7 +5,7 @@
 | Module | Type | Contenu |
 |---|---|---|
 | `androidApp` | App Android | `ScannyApplication` (démarrage de Koin, logs, Crashlytics), `MainActivity` qui affiche `ScannyApp()`, manifest, icône, signature, `google-services.json` |
-| `iosApp` | Projet Xcode | L'app SwiftUI qui démarre Koin et affiche le `ComposeUIViewController` de `shared`, `Info.plist`, assets, signature |
+| `iosApp` | Projet Xcode | L'app SwiftUI qui démarre Firebase (Crashlytics) et Koin, et affiche le `ComposeUIViewController` de `shared`, `Info.plist`, assets, signature |
 | `shared` | KMP + Compose Multiplatform | `ScannyApp`, navigation, écrans (`ui/screen/<feature>`), ViewModels, composants « produit » (`ui/core`), code natif des écrans (`platform/`), module Koin racine. Produit le framework iOS `Shared` |
 | `designSystem` | KMP + Compose Multiplatform | `SCTheme` (couleurs, typographie, formes), composants génériques (`SCScreenStructure`, `SCTopAppBar`, `SCIconButton`…) qui enveloppent Material 3, polices |
 | `domain` | KMP | Modèles métier (`BarcodeContent`, `BarcodeFormat`…), parseur et encodeur du contenu des codes, UseCases |
@@ -81,7 +81,7 @@ Communes (`commonMain`) :
 | Dates et heure | kotlinx-datetime, `kotlin.time.Clock` |
 | Fichiers | kotlinx-io |
 | Coroutines | kotlinx-coroutines |
-| Logs | Kermit (`Logger`). Sur Android, `ScannyApplication` envoie avertissements et erreurs à Crashlytics (`CrashlyticsLogWriter`), et le build debug ajoute logcat |
+| Logs | Kermit (`Logger`). Sur Android, `ScannyApplication` envoie avertissements et erreurs à Crashlytics (`CrashlyticsLogWriter`), et le build debug ajoute logcat. Sur iOS, `startCrashReporting()` (`shared/iosMain`) fait de même avec `kermit-crashlytics`, et envoie les crashs Kotlin avec leur pile |
 | Génération de codes | qrose (rendu `Painter`, export PNG, personnalisation), qrose-oned (les codes-barres d'une dimension) et qrose-encoder-matrix (l'encodeur PDF417), dans `shared` : un code se redessine depuis son texte par `CodeImage` (`ui/core/code`), et son image PNG, à partager ou enregistrer, par `CodeImageRenderer`, tous deux dans le style d'un QR code créé (`CodeStyleMapper`). qrose ne dessine ni Data Matrix, ni Aztec, ni PDF417 : `MatrixCodePainter` dessine leur matrice. Les encodeurs Data Matrix et Aztec de qrose écrivent des codes faux : Scanny en a une copie corrigée, dans `ui/core/code/encoder` (voir [ADR-0004](../adr/0004-encodeurs-data-matrix-et-aztec-corriges.md)) |
 
 Android (`androidMain`, `androidApp`) :

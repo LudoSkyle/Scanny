@@ -32,7 +32,7 @@ La configuration commune des modules KMP passe par deux plugins de convention de
 
 | Module | Plugins |
 |---|---|
-| `androidApp` | `com.android.application`, `org.jetbrains.kotlin.plugin.compose`, Firebase (`com.google.gms.google-services`, `com.google.firebase.crashlytics`, `com.google.firebase.appdistribution`), `com.starter.easylauncher` |
+| `androidApp` | `com.android.application`, `org.jetbrains.kotlin.plugin.compose`, Firebase (`com.google.gms.google-services`, `com.google.firebase.crashlytics`), `com.starter.easylauncher` |
 | `shared` | `scanny-compose-library`, `org.jetbrains.kotlin.plugin.serialization` |
 | `designSystem` | `scanny-compose-library` |
 | `domain` | `scanny-kmp-library` |
@@ -73,6 +73,11 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 - Sans le sous-module (un fork, la CI des PR), le build se configure et teste quand même : le debug
   est signé avec la clé par défaut d'Android, la release n'est pas signée, et Google Services et
   Crashlytics ne s'appliquent pas ; l'app démarre alors sans Crashlytics.
+- Sur iOS, Crashlytics vient de Firebase par Swift Package Manager (`iosApp/project.yml`, le seul
+  produit `FirebaseCrashlytics`, sans Analytics). Une phase de build copie
+  `private/firebase/GoogleService-Info.plist` dans l'app quand il existe ; l'app ne démarre Firebase
+  que s'il y est. Un build release envoie ses symboles (dSYM) à Crashlytics, ceux du code Kotlin
+  compris : le framework release est compilé avec `-Xadd-light-debug=enable`.
 - La release est minifiée (`isMinifyEnabled`, `isShrinkResources`) : toute classe instanciée par
   réflexion est gardée dans `proguard-rules.pro`.
 
