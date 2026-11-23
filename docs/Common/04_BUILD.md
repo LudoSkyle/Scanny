@@ -118,26 +118,41 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 - Sans le sous-module privé, qu'un fork n'atteint pas : le build s'en passe (voir Android
   ci-dessus). Les tests d'interface iOS (XCUITest) n'y tournent pas.
 - Une pull request n'est fusionnée qu'une fois la CI verte.
-### Publication Android
+### Publication (fastlane)
 
-- `.github/workflows/release-android.yml`, lancé à la main : Actions > Release Android > Run
-  workflow, depuis `main`, en choisissant la piste du Play Store (interne par défaut, alpha, bêta,
-  production) et l'état (déployé tout de suite, ou brouillon à déployer depuis la Play Console).
-- Il récupère le sous-module privé avec une clé de déploiement en lecture seule (secret
-  `PRIVATE_SUBMODULE_SSH_KEY`, la clé publique « Scanny CI (read only) » sur le dépôt privé), construit
-  le bundle et l'APK signés (`:androidApp:bundleRelease`, `:androidApp:assembleRelease`), les garde
-  avec le mapping en artefact, et l'envoie au Play Store avec le compte de service de la
-  Play Console (secret `PLAY_SERVICE_ACCOUNT_JSON`). Il publie enfin ces mêmes fichiers dans la
-  release GitHub `vX.Y` de la version (`scanny-X.Y.aab`, `scanny-X.Y.apk`), créée sur le commit
-  publié, ou complétée si elle existe.
-- `.github/workflows/distribute-android.yml`, lancé à la main (Actions > Distribute Android) :
-  l'app signée, en release ou en debug, envoyée aux testeurs de Firebase App Distribution (groupes,
-  « Internal » par défaut, et notes de version au choix), avec le compte de service du projet
-  Firebase (secret `FIREBASE_SERVICE_ACCOUNT_JSON`), écrit dans `androidApp/google-services-account.json`
-  le temps du build : ce fichier est ignoré par git.
+- [fastlane](https://fastlane.tools) construit et publie les deux apps, par les mêmes lanes
+  (`fastlane/Fastfile`), lancées par des workflows manuels de l'onglet Actions, depuis `main` :
+
+| Workflow | Lane | Ce qu'elle fait |
+|---|---|---|
+| Distribute Android | `android distribute` | L'app signée, release ou debug, aux testeurs de Firebase App Distribution (groupes, notes de version) |
+| Release and Publish Android | `android release_and_publish` | Le bundle signé et la fiche au Play Store (piste et état au choix), puis le bundle et l'APK dans la release GitHub `vX.Y` |
+| Distribute iOS | `ios distribute` | L'app signée pour l'App Store aux testeurs de TestFlight |
+| Release and Publish iOS | `ios release_and_publish` | L'app et la fiche à App Store Connect (soumise à la review ou non), puis l'`.ipa` dans la release GitHub `vX.Y` |
+| Update Store Listing | `android store_listing`, `ios store_listing` | La fiche seule, sans nouveau build |
+
+- **La fiche des stores est dans le dépôt** : `fastlane/metadata/android` (textes, images, captures
+  et notes « Nouveautés » par `versionCode`, `changelogs/20000.txt`) et `fastlane/metadata/ios`. Chaque
+  publication l'envoie avec l'app ; elle se change par une pull request. Les notes d'une release GitHub
+  sont `fastlane/release_notes/X.Y.md`.
+- La release GitHub porte les fichiers mêmes envoyés au store : créée sur le commit publié, ou
+  complétée si elle existe (`gh`).
+- Les secrets des workflows (Settings > Secrets and variables > Actions) :
+  - `PRIVATE_SUBMODULE_SSH_KEY` : la clé de déploiement, en lecture seule, du dépôt privé (les clés
+    de signature Android et les fichiers Firebase) ;
+  - `PLAY_SERVICE_ACCOUNT_JSON` et `FIREBASE_SERVICE_ACCOUNT_JSON` : le compte de service
+    `github-ci@scanny-816f0`, de la Play Console et du projet Firebase. L'API « Google Play Android
+    Developer » doit être activée dans son projet Google Cloud ;
+  - pour iOS : `APPLE_TEAM_ID`, la clé API d'App Store Connect (`ASC_KEY_ID`, `ASC_ISSUER_ID`,
+    `ASC_KEY_P8`), et pour match `MATCH_PASSWORD` et `MATCH_SSH_KEY`, la clé de déploiement du dépôt
+    privé `LudoSkyle/Scanny-Certificates` où match range, chiffrés, le certificat et le profil de
+    distribution.
+- Les fichiers de compte de service sont écrits dans le dossier temporaire du runner, jamais dans le
+  dépôt. iOS est construit avec la version d'Android (`MARKETING_VERSION`, `CURRENT_PROJECT_VERSION`)
+  et le profil de match, passés à `xcodebuild` sans toucher au projet.
+- En local : Ruby récente (`brew install ruby`), puis `bundle install` (les gems vont dans
+  `vendor/bundle`, ignoré par git) et `bundle exec fastlane <plateforme> <lane>`.
 - Un workflow lancé à la main n'apparaît dans l'onglet Actions qu'une fois sur la branche par défaut.
-- iOS n'a pas encore de publication : il manque le compte développeur payant et le
-  `GoogleService-Info.plist`.
 
 ### Commandes utiles
 
