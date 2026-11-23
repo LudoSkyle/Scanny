@@ -1,5 +1,6 @@
 package fr.skyle.scanny.ui.screen.createcode.ui.component
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -46,6 +47,9 @@ fun CreationSection(
         }
     }
 
+    // The row of more options brings its own height: folded, it stands for the bottom margin
+    val bottomPadding by animateDpAsState(if (moreOptions != null && !isExpanded) 8.dp else 16.dp)
+
     SCCardStructure(
         modifier = modifier,
         title = title,
@@ -59,7 +63,7 @@ fun CreationSection(
                     start = 16.dp,
                     top = 16.dp,
                     end = 16.dp,
-                    bottom = if (moreOptions != null) 8.dp else 16.dp,
+                    bottom = bottomPadding,
                 ),
             verticalArrangement = Arrangement.spacedBy(space = 16.dp),
         ) {
