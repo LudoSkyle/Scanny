@@ -86,7 +86,9 @@ s'écrit que pour un parcours qui passe par le système. Voir
 - Des commits courts et mono-périmètre : une correction, un renommage ou une fonctionnalité par
   commit.
 - Le dépôt privé `private/` (sous-module : clés de signature, fichiers Firebase) n'est jamais
-  modifié ni affiché.
+  affiché. Il n'est modifié qu'à la demande de l'utilisateur, pour y ranger un fichier qu'il fournit :
+  commit poussé sur sa branche `main`, puis le pointeur du sous-module mis à jour par une pull
+  request du dépôt principal.
 - **Chaque lot est livré par une pull request vers `develop`**, jamais poussé directement : une
   branche `<type>/<description-courte>` partie de `develop` à jour, poussée, puis la PR, fusionnée
   par l'agent lui-même **en rebase** (historique linéaire) une fois les vérifications du lot passées
