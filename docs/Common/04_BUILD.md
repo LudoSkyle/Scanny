@@ -129,7 +129,8 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 | Release and Publish Android | `android release_and_publish` | Le bundle signé et la fiche au Play Store (piste et état au choix), puis le bundle et l'APK dans la release GitHub `vX.Y` |
 | Distribute iOS | `ios distribute` | L'app signée pour l'App Store aux testeurs de TestFlight |
 | Release and Publish iOS | `ios release_and_publish` | L'app et la fiche à App Store Connect (soumise à la review ou non), puis l'`.ipa` dans la release GitHub `vX.Y` |
-| Update Store Listing | `android store_listing`, `ios store_listing` | La fiche seule, sans nouveau build |
+| Update Store Listing Android | `android store_listing` | La fiche du Play Store seule, sans nouveau build |
+| Update Store Listing iOS | `ios store_listing` | La fiche de l'App Store seule, sans nouveau build |
 
 - **La fiche des stores est dans le dépôt** : `fastlane/metadata/android` (textes, images, captures
   et notes « Nouveautés » par `versionCode`, `changelogs/20000.txt`) et `fastlane/metadata/ios`. Chaque

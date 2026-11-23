@@ -1,0 +1,6 @@
+Scanny 2.0, fully rewritten:
+• Scans 13 code formats, with the camera, several at once or from an image
+• Every content read field by field, with its action: Wi-Fi, contact, event, place, one-time password…
+• Creates QR codes, Data Matrix, Aztec, PDF417 and barcodes, with all their fields
+• Customized QR codes: colors, shapes, logo
+• History of the scans and of the creations
