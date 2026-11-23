@@ -1,0 +1,49 @@
+# Promote iOS, in one click: Actions > Promote iOS > Run workflow, from main. fastlane submits for review
+# the build of the version already uploaded by Release and Publish iOS, the one TestFlight tests, with
+# the store listing, without any new build (lane ios promote).
+name: Promote iOS
+
+on:
+  workflow_dispatch:
+    inputs:
+      automatic_release:
+        description: Release on the App Store as soon as it is approved
+        type: boolean
+        default: true
+
+concurrency:
+  group: release-ios
+
+permissions:
+  contents: read
+
+jobs:
+  promote:
+    name: Submit for review
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check the secrets of App Store Connect
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          for name in ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_P8; do
+            if [ -z "${!name}" ]; then echo "::error::The secret $name is missing: see docs/Common/04_BUILD.md"; exit 1; fi
+          done
+
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      - name: Set up Ruby and fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Submit for review
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: bundle exec fastlane ios promote automatic_release:${{ inputs.automatic_release }}

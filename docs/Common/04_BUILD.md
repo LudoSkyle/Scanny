@@ -131,11 +131,16 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 | Release and Publish iOS | `ios release_and_publish` | L'app et la fiche à App Store Connect (soumise à la review ou non), puis l'`.ipa` dans la release GitHub `vX.Y` |
 | Update Store Listing Android | `android store_listing` | La fiche du Play Store seule, sans nouveau build |
 | Update Store Listing iOS | `ios store_listing` | La fiche de l'App Store seule, sans nouveau build |
+| Promote Android | `android promote` | La release de la version, d'une piste à une autre (interne vers production par défaut), à tous ou à une part des utilisateurs, sans nouveau build |
+| Promote iOS | `ios promote` | Le build de la version déjà envoyé, celui que teste TestFlight, soumis à la review avec la fiche, publié dès son acceptation ou non |
 
 - **La fiche des stores est dans le dépôt** : `fastlane/metadata/android` (textes, images, captures
   et notes « Nouveautés » par `versionCode`, `changelogs/20000.txt`) et `fastlane/metadata/ios`. Chaque
   publication l'envoie avec l'app ; elle se change par une pull request. Les notes d'une release GitHub
   sont `fastlane/release_notes/X.Y.md`.
+- **Une version suit toujours le même chemin** : Release and Publish la publie aux testeurs (piste
+  interne, App Store Connect sans review), puis Promote la passe à tous, sans rien reconstruire : ce
+  qui sort est ce qui a été testé.
 - La release GitHub porte les fichiers mêmes envoyés au store : créée sur le commit publié, ou
   complétée si elle existe (`gh`).
 - Les secrets des workflows (Settings > Secrets and variables > Actions) :
