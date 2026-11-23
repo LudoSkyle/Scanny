@@ -87,6 +87,16 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
   `iosApp/Configuration/Local.xcconfig`, ignoré par git. Le détail est dans
   [iosApp/CLAUDE.md](../../iosApp/CLAUDE.md).
 
+### Intégration continue
+
+- GitHub Actions, `.github/workflows/ci.yml` : à chaque pull request et à chaque push sur `develop`
+  et `main`, sur un runner `macos-26` (le Xcode du projet, le SDK Android) : `:domain:allTests`,
+  `:data:allTests`, `:shared:allTests` (JVM et simulateur iOS), `:androidApp:assembleDebug`, puis
+  l'app iOS (`xcodebuild build`, sans signature). Les rapports de tests sont gardés en cas d'échec.
+- Sans le sous-module privé, qu'un fork n'atteint pas : le build s'en passe (voir Android
+  ci-dessus). Les tests d'interface iOS (XCUITest) n'y tournent pas.
+- Une pull request n'est fusionnée qu'une fois la CI verte.
+
 ### Commandes utiles
 
 ```bash
