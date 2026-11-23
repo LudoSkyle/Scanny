@@ -11,6 +11,16 @@ plugins {
     id("androidx.baselineprofile")
 }
 
+// The version of the app, changed by a pull request; iOS follows it (iosApp/project.yml)
+val APP_VERSION_NAME = "2.0"
+
+// One version code per version name, the same on every build: 2.0 gives 20000, 2.1.3 gives 20103. A
+// version uploaded to the Play Store is promoted from track to track there, never uploaded twice
+fun String.toVersionCode(): Int {
+    val (major, minor, patch) = (split(".").map(String::toInt) + listOf(0, 0)).take(3)
+    return major * 10_000 + minor * 100 + patch
+}
+
 // The private submodule holds the signing keys and the Firebase files. Without it, a fork or the CI
 // still builds and tests: the debug build is signed with the default key of Android, the release is
 // not signed, and Firebase is left out
@@ -34,9 +44,8 @@ android {
         applicationId = "fr.skyle.scanny"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        // Numbered by the release workflow at each upload to the Play Store; a local build keeps 20
-        versionCode = providers.gradleProperty("scanny.versionCode").orNull?.toInt() ?: 20
-        versionName = "2.0"
+        versionName = APP_VERSION_NAME
+        versionCode = APP_VERSION_NAME.toVersionCode()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
