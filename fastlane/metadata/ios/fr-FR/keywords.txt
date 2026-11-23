@@ -1,0 +1,1 @@
+qr,code-barres,scanner,lecteur,data matrix,aztec,pdf417,ean,wifi,contact,générateur,créer
