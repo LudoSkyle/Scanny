@@ -303,7 +303,14 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] README à jour
     - [x] Les messages de l'écran de scan au-dessus de ses boutons
     - [x] L'ordre du Photo Picker est celui du système : rien à changer
-13. **Favoris et annotations** *(pas urgent)* : sur une capture, depuis l'historique et l'écran du
+13. **Langues** : dix langues de plus que l'anglais et le français.
+    - [x] Allemand, espagnol, italien, portugais du Brésil, néerlandais, russe, turc, japonais, coréen
+          et chinois simplifié : textes de l'app, autorisations iOS, fiches des deux stores
+    - [x] Les jours des puces de répétition par leur abréviation dans chaque langue (« 一 » à « 日 »
+          en chinois, où tous les noms commencent par « 周 »)
+    - [ ] Relecture par des locuteurs natifs
+    - [ ] Captures des stores dans chaque langue
+14. **Favoris et annotations** *(pas urgent)* : sur une capture, depuis l'historique et l'écran du
     groupe.
 
 ## Décisions prises

@@ -48,9 +48,9 @@ natif iOS des écrans (dans `shared/src/iosMain`, voir
   `private/firebase/GoogleService-Info.plist` dans l'app s'il existe ; `iOSApp` ne démarre Firebase,
   puis `startCrashReporting()`, que s'il y est. La phase « Upload the symbols to Crashlytics » envoie
   le dSYM d'un build release.
-- Toute API qui demande une autorisation déclare sa clé d'usage dans `iosApp/Info.plist`, traduite en
-  anglais et en français. `CADisableMinimumFrameDurationOnPhone` reste à `true` : Compose
-  Multiplatform s'arrête sans elle.
+- Toute API qui demande une autorisation déclare sa clé d'usage dans `iosApp/Info.plist`, traduite
+  dans chaque langue de l'app (`<langue>.lproj/InfoPlist.strings`).
+  `CADisableMinimumFrameDurationOnPhone` reste à `true` : Compose Multiplatform s'arrête sans elle.
 
 ## Commandes
 

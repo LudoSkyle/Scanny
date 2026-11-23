@@ -1,0 +1,10 @@
+<resources>
+    <string name="back">Terug</string>
+    <string name="cancel">Annuleren</string>
+    <string name="clear">Wissen</string>
+    <string name="collapsed">Samengevouwen</string>
+    <string name="expanded">Uitgevouwen</string>
+    <string name="hue">Tint</string>
+    <string name="ok">OK</string>
+    <string name="saturation_brightness">Verzadiging en helderheid</string>
+</resources>

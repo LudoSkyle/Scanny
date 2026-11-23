@@ -1,0 +1,10 @@
+<resources>
+    <string name="back">Назад</string>
+    <string name="cancel">Отмена</string>
+    <string name="clear">Очистить</string>
+    <string name="collapsed">Свёрнуто</string>
+    <string name="expanded">Развёрнуто</string>
+    <string name="hue">Оттенок</string>
+    <string name="ok">OK</string>
+    <string name="saturation_brightness">Насыщенность и яркость</string>
+</resources>

@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.week_day_initials
 import fr.skyle.scanny.resources.week_days
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import kotlinx.datetime.DayOfWeek
@@ -37,6 +38,7 @@ fun WeekDaysChoice(
     modifier: Modifier = Modifier,
 ) {
     val dayNames = stringArrayResource(Res.array.week_days)
+    val dayInitials = stringArrayResource(Res.array.week_day_initials)
 
     Column(modifier = modifier) {
         SCText(
@@ -70,9 +72,9 @@ fun WeekDaysChoice(
                         .semantics { contentDescription = dayNames[day.ordinal] },
                     contentAlignment = Alignment.Center,
                 ) {
-                    // The first letter of its name, the whole name read by a screen reader
+                    // The shortest name of the day in the language, the whole name read by a screen reader
                     SCText(
-                        text = dayNames[day.ordinal].take(1).uppercase(),
+                        text = dayInitials[day.ordinal],
                         style = SCTheme.typography.button,
                         color = if (isSelected) SCTheme.colors.textLight else SCTheme.colors.textPrimary,
                     )

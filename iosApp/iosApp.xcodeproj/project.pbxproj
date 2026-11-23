@@ -33,19 +33,29 @@
 
 /* Begin PBXFileReference section */
 		0D5ED9606FFD0D24F04AF179 /* MultipleScanUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleScanUITests.swift; sourceTree = "<group>"; };
+		1F368840F5CE48EA3B21B976 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		323906AFB18147ABEDEBDB38 /* iosAppUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = iosAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3844CF78A622F67C8545925B /* Scanny.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Scanny.xcconfig; sourceTree = "<group>"; };
 		3BDDF881BDC8407BFFF557BC /* CreateCodeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCodeUITests.swift; sourceTree = "<group>"; };
+		402A520F4E5B4CEA624B49E9 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		424A11BA3CA8492ED2631CE4 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		46046658C8BE76C5FE2E83D4 /* SettingsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsUITests.swift; sourceTree = "<group>"; };
+		5C916204E130EF428382DF21 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		668CECA83ACC03A83C85A623 /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
+		699B07C40BD723F87323A277 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		81DA1760586FB12685017578 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		834D3196BD69E0D757EF3C4E /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		84B180779BE417DB513FDBAE /* ScanFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanFlowUITests.swift; sourceTree = "<group>"; };
 		86038AE1032E284E79B32AD6 /* iosApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AA7C512CC348A8D6D112C34 /* ScanHistoryUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanHistoryUITests.swift; sourceTree = "<group>"; };
 		A200F24526F2E89B50E53BA7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		AD5B72DA568D249D7D726F41 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B4CDD441BE7ABC6C26838D22 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C117AD187833E2513BD2F553 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DA2AF7D2D9475CB6237C289A /* UITestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestSupport.swift; sourceTree = "<group>"; };
+		DC2EF9DA978F927746BF4AED /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		E835E7BD8AB5F7568B1798CD /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F543015C899423D4B01CEB2E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F61394D03A839FE81731FD23 /* EditCodeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCodeUITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -182,8 +192,18 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
+				de,
 				en,
+				es,
 				fr,
+				it,
+				ja,
+				ko,
+				nl,
+				"pt-BR",
+				ru,
+				tr,
+				"zh-Hans",
 			);
 			mainGroup = 38B69C3F79CD97858CF7B609;
 			minimizedProjectReferenceProxies = 1;
@@ -316,8 +336,18 @@
 		37A6BA4C5AAF06904D9C889E /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
+				5C916204E130EF428382DF21 /* de */,
 				A200F24526F2E89B50E53BA7 /* en */,
+				DC2EF9DA978F927746BF4AED /* es */,
 				81DA1760586FB12685017578 /* fr */,
+				E835E7BD8AB5F7568B1798CD /* it */,
+				1F368840F5CE48EA3B21B976 /* ja */,
+				424A11BA3CA8492ED2631CE4 /* ko */,
+				AD5B72DA568D249D7D726F41 /* nl */,
+				834D3196BD69E0D757EF3C4E /* pt-BR */,
+				699B07C40BD723F87323A277 /* ru */,
+				B4CDD441BE7ABC6C26838D22 /* tr */,
+				402A520F4E5B4CEA624B49E9 /* zh-Hans */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
