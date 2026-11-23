@@ -1,7 +1,8 @@
 # Release and Publish iOS, in one click: Actions > Release and Publish iOS > Run workflow, from main.
-# fastlane builds the app signed for the App Store with the certificate and the profile of match,
-# publishes it with the store listing of fastlane/metadata/ios to App Store Connect, submitted for
-# review or not, then releases it on GitHub under the tag of the version (lane ios release_and_publish).
+# fastlane builds the app signed for the App Store, with the distribution certificate of the team and
+# the App Store profile of the app, publishes it with the store listing of fastlane/metadata/ios to App
+# Store Connect, submitted for review or not, then releases it on GitHub under the tag of the version
+# (lane ios release_and_publish).
 name: Release and Publish iOS
 
 on:
@@ -25,27 +26,31 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 90
     steps:
-      - name: Check the secrets of App Store Connect and match
+      - name: Check the secrets of App Store Connect and of the signing
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          MATCH_SSH_KEY: ${{ secrets.MATCH_SSH_KEY }}
+          IOS_DISTRIBUTION_P12: ${{ secrets.IOS_DISTRIBUTION_P12 }}
+          IOS_DISTRIBUTION_P12_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}
+          IOS_PROVISIONING_PROFILE: ${{ secrets.IOS_PROVISIONING_PROFILE }}
         run: |
-          for name in ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_P8 APPLE_TEAM_ID MATCH_PASSWORD MATCH_SSH_KEY; do
+          for name in ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_P8 APPLE_TEAM_ID IOS_DISTRIBUTION_P12 IOS_DISTRIBUTION_P12_PASSWORD IOS_PROVISIONING_PROFILE; do
             if [ -z "${!name}" ]; then echo "::error::The secret $name is missing: see docs/Common/04_BUILD.md"; exit 1; fi
           done
 
       - name: Check out the code
         uses: actions/checkout@v7
 
-      # The certificates of match, in their own private repository, read with a read-only deploy key
-      - name: Reach the certificates of match
-        uses: webfactory/ssh-agent@v0.10.0
-        with:
-          ssh-private-key: ${{ secrets.MATCH_SSH_KEY }}
+      # The distribution certificate of the team and the App Store profile of the app, kept in base64
+      - name: Write the certificate and the profile
+        env:
+          IOS_DISTRIBUTION_P12: ${{ secrets.IOS_DISTRIBUTION_P12 }}
+          IOS_PROVISIONING_PROFILE: ${{ secrets.IOS_PROVISIONING_PROFILE }}
+        run: |
+          printf '%s' "$IOS_DISTRIBUTION_P12" | base64 --decode > "$RUNNER_TEMP/distribution.p12"
+          printf '%s' "$IOS_PROVISIONING_PROFILE" | base64 --decode > "$RUNNER_TEMP/scanny.mobileprovision"
 
       # The build phase of the Xcode project builds the Shared framework with Gradle
       - name: Set up Java
@@ -68,7 +73,8 @@ jobs:
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          MATCH_GIT_URL: git@github.com:LudoSkyle/Scanny-Certificates.git
+          IOS_DISTRIBUTION_P12_FILE: ${{ runner.temp }}/distribution.p12
+          IOS_DISTRIBUTION_P12_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_FILE: ${{ runner.temp }}/scanny.mobileprovision
           GH_TOKEN: ${{ github.token }}
         run: bundle exec fastlane ios release_and_publish submit:${{ inputs.submit }}
