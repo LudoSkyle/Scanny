@@ -48,7 +48,7 @@ kermit = "2.2.0"
 qrose = "1.3.1"
 
 # Firebase
-firebaseBom = "34.14.1"
+firebaseBom = "35.2.0"
 
 # Tests
 junit = "4.13.2"
@@ -59,11 +59,11 @@ androidxComposeUi = "1.12.1"
 zxing = "3.5.4"
 
 # Plugins
-agp = "9.5.1"
+agp = "9.5.2"
 ksp = "2.3.14"
-googleServices = "4.4.4"
-firebaseCrashlyticsPlugin = "3.0.7"
-firebaseAppdistributionPlugin = "5.2.1"
+googleServices = "4.6.0"
+firebaseCrashlyticsPlugin = "3.0.8"
+firebaseAppdistributionPlugin = "5.3.1"
 easylauncherPlugin = "6.4.1"
 
 [libraries]
