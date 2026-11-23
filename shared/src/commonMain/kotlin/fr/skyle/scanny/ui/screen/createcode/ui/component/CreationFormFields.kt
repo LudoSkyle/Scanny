@@ -247,26 +247,22 @@ fun CreationFormFields(
                 CreationKind.LOCATION -> CreationSection(
                     modifier = Modifier.fillMaxWidth(),
                     title = stringResource(Res.string.location),
+                    // Each on its own line: their labels are too long for half of it
                     moreOptions = {
-                        Row(
+                        CreationTextField(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
-                        ) {
-                            CreationTextField(
-                                modifier = Modifier.weight(1f),
-                                value = form.locationAltitude,
-                                onValueChange = { altitude -> onFormChanged(form.copy(locationAltitude = altitude)) },
-                                label = stringResource(Res.string.altitude_in_meters),
-                                keyboardType = coordinateKeyboardType,
-                            )
-                            CreationTextField(
-                                modifier = Modifier.weight(1f),
-                                value = form.locationUncertainty,
-                                onValueChange = { uncertainty -> onFormChanged(form.copy(locationUncertainty = uncertainty)) },
-                                label = stringResource(Res.string.uncertainty_in_meters),
-                                keyboardType = KeyboardType.Decimal,
-                            )
-                        }
+                            value = form.locationAltitude,
+                            onValueChange = { altitude -> onFormChanged(form.copy(locationAltitude = altitude)) },
+                            label = stringResource(Res.string.altitude_in_meters),
+                            keyboardType = coordinateKeyboardType,
+                        )
+                        CreationTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = form.locationUncertainty,
+                            onValueChange = { uncertainty -> onFormChanged(form.copy(locationUncertainty = uncertainty)) },
+                            label = stringResource(Res.string.uncertainty_in_meters),
+                            keyboardType = KeyboardType.Decimal,
+                        )
                     },
                     hasMoreOptionsSet = form.locationAltitude.isNotBlank() || form.locationUncertainty.isNotBlank(),
                 ) {
