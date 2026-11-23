@@ -95,7 +95,8 @@ s'écrit que pour un parcours qui passe par le système. Voir
   change et ce qui a été vérifié.
 - Une version passe de `develop` à `main` par une PR fusionnée par un **commit de fusion** : un rebase
   réécrirait sur `main` les commits de `develop`, et les deux branches divergeraient. Elle est
-  marquée d'un tag `vX.Y` et d'une release GitHub qui porte l'APK et l'AAB signés.
+  marquée d'un tag `vX.Y` et d'une release GitHub qui porte l'APK et l'AAB signés, que crée le
+  workflow « Release Android » lancé depuis `main`.
 - Rien ne se pousse en dehors de ce circuit : pas de push direct sur `develop` ni sur `main`.
 
 ## Mise à jour de cette documentation
