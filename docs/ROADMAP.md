@@ -294,6 +294,16 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
 12. **Finitions** : splash, README à jour (il cite encore Hilt et Camera 2), CI. Deux remarques
     d'ergonomie relevées au lot 6 : le message « aucun code trouvé » masque le bouton galerie le temps
     de son affichage, et le Photo Picker range les images de la plus récente à la plus ancienne.
+    - [x] Build et tests sans le sous-module privé (fork, CI des pull requests)
+    - [x] CI GitHub Actions : tests JVM et simulateur iOS, app Android et app iOS à chaque pull
+          request ; l'ancienne configuration CircleCI retirée
+    - [x] Publication Android sur le Play Store en un clic (workflow lancé à la main), le sous-module
+          privé lu par une clé de déploiement en lecture seule *(le compte de service de la Play
+          Console reste à fournir, secret `PLAY_SERVICE_ACCOUNT_JSON`)* ; iOS attend le compte payant
+    - [x] Écran de démarrage : l'icône sur fond blanc, sur Android et iOS
+    - [x] README à jour
+    - [x] Les messages de l'écran de scan au-dessus de ses boutons
+    - [x] L'ordre du Photo Picker est celui du système : rien à changer
 13. **Favoris et annotations** *(pas urgent)* : sur une capture, depuis l'historique et l'écran du
     groupe.
 
