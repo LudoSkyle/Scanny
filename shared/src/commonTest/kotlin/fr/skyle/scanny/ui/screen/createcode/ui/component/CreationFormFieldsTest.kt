@@ -258,7 +258,7 @@ internal class CreationFormFieldsTest : ComposeTest() {
     }
 
     @Test
-    fun `a new link starts with https and goes on after it`() = runComposeUiTest {
+    fun `a new link starts with https and goes on after it wherever the field is touched`() = runComposeUiTest {
         // Given
         var form by mutableStateOf(CreationForm(kind = CreationKind.LINK))
         setContent {
@@ -271,6 +271,8 @@ internal class CreationFormFieldsTest : ComposeTest() {
         }
 
         // When
+        // Touched in its middle, inside the scheme
+        onNode(hasSetTextAction() and hasText(required(Res.string.link))).performClick()
         onNode(hasSetTextAction() and hasText(required(Res.string.link))).performTextInput("scanny.app")
 
         // Then

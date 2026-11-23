@@ -135,7 +135,8 @@ object SCTheme {
   chasse fixe du système, sur une teinte, à la taille du texte qui l'entoure. `SCTextField` montre
   ainsi son `supportingText`, l'aide sous le champ.
 - Un `SCTextField` prérempli (un lien qui part de `https://`) a son curseur à la fin du texte, pour
-  qu'on le continue : Material le met au début.
+  qu'on le continue : Material le met au début. Tant qu'il ne tient que son `prefill`, le curseur
+  reste après lui, où que le champ soit touché.
 - Un écran affiche un texte avec `SCText` et un message court par un `SCSnackbarState` donné à
   `SCScreenStructure` : il ne voit jamais `Text` ni `SnackbarHostState` de Material. Une feuille qui
   cache l'écran a ses propres messages (`snackbarState` de `SCBottomSheet`), vidés à sa fermeture

@@ -26,7 +26,8 @@ import fr.skyle.scanny.designsystem.theme.SCTheme
 /**
  * A text the user writes, named by its [label]: on one line when [isSingleLine], else on [minLines]
  * lines at least. [keyboardType] opens the keyboard that suits it: a link, an e-mail, a phone number…
- * A [supportingText] under it helps to fill it, its parts between backticks as code.
+ * A [supportingText] under it helps to fill it, its parts between backticks as code. While it holds
+ * its [prefill] alone, a scheme such as `https://`, the cursor stays after it, wherever it is touched.
  */
 @Composable
 fun SCTextField(
@@ -39,6 +40,7 @@ fun SCTextField(
     isSingleLine: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
     supportingText: String? = null,
+    prefill: String? = null,
 ) {
     // The cursor of a text given before any touch, prefilled, at its end, for the user to go on with
     // it: Material puts it at the start. Kept with the composition of the keyboard as they change
@@ -57,7 +59,8 @@ fun SCTextField(
         modifier = modifier,
         value = textFieldValue,
         onValueChange = { changedValue ->
-            selection = changedValue.selection
+            // Typed after the prefill, never inside it
+            selection = if (changedValue.text == prefill) TextRange(changedValue.text.length) else changedValue.selection
             composition = changedValue.composition
             if (changedValue.text != value) {
                 onValueChange(changedValue.text)

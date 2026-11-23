@@ -17,7 +17,8 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * A field of the content of a code, on one line unless more are asked for. A field the code cannot do
- * without, [isRequired], has an asterisk after its label. A [supportingText] under it helps to fill it.
+ * without, [isRequired], has an asterisk after its label. A [supportingText] under it helps to fill it;
+ * while it holds its [prefill] alone, the cursor stays after it.
  */
 @Composable
 fun CreationTextField(
@@ -29,6 +30,7 @@ fun CreationTextField(
     minLines: Int = 1,
     keyboardType: KeyboardType = KeyboardType.Text,
     supportingText: String? = null,
+    prefill: String? = null,
 ) {
     SCTextField(
         modifier = modifier,
@@ -40,6 +42,7 @@ fun CreationTextField(
         isSingleLine = minLines == 1,
         keyboardType = keyboardType,
         supportingText = supportingText,
+        prefill = prefill,
     )
 }
 

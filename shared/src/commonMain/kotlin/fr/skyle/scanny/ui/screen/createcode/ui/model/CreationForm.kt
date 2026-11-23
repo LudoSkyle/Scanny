@@ -131,4 +131,5 @@ data class CreationForm(
     val barcodeValue: String = "",
 )
 
-private const val LINK_SCHEME = "https://"
+// What the field of a link starts with: the scheme of most links
+internal const val LINK_SCHEME = "https://"
