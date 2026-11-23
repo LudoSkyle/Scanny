@@ -1,0 +1,58 @@
+# Every pull request, and every push to develop and main: the tests on the JVM and on the iOS simulator,
+# the Android app and the iOS app. Without the private submodule, which a fork cannot reach: the build
+# runs without the signing keys and the Firebase files (see docs/Common/04_BUILD.md).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
+      - main
+  workflow_dispatch:
+
+# A new push to a pull request stops the run of the previous one
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests and builds
+    # macOS for the iOS simulator, with the Xcode of the project and the Android SDK
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Test on the JVM and the iOS simulator, build the Android app
+        run: ./gradlew :domain:allTests :data:allTests :shared:allTests :androidApp:assembleDebug
+
+      # Its build phase builds the Shared framework
+      - name: Build the iOS app
+        run: >-
+          xcodebuild build
+          -project iosApp/iosApp.xcodeproj
+          -scheme iosApp
+          -destination 'generic/platform=iOS Simulator'
+          CODE_SIGNING_ALLOWED=NO
+
+      - name: Keep the test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports
+          path: '**/build/reports/tests/'
