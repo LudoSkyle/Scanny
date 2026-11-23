@@ -1,75 +1,65 @@
-![Scanny](app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
+<img src="iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/AppIcon.png" width="96" alt="Scanny" />
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/SkyleKayma/Scanny/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/SkyleKayma/Scanny/tree/main) 
-[![License](https://img.shields.io/badge/License-Apache-blue.svg)](https://github.com/SkyleKayma/Scanny/edit/main/LICENSE)
+[![CI](https://github.com/LudoSkyle/Scanny/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/LudoSkyle/Scanny/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 # Scanny
 
-Modern app to scan and create QRCode, with history.
-It does use only latest libraries and do NOT depends on Zxing.
-It aims to be reliable and fast.
+Scan and create QR codes and barcodes, on Android and iOS. Light, reliable, without ads, and without
+ZXing in the app.
 
-<a href='https://play.google.com/store/apps/details?id=fr.skyle.scanny&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img width="200" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
+<a href='https://play.google.com/store/apps/details?id=fr.skyle.scanny'><img width="200" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
 
-# What does it uses ?
+## Features
 
-Fully written in Kotlin.
+- **Scan** with the camera, one code or several at once, or from an image of the gallery: QR Code,
+  Data Matrix, Aztec, PDF417, EAN-13, EAN-8, UPC-A, UPC-E, Code 39, Code 93, Code 128, ITF and Codabar.
+- **Understand** what a code holds, and act on it: open a link or the deep link of an app, write an
+  e-mail, an SMS or an MMS, call, join a Wi-Fi network, add a contact or an event, show a place on
+  the map, add a one-time password to an authenticator, open a bitcoin wallet.
+- **Create** a QR code, a Data Matrix, an Aztec code, a PDF417 or a barcode, with every field of
+  each format, and customize a QR code: colors, gradient, shapes, logo, error correction.
+- **History** of the scans and of the creations, kept as long as chosen, with the code drawn again,
+  shared or saved as an image.
 
-Most important libraries:
-- AndroidX
-- Google ML Kit
-- Custom QRCode generation (https://github.com/g0dkar/qrcode-kotlin)
-- Compose
-- Coroutines
-- Hilt
-- Camera 2
+## Built with
 
-# Features
+- [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html) and
+  [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/): one UI for Android and
+  iOS, the native code behind a common interface only (camera, detection, system actions).
+- Detection: CameraX and ML Kit on Android, AVFoundation and Vision on iOS.
+- Room and DataStore, Koin, kotlinx-datetime, Kermit, and Firebase Crashlytics on Android.
+- [qrose](https://github.com/alexzhirkevich/qrose) to draw the codes, with corrected copies of its
+  Data Matrix and Aztec encoders ([ADR-0004](docs/adr/0004-encodeurs-data-matrix-et-aztec-corriges.md)).
 
-What app currently features:
+The modules: `androidApp` and `iosApp` host the app on each platform, `shared` holds the screens and
+the navigation, `designSystem` the theme and the generic components, `domain` the models, the parser
+and the use cases, `data` the database, the preferences and the repositories.
 
-- [x] Scan QRCode with Camera
-- [x] Find QRCode in image
-- [x] Feedback system
+## Build
 
-This application can scan all types of code that Google MLKit handles.
+Requirements: JDK 17, the Android SDK, and Xcode 26 for iOS.
 
-
-# What will be added in the next releases
-
-## Next release
-
-- [ ] Scan history
-
-## Upcoming releases
-
-- [ ] Create QRCode
-- [ ] Creation history
-- [ ] Customization of created QRCode
-- [ ] Google In-App rating
-- [ ] Google In-App update
-
-# Contributions
-
-If you've found an error in this project, please file an issue.
-
-Patches are encouraged and may be submitted by forking this project and submitting a pull request. Since this project is still in its very
-early stages, if your change is substantial, please raise an issue first to discuss it.
-
-# License
-
+```bash
+./gradlew :domain:allTests :data:allTests :shared:allTests   # tests, on the JVM and the iOS simulator
+./gradlew :androidApp:assembleDebug                          # Android app
 ```
-Copyright 2020 Google LLC
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+The iOS app opens in Xcode (`iosApp/iosApp.xcodeproj`, scheme `iosApp`); a build phase builds the
+`Shared` framework. See [iosApp/CLAUDE.md](iosApp/CLAUDE.md) for the signing.
 
-    https://www.apache.org/licenses/LICENSE-2.0
+The signing keys and the Firebase files live in a private submodule. Without it, the project still
+builds and tests: the debug build is signed with the default key of Android, and Firebase is left out.
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
+Every pull request is tested and built by GitHub Actions. The documentation of the project, in French,
+starts at [docs/INDEX.md](docs/INDEX.md).
+
+## Contributing
+
+If you find an error, please file an issue. Pull requests are welcome; for a substantial change,
+please open an issue first to discuss it.
+
+## License
+
+Scanny is licensed under the [Apache License 2.0](LICENSE). The encoders copied from qrose keep its
+MIT license, beside them.
