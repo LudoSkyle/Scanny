@@ -92,7 +92,8 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 - GitHub Actions, `.github/workflows/ci.yml` : à chaque pull request et à chaque push sur `develop`
   et `main`, sur un runner `macos-26` (le Xcode du projet, le SDK Android) : `:domain:allTests`,
   `:data:allTests`, `:shared:allTests` (JVM et simulateur iOS), `:androidApp:assembleDebug`, puis
-  l'app iOS (`xcodebuild build`, sans signature). Les rapports de tests sont gardés en cas d'échec.
+  l'app iOS (`xcodebuild build` sur le simulateur iPhone 17, sans signature : un simulateur générique
+  compilerait aussi pour x86_64, que le framework ne cible pas). Les rapports de tests sont gardés en cas d'échec.
 - Sans le sous-module privé, qu'un fork n'atteint pas : le build s'en passe (voir Android
   ci-dessus). Les tests d'interface iOS (XCUITest) n'y tournent pas.
 - Une pull request n'est fusionnée qu'une fois la CI verte.

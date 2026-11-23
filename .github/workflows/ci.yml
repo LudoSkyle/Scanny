@@ -41,13 +41,14 @@ jobs:
       - name: Test on the JVM and the iOS simulator, build the Android app
         run: ./gradlew :domain:allTests :data:allTests :shared:allTests :androidApp:assembleDebug
 
-      # Its build phase builds the Shared framework
+      # Its build phase builds the Shared framework. On a simulator of the runner: a generic one would
+      # build for x86_64 too, which the framework has no target for
       - name: Build the iOS app
         run: >-
           xcodebuild build
           -project iosApp/iosApp.xcodeproj
           -scheme iosApp
-          -destination 'generic/platform=iOS Simulator'
+          -destination 'platform=iOS Simulator,name=iPhone 17'
           CODE_SIGNING_ALLOWED=NO
 
       - name: Keep the test reports
