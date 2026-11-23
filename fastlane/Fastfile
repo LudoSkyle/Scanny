@@ -2,7 +2,8 @@
 # - distribute: the signed app to the testers (Firebase App Distribution, TestFlight);
 # - release_and_publish: the signed app and its store listing to the store, then a release on GitHub
 #   under the tag of the version, with the very files sent to the store;
-# - store_listing: the store listing alone, as written in fastlane/metadata.
+# - store_listing: the store listing alone, as written in fastlane/metadata;
+# - promote: the version already published, from the testers to everyone, without any new build.
 # Run by the workflows of .github/workflows, with their secrets. See docs/Common/04_BUILD.md.
 
 require "json"
@@ -105,6 +106,27 @@ platform :android do
       skip_upload_changelogs: true,
     )
   end
+
+  desc "Promotes the release of this version from a track to another, without any new build"
+  desc "Options: from (internal), to (production), rollout (the share of the users, 0.2 for 20 %; all by default)"
+  lane :promote do |options|
+    rollout = options[:rollout].to_s
+    upload_to_play_store(
+      package_name: APP_IDENTIFIER,
+      json_key: ENV.fetch("PLAY_SERVICE_ACCOUNT_FILE"),
+      track: options.fetch(:from, "internal"),
+      track_promote_to: options.fetch(:to, "production"),
+      version_code: app_version_code,
+      rollout: rollout.empty? ? nil : rollout,
+      # The release keeps its bundle and its notes, the listing stays as it is
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
 end
 
 platform :ios do
@@ -192,6 +214,24 @@ platform :ios do
       metadata_path: METADATA_IOS,
       screenshots_path: SCREENSHOTS_IOS,
       skip_binary_upload: true,
+      force: true,
+      precheck_include_in_app_purchases: false,
+    )
+  end
+
+  desc "Submits for review the build of this version already uploaded, the one TestFlight tests, with the store listing"
+  desc "Options: automatic_release (true): released on the App Store as soon as it is approved"
+  lane :promote do |options|
+    upload_to_app_store(
+      api_key: app_store_connect_key,
+      app_identifier: APP_IDENTIFIER,
+      app_version: app_version_name,
+      build_number: app_version_code.to_s,
+      metadata_path: METADATA_IOS,
+      screenshots_path: SCREENSHOTS_IOS,
+      skip_binary_upload: true,
+      submit_for_review: true,
+      automatic_release: options.fetch(:automatic_release, true),
       force: true,
       precheck_include_in_app_purchases: false,
     )

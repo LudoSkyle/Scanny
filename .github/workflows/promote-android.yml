@@ -1,0 +1,59 @@
+# Promote Android, in one click: Actions > Promote Android > Run workflow, from main. fastlane moves the
+# release of the version, already published to the testers by Release and Publish Android, to another
+# track of the Play Store, production by default, without any new build (lane android promote).
+name: Promote Android
+
+on:
+  workflow_dispatch:
+    inputs:
+      from:
+        description: Track the release is on
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+        default: internal
+      to:
+        description: Track to promote it to
+        type: choice
+        options:
+          - alpha
+          - beta
+          - production
+        default: production
+      rollout:
+        description: Share of the users, 0.2 for 20 % (empty for all)
+        type: string
+        default: ''
+
+concurrency:
+  group: release-android
+
+permissions:
+  contents: read
+
+jobs:
+  promote:
+    name: Promote
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      - name: Set up Ruby and fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Promote
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          PLAY_SERVICE_ACCOUNT_FILE: ${{ runner.temp }}/play-service-account.json
+          FROM: ${{ inputs.from }}
+          TO: ${{ inputs.to }}
+          ROLLOUT: ${{ inputs.rollout }}
+        run: |
+          printf '%s' "$PLAY_SERVICE_ACCOUNT_JSON" > "$PLAY_SERVICE_ACCOUNT_FILE"
+          bundle exec fastlane android promote from:"$FROM" to:"$TO" rollout:"$ROLLOUT"
