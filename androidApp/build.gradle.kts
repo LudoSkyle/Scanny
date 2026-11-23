@@ -6,16 +6,24 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
     id("com.google.firebase.appdistribution")
     id("com.starter.easylauncher")
 }
 
-// Keystore
+// The private submodule holds the signing keys and the Firebase files. Without it, a fork or the CI
+// still builds and tests: the debug build is signed with the default key of Android, the release is
+// not signed, and Firebase is left out
 val keystorePropertiesFile = rootProject.file("private/keys/keystore.properties")
+val hasKeystore = keystorePropertiesFile.exists()
 val keystoreProperties = Properties()
-keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+if (hasKeystore) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+val hasFirebase = rootProject.file("private/firebase/google-services.json").exists()
+if (hasFirebase) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
+}
 
 android {
     namespace = "fr.skyle.scanny"
@@ -32,14 +40,16 @@ android {
     }
 
     signingConfigs {
-        maybeCreate(BuildType.DEBUG.name).apply {
-            storeFile = file(keystoreProperties["debugStoreFile"].toString())
-        }
-        maybeCreate(BuildType.RELEASE.name).apply {
-            storeFile = file(keystoreProperties["releaseStoreFile"].toString())
-            storePassword = keystoreProperties["passwordRelease"].toString()
-            keyAlias = keystoreProperties["aliasRelease"].toString()
-            keyPassword = keystoreProperties["passwordRelease"].toString()
+        if (hasKeystore) {
+            maybeCreate(BuildType.DEBUG.name).apply {
+                storeFile = file(keystoreProperties["debugStoreFile"].toString())
+            }
+            maybeCreate(BuildType.RELEASE.name).apply {
+                storeFile = file(keystoreProperties["releaseStoreFile"].toString())
+                storePassword = keystoreProperties["passwordRelease"].toString()
+                keyAlias = keystoreProperties["aliasRelease"].toString()
+                keyPassword = keystoreProperties["passwordRelease"].toString()
+            }
         }
     }
 
@@ -47,7 +57,9 @@ android {
         debug {
             versionNameSuffix = "-debug"
             applicationIdSuffix = ".debug"
-            signingConfig = signingConfigs.getByName(BuildType.DEBUG.name)
+            if (hasKeystore) {
+                signingConfig = signingConfigs.getByName(BuildType.DEBUG.name)
+            }
 
             firebaseAppDistribution {
                 artifactType = "APK"
@@ -59,7 +71,9 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
 
-            signingConfig = signingConfigs.getByName(BuildType.RELEASE.name)
+            if (hasKeystore) {
+                signingConfig = signingConfigs.getByName(BuildType.RELEASE.name)
+            }
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

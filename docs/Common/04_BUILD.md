@@ -67,6 +67,9 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 - La signature lit `private/keys/keystore.properties`, et `google-services.json` est copié depuis
   `private/firebase/` avant le build. `private/` est un sous-module privé : il n'est jamais modifié,
   ni son contenu affiché.
+- Sans le sous-module (un fork, la CI des PR), le build se configure et teste quand même : le debug
+  est signé avec la clé par défaut d'Android, la release n'est pas signée, et Google Services et
+  Crashlytics ne s'appliquent pas ; l'app démarre alors sans Crashlytics.
 - La release est minifiée (`isMinifyEnabled`, `isShrinkResources`) : toute classe instanciée par
   réflexion est gardée dans `proguard-rules.pro`.
 

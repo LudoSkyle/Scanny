@@ -3,6 +3,7 @@ package fr.skyle.scanny
 import android.app.Application
 import co.touchlab.kermit.LogWriter
 import co.touchlab.kermit.Logger
+import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import fr.skyle.scanny.di.sharedModule
 import fr.skyle.scanny.log.CrashlyticsLogWriter
@@ -22,6 +23,11 @@ open class ScannyApplication : Application() {
         }
     }
 
+    // Crashlytics only when Firebase starts: a build without the private Firebase file has none
     protected open fun logWriters(): List<LogWriter> =
-        listOf(CrashlyticsLogWriter(crashlytics = FirebaseCrashlytics.getInstance()))
+        if (FirebaseApp.getApps(this).isNotEmpty()) {
+            listOf(CrashlyticsLogWriter(crashlytics = FirebaseCrashlytics.getInstance()))
+        } else {
+            emptyList()
+        }
 }
