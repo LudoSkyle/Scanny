@@ -18,9 +18,11 @@ import platform.AVFoundation.AVCaptureDevice
 import platform.AVFoundation.AVCaptureDeviceInput
 import platform.AVFoundation.AVCaptureDevicePositionBack
 import platform.AVFoundation.AVCaptureDevicePositionFront
+import platform.AVFoundation.AVCaptureDeviceTypeBuiltInDualWideCamera
+import platform.AVFoundation.AVCaptureDeviceTypeBuiltInTripleCamera
 import platform.AVFoundation.AVCaptureDeviceTypeBuiltInWideAngleCamera
-import platform.AVFoundation.AVCaptureExposureModeAutoExpose
-import platform.AVFoundation.AVCaptureFocusModeAutoFocus
+import platform.AVFoundation.AVCaptureExposureModeContinuousAutoExposure
+import platform.AVFoundation.AVCaptureFocusModeContinuousAutoFocus
 import platform.AVFoundation.AVCaptureMetadataOutput
 import platform.AVFoundation.AVCaptureMetadataOutputObjectsDelegateProtocol
 import platform.AVFoundation.AVCaptureOutput
@@ -45,6 +47,8 @@ import platform.AVFoundation.maxAvailableVideoZoomFactor
 import platform.AVFoundation.minAvailableVideoZoomFactor
 import platform.AVFoundation.torchMode
 import platform.AVFoundation.videoZoomFactor
+import platform.AVFoundation.virtualDeviceSwitchOverVideoZoomFactors
+import platform.Foundation.NSNumber
 import platform.CoreGraphics.CGPointMake
 import platform.CoreGraphics.CGRectZero
 import platform.QuartzCore.CATransaction
@@ -160,6 +164,9 @@ private class IosScanCamera(
     private val metadataOutput = AVCaptureMetadataOutput()
     private var device: AVCaptureDevice? = null
 
+    // The zoom factor of the device that frames as its wide angle camera: the zoom ratio 1 of Scanny
+    private var wideAngleZoomFactor = 1.0
+
     // AVFoundation keeps a weak reference to its delegate
     private var metadataDelegate: MetadataDelegate? = null
 
@@ -167,14 +174,7 @@ private class IosScanCamera(
 
     // Null when the device has no camera on this side, as the simulator
     fun start(onBarcodeDetected: (DetectedBarcode) -> Unit): CameraCapabilities? {
-        val camera = AVCaptureDevice.defaultDeviceWithDeviceType(
-            deviceType = AVCaptureDeviceTypeBuiltInWideAngleCamera,
-            mediaType = AVMediaTypeVideo,
-            position = when (lens) {
-                CameraLens.BACK -> AVCaptureDevicePositionBack
-                CameraLens.FRONT -> AVCaptureDevicePositionFront
-            },
-        ) ?: return null
+        val camera = scanningDevice() ?: return null
         val input = AVCaptureDeviceInput.deviceInputWithDevice(
             device = camera,
             error = null,
@@ -198,6 +198,16 @@ private class IosScanCamera(
 
         device = camera
         metadataDelegate = delegate
+        // A virtual camera starts on its ultra wide angle camera, 0.5x: framed as the wide angle one
+        wideAngleZoomFactor = (camera.virtualDeviceSwitchOverVideoZoomFactors.firstOrNull() as? NSNumber)
+            ?.doubleValue
+            ?: 1.0
+        configure { configured ->
+            configured.videoZoomFactor = wideAngleZoomFactor
+            if (configured.isFocusModeSupported(AVCaptureFocusModeContinuousAutoFocus)) {
+                configured.focusMode = AVCaptureFocusModeContinuousAutoFocus
+            }
+        }
 
         // Starting a session blocks until the camera runs: never on the main thread
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT.toLong(), 0u)) {
@@ -206,8 +216,8 @@ private class IosScanCamera(
 
         return CameraCapabilities(
             hasTorch = camera.hasTorch,
-            minZoomRatio = camera.minAvailableVideoZoomFactor.toFloat(),
-            maxZoomRatio = camera.maxAvailableVideoZoomFactor.toFloat(),
+            minZoomRatio = (camera.minAvailableVideoZoomFactor / wideAngleZoomFactor).toFloat(),
+            maxZoomRatio = (camera.maxAvailableVideoZoomFactor / wideAngleZoomFactor).toFloat(),
         )
     }
 
@@ -228,7 +238,7 @@ private class IosScanCamera(
 
     fun setZoomRatio(ratio: Float) {
         configure { camera ->
-            camera.videoZoomFactor = ratio.toDouble().coerceIn(
+            camera.videoZoomFactor = (ratio * wideAngleZoomFactor).coerceIn(
                 minimumValue = camera.minAvailableVideoZoomFactor,
                 maximumValue = camera.maxAvailableVideoZoomFactor,
             )
@@ -249,15 +259,43 @@ private class IosScanCamera(
             )
         }
 
+        // Focused there, and still focusing as the code moves: a single focus would hold its distance
         configure { camera ->
-            if (camera.focusPointOfInterestSupported && camera.isFocusModeSupported(AVCaptureFocusModeAutoFocus)) {
+            if (camera.focusPointOfInterestSupported && camera.isFocusModeSupported(AVCaptureFocusModeContinuousAutoFocus)) {
                 camera.focusPointOfInterest = point
-                camera.focusMode = AVCaptureFocusModeAutoFocus
+                camera.focusMode = AVCaptureFocusModeContinuousAutoFocus
             }
-            if (camera.exposurePointOfInterestSupported && camera.isExposureModeSupported(AVCaptureExposureModeAutoExpose)) {
+            if (camera.exposurePointOfInterestSupported && camera.isExposureModeSupported(AVCaptureExposureModeContinuousAutoExposure)) {
                 camera.exposurePointOfInterest = point
-                camera.exposureMode = AVCaptureExposureModeAutoExpose
+                camera.exposureMode = AVCaptureExposureModeContinuousAutoExposure
             }
+        }
+    }
+
+    /**
+     * At the back, the virtual camera that switches by itself to the ultra wide angle one, which
+     * focuses the closest, as a code comes near: the wide angle camera alone cannot focus under 15 to
+     * 20 cm. Else, and at the front, the wide angle camera.
+     */
+    private fun scanningDevice(): AVCaptureDevice? {
+        val deviceTypes = when (lens) {
+            CameraLens.BACK -> listOf(
+                AVCaptureDeviceTypeBuiltInTripleCamera,
+                AVCaptureDeviceTypeBuiltInDualWideCamera,
+                AVCaptureDeviceTypeBuiltInWideAngleCamera,
+            )
+            CameraLens.FRONT -> listOf(AVCaptureDeviceTypeBuiltInWideAngleCamera)
+        }
+        val position = when (lens) {
+            CameraLens.BACK -> AVCaptureDevicePositionBack
+            CameraLens.FRONT -> AVCaptureDevicePositionFront
+        }
+        return deviceTypes.firstNotNullOfOrNull { deviceType ->
+            AVCaptureDevice.defaultDeviceWithDeviceType(
+                deviceType = deviceType,
+                mediaType = AVMediaTypeVideo,
+                position = position,
+            )
         }
     }
 
