@@ -53,6 +53,7 @@ import fr.skyle.scanny.ui.screen.createcode.ui.mapper.exampleValue
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationFamily
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
+import fr.skyle.scanny.ui.screen.createcode.ui.model.LINK_SCHEME
 import org.jetbrains.compose.resources.stringResource
 
 // The lengths of a one-time password the key URI format allows
@@ -116,6 +117,7 @@ fun CreationFormFields(
                         label = stringResource(Res.string.link),
                         isRequired = true,
                         keyboardType = KeyboardType.Uri,
+                        prefill = LINK_SCHEME,
                     )
                 }
 
@@ -312,6 +314,7 @@ fun CreationFormFields(
                         label = stringResource(Res.string.link),
                         isRequired = true,
                         keyboardType = KeyboardType.Uri,
+                        prefill = LINK_SCHEME,
                     )
                 }
 
