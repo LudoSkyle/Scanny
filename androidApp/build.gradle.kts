@@ -149,6 +149,7 @@ dependencies {
 
     // AndroidX
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.splashscreen)
 
     // Koin
     implementation(libs.koin.android)

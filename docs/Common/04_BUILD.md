@@ -81,6 +81,10 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 - Le projet Xcode est généré par XcodeGen depuis `iosApp/project.yml`, seul fichier à éditer : le
   `.pbxproj` ne se modifie jamais à la main, il se régénère (`xcodegen generate`). Le projet généré
   est commité.
+- Au démarrage, l'icône de l'app sur le blanc de l'icône : sur Android par `core-splashscreen`
+  (`Theme.Scanny.Starting`, `installSplashScreen()` dans `MainActivity`), sur toutes les versions ;
+  sur iOS par `UILaunchScreen` de l'`Info.plist` (la couleur `LaunchBackground` et l'image
+  `LaunchLogo` des assets).
 - Bundle ID `fr.skyle.scanny`, cible minimale iOS 18.5, iPhone en portrait. `MARKETING_VERSION` et
   `CURRENT_PROJECT_VERSION` suivent `versionName` et `versionCode` d'Android.
 - Aucune équipe Apple n'est commitée : l'équipe personnelle se déclare dans
