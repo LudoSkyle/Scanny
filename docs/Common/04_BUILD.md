@@ -63,9 +63,10 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 
 - `applicationId` : `fr.skyle.scanny` ; la variante debug ajoute `.debug` et le suffixe de version
   `-debug`, et porte un ruban « DEBUG » sur l'icône (easylauncher).
-- `versionName` est déclaré dans `androidApp/build.gradle.kts`, et se change par une pull request.
-  `versionCode` y vaut 20, sauf quand la propriété `scanny.versionCode` le donne : le workflow de
-  publication le numérote ainsi à chaque envoi.
+- La version (`APP_VERSION_NAME`, `versionName`) est déclarée dans `androidApp/build.gradle.kts`,
+  et se change par une pull request. `versionCode` en découle, le même à chaque build : majeure ×
+  10 000 + mineure × 100 + correctif, `2.0` donnant 20000, `2.1.3` 20103. Une version envoyée au
+  Play Store se promeut de piste en piste dans la Play Console, sans être renvoyée.
 - La signature lit `private/keys/keystore.properties`, et `google-services.json` est copié depuis
   `private/firebase/` avant le build. `private/` est un sous-module privé : il n'est jamais modifié,
   ni son contenu affiché.
@@ -124,9 +125,14 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
   production) et l'état (déployé tout de suite, ou brouillon à déployer depuis la Play Console).
 - Il récupère le sous-module privé avec une clé de déploiement en lecture seule (secret
   `PRIVATE_SUBMODULE_SSH_KEY`, la clé publique « Scanny CI (read only) » sur le dépôt privé), construit
-  le bundle signé (`:androidApp:bundleRelease`) avec `versionCode` = 1000 + le numéro de l'exécution,
-  le garde avec son mapping en artefact, et l'envoie au Play Store avec le compte de service de la
+  le bundle signé (`:androidApp:bundleRelease`), le garde avec son mapping en artefact, et l'envoie au Play Store avec le compte de service de la
   Play Console (secret `PLAY_SERVICE_ACCOUNT_JSON`).
+- `.github/workflows/distribute-android.yml`, lancé à la main (Actions > Distribute Android) :
+  l'app signée, en release ou en debug, envoyée aux testeurs de Firebase App Distribution (groupes,
+  « Internal » par défaut, et notes de version au choix), avec le compte de service du projet
+  Firebase (secret `FIREBASE_SERVICE_ACCOUNT_JSON`), écrit dans `androidApp/google-services-account.json`
+  le temps du build : ce fichier est ignoré par git.
+- Un workflow lancé à la main n'apparaît dans l'onglet Actions qu'une fois sur la branche par défaut.
 - iOS n'a pas encore de publication : il manque le compte développeur payant et le
   `GoogleService-Info.plist`.
 
