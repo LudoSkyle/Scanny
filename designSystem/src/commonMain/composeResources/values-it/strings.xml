@@ -1,0 +1,10 @@
+<resources>
+    <string name="back">Indietro</string>
+    <string name="cancel">Annulla</string>
+    <string name="clear">Cancella</string>
+    <string name="collapsed">Compresso</string>
+    <string name="expanded">Espanso</string>
+    <string name="hue">Tonalità</string>
+    <string name="ok">OK</string>
+    <string name="saturation_brightness">Saturazione e luminosità</string>
+</resources>

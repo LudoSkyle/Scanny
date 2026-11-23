@@ -1,0 +1,10 @@
+<resources>
+    <string name="back">Zurück</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="clear">Löschen</string>
+    <string name="collapsed">Eingeklappt</string>
+    <string name="expanded">Ausgeklappt</string>
+    <string name="hue">Farbton</string>
+    <string name="ok">OK</string>
+    <string name="saturation_brightness">Sättigung und Helligkeit</string>
+</resources>

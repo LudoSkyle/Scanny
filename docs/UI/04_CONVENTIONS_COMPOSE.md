@@ -38,7 +38,7 @@ Ces conventions s'appliquent à `shared` et `designSystem`, en complément de
 ### Ressources
 
 - Textes, polices et icônes passent par **Compose Resources** : `src/commonMain/composeResources/`
-  (dossiers `values`, `values-fr`, `drawable`, `font`), lus avec `stringResource(Res.string.x)`,
+  (dossiers `values`, `values-<langue>`, `drawable`, `font`), lus avec `stringResource(Res.string.x)`,
   `painterResource(Res.drawable.x)` et `Font(Res.font.x)`.
 - Hors d'un composable, une chaîne se lit avec la fonction suspendue `getString(Res.string.x)`.
 - Les icônes sont des **Material Symbols** (style Rounded), téléchargées en vectoriel XML dans

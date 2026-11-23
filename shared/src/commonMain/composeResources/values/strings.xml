@@ -450,6 +450,16 @@
     <string name="version_and_build">Version %1$s (build %2$s)</string>
     <string name="vibrate_after_scan">Vibrate after a scan</string>
     <string name="website">Website</string>
+    <!-- On the chips of the days an event repeats on: the shortest the language writes -->
+    <string-array name="week_day_initials">
+        <item>M</item>
+        <item>T</item>
+        <item>W</item>
+        <item>T</item>
+        <item>F</item>
+        <item>S</item>
+        <item>S</item>
+    </string-array>
     <string-array name="week_days">
         <item>Monday</item>
         <item>Tuesday</item>
@@ -459,7 +469,7 @@
         <item>Saturday</item>
         <item>Sunday</item>
     </string-array>
-    <string name="wifi" translatable="false">Wi-Fi</string>
+    <string name="wifi">Wi-Fi</string>
     <string name="wifi_choose_in_settings">Choose “%1$s” in the list.</string>
     <string name="wifi_not_saved">“%1$s” could not be saved.</string>
     <string name="wifi_password_copied">Password copied: choose “%1$s” in the list.</string>

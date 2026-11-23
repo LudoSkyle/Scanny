@@ -1,0 +1,10 @@
+<resources>
+    <string name="back">戻る</string>
+    <string name="cancel">キャンセル</string>
+    <string name="clear">クリア</string>
+    <string name="collapsed">折りたたみ済み</string>
+    <string name="expanded">展開済み</string>
+    <string name="hue">色相</string>
+    <string name="ok">OK</string>
+    <string name="saturation_brightness">彩度と明るさ</string>
+</resources>

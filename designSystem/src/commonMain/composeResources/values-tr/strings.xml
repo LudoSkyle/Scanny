@@ -1,0 +1,10 @@
+<resources>
+    <string name="back">Geri</string>
+    <string name="cancel">İptal</string>
+    <string name="clear">Temizle</string>
+    <string name="collapsed">Daraltıldı</string>
+    <string name="expanded">Genişletildi</string>
+    <string name="hue">Ton</string>
+    <string name="ok">Tamam</string>
+    <string name="saturation_brightness">Doygunluk ve parlaklık</string>
+</resources>
