@@ -68,7 +68,6 @@ agp = "9.5.2"
 ksp = "2.3.14"
 googleServices = "4.6.0"
 firebaseCrashlyticsPlugin = "3.0.8"
-firebaseAppdistributionPlugin = "5.3.1"
 easylauncherPlugin = "6.4.1"
 
 [libraries]
@@ -159,6 +158,5 @@ plugin-room = { module = "androidx.room:room-gradle-plugin", version.ref = "room
 plugin-composeMultiplatform = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeMultiplatform" }
 plugin-googleServices = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 plugin-firebaseCrashlytics = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsPlugin" }
-plugin-firebaseAppdistribution = { module = "com.google.firebase:firebase-appdistribution-gradle", version.ref = "firebaseAppdistributionPlugin" }
 plugin-easylauncher = { module = "com.project.starter:easylauncher", version.ref = "easylauncherPlugin" }
 plugin-baselineprofile = { module = "androidx.baselineprofile:androidx.baselineprofile.gradle.plugin", version.ref = "benchmark" }

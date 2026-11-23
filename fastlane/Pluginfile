@@ -1,0 +1,2 @@
+# The plugins of fastlane, installed with the Gemfile
+gem "fastlane-plugin-firebase_app_distribution"

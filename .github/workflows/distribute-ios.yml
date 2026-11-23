@@ -1,0 +1,69 @@
+# Distribute iOS, in one click: Actions > Distribute iOS > Run workflow. fastlane builds the app signed
+# for the App Store with the certificate and the profile of match, and sends it to the testers of
+# TestFlight (lane ios distribute).
+name: Distribute iOS
+
+on:
+  workflow_dispatch:
+    inputs:
+      changelog:
+        description: What the testers should try
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  distribute:
+    name: Build and distribute
+    runs-on: macos-26
+    timeout-minutes: 90
+    steps:
+      - name: Check the secrets of App Store Connect and match
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_SSH_KEY: ${{ secrets.MATCH_SSH_KEY }}
+        run: |
+          for name in ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_P8 APPLE_TEAM_ID MATCH_PASSWORD MATCH_SSH_KEY; do
+            if [ -z "${!name}" ]; then echo "::error::The secret $name is missing: see docs/Common/04_BUILD.md"; exit 1; fi
+          done
+
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      # The certificates of match, in their own private repository, read with a read-only deploy key
+      - name: Reach the certificates of match
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.MATCH_SSH_KEY }}
+
+      # The build phase of the Xcode project builds the Shared framework with Gradle
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Set up Ruby and fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Build and distribute
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: git@github.com:LudoSkyle/Scanny-Certificates.git
+          CHANGELOG: ${{ inputs.changelog }}
+        run: bundle exec fastlane ios distribute changelog:"$CHANGELOG"

@@ -1,7 +1,6 @@
-# Sends the Android app to the testers of Firebase App Distribution in one click: Actions > Distribute
-# Android > Run workflow. Builds the app signed with the keys of the private submodule, reached with a
-# read-only deploy key (secret PRIVATE_SUBMODULE_SSH_KEY), and uploads it with the service account of
-# the Firebase project (secret FIREBASE_SERVICE_ACCOUNT_JSON). See docs/Common/04_BUILD.md.
+# Distribute Android, in one click: Actions > Distribute Android > Run workflow. fastlane builds the
+# app signed with the keys of the private submodule, release or debug, and sends it to the testers of
+# Firebase App Distribution (lane android distribute).
 name: Distribute Android
 
 on:
@@ -47,22 +46,18 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      # Where the build reads it, never committed
-      - name: Write the service account
-        env:
-          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
-        run: printf '%s' "$SERVICE_ACCOUNT" > androidApp/google-services-account.json
+      - name: Set up Ruby and fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
 
-      - name: Build and upload
+      - name: Build and distribute
         env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          FIREBASE_SERVICE_ACCOUNT_FILE: ${{ runner.temp }}/firebase-service-account.json
           VARIANT: ${{ inputs.variant }}
           GROUPS: ${{ inputs.groups }}
           RELEASE_NOTES: ${{ inputs.releaseNotes }}
         run: |
-          TASK_VARIANT="$(tr '[:lower:]' '[:upper:]' <<< "${VARIANT:0:1}")${VARIANT:1}"
-          ./gradlew ":androidApp:assemble$TASK_VARIANT" ":androidApp:appDistributionUpload$TASK_VARIANT" \
-            --groups="$GROUPS" --releaseNotes="$RELEASE_NOTES"
-
-      - name: Forget the service account
-        if: always()
-        run: rm -f androidApp/google-services-account.json
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$FIREBASE_SERVICE_ACCOUNT_FILE"
+          bundle exec fastlane android distribute variant:"$VARIANT" groups:"$GROUPS" release_notes:"$RELEASE_NOTES"

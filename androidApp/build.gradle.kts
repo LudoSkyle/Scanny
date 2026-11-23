@@ -6,7 +6,6 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
-    id("com.google.firebase.appdistribution")
     id("com.starter.easylauncher")
     id("androidx.baselineprofile")
 }
@@ -71,12 +70,6 @@ android {
             if (hasKeystore) {
                 signingConfig = signingConfigs.getByName(BuildType.DEBUG.name)
             }
-
-            firebaseAppDistribution {
-                artifactType = "APK"
-                groups = "Internal"
-                serviceCredentialsFile = "./google-services-account.json"
-            }
         }
         release {
             isMinifyEnabled = true
@@ -90,12 +83,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
-            firebaseAppDistribution {
-                artifactType = "APK"
-                groups = "Internal"
-                serviceCredentialsFile = "./google-services-account.json"
-            }
         }
     }
 

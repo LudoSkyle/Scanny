@@ -1,0 +1,199 @@
+# Builds and publishes Scanny, the same lanes on each platform:
+# - distribute: the signed app to the testers (Firebase App Distribution, TestFlight);
+# - release_and_publish: the signed app and its store listing to the store, then a release on GitHub
+#   under the tag of the version, with the very files sent to the store;
+# - store_listing: the store listing alone, as written in fastlane/metadata.
+# Run by the workflows of .github/workflows, with their secrets. See docs/Common/04_BUILD.md.
+
+require "json"
+
+ROOT = File.expand_path("..", __dir__)
+GITHUB_REPOSITORY = "LudoSkyle/Scanny"
+APP_IDENTIFIER = "fr.skyle.scanny"
+RELEASE_DIRECTORY = File.join(ROOT, "release")
+
+# The version of the app, declared once in the Android build: 2.0 gives the version code 20000
+def app_version_name
+  File.read(File.join(ROOT, "androidApp/build.gradle.kts"))[/^val APP_VERSION_NAME = "(.+)"$/, 1] ||
+    UI.user_error!("No APP_VERSION_NAME in androidApp/build.gradle.kts")
+end
+
+def app_version_code
+  major, minor, patch = (app_version_name.split(".").map(&:to_i) + [0, 0]).first(3)
+  major * 10_000 + minor * 100 + patch
+end
+
+# The notes of a version, shown on its release on GitHub
+def release_notes_file
+  path = File.join(ROOT, "fastlane/release_notes/#{app_version_name}.md")
+  File.exist?(path) ? path : nil
+end
+
+# Releases the files of the version on GitHub, from the commit published: completed if it exists
+def release_on_github(files:)
+  tag = "v#{app_version_name}"
+  commit = ENV["GITHUB_SHA"] || sh("git", "rev-parse", "HEAD").strip
+  if system("gh", "release", "view", tag, "--repo", GITHUB_REPOSITORY, out: File::NULL, err: File::NULL)
+    sh("gh", "release", "upload", tag, *files, "--repo", GITHUB_REPOSITORY, "--clobber")
+  else
+    notes = release_notes_file ? ["--notes-file", release_notes_file] : ["--generate-notes"]
+    sh("gh", "release", "create", tag, *files, "--repo", GITHUB_REPOSITORY, "--target", commit,
+       "--title", "Scanny #{app_version_name}", *notes)
+  end
+end
+
+platform :android do
+  METADATA_ANDROID = File.join(ROOT, "fastlane/metadata/android")
+
+  # The app of the Firebase project for a package, read from the file of the private submodule
+  def firebase_app_id(package_name)
+    json = JSON.parse(File.read(File.join(ROOT, "private/firebase/google-services.json")))
+    client = json["client"].find { |entry| entry.dig("client_info", "android_client_info", "package_name") == package_name }
+    UI.user_error!("No Firebase app for #{package_name}") unless client
+    client.dig("client_info", "mobilesdk_app_id")
+  end
+
+  desc "Sends the signed app to the testers of Firebase App Distribution"
+  desc "Options: variant (release, debug), groups (Internal), release_notes"
+  lane :distribute do |options|
+    variant = options.fetch(:variant, "release")
+    gradle(task: ":androidApp:assemble#{variant.capitalize}", project_dir: ROOT)
+    firebase_app_distribution(
+      app: firebase_app_id(variant == "debug" ? "#{APP_IDENTIFIER}.debug" : APP_IDENTIFIER),
+      service_credentials_file: ENV.fetch("FIREBASE_SERVICE_ACCOUNT_FILE"),
+      android_artifact_type: "APK",
+      android_artifact_path: File.join(ROOT, "androidApp/build/outputs/apk/#{variant}/androidApp-#{variant}.apk"),
+      groups: options.fetch(:groups, "Internal"),
+      release_notes: options[:release_notes].to_s,
+    )
+  end
+
+  desc "Publishes the signed bundle and the store listing to the Play Store, then releases the bundle and the APK on GitHub"
+  desc "Options: track (internal, alpha, beta, production), status (completed, draft)"
+  lane :release_and_publish do |options|
+    gradle(tasks: [":androidApp:bundleRelease", ":androidApp:assembleRelease"], project_dir: ROOT)
+
+    FileUtils.mkdir_p(RELEASE_DIRECTORY)
+    bundle = File.join(RELEASE_DIRECTORY, "scanny-#{app_version_name}.aab")
+    apk = File.join(RELEASE_DIRECTORY, "scanny-#{app_version_name}.apk")
+    FileUtils.cp(File.join(ROOT, "androidApp/build/outputs/bundle/release/androidApp-release.aab"), bundle)
+    FileUtils.cp(File.join(ROOT, "androidApp/build/outputs/apk/release/androidApp-release.apk"), apk)
+
+    # The listing, its images and the notes of this version code go with the bundle
+    upload_to_play_store(
+      package_name: APP_IDENTIFIER,
+      json_key: ENV.fetch("PLAY_SERVICE_ACCOUNT_FILE"),
+      track: options.fetch(:track, "internal"),
+      release_status: options.fetch(:status, "completed"),
+      aab: bundle,
+      mapping: File.join(ROOT, "androidApp/build/outputs/mapping/release/mapping.txt"),
+      metadata_path: METADATA_ANDROID,
+      skip_upload_apk: true,
+    )
+
+    release_on_github(files: [bundle, apk])
+  end
+
+  desc "Updates the store listing of the Play Store alone: texts, images and screenshots"
+  lane :store_listing do
+    upload_to_play_store(
+      package_name: APP_IDENTIFIER,
+      json_key: ENV.fetch("PLAY_SERVICE_ACCOUNT_FILE"),
+      metadata_path: METADATA_ANDROID,
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_changelogs: true,
+    )
+  end
+end
+
+platform :ios do
+  METADATA_IOS = File.join(ROOT, "fastlane/metadata/ios")
+  SCREENSHOTS_IOS = File.join(ROOT, "fastlane/screenshots/ios")
+
+  # The key of App Store Connect: no two-factor authentication, on the CI as on a Mac
+  def app_store_connect_key
+    app_store_connect_api_key(
+      key_id: ENV.fetch("ASC_KEY_ID"),
+      issuer_id: ENV.fetch("ASC_ISSUER_ID"),
+      key_content: ENV.fetch("ASC_KEY_P8"),
+    )
+  end
+
+  # The app signed for the App Store, with the certificate and the profile match keeps encrypted in
+  # its own private repository; only read on the CI
+  def build_signed_app
+    setup_ci if ENV["CI"]
+    match(
+      type: "appstore",
+      app_identifier: APP_IDENTIFIER,
+      team_id: ENV.fetch("APPLE_TEAM_ID"),
+      git_url: ENV.fetch("MATCH_GIT_URL"),
+      api_key: app_store_connect_key,
+      readonly: is_ci,
+    )
+    build_app(
+      project: File.join(ROOT, "iosApp/iosApp.xcodeproj"),
+      scheme: "iosApp",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: RELEASE_DIRECTORY,
+      output_name: "scanny-#{app_version_name}.ipa",
+      # The version of the Android build, and the profile of match, without touching the project
+      xcargs: [
+        "MARKETING_VERSION=#{app_version_name}",
+        "CURRENT_PROJECT_VERSION=#{app_version_code}",
+        "DEVELOPMENT_TEAM=#{ENV.fetch('APPLE_TEAM_ID')}",
+        "CODE_SIGN_STYLE=Manual",
+        "CODE_SIGN_IDENTITY='Apple Distribution'",
+        "PROVISIONING_PROFILE_SPECIFIER='match AppStore #{APP_IDENTIFIER}'",
+      ].join(" "),
+      export_options: {
+        provisioningProfiles: { APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}" },
+      },
+    )
+  end
+
+  desc "Sends the signed app to the testers of TestFlight"
+  desc "Options: changelog"
+  lane :distribute do |options|
+    build_signed_app
+    upload_to_testflight(
+      api_key: app_store_connect_key,
+      changelog: options[:changelog].to_s,
+      skip_waiting_for_build_processing: true,
+    )
+  end
+
+  desc "Publishes the signed app and the store listing to App Store Connect, then releases the app on GitHub"
+  desc "Options: submit (false): submit the version for review"
+  lane :release_and_publish do |options|
+    build_signed_app
+    upload_to_app_store(
+      api_key: app_store_connect_key,
+      app_identifier: APP_IDENTIFIER,
+      app_version: app_version_name,
+      metadata_path: METADATA_IOS,
+      screenshots_path: SCREENSHOTS_IOS,
+      submit_for_review: options.fetch(:submit, false),
+      automatic_release: false,
+      force: true,
+      precheck_include_in_app_purchases: false,
+    )
+    release_on_github(files: [File.join(RELEASE_DIRECTORY, "scanny-#{app_version_name}.ipa")])
+  end
+
+  desc "Updates the store listing of the App Store alone: texts and screenshots"
+  lane :store_listing do
+    upload_to_app_store(
+      api_key: app_store_connect_key,
+      app_identifier: APP_IDENTIFIER,
+      app_version: app_version_name,
+      metadata_path: METADATA_IOS,
+      screenshots_path: SCREENSHOTS_IOS,
+      skip_binary_upload: true,
+      force: true,
+      precheck_include_in_app_purchases: false,
+    )
+  end
+end

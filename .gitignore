@@ -39,5 +39,11 @@ google-services.json
 
 # Kotlin
 .kotlin/
-# The service account of Firebase App Distribution, written by its workflow
-google-services-account.json
+# The service accounts the workflows write for fastlane, never committed
+*-service-account.json
+
+# The gems of fastlane, installed in the repository by Bundler
+vendor/bundle/
+.bundle/
+fastlane/report.xml
+fastlane/README.md

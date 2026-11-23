@@ -23,7 +23,6 @@ dependencies {
     // Firebase
     implementation(libs.plugin.googleServices)
     implementation(libs.plugin.firebaseCrashlytics)
-    implementation(libs.plugin.firebaseAppdistribution)
 
     // App
     implementation(libs.plugin.easylauncher)
