@@ -25,7 +25,8 @@ data class CreationForm(
     // The format of another code in two dimensions
     val matrixFormat: BarcodeFormat = BarcodeFormat.DATA_MATRIX,
     val text: String = "",
-    val url: String = "",
+    // Started with the scheme of most links, for the user to type the rest
+    val url: String = LINK_SCHEME,
     // As typed: addresses separated by commas
     val emailTo: String = "",
     val emailCc: String = "",
@@ -78,7 +79,7 @@ data class CreationForm(
     val locationAltitude: String = "",
     val locationUncertainty: String = "",
     val locationLabel: String = "",
-    val bookmarkUrl: String = "",
+    val bookmarkUrl: String = LINK_SCHEME,
     val bookmarkTitle: String = "",
     val otpIssuer: String = "",
     val otpAccount: String = "",
@@ -129,3 +130,5 @@ data class CreationForm(
     val barcodeFormat: BarcodeFormat = BarcodeFormat.EAN_13,
     val barcodeValue: String = "",
 )
+
+private const val LINK_SCHEME = "https://"

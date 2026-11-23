@@ -62,6 +62,22 @@ class CreationFormMapperTest {
     }
 
     @Test
+    fun `a link or a bookmark left at the scheme it starts with is incomplete`() {
+        // When
+        val contents = listOf(
+            CreationForm(kind = CreationKind.LINK),
+            CreationForm(kind = CreationKind.LINK, url = "http://"),
+            CreationForm(kind = CreationKind.BOOKMARK, bookmarkTitle = "Scanny"),
+        ).map { form -> form.toBarcodeContent() }
+
+        // Then
+        assertEquals(
+            expected = List(3) { null },
+            actual = contents,
+        )
+    }
+
+    @Test
     fun `an e-mail takes several addresses in each of its recipients copies and blind copies`() {
         // When
         val content = CreationForm(

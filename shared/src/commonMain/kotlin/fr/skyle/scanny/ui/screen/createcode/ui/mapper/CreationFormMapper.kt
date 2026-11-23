@@ -65,7 +65,7 @@ internal fun CreationForm.toBarcodeContent(): BarcodeContent? {
             BarcodeContent.Text(text = text)
         }
 
-        CreationKind.LINK -> url.trim().takeIf { url -> url.isNotEmpty() }?.let { url ->
+        CreationKind.LINK -> url.trim().takeIf { url -> url.hasAddress() }?.let { url ->
             BarcodeContent.Url(url = url.withScheme())
         }
 
@@ -103,7 +103,7 @@ internal fun CreationForm.toBarcodeContent(): BarcodeContent? {
 
         CreationKind.LOCATION -> toLocation()
 
-        CreationKind.BOOKMARK -> bookmarkUrl.trim().takeIf { url -> url.isNotEmpty() }?.let { url ->
+        CreationKind.BOOKMARK -> bookmarkUrl.trim().takeIf { url -> url.hasAddress() }?.let { url ->
             BarcodeContent.Bookmark(
                 url = url.withScheme(),
                 title = bookmarkTitle.trim().ifEmpty { null },
@@ -190,6 +190,10 @@ private fun CreationForm.toContact(): BarcodeContent.Contact? {
 // Separated by commas, semicolons or spaces, which no address holds
 private fun String.toAddresses(): List<String> =
     split(',', ';', ' ', '\n').map { address -> address.trim() }.filter { address -> address.isNotEmpty() }
+
+// Something past the scheme the field starts with: "https://" alone is still empty
+private fun String.hasAddress(): Boolean =
+    isNotEmpty() && !equals(HTTPS, ignoreCase = true) && !equals(HTTP, ignoreCase = true)
 
 private fun String.withScheme(): String {
     val hasScheme = startsWith(prefix = HTTP, ignoreCase = true) || startsWith(prefix = HTTPS, ignoreCase = true)

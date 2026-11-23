@@ -7,8 +7,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -34,10 +40,29 @@ fun SCTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     supportingText: String? = null,
 ) {
+    // The cursor of a text given before any touch, prefilled, at its end, for the user to go on with
+    // it: Material puts it at the start. Kept with the composition of the keyboard as they change
+    var selection by remember { mutableStateOf(TextRange(value.length)) }
+    var composition by remember { mutableStateOf<TextRange?>(null) }
+    val textFieldValue = TextFieldValue(
+        text = value,
+        selection = TextRange(
+            start = selection.start.coerceIn(minimumValue = 0, maximumValue = value.length),
+            end = selection.end.coerceIn(minimumValue = 0, maximumValue = value.length),
+        ),
+        composition = composition?.takeIf { range -> range.max <= value.length },
+    )
+
     OutlinedTextField(
         modifier = modifier,
-        value = value,
-        onValueChange = onValueChange,
+        value = textFieldValue,
+        onValueChange = { changedValue ->
+            selection = changedValue.selection
+            composition = changedValue.composition
+            if (changedValue.text != value) {
+                onValueChange(changedValue.text)
+            }
+        },
         label = {
             SCText(
                 modifier = Modifier.wrapContentSize(),

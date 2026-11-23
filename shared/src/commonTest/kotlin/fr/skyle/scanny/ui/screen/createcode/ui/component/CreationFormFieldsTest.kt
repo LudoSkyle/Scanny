@@ -258,6 +258,29 @@ internal class CreationFormFieldsTest : ComposeTest() {
     }
 
     @Test
+    fun `a new link starts with https and goes on after it`() = runComposeUiTest {
+        // Given
+        var form by mutableStateOf(CreationForm(kind = CreationKind.LINK))
+        setContent {
+            SCTheme {
+                CreationFormFields(
+                    form = form,
+                    onFormChanged = { changedForm -> form = changedForm },
+                )
+            }
+        }
+
+        // When
+        onNode(hasSetTextAction() and hasText(required(Res.string.link))).performTextInput("scanny.app")
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Url(url = "https://scanny.app"),
+            actual = form.toBarcodeContent(),
+        )
+    }
+
+    @Test
     fun `the options few need are folded until asked for`() = runComposeUiTest {
         // Given
         setContent {
