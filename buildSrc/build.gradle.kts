@@ -27,4 +27,5 @@ dependencies {
 
     // App
     implementation(libs.plugin.easylauncher)
+    implementation(libs.plugin.baselineprofile)
 }

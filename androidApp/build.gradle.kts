@@ -8,6 +8,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.firebase.appdistribution")
     id("com.starter.easylauncher")
+    id("androidx.baselineprofile")
 }
 
 // The private submodule holds the signing keys and the Firebase files. Without it, a fork or the CI
@@ -151,6 +152,9 @@ dependencies {
     // AndroidX
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.splashscreen)
+    // Compiles the baseline profile at install, where the Play Store does not
+    implementation(libs.androidx.profileinstaller)
+    baselineProfile(project(":baselineprofile"))
 
     // Koin
     implementation(libs.koin.android)

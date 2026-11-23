@@ -10,6 +10,7 @@
 | `designSystem` | KMP + Compose Multiplatform | `SCTheme` (couleurs, typographie, formes), composants génériques (`SCScreenStructure`, `SCTopAppBar`, `SCIconButton`…) qui enveloppent Material 3, polices |
 | `domain` | KMP | Modèles métier (`BarcodeContent`, `BarcodeFormat`…), parseur et encodeur du contenu des codes, UseCases |
 | `data` | KMP | Base Room (entités, DAO), préférences DataStore, Repositories (interfaces et implémentations), modèles exposés |
+| `baselineprofile` | Android (test) | Le générateur des baseline profiles de `androidApp` et le benchmark de son démarrage (Macrobenchmark, UiAutomator) ; aucun code de l'app |
 
 Le nom de package suit le module : `fr.skyle.scanny` pour `shared` et les hôtes,
 `fr.skyle.scanny.designsystem`, `fr.skyle.scanny.domain`, `fr.skyle.scanny.data`.

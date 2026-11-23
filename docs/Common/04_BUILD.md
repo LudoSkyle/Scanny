@@ -75,6 +75,20 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 - La release est minifiée (`isMinifyEnabled`, `isShrinkResources`) : toute classe instanciée par
   réflexion est gardée dans `proguard-rules.pro`.
 
+### Baseline profiles (Android)
+
+- Le module `baselineprofile` (`com.android.test`, plugin `androidx.baselineprofile`) pilote la
+  release sur un appareil : le démarrage jusqu'à l'écran de scan, qui fait aussi le profil de
+  démarrage (le code rangé en tête du dex), puis l'éditeur et l'historique. Les profils générés sont
+  commités dans `androidApp/src/release/generated/baselineProfiles/` ; la release les embarque, et
+  `profileinstaller` les compile à l'installation hors du Play Store.
+- Ils se régénèrent quand un parcours change, sur un **émulateur** d'Android 13 ou plus, en anglais :
+  `ANDROID_SERIAL=emulator-5554 ./gradlew :androidApp:generateReleaseBaselineProfile`. Jamais sur un
+  téléphone : la release qu'il installe remplacerait celle du Play Store.
+- `StartupBenchmark` mesure le démarrage à froid sans compilation et avec le profil :
+  `ANDROID_SERIAL=emulator-5554 ./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest`.
+  Sur l'émulateur Android 17, le 2026-11-23 : médiane de 782 ms sans, 730 ms avec.
+
 ### iOS (`iosApp`)
 
 - `shared` produit un framework **statique** nommé `Shared` pour `iosArm64` et `iosSimulatorArm64`.
