@@ -144,8 +144,8 @@ platform :ios do
 
   # The app signed for the App Store, with the distribution certificate of the team and the App Store
   # profile of the app, both given by the secrets of the workflow. On a Mac, the certificate is the
-  # one of its keychain
-  def build_signed_app
+  # one of its keychain. The build number is the version code, unless given
+  def build_signed_app(build_number: app_version_code.to_s)
     if ENV["CI"]
       setup_ci
       import_certificate(
@@ -169,7 +169,7 @@ platform :ios do
       # The version of the Android build, and the profile of the app, without touching the project
       xcargs: [
         "MARKETING_VERSION=#{app_version_name}",
-        "CURRENT_PROJECT_VERSION=#{app_version_code}",
+        "CURRENT_PROJECT_VERSION=#{build_number}",
         "DEVELOPMENT_TEAM=#{ENV.fetch('APPLE_TEAM_ID')}",
         "CODE_SIGN_STYLE=Manual",
         "CODE_SIGN_IDENTITY='Apple Distribution'",
@@ -184,7 +184,8 @@ platform :ios do
   desc "Sends the signed app to the testers of TestFlight"
   desc "Options: changelog"
   lane :distribute do |options|
-    build_signed_app
+    # A number of its own, 20000.12 for the 12th run: the version code stays for the build of the store
+    build_signed_app(build_number: "#{app_version_code}.#{ENV.fetch('GITHUB_RUN_NUMBER', Time.now.to_i)}")
     upload_to_testflight(
       api_key: app_store_connect_key,
       changelog: options[:changelog].to_s,
