@@ -1,0 +1,6 @@
+Scanny 2.0, komplett neu entwickelt:
+• Scannt 13 Codeformate, mit der Kamera, mehrere auf einmal oder aus einem Bild
+• Jeder Inhalt Feld für Feld gelesen, mit passender Aktion: Wi-Fi, Kontakt, Termin, Ort, Einmalpasswort…
+• Erstellt QR-Codes, Data Matrix, Aztec, PDF417 und Barcodes, mit allen Feldern
+• Individuelle QR-Codes: Farben, Formen, Logo
+• Verlauf der Scans und der erstellten Codes

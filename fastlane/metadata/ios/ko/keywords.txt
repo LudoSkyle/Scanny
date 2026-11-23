@@ -1,0 +1,1 @@
+qr,큐알,큐알코드,바코드,스캐너,리더기,인식,data matrix,aztec,pdf417,ean,wifi,와이파이,연락처,생성기,만들기

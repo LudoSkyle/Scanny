@@ -1,0 +1,6 @@
+Scanny 2.0, totalmente reescrito:
+• Lê 13 formatos de código, com a câmera, vários de uma vez ou a partir de uma imagem
+• Cada conteúdo lido campo por campo, com sua ação: Wi-Fi, contato, evento, local, senha de uso único…
+• Cria QR codes, Data Matrix, Aztec, PDF417 e códigos de barras, com todos os seus campos
+• QR codes personalizados: cores, formas, logo
+• Histórico das leituras e das criações

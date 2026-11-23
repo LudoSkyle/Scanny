@@ -1,0 +1,30 @@
+Scanny scant en maakt QR-codes en barcodes. Licht, snel, zonder advertenties en zonder account.
+
+<b>Scannen</b>
+• Met de camera, één code of meerdere tegelijk, of vanuit een afbeelding uit de galerij
+• 13 formaten: QR Code, Data Matrix, Aztec, PDF417, EAN-13, EAN-8, UPC-A, UPC-E, Code 39, Code 93, Code 128, ITF en Codabar
+
+<b>Begrijpen en handelen</b>
+Scanny leest wat een code bevat, veld voor veld, en biedt de bijbehorende actie aan:
+• Een link openen
+• Verbinden met een Wi-Fi-netwerk
+• Een contact toevoegen, of een evenement aan de agenda
+• Een e-mail of SMS schrijven, bellen
+• Een plaats op de kaart tonen
+• Een eenmalig wachtwoord aan je authenticator toevoegen
+• Een bitcoinwallet openen
+
+<b>Maken</b>
+• QR-codes, Data Matrix, Aztec-codes, PDF417 en barcodes, met alle velden van elke inhoud
+• De code verschijnt terwijl je typt
+• Gepersonaliseerde QR-codes: kleuren, kleurverloop, vorm van de stippen en de hoeken, logo, foutcorrectie
+• Deel de code of sla hem op als afbeelding
+
+<b>Geschiedenis</b>
+• Je scans en creaties, bewaard zo lang als je wilt
+• Elke code opnieuw getekend, klaar om te delen of op te slaan
+
+<b>Je privacy</b>
+Geen advertenties, geen account: je codes blijven op je telefoon.
+
+Scanny is open source: https://github.com/LudoSkyle/Scanny

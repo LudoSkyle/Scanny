@@ -1,0 +1,1 @@
+qr,barkod,karekod,tarayıcı,okuyucu,data matrix,aztec,pdf417,ean,upc,wifi,kişi,oluşturucu

@@ -1,0 +1,30 @@
+Scanny escanea y crea códigos QR y códigos de barras. Ligera, rápida, sin anuncios y sin cuenta.
+
+Escanear
+• Con la cámara, un código o varios a la vez, o desde una imagen de la galería
+• 13 formatos: QR Code, Data Matrix, Aztec, PDF417, EAN-13, EAN-8, UPC-A, UPC-E, Code 39, Code 93, Code 128, ITF y Codabar
+
+Entender y actuar
+Scanny lee lo que contiene un código, campo por campo, y te ofrece la acción adecuada:
+• Abrir un enlace
+• Conectarse a una red Wi-Fi
+• Añadir un contacto, o un evento al calendario
+• Escribir un correo o un SMS, hacer una llamada
+• Ver un lugar en el mapa
+• Añadir una contraseña de un solo uso a tu autenticador
+• Abrir una billetera de bitcoin
+
+Crear
+• Códigos QR, Data Matrix, códigos Aztec, PDF417 y códigos de barras, con todos los campos de cada contenido
+• El código se dibuja mientras escribes
+• Códigos QR personalizados: colores, degradado, forma de los puntos y de las esquinas, logo, corrección de errores
+• Comparte el código o guárdalo como imagen
+
+Historial
+• Tus escaneos y creaciones, guardados el tiempo que elijas
+• Cada código vuelve a dibujarse, listo para compartir o guardar
+
+Tu privacidad
+Sin anuncios, sin cuenta: tus códigos se quedan en tu iPhone.
+
+Scanny es de código abierto: https://github.com/LudoSkyle/Scanny

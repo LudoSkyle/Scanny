@@ -1,0 +1,6 @@
+Scanny 2.0, baştan yeniden yazıldı:
+• Kamerayla, aynı anda birkaç kod ya da bir görselden 13 kod formatını tarar
+• Her içerik alan alan okunur ve işlemiyle gelir: Wi-Fi, kişi, etkinlik, yer, tek kullanımlık şifre…
+• Tüm alanlarıyla QR kodlar, Data Matrix, Aztec, PDF417 ve barkodlar oluşturur
+• Özelleştirilmiş QR kodlar: renkler, şekiller, logo
+• Taramaların ve oluşturulanların geçmişi
