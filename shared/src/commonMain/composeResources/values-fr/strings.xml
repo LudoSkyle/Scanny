@@ -427,6 +427,15 @@
     <string name="version_and_build">Version %1$s (build %2$s)</string>
     <string name="vibrate_after_scan">Vibrer après un scan</string>
     <string name="website">Site web</string>
+    <string-array name="week_day_initials">
+        <item>L</item>
+        <item>M</item>
+        <item>M</item>
+        <item>J</item>
+        <item>V</item>
+        <item>S</item>
+        <item>D</item>
+    </string-array>
     <string-array name="week_days">
         <item>lundi</item>
         <item>mardi</item>
@@ -436,6 +445,7 @@
         <item>samedi</item>
         <item>dimanche</item>
     </string-array>
+    <string name="wifi">Wi-Fi</string>
     <string name="wifi_choose_in_settings">Choisissez « %1$s » dans la liste.</string>
     <string name="wifi_not_saved">« %1$s » n'a pas pu être enregistré.</string>
     <string name="wifi_password_copied">Mot de passe copié : choisissez « %1$s » dans la liste.</string>

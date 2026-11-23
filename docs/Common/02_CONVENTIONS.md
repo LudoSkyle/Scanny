@@ -112,7 +112,15 @@ Conventions transverses à tous les modules. Pour l'UI, voir en complément
 - Tout texte affiché vient des ressources, même un sigle qui ne se traduit pas : il est alors
   déclaré dans `values/strings.xml` seulement, avec `translatable="false"`.
 - Les textes vivent dans Compose Resources : `src/commonMain/composeResources/values/strings.xml`
-  (anglais, langue par défaut) et `values-fr/strings.xml`, dans le module qui les affiche.
+  (anglais, langue par défaut) et un `values-<langue>/strings.xml` par langue, dans le module qui
+  les affiche. Scanny parle anglais, allemand (`de`), espagnol (`es`), français (`fr`), italien
+  (`it`), japonais (`ja`), coréen (`ko`), néerlandais (`nl`), portugais du Brésil (`pt`), russe
+  (`ru`), turc (`tr`) et chinois simplifié (`zh`). Le dossier ne porte que la langue, sans région :
+  il vaut pour toutes ses variantes.
+- Un texte ajouté ou changé l'est dans toutes les langues, dans le même commit. Une langue de plus
+  se déclare aussi dans `androidApp/src/main/res/xml/locales_config.xml` (le choix de la langue de
+  l'app, Android 13 et plus), dans `CFBundleLocalizations` de `iosApp/iosApp/Info.plist` avec son
+  `<langue>.lproj/InfoPlist.strings`, et dans les fiches des stores (`fastlane/metadata`).
 - Les fichiers `strings.xml` restent triés par ordre alphabétique des clés.
 - Les clés sont en anglais, même si la valeur est en français.
 - La clé décrit le contenu, pas l'usage à l'écran.
