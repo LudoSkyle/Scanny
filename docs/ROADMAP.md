@@ -76,6 +76,15 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 - [x] Un éditeur plus lisible : une barre fixée en bas avec le code en miniature et le bouton, les
       champs en cartes titrées, les plus rares repliés, un exemple sous la valeur d'un code-barres,
       les valeurs des exemples de la FAQ en police à chasse fixe
+- Version future, nouveaux types de contenu, lus puis créés (décidé le 2026-11-23, pour plus tard) :
+  - paiements : virement SEPA (EPC QR, `BCD…`, le plus utile en France), QR-facture suisse (`SPC…`),
+    Pix, UPI (`upi://pay`) et les QR marchands EMVCo, autres cryptomonnaies (`ethereum:`, Litecoin,
+    Bitcoin Cash, Monero), factures Lightning, et le BIP 321 qui remplace le BIP 21 ;
+  - produits et documents : contenu GS1 des Data Matrix (GTIN, lot, péremption, série) et GS1 Digital
+    Link, carte d'embarquement (IATA BCBP), permis de conduire américain (AAMVA) ;
+  - appareils : Wi-Fi Easy Connect (`DPP:`), appairage Matter (`MT:`) et HomeKit (`X-HM://`), passkeys
+    (`FIDO:/`) ;
+  - agenda et contacts : tâche (`VTODO`), ancienne carte de visite (`BIZCARD:`).
 - Pistes, non engagées : avis et mise à jour depuis l'app.
 
 ## Lots techniques
