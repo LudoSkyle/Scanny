@@ -222,9 +222,9 @@ format, son style, sa date.
   la période (TOTP) ou le compteur (HOTP). Un champ sans lequel le code n'existe pas porte un
   astérisque (`isRequired` de `CreationTextField`). Un paramètre laissé à son défaut n'est pas écrit :
   le code est plus petit et se lit pareil.
-- Les types de contenu du menu de l'éditeur vont du plus créé au moins créé : lien, texte, Wi-Fi,
-  contact, e-mail, téléphone, SMS, position, événement, clé à usage unique, marque-page, Bitcoin,
-  MMS (l'ordre de `CreationKind`). Un nouvel éditeur s'ouvre sur un texte.
+- Les types de contenu du menu de l'éditeur vont du plus créé au moins créé, le MMS à côté du SMS :
+  texte, lien, Wi-Fi, contact, e-mail, téléphone, SMS, MMS, position, événement, clé à usage
+  unique, marque-page, Bitcoin (l'ordre de `CreationKind`). Un nouvel éditeur s'ouvre sur un texte.
 - Les champs de l'éditeur vont par sections, des cartes titrées (`CreationSection`) : le code (sa
   famille, son format, le type de son contenu), puis les groupes du contenu (pour un contact : nom,
   travail, coordonnées, adresses, autres). Les champs que peu remplissent sont repliés sous « Plus
