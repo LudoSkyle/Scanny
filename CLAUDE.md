@@ -4,7 +4,7 @@ Scanny est une app de scan et de création de QR codes et de codes-barres, pour 
 Kotlin Multiplatform et Compose Multiplatform. Elle est découpée en modules : `androidApp` et
 `iosApp` (les hôtes de chaque plateforme), `shared` (écrans, navigation, ViewModels), `designSystem`
 (thème et composants génériques), `domain` (modèles métier, parseur, UseCases) et `data` (base
-locale, préférences, Repositories).
+locale, préférences, Repositories). `baselineprofile` génère les baseline profiles d'Android.
 
 ## Avant de commencer
 
