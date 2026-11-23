@@ -142,18 +142,23 @@ platform :ios do
     )
   end
 
-  # The app signed for the App Store, with the certificate and the profile match keeps encrypted in
-  # its own private repository; only read on the CI
+  # The app signed for the App Store, with the distribution certificate of the team and the App Store
+  # profile of the app, both given by the secrets of the workflow. On a Mac, the certificate is the
+  # one of its keychain
   def build_signed_app
-    setup_ci if ENV["CI"]
-    match(
-      type: "appstore",
-      app_identifier: APP_IDENTIFIER,
-      team_id: ENV.fetch("APPLE_TEAM_ID"),
-      git_url: ENV.fetch("MATCH_GIT_URL"),
-      api_key: app_store_connect_key,
-      readonly: is_ci,
-    )
+    if ENV["CI"]
+      setup_ci
+      import_certificate(
+        certificate_path: ENV.fetch("IOS_DISTRIBUTION_P12_FILE"),
+        certificate_password: ENV.fetch("IOS_DISTRIBUTION_P12_PASSWORD"),
+        keychain_name: "fastlane_tmp_keychain",
+        keychain_password: "",
+      )
+    end
+    profile = ENV.fetch("IOS_PROVISIONING_PROFILE_FILE")
+    install_provisioning_profile(path: profile)
+    profile_name = FastlaneCore::ProvisioningProfile.name(profile)
+
     build_app(
       project: File.join(ROOT, "iosApp/iosApp.xcodeproj"),
       scheme: "iosApp",
@@ -161,17 +166,17 @@ platform :ios do
       export_method: "app-store",
       output_directory: RELEASE_DIRECTORY,
       output_name: "scanny-#{app_version_name}.ipa",
-      # The version of the Android build, and the profile of match, without touching the project
+      # The version of the Android build, and the profile of the app, without touching the project
       xcargs: [
         "MARKETING_VERSION=#{app_version_name}",
         "CURRENT_PROJECT_VERSION=#{app_version_code}",
         "DEVELOPMENT_TEAM=#{ENV.fetch('APPLE_TEAM_ID')}",
         "CODE_SIGN_STYLE=Manual",
         "CODE_SIGN_IDENTITY='Apple Distribution'",
-        "PROVISIONING_PROFILE_SPECIFIER='match AppStore #{APP_IDENTIFIER}'",
+        "PROVISIONING_PROFILE_SPECIFIER='#{profile_name}'",
       ].join(" "),
       export_options: {
-        provisioningProfiles: { APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}" },
+        provisioningProfiles: { APP_IDENTIFIER => profile_name },
       },
     )
   end

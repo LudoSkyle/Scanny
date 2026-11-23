@@ -149,13 +149,17 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
   - `PLAY_SERVICE_ACCOUNT_JSON` et `FIREBASE_SERVICE_ACCOUNT_JSON` : le compte de service
     `github-ci@scanny-816f0`, de la Play Console et du projet Firebase. L'API « Google Play Android
     Developer » doit être activée dans son projet Google Cloud ;
-  - pour iOS : `APPLE_TEAM_ID`, la clé API d'App Store Connect (`ASC_KEY_ID`, `ASC_ISSUER_ID`,
-    `ASC_KEY_P8`), et pour match `MATCH_PASSWORD` et `MATCH_SSH_KEY`, la clé de déploiement du dépôt
-    privé `LudoSkyle/Scanny-Certificates` où match range, chiffrés, le certificat et le profil de
-    distribution.
-- Les fichiers de compte de service sont écrits dans le dossier temporaire du runner, jamais dans le
-  dépôt. iOS est construit avec la version d'Android (`MARKETING_VERSION`, `CURRENT_PROJECT_VERSION`)
-  et le profil de match, passés à `xcodebuild` sans toucher au projet.
+  - pour iOS : `APPLE_TEAM_ID` (`QH6KR5PAQ7`), la clé API d'App Store Connect (`ASC_KEY_ID`,
+    `ASC_ISSUER_ID`, `ASC_KEY_P8`), et la signature : `IOS_DISTRIBUTION_P12`, le certificat
+    « Apple Distribution » de l'équipe avec sa clé privée, en base64, `IOS_DISTRIBUTION_P12_PASSWORD`
+    son mot de passe, et `IOS_PROVISIONING_PROFILE`, le profil App Store de `fr.skyle.scanny`, en
+    base64. Le certificat et le profil expirent le 23 novembre 2027 : ils se renouvellent dans le
+    compte Apple de l'équipe, puis se remplacent dans les secrets (`base64 -i fichier | gh secret set
+    NOM`).
+- Les fichiers de compte de service, le certificat et le profil sont écrits dans le dossier temporaire
+  du runner, jamais dans le dépôt ; le certificat va dans un trousseau temporaire. iOS est construit
+  avec la version d'Android (`MARKETING_VERSION`, `CURRENT_PROJECT_VERSION`) et le profil App Store,
+  passés à `xcodebuild` sans toucher au projet.
 - En local : Ruby récente (`brew install ruby`), puis `bundle install` (les gems vont dans
   `vendor/bundle`, ignoré par git) et `bundle exec fastlane <plateforme> <lane>`.
 - Un workflow lancé à la main n'apparaît dans l'onglet Actions qu'une fois sur la branche par défaut.
