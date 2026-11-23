@@ -1,0 +1,6 @@
+Scanny 2.0, completamente riscritta:
+• Scansione di 13 formati di codici, con la fotocamera, più codici insieme o da un'immagine
+• Ogni contenuto letto campo per campo, con la sua azione: Wi-Fi, contatto, evento, luogo, password monouso…
+• Creazione di codici QR, Data Matrix, Aztec, PDF417 e codici a barre, con tutti i loro campi
+• Codici QR personalizzati: colori, forme, logo
+• Cronologia delle scansioni e delle creazioni

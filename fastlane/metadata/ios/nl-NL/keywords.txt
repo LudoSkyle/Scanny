@@ -1,0 +1,1 @@
+qr,barcode,streepjescode,scanner,lezer,data matrix,aztec,pdf417,ean,upc,wifi,contact,generator,maken

@@ -1,0 +1,6 @@
+Scanny 2.0, volledig herschreven:
+• Scant 13 codeformaten, met de camera, meerdere tegelijk of vanuit een afbeelding
+• Elke inhoud veld voor veld gelezen, met de bijbehorende actie: Wi-Fi, contact, evenement, plaats, eenmalig wachtwoord…
+• Maakt QR-codes, Data Matrix, Aztec, PDF417 en barcodes, met al hun velden
+• Gepersonaliseerde QR-codes: kleuren, vormen, logo
+• Geschiedenis van scans en creaties

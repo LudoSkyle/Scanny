@@ -1,0 +1,1 @@
+二维码,条形码,扫码,扫一扫,扫描器,条码,QR码,生成器,data matrix,pdf417,ean,wifi

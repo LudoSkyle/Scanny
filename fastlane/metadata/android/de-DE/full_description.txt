@@ -1,0 +1,30 @@
+Scanny scannt und erstellt QR-Codes und Barcodes. Leicht, schnell, ohne Werbung und ohne Konto.
+
+<b>Scannen</b>
+• Mit der Kamera, einen Code oder mehrere auf einmal, oder aus einem Bild der Galerie
+• 13 Formate: QR Code, Data Matrix, Aztec, PDF417, EAN-13, EAN-8, UPC-A, UPC-E, Code 39, Code 93, Code 128, ITF und Codabar
+
+<b>Verstehen und handeln</b>
+Scanny liest, was ein Code enthält, Feld für Feld, und bietet die passende Aktion an:
+• Einen Link öffnen
+• Sich mit einem Wi-Fi-Netzwerk verbinden
+• Einen Kontakt hinzufügen oder einen Termin in den Kalender eintragen
+• Eine E-Mail oder SMS schreiben, anrufen
+• Einen Ort auf der Karte zeigen
+• Ein Einmalpasswort zu Ihrem Authenticator hinzufügen
+• Eine Bitcoin-Wallet öffnen
+
+<b>Erstellen</b>
+• QR-Codes, Data Matrix, Aztec-Codes, PDF417 und Barcodes, mit allen Feldern jedes Inhalts
+• Der Code entsteht schon beim Tippen
+• Individuelle QR-Codes: Farben, Farbverlauf, Form der Punkte und der Ecken, Logo, Fehlerkorrektur
+• Den Code teilen oder als Bild speichern
+
+<b>Verlauf</b>
+• Ihre Scans und erstellten Codes, so lange aufbewahrt, wie Sie möchten
+• Jeder Code neu gezeichnet, bereit zum Teilen oder Speichern
+
+<b>Ihre Privatsphäre</b>
+Keine Werbung, kein Konto: Ihre Codes bleiben auf Ihrem Smartphone.
+
+Scanny ist Open Source: https://github.com/LudoSkyle/Scanny
