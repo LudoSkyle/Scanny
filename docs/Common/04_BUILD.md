@@ -63,7 +63,9 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 
 - `applicationId` : `fr.skyle.scanny` ; la variante debug ajoute `.debug` et le suffixe de version
   `-debug`, et porte un ruban « DEBUG » sur l'icône (easylauncher).
-- `versionCode` et `versionName` sont déclarés dans `androidApp/build.gradle.kts`.
+- `versionName` est déclaré dans `androidApp/build.gradle.kts`, et se change par une pull request.
+  `versionCode` y vaut 20, sauf quand la propriété `scanny.versionCode` le donne : le workflow de
+  publication le numérote ainsi à chaque envoi.
 - La signature lit `private/keys/keystore.properties`, et `google-services.json` est copié depuis
   `private/firebase/` avant le build. `private/` est un sous-module privé : il n'est jamais modifié,
   ni son contenu affiché.
@@ -101,6 +103,18 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 - Sans le sous-module privé, qu'un fork n'atteint pas : le build s'en passe (voir Android
   ci-dessus). Les tests d'interface iOS (XCUITest) n'y tournent pas.
 - Une pull request n'est fusionnée qu'une fois la CI verte.
+### Publication Android
+
+- `.github/workflows/release-android.yml`, lancé à la main : Actions > Release Android > Run
+  workflow, depuis `main`, en choisissant la piste du Play Store (interne par défaut, alpha, bêta,
+  production) et l'état (déployé tout de suite, ou brouillon à déployer depuis la Play Console).
+- Il récupère le sous-module privé avec une clé de déploiement en lecture seule (secret
+  `PRIVATE_SUBMODULE_SSH_KEY`, la clé publique « Scanny CI (read only) » sur le dépôt privé), construit
+  le bundle signé (`:androidApp:bundleRelease`) avec `versionCode` = 1000 + le numéro de l'exécution,
+  le garde avec son mapping en artefact, et l'envoie au Play Store avec le compte de service de la
+  Play Console (secret `PLAY_SERVICE_ACCOUNT_JSON`).
+- iOS n'a pas encore de publication : il manque le compte développeur payant et le
+  `GoogleService-Info.plist`.
 
 ### Commandes utiles
 

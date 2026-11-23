@@ -33,7 +33,8 @@ android {
         applicationId = "fr.skyle.scanny"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 20
+        // Numbered by the release workflow at each upload to the Play Store; a local build keeps 20
+        versionCode = providers.gradleProperty("scanny.versionCode").orNull?.toInt() ?: 20
         versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
