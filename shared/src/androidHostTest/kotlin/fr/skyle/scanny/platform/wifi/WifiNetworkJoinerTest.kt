@@ -173,6 +173,27 @@ class WifiNetworkJoinerTest {
         assertNull(activity.getSystemService(ClipboardManager::class.java).primaryClip)
     }
 
+    @Test
+    @Config(sdk = [ANDROID_11])
+    fun `a network already saved opens the wi-fi panel with no message and nothing copied`() {
+        // Given
+        val activity = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
+
+        // When
+        val result = openWifiPanel(context = activity)
+
+        // Then
+        assertEquals(
+            expected = listOf(WifiJoinResult.SETTINGS_OPENED, Settings.Panel.ACTION_WIFI, null),
+            actual = listOf(
+                result,
+                shadowOf(activity).nextStartedActivity.action,
+                ShadowToast.getTextOfLatestToast(),
+            ),
+        )
+        assertNull(activity.getSystemService(ClipboardManager::class.java).primaryClip)
+    }
+
     private fun wifi(
         encryption: WifiEncryption,
         password: String?,

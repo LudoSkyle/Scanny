@@ -436,7 +436,6 @@
         <item>samedi</item>
         <item>dimanche</item>
     </string-array>
-    <string name="wifi_already_saved">« %1$s » est déjà enregistré sur cet appareil.</string>
     <string name="wifi_choose_in_settings">Choisissez « %1$s » dans la liste.</string>
     <string name="wifi_not_saved">« %1$s » n'a pas pu être enregistré.</string>
     <string name="wifi_password_copied">Mot de passe copié : choisissez « %1$s » dans la liste.</string>

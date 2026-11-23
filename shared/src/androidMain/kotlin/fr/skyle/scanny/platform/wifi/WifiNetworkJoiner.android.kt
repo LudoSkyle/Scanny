@@ -47,7 +47,9 @@ internal actual fun rememberWifiNetworkJoiner(
     // The settings only show their screen to an app that waits for its result
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         pendingWifi?.let { wifi ->
-            currentOnResult(wifi, wifiJoinResult(resultCode = result.resultCode, data = result.data))
+            val joinResult = wifiJoinResult(resultCode = result.resultCode, data = result.data)
+            // A network already saved: the Wi-Fi settings, where it is, rather than a message saying so
+            currentOnResult(wifi, if (joinResult == WifiJoinResult.ALREADY_SAVED) openWifiPanel(context = context) else joinResult)
         }
         pendingWifi = null
     }
@@ -169,13 +171,21 @@ internal fun openWifiSettings(
         context.getSystemService(ClipboardManager::class.java)?.setPrimaryClip(clip)
     }
 
+    val result = openWifiPanel(context = context)
+    if (result == WifiJoinResult.SETTINGS_OPENED) {
+        Toast.makeText(context, instructions, Toast.LENGTH_LONG).show()
+    }
+    return result
+}
+
+/** Opens the Wi-Fi settings: the panel over the app from Android 10, the screen of the settings before. */
+internal fun openWifiPanel(context: Context): WifiJoinResult {
     val intent = Intent(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) Settings.Panel.ACTION_WIFI else Settings.ACTION_WIFI_SETTINGS)
     if (context !is Activity) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
     return try {
         context.startActivity(intent)
-        Toast.makeText(context, instructions, Toast.LENGTH_LONG).show()
         WifiJoinResult.SETTINGS_OPENED
     } catch (exception: ActivityNotFoundException) {
         Logger.e(throwable = exception) { "No Wi-Fi settings to open" }

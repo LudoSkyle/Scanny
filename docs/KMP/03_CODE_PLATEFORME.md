@@ -301,14 +301,15 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
     serveur, qu'un code ne porte pas. Il ne s'affiche qu'à une app qui attend son résultat, d'où
     `rememberLauncherForActivityResult`. Son résultat est une `ArrayList<Integer>`
     (`getIntegerArrayListExtra`, pas `getIntArrayExtra`) : enregistré, déjà enregistré (l'écran se
-    ferme aussitôt, sans rien montrer), refusé ; sans résultat, l'utilisateur a annulé.
+    ferme aussitôt, sans rien montrer), refusé ; sans résultat, l'utilisateur a annulé. Un réseau
+    déjà enregistré ouvre aussitôt le panneau Wi-Fi, où il figure, sans message ni mot de passe
+    copié.
   - Sinon (avant Android 11, où `WifiManager.addNetwork` échoue toujours pour une app qui vise
     Android 10 et plus ; un WEP ; un réseau d'entreprise ; un mot de passe que l'écran refuserait),
     le mot de passe est copié,
     marqué sensible, et les réglages Wi-Fi s'ouvrent : le panneau par-dessus l'app à partir
     d'Android 10, l'écran des réglages avant.
-  - Le message suit : « enregistré », ou « déjà enregistré » et « refusé » avec une action qui ouvre
-    les réglages Wi-Fi. Rien pour une annulation. Quand les réglages s'ouvrent, un message de l'app
+  - Le message suit : « enregistré », ou « refusé » avec une action qui ouvre les réglages Wi-Fi. Rien pour une annulation. Quand les réglages s'ouvrent, un message de l'app
     serait caché dessous : la consigne (« Mot de passe copié : choisissez « … » dans la liste »)
     passe par un `Toast`, le seul message d'une app que le système dessine par-dessus une autre.
 

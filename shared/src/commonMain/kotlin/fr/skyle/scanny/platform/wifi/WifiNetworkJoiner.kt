@@ -7,6 +7,8 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 internal enum class WifiJoinResult {
     // Saved by the system: the device joins it when in range
     SAVED,
+
+    // Read from the screen of the system only: the joiner opens the Wi-Fi settings instead, where it is
     ALREADY_SAVED,
     NOT_SAVED,
 
