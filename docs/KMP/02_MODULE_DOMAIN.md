@@ -231,7 +231,7 @@ format, son style, sa date.
   scanné ou créé, le formulaire étant rempli après sa composition), et reste dépliée ensuite, même
   vidée, pour que le champ en cours de saisie ne disparaisse pas.
 - Le formulaire de l'éditeur (`CreationFormMapper`, dans `shared`) rend un contenu seulement quand ce
-  qu'il exige est là : un texte, un lien (sans schéma, il reçoit `https://`, sans quoi un lecteur le
+  qu'il exige est là : un texte, un lien (son champ part de `https://`, seul il compte pour vide ; sans schéma, il reçoit `https://`, sans quoi un lecteur le
   lirait comme un texte), un champ au moins d'un e-mail (la RFC 6068 n'en exige aucun), une altitude et
   une incertitude (positive) qui sont des nombres si elles sont données, le numéro d'un SMS, pour un contact en vCard un nom à montrer (tapé, fait de ses parties ou de son
   organisation) et en MeCard un prénom ou un nom (les champs qu'un MeCard ne tient pas restent dans le
