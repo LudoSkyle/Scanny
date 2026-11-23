@@ -1,18 +1,21 @@
 package fr.skyle.scanny.ui.screen.createcode.ui.model
 
-/** What a QR code or another code in two dimensions holds. */
+/**
+ * What a QR code or another code in two dimensions holds, from the most created to the least: the
+ * order of the menu of the editor.
+ */
 enum class CreationKind {
-    TEXT,
     LINK,
-    EMAIL,
-    SMS,
-    MMS,
-    PHONE,
+    TEXT,
     WIFI,
     CONTACT,
+    EMAIL,
+    PHONE,
+    SMS,
     LOCATION,
-    BOOKMARK,
-    OTP,
-    BITCOIN,
     EVENT,
+    OTP,
+    BOOKMARK,
+    BITCOIN,
+    MMS,
 }
