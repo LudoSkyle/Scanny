@@ -52,18 +52,14 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      # Above any version code given by hand so far, and higher at each run
-      - name: Number the version
-        id: version
-        run: echo "code=$((1000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
-
+      # Its version code follows its version name: a version already on the Play Store is refused there
       - name: Build the signed bundle
-        run: ./gradlew :androidApp:bundleRelease -Pscanny.versionCode=${{ steps.version.outputs.code }}
+        run: ./gradlew :androidApp:bundleRelease
 
       - name: Keep the bundle and its mapping
         uses: actions/upload-artifact@v7
         with:
-          name: scanny-release-${{ steps.version.outputs.code }}
+          name: scanny-release-${{ github.run_number }}
           path: |
             androidApp/build/outputs/bundle/release/*.aab
             androidApp/build/outputs/mapping/release/mapping.txt
