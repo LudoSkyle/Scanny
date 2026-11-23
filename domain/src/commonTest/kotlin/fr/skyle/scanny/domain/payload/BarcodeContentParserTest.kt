@@ -1045,6 +1045,57 @@ class BarcodeContentParserTest {
     }
 
     @Test
+    fun `the deep link of an app is an url`() {
+        // Given
+        val rawValues = listOf(
+            "whatsapp://send?text=Hello",
+            "market://details?id=fr.skyle.scanny",
+            "fb://profile/123",
+            "zoommtg://zoom.us/join?confno=123",
+        )
+
+        // When
+        val contents = rawValues.map { rawValue -> parse(rawValue = rawValue) }
+
+        // Then
+        assertEquals(
+            expected = rawValues.map { rawValue -> BarcodeContent.Url(url = rawValue) },
+            actual = contents,
+        )
+    }
+
+    @Test
+    fun `a scheme without its slashes or with a space in the link stays text`() {
+        // Given
+        val rawValues = listOf("Ref:123", "spotify:track:6rqhFgbbKwnb9MLmUQDhG6", "notes:// with a space", "1st://scanny")
+
+        // When
+        val contents = rawValues.map { rawValue -> parse(rawValue = rawValue) }
+
+        // Then
+        assertEquals(
+            expected = rawValues.map { rawValue -> BarcodeContent.Text(text = rawValue) },
+            actual = contents,
+        )
+    }
+
+    @Test
+    fun `a malformed key stays text rather than a deep link`() {
+        // Given
+        // otpauth:// is a key, read as such or not at all
+        val rawValue = "otpauth://totp/Scanny:john"
+
+        // When
+        val content = parse(rawValue = rawValue)
+
+        // Then
+        assertEquals(
+            expected = BarcodeContent.Text(text = rawValue),
+            actual = content,
+        )
+    }
+
+    @Test
     fun `a link without scheme stays text`() {
         // Given
         val rawValue = "www.scanny.app"

@@ -97,6 +97,10 @@ parseur, et obtiennent le même résultat.
 - Formats reconnus : `WIFI:`, `MATMSG:`, `mailto:`, `SMSTO:` / `sms:`, `MMSTO:` / `mms:`, `MECARD:`, `BEGIN:VCARD`,
   `tel:`, `geo:`, `MEBKM:`, `otpauth://`, `bitcoin:`, `BEGIN:VCALENDAR` / `BEGIN:VEVENT`, et les URL (`http://`, `https://`). Les préfixes et les clés sont
   insensibles à la casse, les valeurs non.
+- Un lien profond d'app (`whatsapp://send?…`, `market://…`) est un lien : tout schéma de la RFC 3986
+  suivi de `//`, sans espace (`startsWithLinkScheme`). Un schéma sans `//` (`spotify:track:…`) reste un
+  texte, que « Réf:123 » imiterait. Un préfixe connu passe avant : un `otpauth://` mal formé reste un
+  texte. L'éditeur garde le schéma d'un lien profond et n'y ajoute pas `https://`.
 - Un `geo:` (RFC 5870) donne sa latitude, sa longitude, son altitude et son incertitude (`;u=…`). Un
   autre système de référence que WGS84 (`;crs=…`) en fait un texte : ses coordonnées ne se placeraient
   pas sur les cartes. Android met le lieu dans la requête : `?q=lat,lon(nom)` donne le nom, et

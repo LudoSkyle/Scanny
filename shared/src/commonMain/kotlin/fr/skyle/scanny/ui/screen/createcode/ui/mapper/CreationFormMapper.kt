@@ -15,6 +15,7 @@ import fr.skyle.scanny.domain.model.EventRecurrence
 import fr.skyle.scanny.domain.model.OtpType
 import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.model.WifiTransitionMode
+import fr.skyle.scanny.domain.payload.startsWithLinkScheme
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationFamily
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationForm
 import fr.skyle.scanny.ui.screen.createcode.ui.model.CreationKind
@@ -195,10 +196,9 @@ private fun String.toAddresses(): List<String> =
 private fun String.hasAddress(): Boolean =
     isNotEmpty() && !equals(HTTPS, ignoreCase = true) && !equals(HTTP, ignoreCase = true)
 
-private fun String.withScheme(): String {
-    val hasScheme = startsWith(prefix = HTTP, ignoreCase = true) || startsWith(prefix = HTTPS, ignoreCase = true)
-    return if (hasScheme) this else "$HTTPS$this"
-}
+// The deep link of an app keeps its own scheme
+private fun String.withScheme(): String =
+    if (startsWithLinkScheme()) this else "$HTTPS$this"
 
 // A latitude and a longitude on the map; an altitude and an uncertainty in meters if any. Each typed with
 // a decimal comma or point

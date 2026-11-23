@@ -75,7 +75,9 @@ internal object BarcodeContentParser {
             value.hasPrefix(PayloadSyntax.MEBKM) -> parseBookmark(fieldsText = value.drop(PayloadSyntax.MEBKM.length))
             value.hasPrefix(PayloadSyntax.OTPAUTH) -> parseOtp(uri = value.drop(PayloadSyntax.OTPAUTH.length))
             value.hasPrefix(PayloadSyntax.BITCOIN) -> parseBitcoin(uri = value.drop(PayloadSyntax.BITCOIN.length))
-            value.hasPrefix(PayloadSyntax.HTTP) || value.hasPrefix(PayloadSyntax.HTTPS) -> BarcodeContent.Url(url = value)
+            // A link of the web, or the deep link of an app ("whatsapp://send?…"), with no space in it
+            value.hasPrefix(PayloadSyntax.HTTP) || value.hasPrefix(PayloadSyntax.HTTPS) ||
+                (value.startsWithLinkScheme() && value.none { char -> char.isWhitespace() }) -> BarcodeContent.Url(url = value)
             else -> null
         }
 

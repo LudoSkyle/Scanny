@@ -42,9 +42,9 @@ class CreationFormMapperTest {
     }
 
     @Test
-    fun `a link typed without its scheme gets https and one with http keeps it`() {
+    fun `a link typed without its scheme gets https and one with another scheme keeps it`() {
         // When
-        val contents = listOf(" scanny.app ", "http://scanny.app").map { url ->
+        val contents = listOf(" scanny.app ", "http://scanny.app", "whatsapp://send?text=Hello").map { url ->
             CreationForm(
                 kind = CreationKind.LINK,
                 url = url,
@@ -56,6 +56,7 @@ class CreationFormMapperTest {
             expected = listOf(
                 BarcodeContent.Url(url = "https://scanny.app"),
                 BarcodeContent.Url(url = "http://scanny.app"),
+                BarcodeContent.Url(url = "whatsapp://send?text=Hello"),
             ),
             actual = contents,
         )
