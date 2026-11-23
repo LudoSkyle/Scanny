@@ -1,0 +1,10 @@
+Scanny is a modern, light, fast and ad-free QRCode application!
+
+This application aims to be able to scan QRCodes and barcodes using the latest existing technologies.
+It is very fast and reliable.
+
+This is an OpenSource application, you can find this application on the corresponding Github repository.
+
+Do not hesitate to give us feedback using the Feedback function!
+
+Thank you for using the app.
