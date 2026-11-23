@@ -105,9 +105,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
          `ScannyApp`, démarrage de Koin
    - [x] Phase de build du framework `Shared`, `Info.plist`, icône, signature locale (l'équipe Apple
          se déclare dans `Configuration/Local.xcconfig`, ignoré par git)
-   - [ ] Firebase Crashlytics par SPM, branché sur les logs Kermit. *Bloqué : il faut le
-         `GoogleService-Info.plist` d'une app iOS `fr.skyle.scanny` déclarée dans la console
-         Firebase, à déposer dans `private/firebase/`.*
+   - [x] Firebase Crashlytics par SPM, branché sur les logs Kermit et les crashs Kotlin (CrashKiOS),
+         avec l'envoi des symboles des builds release
    - [x] `iosApp/CLAUDE.md` pour les règles propres au projet Xcode
 3. **Design system**
    - [x] Material 3, dans `designSystem` seulement
@@ -319,7 +318,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
 - **Tests d'écran** : en Compose (`runComposeUiTest`), sur la JVM et le simulateur iOS ; XCUITest
   ne garde que les parcours qui passent par le système, en parallèle
   ([ADR-0003](./adr/0003-les-ecrans-se-testent-en-compose.md)).
-- **Crashlytics sur iOS** : oui, par SPM dans `iosApp`, dès que le `GoogleService-Info.plist` iOS est fourni.
+- **Crashlytics sur iOS** : oui, par SPM dans `iosApp` (`FirebaseCrashlytics` seul, sans Analytics),
+  le `GoogleService-Info.plist` iOS dans `private/firebase/`.
 - **WiFi sur iOS** : reporté jusqu'à l'obtention d'un compte développeur payant (l'entitlement
   *Hotspot Configuration* l'exige). En attendant, l'action WiFi n'est pas proposée sur iOS.
 - **Génération des QR codes** : qrose (`io.github.alexzhirkevich:qrose`), la plus maintenue, la plus

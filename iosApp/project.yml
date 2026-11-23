@@ -7,6 +7,11 @@ settings:
   base:
     MARKETING_VERSION: "2.0"
     CURRENT_PROJECT_VERSION: "20000"
+packages:
+  # Crashlytics alone: no Analytics, which could read the advertising identifier
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk
+    from: 13.2.0
 targets:
   iosApp:
     type: application
@@ -21,6 +26,9 @@ targets:
       Release: Configuration/Scanny.xcconfig
     sources:
       - iosApp
+    dependencies:
+      - package: Firebase
+        product: FirebaseCrashlytics
     settings:
       base:
         PRODUCT_NAME: Scanny
@@ -46,6 +54,32 @@ targets:
         script: |
           cd "$SRCROOT/.."
           ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+    postCompileScripts:
+      # From the private submodule, when there: a build without it has no Firebase, so no Crashlytics
+      - name: Copy the Firebase file
+        basedOnDependencyAnalysis: false
+        script: |
+          source="$SRCROOT/../private/firebase/GoogleService-Info.plist"
+          destination="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/GoogleService-Info.plist"
+          if [ -f "$source" ]; then
+            cp "$source" "$destination"
+          else
+            rm -f "$destination"
+          fi
+    postBuildScripts:
+      # The symbols of a release build, Kotlin included, for Crashlytics to read its crashes
+      - name: Upload the symbols to Crashlytics
+        basedOnDependencyAnalysis: false
+        inputFiles:
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist
+          - $(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)
+        script: |
+          if [ "$CONFIGURATION" = "Release" ] && [ -f "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/GoogleService-Info.plist" ]; then
+            "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
+          fi
   iosAppUITests:
     type: bundle.ui-testing
     platform: iOS

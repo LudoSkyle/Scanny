@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+
 plugins {
     id("scanny-compose-library")
     id("org.jetbrains.kotlin.plugin.serialization")
@@ -23,6 +25,10 @@ kotlin {
         target.binaries.framework {
             baseName = "Shared"
             isStatic = true
+            // The lines of the Kotlin code in the symbols of the app, for Crashlytics to read its crashes
+            if (buildType == NativeBuildType.RELEASE) {
+                freeCompilerArgs += "-Xadd-light-debug=enable"
+            }
         }
     }
 
@@ -82,6 +88,11 @@ kotlin {
             implementation(libs.camerax.compose)
             implementation(libs.mlkit.barcode.scanning)
             implementation(libs.kotlinx.coroutines.play.services)
+        }
+
+        iosMain.dependencies {
+            // The logs and the crashes of Kotlin to Crashlytics, which the app of iosApp links
+            implementation(libs.kermit.crashlytics)
         }
 
         getByName("androidHostTest").dependencies {

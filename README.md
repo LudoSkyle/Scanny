@@ -39,7 +39,7 @@ Light, reliable, without ads, and without ZXing in the app.
   [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/): one UI for Android and
   iOS, the native code behind a common interface only (camera, detection, system actions).
 - Detection: CameraX and ML Kit on Android, AVFoundation and Vision on iOS.
-- Room and DataStore, Koin, kotlinx-datetime, Kermit, and Firebase Crashlytics on Android.
+- Room and DataStore, Koin, kotlinx-datetime, Kermit, and Firebase Crashlytics.
 - [qrose](https://github.com/alexzhirkevich/qrose) to draw the codes, with corrected copies of its
   Data Matrix and Aztec encoders ([ADR-0004](docs/adr/0004-encodeurs-data-matrix-et-aztec-corriges.md)).
 
