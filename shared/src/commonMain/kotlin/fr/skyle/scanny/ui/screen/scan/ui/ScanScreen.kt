@@ -3,10 +3,15 @@ package fr.skyle.scanny.ui.screen.scan.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -76,6 +81,41 @@ fun ScanScreen(
     SCScreenStructure(
         modifier = Modifier.fillMaxSize(),
         style = SCScreenStructureDefaults.Style.BLACK,
+        // The controls under the camera, in the bottom bar: a message, as no code found in an image,
+        // shows above them instead of over them
+        bottomBar = {
+            // Scanning an image needs no camera: it stays available whatever the permission
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(insets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
+                    .padding(bottom = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                if (multipleScan != null) {
+                    MultipleScanBar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
+                        codeCount = multipleScan.codeCount,
+                        isRecording = multipleScan.isRecording,
+                        onFinishClicked = onMultipleScanFinished,
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                ScanControls(
+                    modifier = Modifier.wrapContentSize(),
+                    hasTorch = permissionStatus == CameraPermissionStatus.GRANTED && cameraCapabilities?.hasTorch == true,
+                    isTorchEnabled = isTorchEnabled,
+                    isMultipleScanActive = multipleScan != null,
+                    onScanImageClicked = onScanImageClicked,
+                    onMultipleScanClicked = onMultipleScanClicked,
+                    onTorchClicked = onTorchClicked,
+                )
+            }
+        },
         snackbarState = snackbarState,
     ) { contentPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
@@ -135,39 +175,6 @@ fun ScanScreen(
                 onHistoryClicked = onHistoryClicked,
                 onSettingsClicked = onSettingsClicked,
             )
-
-            // Scanning an image needs no camera: it stays available whatever the permission
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(contentPadding)
-                    .padding(bottom = 32.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                if (multipleScan != null) {
-                    MultipleScanBar(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp),
-                        codeCount = multipleScan.codeCount,
-                        isRecording = multipleScan.isRecording,
-                        onFinishClicked = onMultipleScanFinished,
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-
-                ScanControls(
-                    modifier = Modifier.wrapContentSize(),
-                    hasTorch = permissionStatus == CameraPermissionStatus.GRANTED && cameraCapabilities?.hasTorch == true,
-                    isTorchEnabled = isTorchEnabled,
-                    isMultipleScanActive = multipleScan != null,
-                    onScanImageClicked = onScanImageClicked,
-                    onMultipleScanClicked = onMultipleScanClicked,
-                    onTorchClicked = onTorchClicked,
-                )
-            }
         }
     }
 
