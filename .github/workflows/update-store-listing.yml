@@ -1,0 +1,44 @@
+# Update Store Listing, in one click: Actions > Update Store Listing > Run workflow, from main. fastlane
+# sends the store listing written in fastlane/metadata (texts, images, screenshots) to the Play Store or
+# to App Store Connect, without any new build (lane store_listing). Each release sends it too.
+name: Update Store Listing
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Store to update
+        type: choice
+        options:
+          - android
+          - ios
+        default: android
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    name: Update the store listing
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      - name: Set up Ruby and fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Update the store listing
+        env:
+          PLATFORM: ${{ inputs.platform }}
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          PLAY_SERVICE_ACCOUNT_FILE: ${{ runner.temp }}/play-service-account.json
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          printf '%s' "$PLAY_SERVICE_ACCOUNT_JSON" > "$PLAY_SERVICE_ACCOUNT_FILE"
+          bundle exec fastlane "$PLATFORM" store_listing

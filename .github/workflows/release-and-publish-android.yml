@@ -1,0 +1,78 @@
+# Release and Publish Android, in one click: Actions > Release and Publish Android > Run workflow, from
+# main. fastlane builds the bundle and the APK signed with the keys of the private submodule, publishes
+# the bundle and the store listing of fastlane/metadata/android to the Play Store, then releases both
+# files on GitHub under the tag of the version (lane android release_and_publish).
+name: Release and Publish Android
+
+on:
+  workflow_dispatch:
+    inputs:
+      track:
+        description: Track of the Play Store
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+        default: internal
+      status:
+        description: Rolled out at once, or left as a draft to roll out from the Play Console
+        type: choice
+        options:
+          - completed
+          - draft
+        default: completed
+
+concurrency:
+  group: release-android
+
+# To tag the version and release it on GitHub
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release and publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      # The keys of the private submodule, read with a read-only deploy key
+      - name: Check out the code and the private submodule
+        uses: actions/checkout@v7
+        with:
+          ssh-key: ${{ secrets.PRIVATE_SUBMODULE_SSH_KEY }}
+          submodules: true
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Set up Ruby and fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Release and publish
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          PLAY_SERVICE_ACCOUNT_FILE: ${{ runner.temp }}/play-service-account.json
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          printf '%s' "$PLAY_SERVICE_ACCOUNT_JSON" > "$PLAY_SERVICE_ACCOUNT_FILE"
+          bundle exec fastlane android release_and_publish track:${{ inputs.track }} status:${{ inputs.status }}
+
+      - name: Keep the bundle, the APK and the mapping
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: scanny-android-${{ github.run_number }}
+          path: |
+            release/
+            androidApp/build/outputs/mapping/release/mapping.txt
+          if-no-files-found: ignore
