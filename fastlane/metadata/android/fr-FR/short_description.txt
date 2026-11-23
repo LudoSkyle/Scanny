@@ -1,1 +1,1 @@
-Scanny est une application de QRCode moderne, légère, rapide et sans publicité !
+Scannez et créez QR codes et codes-barres. Léger, rapide et sans publicité.
