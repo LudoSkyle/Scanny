@@ -68,8 +68,8 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
   10 000 + mineure × 100 + correctif, `2.0` donnant 20000, `2.1.3` 20103. Une version envoyée au
   Play Store se promeut de piste en piste dans la Play Console, sans être renvoyée.
 - La signature lit `private/keys/keystore.properties`, et `google-services.json` est copié depuis
-  `private/firebase/` avant le build. `private/` est un sous-module privé : il n'est jamais modifié,
-  ni son contenu affiché.
+  `private/firebase/` avant le build. `private/` est un sous-module privé : son contenu n'est jamais
+  affiché, et il n'est modifié qu'à la demande de l'utilisateur.
 - Sans le sous-module (un fork, la CI des PR), le build se configure et teste quand même : le debug
   est signé avec la clé par défaut d'Android, la release n'est pas signée, et Google Services et
   Crashlytics ne s'appliquent pas ; l'app démarre alors sans Crashlytics.
