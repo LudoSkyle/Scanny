@@ -1,10 +1,30 @@
-Scanny is a modern, light, fast and ad-free QRCode application!
+Scanny scans and creates QR codes and barcodes. Light, fast, with no ads and no account.
 
-This application aims to be able to scan QRCodes and barcodes using the latest existing technologies.
-It is very fast and reliable.
+<b>Scan</b>
+• With the camera, one code or several at once, or from an image of the gallery
+• 13 formats: QR Code, Data Matrix, Aztec, PDF417, EAN-13, EAN-8, UPC-A, UPC-E, Code 39, Code 93, Code 128, ITF and Codabar
 
-This is an OpenSource application, you can find this application on the corresponding Github repository.
+<b>Understand and act</b>
+Scanny reads what a code holds, field by field, and offers the action that goes with it:
+• Open a link
+• Join a Wi-Fi network
+• Add a contact, or an event to the calendar
+• Write an e-mail or an SMS, make a call
+• Show a place on the map
+• Add a one-time password to your authenticator
+• Open a bitcoin wallet
 
-Do not hesitate to give us feedback using the Feedback function!
+<b>Create</b>
+• QR codes, Data Matrix, Aztec codes, PDF417 and barcodes, with every field of each content
+• The code is drawn as you type
+• Customized QR codes: colors, gradient, shape of the dots and of the corners, logo, error correction
+• Share the code or save it as an image
 
-Thank you for using the app.
+<b>History</b>
+• Your scans and creations, kept as long as you choose
+• Every code drawn again, ready to be shared or saved
+
+<b>Your privacy</b>
+No ads, no account: your codes stay on your phone.
+
+Scanny is open source: https://github.com/LudoSkyle/Scanny
