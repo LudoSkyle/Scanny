@@ -125,8 +125,11 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
   production) et l'état (déployé tout de suite, ou brouillon à déployer depuis la Play Console).
 - Il récupère le sous-module privé avec une clé de déploiement en lecture seule (secret
   `PRIVATE_SUBMODULE_SSH_KEY`, la clé publique « Scanny CI (read only) » sur le dépôt privé), construit
-  le bundle signé (`:androidApp:bundleRelease`), le garde avec son mapping en artefact, et l'envoie au Play Store avec le compte de service de la
-  Play Console (secret `PLAY_SERVICE_ACCOUNT_JSON`).
+  le bundle et l'APK signés (`:androidApp:bundleRelease`, `:androidApp:assembleRelease`), les garde
+  avec le mapping en artefact, et l'envoie au Play Store avec le compte de service de la
+  Play Console (secret `PLAY_SERVICE_ACCOUNT_JSON`). Il publie enfin ces mêmes fichiers dans la
+  release GitHub `vX.Y` de la version (`scanny-X.Y.aab`, `scanny-X.Y.apk`), créée sur le commit
+  publié, ou complétée si elle existe.
 - `.github/workflows/distribute-android.yml`, lancé à la main (Actions > Distribute Android) :
   l'app signée, en release ou en debug, envoyée aux testeurs de Firebase App Distribution (groupes,
   « Internal » par défaut, et notes de version au choix), avec le compte de service du projet

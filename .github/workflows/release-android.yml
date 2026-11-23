@@ -1,7 +1,8 @@
-# Publishes the Android app to the Play Store in one click: Actions > Release Android > Run workflow,
-# from main. Builds the bundle signed with the keys of the private submodule, reached with a read-only
-# deploy key (secret PRIVATE_SUBMODULE_SSH_KEY), and uploads it to the track chosen with the service
-# account of the Play Console (secret PLAY_SERVICE_ACCOUNT_JSON). See docs/Common/04_BUILD.md.
+# Publishes the Android app in one click: Actions > Release Android > Run workflow, from main. Builds the
+# bundle and the APK signed with the keys of the private submodule, reached with a read-only deploy key
+# (secret PRIVATE_SUBMODULE_SSH_KEY), uploads the bundle to the track chosen with the service account of
+# the Play Console (secret PLAY_SERVICE_ACCOUNT_JSON), then releases both on GitHub under the tag of the
+# version. See docs/Common/04_BUILD.md.
 name: Release Android
 
 on:
@@ -28,8 +29,9 @@ on:
 concurrency:
   group: release-android
 
+# To tag the version and release it on GitHub
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   release:
@@ -53,15 +55,24 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       # Its version code follows its version name: a version already on the Play Store is refused there
-      - name: Build the signed bundle
-        run: ./gradlew :androidApp:bundleRelease
+      - name: Build the signed bundle and APK
+        run: ./gradlew :androidApp:bundleRelease :androidApp:assembleRelease
 
-      - name: Keep the bundle and its mapping
+      - name: Name the files after the version
+        id: version
+        run: |
+          VERSION=$(sed -n 's/^val APP_VERSION_NAME = "\(.*\)"$/\1/p' androidApp/build.gradle.kts)
+          mkdir -p release
+          cp androidApp/build/outputs/bundle/release/androidApp-release.aab "release/scanny-$VERSION.aab"
+          cp androidApp/build/outputs/apk/release/androidApp-release.apk "release/scanny-$VERSION.apk"
+          echo "name=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Keep the bundle, the APK and the mapping
         uses: actions/upload-artifact@v7
         with:
-          name: scanny-release-${{ github.run_number }}
+          name: scanny-${{ steps.version.outputs.name }}
           path: |
-            androidApp/build/outputs/bundle/release/*.aab
+            release/
             androidApp/build/outputs/mapping/release/mapping.txt
 
       - name: Publish to the Play Store
@@ -73,3 +84,15 @@ jobs:
           mappingFile: androidApp/build/outputs/mapping/release/mapping.txt
           track: ${{ inputs.track }}
           status: ${{ inputs.status }}
+
+      # The very files sent to the Play Store
+      - name: Release on GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.name }}
+        run: |
+          if gh release view "v$VERSION" > /dev/null 2>&1; then
+            gh release upload "v$VERSION" release/* --clobber
+          else
+            gh release create "v$VERSION" release/* --target "$GITHUB_SHA" --title "Scanny $VERSION" --generate-notes
+          fi
