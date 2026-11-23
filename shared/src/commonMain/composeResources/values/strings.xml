@@ -460,7 +460,6 @@
         <item>Sunday</item>
     </string-array>
     <string name="wifi" translatable="false">Wi-Fi</string>
-    <string name="wifi_already_saved">“%1$s” is already saved on this device.</string>
     <string name="wifi_choose_in_settings">Choose “%1$s” in the list.</string>
     <string name="wifi_not_saved">“%1$s” could not be saved.</string>
     <string name="wifi_password_copied">Password copied: choose “%1$s” in the list.</string>

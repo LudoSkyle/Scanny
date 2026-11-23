@@ -38,7 +38,6 @@ import fr.skyle.scanny.resources.times_count
 import fr.skyle.scanny.resources.upc_a
 import fr.skyle.scanny.resources.week_days
 import fr.skyle.scanny.resources.wifi
-import fr.skyle.scanny.resources.wifi_already_saved
 import fr.skyle.scanny.resources.wifi_saved
 import fr.skyle.scanny.resources.write_sms
 import fr.skyle.scanny.ui.core.code.mapper.showWifiJoinResult
@@ -192,37 +191,6 @@ internal class ScanResultSheetTest : ComposeTest() {
         // Then
         onNodeWithText(getString(Res.string.upc_a)).assertExists()
         onNodeWithText("123456789012").assertExists()
-    }
-
-    @Test
-    fun `a network already saved is told on the sheet with the wi-fi settings to open`() = runComposeUiTest {
-        // Given
-        var isSettingsAsked: Boolean? = null
-        setContent {
-            val snackbarState = rememberSCSnackbarState()
-            LaunchedEffect(Unit) {
-                isSettingsAsked = snackbarState.showWifiJoinResult(
-                    wifi = WIFI_NETWORK,
-                    result = WifiJoinResult.ALREADY_SAVED,
-                )
-            }
-            scanResultSheet(
-                result = WIFI,
-                snackbarState = snackbarState,
-            )
-        }
-
-        // When
-        onNodeWithText(getString(Res.string.wifi_already_saved, "ScannyNet")).assertExists()
-        onNode(hasText(getString(Res.string.wifi)) and hasClickAction()).performClick()
-
-        // Then
-        // The message answers once its coroutine resumes, after the touch
-        waitUntil { isSettingsAsked != null }
-        assertEquals(
-            expected = true,
-            actual = isSettingsAsked,
-        )
     }
 
     @Test
