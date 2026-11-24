@@ -237,6 +237,7 @@
     <string name="group_not_deleted">グループを削除できませんでした</string>
     <string name="group_of_n_codes">%1$d件のコードのグループ</string>
     <string name="hidden_network">非公開ネットワーク</string>
+    <string name="hide_password">パスワードを非表示</string>
     <string name="history">履歴</string>
     <string name="history_not_cleared">履歴を消去できませんでした</string>
     <string name="home_address">自宅の住所</string>
@@ -379,6 +380,7 @@
     <string name="share_image">画像を共有</string>
     <string name="show_code">コードを表示</string>
     <string name="show_on_map">地図で表示</string>
+    <string name="show_password">パスワードを表示</string>
     <string name="skip_consecutive_duplicates">同じコードの連続スキャンを無視</string>
     <string name="star_project">GitHubでプロジェクトにスターを付ける</string>
     <string name="start">開始</string>

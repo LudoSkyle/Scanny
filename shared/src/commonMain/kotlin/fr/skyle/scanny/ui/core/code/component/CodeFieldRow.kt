@@ -21,13 +21,17 @@ import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-/** A piece of the content, named unless it is the content itself, and the button to copy it. */
+/**
+ * A piece of the content, named unless it is the content itself, and the button to copy it. A
+ * [isSecret] value, a password, is hidden until touched, and copied whole.
+ */
 @Composable
 fun CodeFieldRow(
     label: String?,
     value: String,
     onCopyClicked: () -> Unit,
     modifier: Modifier = Modifier,
+    isSecret: Boolean = false,
 ) {
     Row(
         modifier = modifier.padding(
@@ -42,6 +46,7 @@ fun CodeFieldRow(
             modifier = Modifier.weight(1f),
             label = label,
             value = value,
+            isSecret = isSecret,
         )
 
         Spacer(modifier = Modifier.width(8.dp))

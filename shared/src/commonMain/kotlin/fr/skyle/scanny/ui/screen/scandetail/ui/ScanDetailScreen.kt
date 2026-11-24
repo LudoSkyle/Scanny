@@ -168,6 +168,7 @@ fun ScanDetailScreen(
                             label = field.label?.let { label -> stringResource(label.toText()) },
                             value = value,
                             onCopyClicked = { onCopyClicked(value) },
+                            isSecret = field.isSecret,
                         )
                     }
                 }

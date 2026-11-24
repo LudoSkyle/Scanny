@@ -96,6 +96,7 @@ fun ScanResultSheet(
                     label = field.label?.let { label -> stringResource(label.toText()) },
                     value = codeFieldValueText(field = field),
                     maxLines = FIELD_MAX_LINES,
+                    isSecret = field.isSecret,
                 )
             }
 

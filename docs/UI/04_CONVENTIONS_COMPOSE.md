@@ -60,6 +60,8 @@ Ces conventions s'appliquent à `shared` et `designSystem`, en complément de
   rappel, un statut) porte sa valeur brute et sa forme, `CodeFieldDisplay`, que l'écran écrit dans la
   langue de l'appareil avec `codeFieldValueText(field)` : « November 22, 2026 at 15:00
   (Europe/Paris) », « Every 2 weeks: Monday, 10 times ». La copie prend ce qui s'affiche.
+- Un mot de passe (`CodeField.isSecret`) s'affiche en points, toujours autant pour ne rien dire de sa
+  longueur, jusqu'à une touche qui le montre ; son bouton le copie en entier.
 - Un jour et une heure se choisissent avec `SCDateField` et `SCTimeField` ; le premier rend minuit UTC
   en millisecondes, que l'écran ramène au jour (`toLocalDateTime(TimeZone.UTC).date`).
 

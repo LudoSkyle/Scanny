@@ -255,6 +255,8 @@
     <string name="group_not_deleted">The group could not be deleted</string>
     <string name="group_of_n_codes">Group of %1$d codes</string>
     <string name="hidden_network">Hidden network</string>
+    <string name="hidden_password" translatable="false">••••••••</string>
+    <string name="hide_password">Hide the password</string>
     <string name="history">History</string>
     <string name="history_not_cleared">The history could not be cleared</string>
     <string name="home_address">Home address</string>
@@ -406,6 +408,7 @@
     <string name="share_image">Share the image</string>
     <string name="show_code">Show the code</string>
     <string name="show_on_map">Show on the map</string>
+    <string name="show_password">Show the password</string>
     <string name="skip_consecutive_duplicates">Skip a code scanned again right away</string>
     <string name="sms" translatable="false">SMS</string>
     <string name="star_project">Star the project on GitHub</string>
