@@ -63,7 +63,7 @@ platform :android do
   end
 
   desc "Sends the signed app to the testers of Firebase App Distribution"
-  desc "Options: variant (release, debug), groups (Internal), release_notes (fastlane/release_notes/X.Y-testers.txt by default)"
+  desc "Options: variant (release, debug), groups (developper), release_notes (fastlane/release_notes/X.Y-testers.txt by default)"
   lane :distribute do |options|
     variant = options.fetch(:variant, "release")
     gradle(task: ":androidApp:assemble#{variant.capitalize}", project_dir: ROOT)
@@ -72,7 +72,7 @@ platform :android do
       service_credentials_file: ENV.fetch("FIREBASE_SERVICE_ACCOUNT_FILE"),
       android_artifact_type: "APK",
       android_artifact_path: File.join(ROOT, "androidApp/build/outputs/apk/#{variant}/androidApp-#{variant}.apk"),
-      groups: options.fetch(:groups, "Internal"),
+      groups: options.fetch(:groups, "developper"),
       release_notes: testers_notes(options[:release_notes]),
     )
   end
