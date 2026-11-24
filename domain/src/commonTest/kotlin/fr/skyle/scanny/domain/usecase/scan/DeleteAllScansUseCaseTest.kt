@@ -42,8 +42,11 @@ class DeleteAllScansUseCaseTest {
                     rawValue = "https://scanny.app",
                     format = "QR_CODE",
                     scannedAt = SCANNED_AT,
+                    isScanFavorite = false,
+                    scanCodeCount = 1,
                 ),
             ),
+            isFavorite = false,
         )
 
     private companion object {

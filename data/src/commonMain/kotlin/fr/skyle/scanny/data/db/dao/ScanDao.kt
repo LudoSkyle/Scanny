@@ -34,9 +34,10 @@ internal abstract class ScanDao {
         return scanId
     }
 
-    // The id breaks the tie between two captures of the same millisecond: the last recorded comes first
+    // The id breaks the tie between two captures of the same millisecond: the last recorded comes first.
+    // A favorite is in the history whatever its setting
     @Transaction
-    @Query("SELECT * FROM scan WHERE is_in_history = 1 ORDER BY scanned_at DESC, id DESC")
+    @Query("SELECT * FROM scan WHERE is_in_history = 1 OR is_favorite = 1 ORDER BY scanned_at DESC, id DESC")
     abstract fun watchHistory(): Flow<List<ScanWithCodes>>
 
     @Transaction
@@ -49,13 +50,22 @@ internal abstract class ScanDao {
         scannedAt: Long,
     )
 
+    @Query("UPDATE scan SET is_favorite = :isFavorite WHERE id = :id")
+    abstract suspend fun updateFavorite(
+        id: Long,
+        isFavorite: Boolean,
+    )
+
     @Transaction
     @Query("SELECT * FROM scan WHERE id = :id")
     abstract fun watchById(id: Long): Flow<ScanWithCodes?>
 
+    // With what it shares with the other codes of its capture: its time, whether it is a favorite, and
+    // how many codes it holds
     @Query(
-        "SELECT scanned_code.*, scan.scanned_at FROM scanned_code " +
-            "INNER JOIN scan ON scan.id = scanned_code.scan_id WHERE scanned_code.id = :id",
+        "SELECT scanned_code.*, scan.scanned_at, scan.is_favorite, " +
+            "(SELECT COUNT(*) FROM scanned_code AS sibling WHERE sibling.scan_id = scan.id) AS code_count " +
+            "FROM scanned_code INNER JOIN scan ON scan.id = scanned_code.scan_id WHERE scanned_code.id = :id",
     )
     abstract fun watchCodeById(id: Long): Flow<ScannedCodeWithScanTime?>
 
@@ -73,10 +83,11 @@ internal abstract class ScanDao {
     @Query("DELETE FROM scan WHERE id NOT IN (SELECT scan_id FROM scanned_code)")
     abstract suspend fun deleteScansWithoutCode()
 
-    @Query("DELETE FROM scan WHERE is_in_history = 0")
+    // A favorite is never purged
+    @Query("DELETE FROM scan WHERE is_in_history = 0 AND is_favorite = 0")
     abstract suspend fun deleteOutOfHistory()
 
-    @Query("DELETE FROM scan WHERE scanned_at < :before")
+    @Query("DELETE FROM scan WHERE scanned_at < :before AND is_favorite = 0")
     abstract suspend fun deleteScannedBefore(before: Long)
 
     // A capture never stays without code

@@ -18,7 +18,7 @@ interface ScanRepository {
         isInHistory: Boolean,
     ): Long
 
-    /** The captures of the history, from the newest to the oldest. */
+    /** The captures of the history, its favorites included whatever its setting, from the newest to the oldest. */
     fun watchScans(): Flow<List<StoredScan>>
 
     /** The newest capture of the history, null when it is empty. */
@@ -30,6 +30,12 @@ interface ScanRepository {
         scannedAt: Instant,
     )
 
+    /** Puts a capture among the favorites, or takes it out: a favorite is never purged. */
+    suspend fun setScanFavorite(
+        id: Long,
+        isFavorite: Boolean,
+    )
+
     fun watchScan(id: Long): Flow<StoredScan?>
 
     fun watchCode(id: Long): Flow<StoredCode?>
@@ -38,7 +44,10 @@ interface ScanRepository {
 
     suspend fun deleteAllScans()
 
-    /** Deletes the captures out of the history, and those of the history older than [scannedBefore], if set. */
+    /**
+     * Deletes the captures out of the history, and those of the history older than [scannedBefore], if
+     * set: all but the favorites.
+     */
     suspend fun purgeScans(scannedBefore: Instant?)
 
     /** Deletes a code, and its capture when it was the last code of it. */

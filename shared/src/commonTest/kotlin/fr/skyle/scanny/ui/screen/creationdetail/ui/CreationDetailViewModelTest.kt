@@ -323,6 +323,7 @@ class CreationDetailViewModelTest {
             format = BarcodeFormat.QR_CODE,
             style = STYLE,
             createdAt = Instant.fromEpochMilliseconds(0),
+            isFavorite = false,
         )
 
     private fun TestScope.collectEvents(viewModel: CreationDetailViewModel): List<CreationDetailViewModel.CreationDetailEvent> {

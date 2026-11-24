@@ -19,15 +19,24 @@ interface CreationRepository {
         isInHistory: Boolean,
     ): Long
 
-    /** The creations of the history, from the newest to the oldest. */
+    /** The creations of the history, its favorites included whatever its setting, from the newest to the oldest. */
     fun watchCreations(): Flow<List<StoredCreation>>
 
     fun watchCreation(id: Long): Flow<StoredCreation?>
+
+    /** Puts a creation among the favorites, or takes it out: a favorite is never purged. */
+    suspend fun setCreationFavorite(
+        id: Long,
+        isFavorite: Boolean,
+    )
 
     suspend fun deleteCreation(id: Long)
 
     suspend fun deleteAllCreations()
 
-    /** Deletes the creations out of the history, and those of the history older than [createdBefore], if set. */
+    /**
+     * Deletes the creations out of the history, and those of the history older than [createdBefore], if
+     * set: all but the favorites.
+     */
     suspend fun purgeCreations(createdBefore: Instant?)
 }

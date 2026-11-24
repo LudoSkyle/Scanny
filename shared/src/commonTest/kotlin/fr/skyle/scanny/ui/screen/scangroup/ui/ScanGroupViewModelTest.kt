@@ -198,6 +198,7 @@ class ScanGroupViewModelTest {
                     content = BarcodeContent.Text(text = "4006381333931"),
                 ),
             ),
+            isFavorite = false,
         )
 
     private fun code(
@@ -212,6 +213,8 @@ class ScanGroupViewModelTest {
             content = content,
             format = BarcodeFormat.QR_CODE,
             scannedAt = SCANNED_AT,
+            isFavorite = false,
+            isInGroup = false,
         )
 
     private companion object {

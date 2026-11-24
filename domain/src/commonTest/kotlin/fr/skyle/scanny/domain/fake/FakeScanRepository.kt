@@ -43,8 +43,11 @@ internal class FakeScanRepository(
                         rawValue = code.rawValue,
                         format = code.format,
                         scannedAt = scannedAt,
+                        isScanFavorite = false,
+                        scanCodeCount = codes.size,
                     )
                 },
+                isFavorite = false,
             )
         }
         if (!isInHistory) {
@@ -92,6 +95,24 @@ internal class FakeScanRepository(
                 .flatMap { it.codes }
                 .firstOrNull { it.id == id }
         }
+
+    override suspend fun setScanFavorite(
+        id: Long,
+        isFavorite: Boolean,
+    ) {
+        scans.update { storedScans ->
+            storedScans.map { scan ->
+                if (scan.id == id) {
+                    scan.copy(
+                        isFavorite = isFavorite,
+                        codes = scan.codes.map { code -> code.copy(isScanFavorite = isFavorite) },
+                    )
+                } else {
+                    scan
+                }
+            }
+        }
+    }
 
     override suspend fun deleteScan(id: Long) {
         scans.update { storedScans ->

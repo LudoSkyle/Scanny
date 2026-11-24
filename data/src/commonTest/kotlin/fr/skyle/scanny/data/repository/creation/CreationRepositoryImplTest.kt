@@ -50,8 +50,45 @@ internal class CreationRepositoryImplTest : DatabaseTest() {
                 // The logo read back from the database, another array of the same bytes
                 style = style.copy(logo = byteArrayOf(1, 2, 3)),
                 createdAt = createdAt,
+                isFavorite = false,
             ),
             actual = creationRepository.watchCreation(id = creationId).first(),
+        )
+    }
+
+    @Test
+    fun `a creation put among the favorites is watched as such`() = runTest {
+        // Given
+        val creationId = creationRepository.saveCreation(
+            rawValue = "https://scanny.app",
+            format = "QR_CODE",
+            style = StoredCodeStyle(
+                darkColor = 0xFF000000,
+                lightColor = 0xFFFFFFFF,
+                cornerColor = null,
+                gradient = "NONE",
+                gradientColor = 0xFF3B43BE,
+                dotShape = "SQUARE",
+                cornerShape = "SQUARE",
+                logo = null,
+                logoShape = "SQUARE",
+                logoMargin = "NORMAL",
+                errorCorrection = "AUTO",
+            ),
+            createdAt = Instant.fromEpochMilliseconds(1_000),
+            isInHistory = true,
+        )
+
+        // When
+        creationRepository.setCreationFavorite(
+            id = creationId,
+            isFavorite = true,
+        )
+
+        // Then
+        assertEquals(
+            expected = true,
+            actual = creationRepository.watchCreation(id = creationId).first()?.isFavorite,
         )
     }
 

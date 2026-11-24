@@ -13,4 +13,5 @@ internal fun StoredCreation.toCreation(): Creation =
         format = BarcodeFormat.entries.firstOrNull { it.name == format },
         style = style.toCodeStyle(),
         createdAt = createdAt,
+        isFavorite = isFavorite,
     )

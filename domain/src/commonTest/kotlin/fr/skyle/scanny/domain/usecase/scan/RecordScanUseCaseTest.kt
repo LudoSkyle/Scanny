@@ -48,14 +48,17 @@ class RecordScanUseCaseTest {
                             scanId = 1,
                             rawValue = "https://scanny.app",
                             format = "QR_CODE",
+                            scanCodeCount = 2,
                         ),
                         storedCode(
                             id = 2,
                             scanId = 1,
                             rawValue = "4006381333931",
                             format = "EAN_13",
+                            scanCodeCount = 2,
                         ),
                     ),
+                    isFavorite = false,
                 ),
             ),
             actual = scanRepository.storedScans,
@@ -77,6 +80,7 @@ class RecordScanUseCaseTest {
                             rawValue = "Already there",
                         ),
                     ),
+                    isFavorite = false,
                 ),
             ),
         )
@@ -98,8 +102,11 @@ class RecordScanUseCaseTest {
                         content = BarcodeContent.Url(url = "https://scanny.app"),
                         format = BarcodeFormat.QR_CODE,
                         scannedAt = SCANNED_AT,
+                        isFavorite = false,
+                        isInGroup = false,
                     ),
                 ),
+                isFavorite = false,
             ),
             actual = scan,
         )
@@ -360,6 +367,7 @@ class RecordScanUseCaseTest {
                     rawValue = rawValue,
                 ).copy(scannedAt = scannedAt)
             },
+            isFavorite = false,
         )
 
     private fun recordedCodes(): List<Pair<String, String>> =
@@ -384,6 +392,7 @@ class RecordScanUseCaseTest {
         scanId: Long,
         rawValue: String,
         format: String = "QR_CODE",
+        scanCodeCount: Int = 1,
     ): StoredCode =
         StoredCode(
             id = id,
@@ -391,6 +400,8 @@ class RecordScanUseCaseTest {
             rawValue = rawValue,
             format = format,
             scannedAt = SCANNED_AT,
+            isScanFavorite = false,
+            scanCodeCount = scanCodeCount,
         )
 
     private companion object {

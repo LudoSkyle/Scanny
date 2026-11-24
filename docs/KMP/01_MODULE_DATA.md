@@ -152,7 +152,7 @@ internal expect val platformDataModule: Module
   qu'avaient les créations plus anciennes), la version 7 la couleur de ses coins (de 6 à 7, nulle
   par défaut : celle des points), la version 8 le dégradé de ses points (de 7 à 8, sans dégradé par
   défaut), la version 9 la forme et la marge de son logo (de 8 à 9, carré à la marge normale, comme
-  avant).
+  avant), la version 10 les favoris, des captures et des créations (de 9 à 10, aucun par défaut).
 - Une requête de lecture multiple a un `ORDER BY` explicite : sans lui, l'ordre est un détail de
   SQLite dont l'UI finit par dépendre.
 - Un index est attendu sur toute colonne utilisée en filtre ou en tri (date de scan, type).
@@ -171,7 +171,7 @@ trouvés pendant un scan multiple. Deux tables :
 
 | Table | Colonnes | Rôle |
 |---|---|---|
-| `scan` | `id`, `scanned_at` (indexée), `is_in_history` (indexée, `1` par défaut) | la capture, sa date, et si elle est dans l'historique |
+| `scan` | `id`, `scanned_at` (indexée), `is_in_history` (indexée, `1` par défaut), `is_favorite` (indexée, `0` par défaut) | la capture, sa date, si elle est dans l'historique, et si elle est un favori |
 | `scanned_code` | `id`, `scan_id` (indexée, clé étrangère vers `scan`, `ON DELETE CASCADE`), `position`, `raw_value`, `format` | un code de la capture, à sa place dans l'ordre de lecture |
 
 - Une capture et ses codes s'enregistrent dans une même transaction (`insertWithCodes`) : une
@@ -189,17 +189,24 @@ trouvés pendant un scan multiple. Deux tables :
   comme sa dernière capture (`findLatestScan`). La purge (`purgeScans`) la supprime, avec les
   captures de l'historique plus anciennes que la date donnée.
 - `updateScanTime` remet une capture à l'heure, pour un doublon consécutif (voir le domaine).
+- **Un favori** (`is_favorite = 1`, par `setScanFavorite`, une colonne mise à jour, pas la ligne
+  réécrite) est dans l'historique quel que soit son réglage, et aucune purge ne le supprime ; effacer
+  l'historique (`deleteAll`) le supprime avec les autres. Un groupe est un favori en entier : un code
+  se lit avec le favori de sa capture et son nombre de codes (`isScanFavorite`, `scanCodeCount`). La
+  dernière capture (`findLatestScan`, pour un doublon) reste celle de l'historique seul.
 
 ### Historique des créations
 
 | Table | Colonnes | Rôle |
 |---|---|---|
-| `creation` | `id`, `created_at` (indexée), `raw_value`, `format`, `dark_color`, `light_color` (ARGB, noir et blanc par défaut), `corner_color` (ARGB, nulle pour celle des points), `gradient` (`NONE` par défaut), `gradient_color` (ARGB), `dot_shape`, `corner_shape` (`SQUARE` par défaut), `logo` (un PNG de 256 pixels de côté au plus, nul par défaut), `logo_shape` (`SQUARE` par défaut), `logo_margin` (`NORMAL` par défaut), `error_correction` (`AUTO` par défaut), `is_in_history` (indexée, `1` par défaut) | un code créé : le texte mis dans le code, son format, la façon de le dessiner, sa date |
+| `creation` | `id`, `created_at` (indexée), `raw_value`, `format`, `dark_color`, `light_color` (ARGB, noir et blanc par défaut), `corner_color` (ARGB, nulle pour celle des points), `gradient` (`NONE` par défaut), `gradient_color` (ARGB), `dot_shape`, `corner_shape` (`SQUARE` par défaut), `logo` (un PNG de 256 pixels de côté au plus, nul par défaut), `logo_shape` (`SQUARE` par défaut), `logo_margin` (`NORMAL` par défaut), `error_correction` (`AUTO` par défaut), `is_in_history` (indexée, `1` par défaut), `is_favorite` (indexée, `0` par défaut) | un code créé : le texte mis dans le code, son format, la façon de le dessiner, sa date |
 
 - Seul le texte du code est stocké, comme pour un scan : le contenu se relit depuis lui.
 - Comme une capture, une création hors de l'historique (`is_in_history = 0`) se lit par son
   identifiant mais jamais dans l'historique, et la purge (`purgeCreations`) la supprime avec les
   créations plus anciennes que la date donnée.
+- Comme une capture, une création favorite (`setCreationFavorite`) est dans l'historique quel que
+  soit son réglage, jamais purgée, et supprimée par `deleteAll`.
 
 ### Réglages (DataStore)
 

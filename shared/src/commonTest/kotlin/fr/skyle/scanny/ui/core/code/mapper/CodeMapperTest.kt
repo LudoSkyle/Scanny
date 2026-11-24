@@ -875,5 +875,7 @@ class CodeMapperTest {
             content = content,
             format = BarcodeFormat.QR_CODE,
             scannedAt = Instant.fromEpochMilliseconds(0),
+            isFavorite = false,
+            isInGroup = false,
         )
 }

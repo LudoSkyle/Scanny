@@ -175,6 +175,10 @@ Un `Scan` est une capture : sa date et la liste de ses `ScannedCode`, dans l'ord
 scan simple est une capture d'un code, un scan multiple celle de tous les codes trouvés pendant la
 session.
 
+- Une capture, comme une création, peut être un **favori** (`isFavorite`, par `SetScanFavoriteUseCase`
+  et `SetCreationFavoriteUseCase`) : un groupe l'est en entier. Un `ScannedCode` porte le favori de
+  sa capture et dit s'il est dans un groupe (`isInGroup`).
+
 - `RecordScanUseCase` reçoit les `DetectedBarcode` d'une capture, au moins un. Il les normalise, puis
   ne garde qu'une fois un code lu plusieurs fois (même texte et même format, après normalisation), à
   sa première lecture, sans changer l'ordre des autres. Le même texte dans deux formats reste deux

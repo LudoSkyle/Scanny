@@ -125,9 +125,64 @@ internal class CreationDaoTest : DatabaseTest() {
         assertNull(creationDao.watchById(id = outId).first())
     }
 
+    @Test
+    fun `a favorite out of the history is in the history and a creation is taken out of the favorites`() = runTest {
+        // Given
+        val keptId = insertCreation(createdAt = 1_000)
+        val favoriteId = insertCreation(
+            createdAt = 2_000,
+            isInHistory = false,
+        )
+
+        // When
+        creationDao.updateFavorite(
+            id = favoriteId,
+            isFavorite = true,
+        )
+        val withFavorite = creationDao.watchHistory().first().map { creation -> creation.id to creation.isFavorite }
+        creationDao.updateFavorite(
+            id = favoriteId,
+            isFavorite = false,
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(favoriteId to true, keptId to false) to listOf(keptId),
+            actual = withFavorite to creationDao.watchHistory().first().map { creation -> creation.id },
+        )
+    }
+
+    @Test
+    fun `the purges keep the favorites and deleting everything does not`() = runTest {
+        // Given
+        val oldFavoriteId = insertCreation(
+            createdAt = 1_000,
+            isFavorite = true,
+        )
+        val outFavoriteId = insertCreation(
+            createdAt = 3_000,
+            isInHistory = false,
+            isFavorite = true,
+        )
+        insertCreation(createdAt = 1_000)
+
+        // When
+        creationDao.deleteOutOfHistory()
+        creationDao.deleteCreatedBefore(before = 2_000)
+        val kept = creationDao.watchHistory().first().map { creation -> creation.id }
+        creationDao.deleteAll()
+
+        // Then
+        assertEquals(
+            expected = listOf(outFavoriteId, oldFavoriteId) to emptyList(),
+            actual = kept to creationDao.watchHistory().first().map { creation -> creation.id },
+        )
+    }
+
     private suspend fun insertCreation(
         createdAt: Long = 0,
         isInHistory: Boolean = true,
+        isFavorite: Boolean = false,
     ): Long =
         creationDao.insert(
             entity = CreationEntity(
@@ -146,6 +201,7 @@ internal class CreationDaoTest : DatabaseTest() {
                 logoMargin = "NORMAL",
                 errorCorrection = "AUTO",
                 isInHistory = isInHistory,
+                isFavorite = isFavorite,
             ),
         )
 }
