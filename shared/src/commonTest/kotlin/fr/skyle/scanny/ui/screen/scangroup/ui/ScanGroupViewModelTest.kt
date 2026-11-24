@@ -68,11 +68,13 @@ class ScanGroupViewModelTest {
                         codeId = 1,
                         type = CodeType.LINK,
                         summary = "https://scanny.app",
+                        format = BarcodeFormat.QR_CODE,
                     ),
                     CodeRowItem(
                         codeId = 2,
                         type = CodeType.TEXT,
                         summary = "4006381333931",
+                        format = BarcodeFormat.QR_CODE,
                     ),
                 ),
                 isFavorite = false,

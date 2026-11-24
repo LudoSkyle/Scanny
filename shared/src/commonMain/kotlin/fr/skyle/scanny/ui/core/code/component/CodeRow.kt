@@ -16,8 +16,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.iconbadge.SCIconBadge
 import fr.skyle.scanny.designsystem.core.iconbadge.SCIconBadgeDefaults
+import fr.skyle.scanny.designsystem.core.tag.SCTag
+import fr.skyle.scanny.designsystem.core.tag.SCTagDefaults
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.ui.core.code.mapper.toIcon
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeRowItem
@@ -26,7 +29,10 @@ import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-/** A code of a group: its type, drawn and named, and what it holds. */
+/**
+ * A code of a group, as a code of the history: its type drawn, what it holds, and its format in a
+ * pill; one this version does not know, its type.
+ */
 @Composable
 fun CodeRow(
     item: CodeRowItem,
@@ -62,14 +68,12 @@ fun CodeRow(
                 overflow = TextOverflow.Ellipsis,
             )
 
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            SCText(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(item.type.toText()),
-                style = SCTheme.typography.subtitle2,
-                color = SCTheme.colors.text,
-                maxLines = 1,
+            SCTag(
+                text = stringResource(item.format?.toText() ?: item.type.toText()),
+                style = SCTagDefaults.Style.LIGHT,
+                size = SCTagDefaults.Size.MEDIUM,
             )
         }
     }
@@ -85,6 +89,7 @@ private fun PreviewCodeRow() {
                 codeId = 1,
                 type = CodeType.LINK,
                 summary = "https://scanny.app",
+                format = BarcodeFormat.QR_CODE,
             ),
             onClick = {},
         )
