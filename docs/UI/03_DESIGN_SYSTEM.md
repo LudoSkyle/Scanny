@@ -20,8 +20,10 @@ On y trouve :
   `SCSwitch`, `SCTextField`, `SCDropdownField` (un choix dans un menu qui se déplie sous le champ),
   `SCDropdownMenu` (le menu seul, sous l'élément où il est placé), `SCDivider` (une ligne entre deux
   rangées d'une carte), `SCSegmentedControl` (un choix entre quelques options côte à côte, chacune
-  lue comme un onglet), `SCTag` (un court libellé dans une pastille, qui classe ce qu'il
-  accompagne : le format d'un code, son type étant déjà dessiné, les types des codes d'un groupe), `SCDateField` (une date choisie
+  lue comme un onglet, la pastille de l'option choisie glissant de l'une à l'autre ; sous un pager,
+  `selectionPosition` la fait suivre le doigt), `SCTag` (un court libellé dans une pastille, qui
+  classe ce qu'il accompagne : le format d'un code, son type étant déjà dessiné, les types des codes
+  d'un groupe), `SCDateField` (une date choisie
   dans un calendrier, montrée comme l'appelant l'écrit, en millisecondes à minuit UTC vers le
   calendrier de Material, aux couleurs du thème, que le thème ne donne pas à Material), `SCTimeField`
   (une heure choisie sur l'horloge de Material, en minutes depuis minuit, en 12 ou 24 h selon

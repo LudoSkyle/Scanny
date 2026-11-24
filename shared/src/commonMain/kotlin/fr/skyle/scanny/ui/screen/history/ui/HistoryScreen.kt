@@ -122,6 +122,8 @@ fun HistoryScreen(
                 onOptionSelected = onViewSelected,
                 style = SCSegmentedControlDefaults.Style.PRIMARY,
                 size = SCSegmentedControlDefaults.Size.MEDIUM,
+                // The filling follows the finger that swipes the views
+                selectionPosition = { pagerState.currentPage + pagerState.currentPageOffsetFraction },
             )
 
             // The list goes under the navigation bar, its last row above it
