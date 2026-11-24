@@ -95,12 +95,16 @@ s'écrit que pour un parcours qui passe par le système. Voir
   et la CI GitHub Actions verte (`gh pr checks --watch`), et la branche supprimée. Une PR qui suit une autre est rebasée sur `develop` à jour avant d'être
   poussée. Le titre de la PR est le sujet du commit principal, sa description, en anglais, dit ce qui
   change et ce qui a été vérifié.
-- Une version passe de `develop` à `main` par une PR fusionnée par un **commit de fusion** : un rebase
-  réécrirait sur `main` les commits de `develop`, et les deux branches divergeraient. Elle est
-  marquée d'un tag `vX.Y` et d'une release GitHub qui porte les fichiers signés, que créent les
-  workflows « Release and Publish Android » et « Release and Publish iOS » (fastlane) lancés depuis
-  `main`.
-- Rien ne se pousse en dehors de ce circuit : pas de push direct sur `develop` ni sur `main`.
+- Une version passe de `develop` à `main` par une PR fusionnée en **« Rebase and merge »** : les deux
+  historiques restent linéaires. GitHub recrée alors les commits de `develop` sur `main`, avec
+  d'autres hashes : juste après, `develop` est réaligné sur `main` (`git rebase origin/main`, qui
+  écarte les commits déjà copiés, puis `git push --force-with-lease origin develop`), pour que les
+  deux branches pointent sur le même commit. Sans cela, la PR de version suivante relisterait ces
+  commits. La version est marquée d'un tag `vX.Y` et d'une release GitHub qui porte les fichiers
+  signés, que créent les workflows « Release and Publish Android » et « Release and Publish iOS »
+  (fastlane) lancés depuis `main`.
+- Rien ne se pousse en dehors de ce circuit : pas de push direct sur `develop` ni sur `main`, sauf le
+  réalignement de `develop` sur `main` après une version, seul force-push permis.
 
 ## Mise à jour de cette documentation
 
