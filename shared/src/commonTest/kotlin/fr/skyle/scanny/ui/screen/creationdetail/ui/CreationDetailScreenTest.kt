@@ -56,6 +56,7 @@ internal class CreationDetailScreenTest : ComposeTest() {
                     onDeleteClicked = {},
                     onCopyClicked = {},
                     onFavoriteClicked = {},
+                    onShareClicked = {},
                 )
             }
         }

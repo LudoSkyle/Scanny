@@ -7,6 +7,7 @@ import fr.skyle.scanny.domain.usecase.creation.DeleteCreationUseCase
 import fr.skyle.scanny.domain.usecase.creation.SetCreationFavoriteUseCase
 import fr.skyle.scanny.domain.usecase.creation.WatchCreationUseCase
 import fr.skyle.scanny.platform.image.SavedImage
+import fr.skyle.scanny.platform.share.TextSharer
 import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
 import fr.skyle.scanny.ui.core.code.model.CodeImageFormat
 import fr.skyle.scanny.ui.screen.creationdetail.ui.mapper.toCreationDetailItem
@@ -30,6 +31,7 @@ class CreationDetailViewModel(
     private val watchCreationUseCase: WatchCreationUseCase,
     private val deleteCreationUseCase: DeleteCreationUseCase,
     private val setCreationFavoriteUseCase: SetCreationFavoriteUseCase,
+    private val textSharer: TextSharer,
     private val codeImageExporter: CodeImageExporter,
     private val clock: Clock,
     private val timeZone: TimeZone,
@@ -77,6 +79,12 @@ class CreationDetailViewModel(
                 _event.send(CreationDetailEvent.FavoriteNotChanged)
             }
         }
+    }
+
+    // The text put in the code, as for a scanned code: what another app, or a scanner, reads back
+    fun onShareClicked() {
+        val creation = _uiState.value.creation ?: return
+        textSharer.shareText(text = creation.rawValue)
     }
 
     fun onShareImageClicked(imageFormat: CodeImageFormat) {
