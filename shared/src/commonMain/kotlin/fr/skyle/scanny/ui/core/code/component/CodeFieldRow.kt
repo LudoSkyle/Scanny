@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,6 +19,7 @@ import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButtonDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.copy
+import fr.skyle.scanny.resources.hidden_password
 import fr.skyle.scanny.resources.ic_content_copy
 import fr.skyle.scanny.resources.password
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
@@ -42,14 +47,24 @@ fun CodeFieldRow(
         ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        var isShown by rememberSaveable(value) { mutableStateOf(false) }
+
         CodeFieldText(
             modifier = Modifier.weight(1f),
             label = label,
-            value = value,
-            isSecret = isSecret,
+            value = if (isSecret && !isShown) stringResource(Res.string.hidden_password) else value,
         )
 
         Spacer(modifier = Modifier.width(8.dp))
+
+        // Next to the button to copy, both in place whatever the value
+        if (isSecret) {
+            SecretToggleButton(
+                modifier = Modifier.wrapContentSize(),
+                isShown = isShown,
+                onClick = { isShown = !isShown },
+            )
+        }
 
         SCIconButton(
             modifier = Modifier.wrapContentSize(),
