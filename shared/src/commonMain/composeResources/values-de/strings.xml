@@ -243,6 +243,7 @@
     <string name="group_not_deleted">Die Gruppe konnte nicht gelöscht werden</string>
     <string name="group_of_n_codes">Gruppe mit %1$d Codes</string>
     <string name="hidden_network">Verborgenes Netzwerk</string>
+    <string name="hide_password">Passwort ausblenden</string>
     <string name="history">Verlauf</string>
     <string name="history_not_cleared">Der Verlauf konnte nicht gelöscht werden</string>
     <string name="home_address">Privatadresse</string>
@@ -387,6 +388,7 @@
     <string name="share_image">Bild teilen</string>
     <string name="show_code">Code anzeigen</string>
     <string name="show_on_map">Auf der Karte zeigen</string>
+    <string name="show_password">Passwort anzeigen</string>
     <string name="skip_consecutive_duplicates">Direkt erneut gescannten Code ignorieren</string>
     <string name="star_project">Projekt auf GitHub mit einem Stern markieren</string>
     <string name="start">Beginn</string>

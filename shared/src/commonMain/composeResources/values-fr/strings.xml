@@ -243,6 +243,7 @@
     <string name="group_not_deleted">Le groupe n'a pas pu être supprimé</string>
     <string name="group_of_n_codes">Groupe de %1$d codes</string>
     <string name="hidden_network">Réseau masqué</string>
+    <string name="hide_password">Masquer le mot de passe</string>
     <string name="history">Historique</string>
     <string name="history_not_cleared">L'historique n'a pas pu être effacé</string>
     <string name="home_address">Adresse domicile</string>
@@ -387,6 +388,7 @@
     <string name="share_image">Partager l'image</string>
     <string name="show_code">Afficher le code</string>
     <string name="show_on_map">Voir sur la carte</string>
+    <string name="show_password">Afficher le mot de passe</string>
     <string name="skip_consecutive_duplicates">Ignorer un code scanné de nouveau aussitôt</string>
     <string name="star_project">Mettre une étoile au projet sur GitHub</string>
     <string name="start">Début</string>

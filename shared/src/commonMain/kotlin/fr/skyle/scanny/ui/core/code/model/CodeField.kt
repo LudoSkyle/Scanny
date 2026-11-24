@@ -7,7 +7,11 @@ data class CodeField(
     val value: String,
     // How to show the value in the language of the device when it is not a text: a date, a recurrence…
     val display: CodeFieldDisplay? = null,
-)
+) {
+    // A password is hidden until touched: the screen may be seen by others
+    val isSecret: Boolean
+        get() = label == CodeFieldLabel.PASSWORD
+}
 
 enum class CodeFieldLabel {
     NETWORK,

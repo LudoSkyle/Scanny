@@ -15,11 +15,14 @@ import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.about_format
 import fr.skyle.scanny.resources.copy
 import fr.skyle.scanny.resources.edit_code
+import fr.skyle.scanny.resources.hidden_password
+import fr.skyle.scanny.resources.hide_password
 import fr.skyle.scanny.resources.password
 import fr.skyle.scanny.resources.raw_content
 import fr.skyle.scanny.resources.recipient
 import fr.skyle.scanny.resources.share
 import fr.skyle.scanny.resources.show_code
+import fr.skyle.scanny.resources.show_password
 import fr.skyle.scanny.resources.write_email
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
@@ -76,6 +79,32 @@ internal class ScanDetailScreenTest : ComposeTest() {
         // Then
         assertEquals(
             expected = listOf("john@doe.fr"),
+            actual = copies,
+        )
+    }
+
+    @Test
+    fun `a password is hidden until touched and copied whole`() = runComposeUiTest {
+        // Given
+        val copies = mutableListOf<String>()
+        setContent {
+            scanDetailScreen(
+                code = WIFI,
+                onCopyClicked = { text -> copies += text },
+            )
+        }
+        onNodeWithText(getString(Res.string.hidden_password)).assertExists()
+        onNodeWithText("secret123").assertDoesNotExist()
+
+        // When
+        onNodeWithContentDescription(getString(Res.string.show_password)).performClick()
+        onAllNodesWithContentDescription(getString(Res.string.copy))[1].performClick()
+
+        // Then
+        onNodeWithText("secret123").assertExists()
+        onNodeWithContentDescription(getString(Res.string.hide_password)).assertExists()
+        assertEquals(
+            expected = listOf("secret123"),
             actual = copies,
         )
     }

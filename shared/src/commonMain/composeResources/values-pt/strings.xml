@@ -243,6 +243,7 @@
     <string name="group_not_deleted">Não foi possível excluir o grupo</string>
     <string name="group_of_n_codes">Grupo de %1$d códigos</string>
     <string name="hidden_network">Rede oculta</string>
+    <string name="hide_password">Ocultar a senha</string>
     <string name="history">Histórico</string>
     <string name="history_not_cleared">Não foi possível limpar o histórico</string>
     <string name="home_address">Endereço residencial</string>
@@ -387,6 +388,7 @@
     <string name="share_image">Compartilhar a imagem</string>
     <string name="show_code">Mostrar o código</string>
     <string name="show_on_map">Ver no mapa</string>
+    <string name="show_password">Mostrar a senha</string>
     <string name="skip_consecutive_duplicates">Ignorar um código lido de novo logo em seguida</string>
     <string name="star_project">Dar uma estrela ao projeto no GitHub</string>
     <string name="start">Início</string>

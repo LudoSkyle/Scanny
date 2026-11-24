@@ -243,6 +243,7 @@
     <string name="group_not_deleted">Grup silinemedi</string>
     <string name="group_of_n_codes">%1$d kodluk grup</string>
     <string name="hidden_network">Gizli ağ</string>
+    <string name="hide_password">Şifreyi gizle</string>
     <string name="history">Geçmiş</string>
     <string name="history_not_cleared">Geçmiş temizlenemedi</string>
     <string name="home_address">Ev adresi</string>
@@ -387,6 +388,7 @@
     <string name="share_image">Görseli paylaş</string>
     <string name="show_code">Kodu göster</string>
     <string name="show_on_map">Haritada göster</string>
+    <string name="show_password">Şifreyi göster</string>
     <string name="skip_consecutive_duplicates">Hemen yeniden taranan kodu yoksay</string>
     <string name="star_project">Projeye GitHub'da yıldız ver</string>
     <string name="start">Başlangıç</string>

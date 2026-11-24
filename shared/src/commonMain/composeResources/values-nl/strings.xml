@@ -243,6 +243,7 @@
     <string name="group_not_deleted">De groep kon niet worden verwijderd</string>
     <string name="group_of_n_codes">Groep van %1$d codes</string>
     <string name="hidden_network">Verborgen netwerk</string>
+    <string name="hide_password">Wachtwoord verbergen</string>
     <string name="history">Geschiedenis</string>
     <string name="history_not_cleared">De geschiedenis kon niet worden gewist</string>
     <string name="home_address">Thuisadres</string>
@@ -387,6 +388,7 @@
     <string name="share_image">Afbeelding delen</string>
     <string name="show_code">Code tonen</string>
     <string name="show_on_map">Tonen op kaart</string>
+    <string name="show_password">Wachtwoord tonen</string>
     <string name="skip_consecutive_duplicates">Een meteen opnieuw gescande code overslaan</string>
     <string name="star_project">Geef het project een ster op GitHub</string>
     <string name="start">Begin</string>

@@ -255,6 +255,7 @@
     <string name="group_not_deleted">Не удалось удалить группу</string>
     <string name="group_of_n_codes">Группа кодов (%1$d)</string>
     <string name="hidden_network">Скрытая сеть</string>
+    <string name="hide_password">Скрыть пароль</string>
     <string name="history">История</string>
     <string name="history_not_cleared">Не удалось очистить историю</string>
     <string name="home_address">Домашний адрес</string>
@@ -403,6 +404,7 @@
     <string name="share_image">Поделиться изображением</string>
     <string name="show_code">Показать код</string>
     <string name="show_on_map">Показать на карте</string>
+    <string name="show_password">Показать пароль</string>
     <string name="skip_consecutive_duplicates">Пропускать код, сразу отсканированный повторно</string>
     <string name="star_project">Поставить звезду проекту на GitHub</string>
     <string name="start">Начало</string>

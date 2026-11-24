@@ -237,6 +237,7 @@
     <string name="group_not_deleted">无法删除该组</string>
     <string name="group_of_n_codes">一组 %1$d 个码</string>
     <string name="hidden_network">隐藏网络</string>
+    <string name="hide_password">隐藏密码</string>
     <string name="history">历史记录</string>
     <string name="history_not_cleared">无法清除历史记录</string>
     <string name="home_address">住宅地址</string>
@@ -379,6 +380,7 @@
     <string name="share_image">分享图片</string>
     <string name="show_code">显示码</string>
     <string name="show_on_map">在地图上显示</string>
+    <string name="show_password">显示密码</string>
     <string name="skip_consecutive_duplicates">忽略刚扫描过又立即重复扫描的码</string>
     <string name="star_project">在 GitHub 上为项目加星标</string>
     <string name="start">开始</string>
