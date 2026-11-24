@@ -15,10 +15,11 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
+import fr.skyle.scanny.ui.screen.history.ui.model.HistoryHeader
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
 
-/** The captures by day, from the newest, or what shows before the first scan. */
+/** The favorite captures, then the others by day, from the newest, or what shows before the first scan. */
 @Composable
 fun ScanHistoryList(
     sections: List<ScanHistorySection>?,
@@ -43,12 +44,14 @@ fun ScanHistoryList(
         ) {
             sections.forEach { section ->
                 item(
-                    key = section.day.toString(),
-                    contentType = "day",
+                    key = section.header.toString(),
+                    contentType = "header",
                 ) {
-                    HistoryDayHeader(
-                        modifier = Modifier.fillMaxWidth(),
-                        day = section.day,
+                    HistorySectionHeader(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItem(),
+                        header = section.header,
                     )
                 }
 
@@ -57,8 +60,11 @@ fun ScanHistoryList(
                     key = { item -> item.scanId },
                     contentType = { "scan" },
                 ) { item ->
+                    // Moved between the favorites and its day without a blink
                     ScanHistoryRow(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItem(),
                         item = item,
                         onClick = { onScanClicked(item) },
                     )
@@ -76,7 +82,7 @@ private fun PreviewScanHistoryList() {
             modifier = Modifier.fillMaxSize(),
             sections = listOf(
                 ScanHistorySection(
-                    day = CalendarDay.Today,
+                    header = HistoryHeader.Day(day = CalendarDay.Today),
                     items = listOf(
                         ScanHistoryItem(
                             scanId = 1,

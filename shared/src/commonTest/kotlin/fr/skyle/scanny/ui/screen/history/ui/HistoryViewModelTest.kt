@@ -17,9 +17,15 @@ import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistorySection
+import fr.skyle.scanny.ui.screen.history.ui.model.HistoryHeader
 import fr.skyle.scanny.ui.screen.history.ui.model.HistoryView
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
@@ -31,11 +37,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.time.Instant
 
 // The test dispatchers of kotlinx-coroutines-test are still experimental
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -118,7 +119,7 @@ class HistoryViewModelTest {
         assertEquals(
             expected = listOf(
                 ScanHistorySection(
-                    day = CalendarDay.Today,
+                    header = HistoryHeader.Day(day = CalendarDay.Today),
                     items = listOf(
                         ScanHistoryItem(
                             scanId = 4,
@@ -144,7 +145,7 @@ class HistoryViewModelTest {
                     ),
                 ),
                 ScanHistorySection(
-                    day = CalendarDay.Yesterday,
+                    header = HistoryHeader.Day(day = CalendarDay.Yesterday),
                     items = listOf(
                         item(
                             scanId = 2,
@@ -154,13 +155,13 @@ class HistoryViewModelTest {
                     ),
                 ),
                 ScanHistorySection(
-                    day = CalendarDay.Date(
+                    header = HistoryHeader.Day(day = CalendarDay.Date(
                         date = LocalDate(
                             year = 2026,
                             month = 11,
                             day = 2,
                         ),
-                    ),
+                    )),
                     items = listOf(
                         item(
                             scanId = 1,
@@ -171,6 +172,80 @@ class HistoryViewModelTest {
                 ),
             ),
             actual = viewModel.uiState.value.scanSections,
+        )
+    }
+
+    @Test
+    fun `the favorite captures come first apart and leave their day`() = runTest(testDispatcher) {
+        // Given
+        val watchScansUseCase = FakeWatchScansUseCase(
+            scans = listOf(
+                scan(
+                    id = 3,
+                    scannedAt = "2026-11-20T21:48:00Z",
+                    codes = listOf(code(id = 3, rawValue = "Today")),
+                ),
+                scan(
+                    id = 2,
+                    scannedAt = "2026-11-20T09:05:00Z",
+                    codes = listOf(code(id = 2, rawValue = "Favorite of today")),
+                    isFavorite = true,
+                ),
+                scan(
+                    id = 1,
+                    scannedAt = "2026-11-02T08:30:00Z",
+                    codes = listOf(code(id = 1, rawValue = "Older favorite")),
+                    isFavorite = true,
+                ),
+            ),
+        )
+
+        // When
+        val viewModel = historyViewModel(watchScansUseCase = watchScansUseCase)
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                HistoryHeader.Favorites to listOf(2L, 1L),
+                HistoryHeader.Day(day = CalendarDay.Today) to listOf(3L),
+            ),
+            actual = viewModel.uiState.value.scanSections?.map { section ->
+                section.header to section.items.map { item -> item.scanId }
+            },
+        )
+    }
+
+    @Test
+    fun `the favorite creations come first apart and leave their day`() = runTest(testDispatcher) {
+        // Given
+        val watchCreationsUseCase = FakeWatchCreationsUseCase(
+            creations = listOf(
+                creation(
+                    id = 2,
+                    createdAt = "2026-11-20T21:48:00Z",
+                    content = BarcodeContent.Text(text = "Today"),
+                ),
+                creation(
+                    id = 1,
+                    createdAt = "2026-11-02T08:30:00Z",
+                    content = BarcodeContent.Text(text = "Older favorite"),
+                    isFavorite = true,
+                ),
+            ),
+        )
+
+        // When
+        val viewModel = historyViewModel(watchCreationsUseCase = watchCreationsUseCase)
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                HistoryHeader.Favorites to listOf(1L),
+                HistoryHeader.Day(day = CalendarDay.Today) to listOf(2L),
+            ),
+            actual = viewModel.uiState.value.creationSections?.map { section ->
+                section.header to section.items.map { item -> item.creationId }
+            },
         )
     }
 
@@ -330,7 +405,7 @@ class HistoryViewModelTest {
         assertEquals(
             expected = HistoryView.CREATIONS to listOf(
                 CreationHistorySection(
-                    day = CalendarDay.Today,
+                    header = HistoryHeader.Day(day = CalendarDay.Today),
                     items = listOf(
                         CreationHistoryItem(
                             creationId = 2,
@@ -342,7 +417,7 @@ class HistoryViewModelTest {
                     ),
                 ),
                 CreationHistorySection(
-                    day = CalendarDay.Yesterday,
+                    header = HistoryHeader.Day(day = CalendarDay.Yesterday),
                     items = listOf(
                         CreationHistoryItem(
                             creationId = 1,
@@ -430,6 +505,7 @@ class HistoryViewModelTest {
         id: Long,
         scannedAt: String,
         codes: List<ScannedCode>,
+        isFavorite: Boolean = false,
     ): Scan =
         Scan(
             id = id,
@@ -437,7 +513,7 @@ class HistoryViewModelTest {
             codes = codes.map { code ->
                 code.copy(scanId = id)
             },
-            isFavorite = false,
+            isFavorite = isFavorite,
         )
 
     private fun code(
@@ -460,6 +536,7 @@ class HistoryViewModelTest {
         id: Long,
         createdAt: String,
         content: BarcodeContent,
+        isFavorite: Boolean = false,
     ): Creation =
         Creation(
             id = id,
@@ -468,7 +545,7 @@ class HistoryViewModelTest {
             format = BarcodeFormat.QR_CODE,
             style = CodeStyle(),
             createdAt = Instant.parse(createdAt),
-            isFavorite = false,
+            isFavorite = isFavorite,
         )
 
     private fun item(
