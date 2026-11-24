@@ -97,6 +97,27 @@ class ScanDetailViewModel(
         }
     }
 
+    fun onShareSvgClicked() {
+        val code = _uiState.value.code ?: return
+        val format = code.format ?: return
+        viewModelScope.launch {
+            try {
+                codeImageExporter.shareSvg(
+                    rawValue = code.rawValue,
+                    format = format,
+                    style = CodeStyle(),
+                    fileName = imageFileName(extension = "svg"),
+                )
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                Logger.e(throwable = exception) { "Failed to share the SVG image of the scanned code $codeId" }
+
+                _event.send(ScanDetailEvent.ImageNotShared)
+            }
+        }
+    }
+
     fun onSaveImageClicked() {
         val code = _uiState.value.code ?: return
         val format = code.format ?: return
@@ -120,8 +141,8 @@ class ScanDetailViewModel(
         }
     }
 
-    private fun imageFileName(): String =
-        "scanny-scan-$codeId.png"
+    private fun imageFileName(extension: String = "png"): String =
+        "scanny-scan-$codeId.$extension"
 
     fun onAddContactClicked(contact: BarcodeContent.Contact) {
         try {

@@ -290,6 +290,36 @@ class ScanDetailViewModelTest {
     }
 
     @Test
+    fun `exporting draws the code dark on white and shares its svg image named after the code`() = runTest(testDispatcher) {
+        // Given
+        val codeImageRenderer = FakeCodeImageRenderer(svg = "<svg>code</svg>")
+        val imageSharer = FakeImageSharer()
+        val viewModel = scanDetailViewModel(
+            codeImageRenderer = codeImageRenderer,
+            imageSharer = imageSharer,
+        )
+
+        // When
+        viewModel.onShareSvgClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                FakeCodeImageRenderer.RenderedCode(
+                    rawValue = WIFI_RAW_VALUE,
+                    format = BarcodeFormat.QR_CODE,
+                    style = CodeStyle(),
+                ),
+            ),
+            actual = codeImageRenderer.renderedCodes,
+        )
+        assertEquals(
+            expected = listOf("<svg>code</svg>" to "scanny-scan-7.svg"),
+            actual = imageSharer.sharedSvgs,
+        )
+    }
+
+    @Test
     fun `saving the image keeps it in the photos and says it`() = runTest(testDispatcher) {
         // Given
         val imageSaver = FakeImageSaver()

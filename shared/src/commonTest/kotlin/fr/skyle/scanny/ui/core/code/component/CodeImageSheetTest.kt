@@ -15,6 +15,7 @@ import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.export_svg
 import fr.skyle.scanny.resources.save_image
 import fr.skyle.scanny.resources.share_image
 import fr.skyle.scanny.resources.the_code
@@ -35,17 +36,19 @@ internal class CodeImageSheetTest : ComposeTest() {
                 canSave = true,
                 onShareClicked = { actions += "share" },
                 onSaveClicked = { actions += "save" },
+                onExportSvgClicked = { actions += "svg" },
             )
         }
 
         // When
         onNodeWithText(getString(Res.string.share_image)).performClick()
         onNodeWithText(getString(Res.string.save_image)).performClick()
+        onNodeWithText(getString(Res.string.export_svg)).performClick()
 
         // Then
         onNodeWithContentDescription(getString(Res.string.the_code)).assertExists()
         assertEquals(
-            expected = listOf("share", "save"),
+            expected = listOf("share", "save", "svg"),
             actual = actions,
         )
     }
@@ -99,6 +102,7 @@ internal class CodeImageSheetTest : ComposeTest() {
         snackbarState: SCSnackbarState = rememberSCSnackbarState(),
         onShareClicked: () -> Unit = {},
         onSaveClicked: () -> Unit = {},
+        onExportSvgClicked: () -> Unit = {},
     ) {
         SCTheme {
             CodeImageSheet(
@@ -109,6 +113,7 @@ internal class CodeImageSheetTest : ComposeTest() {
                 snackbarState = snackbarState,
                 onShareClicked = onShareClicked,
                 onSaveClicked = onSaveClicked,
+                onExportSvgClicked = onExportSvgClicked,
                 onDismissRequest = {},
             )
         }

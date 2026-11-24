@@ -165,6 +165,7 @@
     <plurals name="every_years">
         <item quantity="other">每 %1$d 年</item>
     </plurals>
+    <string name="export_svg">导出为 SVG</string>
     <string name="extended_address">楼栋、门牌号</string>
     <string name="fax">传真</string>
     <string name="feedback">反馈</string>

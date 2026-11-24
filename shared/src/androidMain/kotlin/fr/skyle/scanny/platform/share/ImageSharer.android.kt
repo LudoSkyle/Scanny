@@ -16,12 +16,35 @@ internal class AndroidImageSharer(
         png: ByteArray,
         fileName: String,
     ) {
+        shareFile(
+            bytes = png,
+            fileName = fileName,
+            mimeType = "image/png",
+        )
+    }
+
+    override fun shareSvg(
+        svg: String,
+        fileName: String,
+    ) {
+        shareFile(
+            bytes = svg.encodeToByteArray(),
+            fileName = fileName,
+            mimeType = "image/svg+xml",
+        )
+    }
+
+    private fun shareFile(
+        bytes: ByteArray,
+        fileName: String,
+        mimeType: String,
+    ) {
         val directory = File(context.cacheDir, SHARED_IMAGES_DIRECTORY).apply { mkdirs() }
-        val file = File(directory, fileName).apply { writeBytes(png) }
+        val file = File(directory, fileName).apply { writeBytes(bytes) }
         val uri = FileProvider.getUriForFile(context, "${context.packageName}.files", file)
 
         val sendIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "image/png"
+            type = mimeType
             putExtra(Intent.EXTRA_STREAM, uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }

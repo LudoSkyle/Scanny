@@ -169,6 +169,7 @@ fun ScanDetailRoute(
             snackbarState = sheetSnackbarState,
             onShareClicked = viewModel::onShareImageClicked,
             onSaveClicked = viewModel::onSaveImageClicked,
+            onExportSvgClicked = viewModel::onShareSvgClicked,
             onDismissRequest = {
                 sheetSnackbarState.dismiss()
                 isCodeSheetVisible = false

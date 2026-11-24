@@ -4,9 +4,10 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.ui.core.code.image.CodeImageRenderer
 
-/** Gives [png] for any code it draws, or fails if [error] is set. */
+/** Gives [png] or [svg] for any code it draws, or fails if [error] is set. */
 internal class FakeCodeImageRenderer(
     private val png: ByteArray = byteArrayOf(1, 2, 3),
+    private val svg: String = "<svg/>",
     private val error: Exception? = null,
 ) : CodeImageRenderer {
 
@@ -25,6 +26,21 @@ internal class FakeCodeImageRenderer(
             style = style,
         )
         return png
+    }
+
+    override suspend fun renderSvg(
+        rawValue: String,
+        format: BarcodeFormat,
+        style: CodeStyle,
+    ): String {
+        error?.let { throw it }
+
+        renderedCodes += RenderedCode(
+            rawValue = rawValue,
+            format = format,
+            style = style,
+        )
+        return svg
     }
 
     data class RenderedCode(

@@ -41,6 +41,27 @@ class CodeImageExporterTest {
     }
 
     @Test
+    fun `exporting draws the code in its style and shares its svg image`() = runTest {
+        // When
+        CodeImageExporter(
+            codeImageRenderer = FakeCodeImageRenderer(svg = "<svg>code</svg>"),
+            imageSharer = imageSharer,
+            imageSaver = imageSaver,
+        ).shareSvg(
+            rawValue = "https://scanny.app",
+            format = BarcodeFormat.QR_CODE,
+            style = STYLE,
+            fileName = "scanny-1.svg",
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf("<svg>code</svg>" to "scanny-1.svg"),
+            actual = imageSharer.sharedSvgs,
+        )
+    }
+
+    @Test
     fun `saving draws the code and keeps its image in the photos`() = runTest {
         // When
         codeImageExporter().save(

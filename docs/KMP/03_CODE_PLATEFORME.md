@@ -224,13 +224,23 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   des exemples sont exacts.
 - Le code se montre dans une feuille (`CodeImageSheet`), ouverte par « Afficher le code » du détail
   d'un scan comme de celui d'une création, en grand pour qu'un autre téléphone le scanne, avec les
-  actions sur son image : la partager, l'enregistrer dans les photos (`CodeImageExporter`, qui la
-  dessine puis la confie à `ImageSharer` ou `ImageSaver`). Enregistrée, un message le dit dans la
+  actions sur son image : la partager, l'enregistrer dans les photos, l'exporter en SVG
+  (`CodeImageExporter`, qui la dessine puis la confie à `ImageSharer` ou `ImageSaver`). Enregistrée, un message le dit dans la
   feuille, avec « Voir » pour l'ouvrir dans les photos : un message de l'écran passerait sous elle ;
   un échec la ferme, pour que le message se lise. Un code scanné y est redessiné sombre sur blanc, une création dans son style.
 - L'image d'un code se dessine en commun (`CodeImageRenderer`, hors du fil principal) : un PNG
   de 1024 pixels de côté pour un QR code, dans son style, 1200 × 480 pour un code-barres, sombre sur
   blanc, avec la marge dont un lecteur a besoin autour d'un code, de la couleur du fond.
+- Le même code s'exporte en SVG, de la même taille : les peintres qui le dessinent à l'écran dessinent
+  sur un `SvgCanvas`, un `Canvas` de Compose qui écrit chaque tracé en élément SVG, déjà déplacé par
+  ses transformations. Les points, les coins et leurs formes y restent des vecteurs ; une conique
+  (l'arc d'un rond, d'un coin arrondi), que SVG n'a pas, y devient une courbe de Bézier cubique. Un
+  peintre de qrose dessine dans une image qu'il garde : son dessin lui-même, `onCache()`, public, est
+  appelé sur le canevas. Le dégradé d'un pinceau ne se relit pas : le SVG reprend celui du style
+  (`svgGradient`, à côté de `dotBrush`) ; le blanc que qrose efface autour d'un logo devient un
+  masque ; le logo y est embarqué en PNG. Rendu par `rsvg-convert`, le SVG est identique au PNG au
+  pixel près, au lissage des bords près. Le parcours d'un `Path` passe par une bibliothèque native
+  sur Android, absente de Robolectric : les tests du SVG tournent sur le simulateur iOS.
 - Le logo d'un QR code est une image de la galerie, réduite dès qu'elle est choisie : redressée, en
   PNG, de 256 pixels de côté au plus (`logoSize`, en commun), assez pour le cinquième d'une image de
   1024 pixels qu'il occupe, et assez léger pour être gardé avec la création. Android la lit par
@@ -245,7 +255,9 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
 - La partager passe par `ImageSharer`. Android écrit le PNG dans le cache (`shared_images/`), que le
   `FileProvider` de l'app (`${applicationId}.files`, déclaré dans le manifeste de `shared`) prête à
   l'app choisie dans la feuille de partage. iOS partage une `UIImage` plutôt qu'un fichier : la
-  feuille propose alors de la garder dans les photos.
+  feuille propose alors de la garder dans les photos. Un SVG, que les photos ne gardent pas, se
+  partage en fichier sur les deux : `image/svg+xml` sur Android, un fichier du dossier temporaire sur
+  iOS, que la feuille propose de garder dans Fichiers.
 - L'enregistrer passe par `ImageSaver`. Android l'écrit par `MediaStore` dans `Pictures/Scanny`,
   sans permission à partir d'Android 10 ; en dessous, l'action n'est pas proposée (`canSave`), la
   feuille de partage gardant l'image ailleurs. iOS l'ajoute aux photos par `PHPhotoLibrary`, en accès
