@@ -182,6 +182,7 @@
         <item quantity="one">Every year</item>
         <item quantity="other">Every %1$d years</item>
     </plurals>
+    <string name="export_svg">Export as SVG</string>
     <string name="extended_address">Apartment, building</string>
     <string name="faq" translatable="false">FAQ</string>
     <string name="fax">Fax</string>

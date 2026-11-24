@@ -183,6 +183,7 @@
         <item quantity="many">Каждые %1$d лет</item>
         <item quantity="other">Каждые %1$d года</item>
     </plurals>
+    <string name="export_svg">Экспорт в SVG</string>
     <string name="extended_address">Квартира, корпус</string>
     <string name="fax">Факс</string>
     <string name="feedback">Отзыв</string>

@@ -79,6 +79,27 @@ class CreationDetailViewModel(
         }
     }
 
+    fun onShareSvgClicked() {
+        val creation = _uiState.value.creation ?: return
+        val format = creation.format ?: return
+        viewModelScope.launch {
+            try {
+                codeImageExporter.shareSvg(
+                    rawValue = creation.rawValue,
+                    format = format,
+                    style = creation.style,
+                    fileName = imageFileName(extension = "svg"),
+                )
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                Logger.e(throwable = exception) { "Failed to share the SVG image of the creation $creationId" }
+
+                _event.send(CreationDetailEvent.ImageNotShared)
+            }
+        }
+    }
+
     fun onSaveImageClicked() {
         val creation = _uiState.value.creation ?: return
         val format = creation.format ?: return
@@ -102,8 +123,8 @@ class CreationDetailViewModel(
         }
     }
 
-    private fun imageFileName(): String =
-        "scanny-$creationId.png"
+    private fun imageFileName(extension: String = "png"): String =
+        "scanny-$creationId.$extension"
 
     fun onDeleteConfirmed() {
         viewModelScope.launch {

@@ -19,6 +19,7 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.export_svg
 import fr.skyle.scanny.resources.save_image
 import fr.skyle.scanny.resources.share_image
 import fr.skyle.scanny.resources.the_code
@@ -30,7 +31,8 @@ private const val CODE_WIDTH_FRACTION = 0.8f
 
 /**
  * A code drawn again, in its [style], for another phone to scan it from the screen, with the actions
- * on its image: share it, keep it in the photos. The messages about the image show in the sheet
+ * on its image: share it, keep it in the photos, export it as an SVG image, which stays sharp at any
+ * size for a print. The messages about the image show in the sheet
  * ([snackbarState]): a message of the screen would show under it.
  */
 @Composable
@@ -42,6 +44,7 @@ fun CodeImageSheet(
     snackbarState: SCSnackbarState,
     onShareClicked: () -> Unit,
     onSaveClicked: () -> Unit,
+    onExportSvgClicked: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -86,6 +89,16 @@ fun CodeImageSheet(
                     size = SCButtonDefaults.Size.MEDIUM,
                 )
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            SCButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(Res.string.export_svg),
+                onClick = onExportSvgClicked,
+                style = SCButtonDefaults.Style.SECONDARY,
+                size = SCButtonDefaults.Size.MEDIUM,
+            )
         }
     }
 }
@@ -105,6 +118,7 @@ private fun PreviewCodeImageSheet() {
             snackbarState = rememberSCSnackbarState(),
             onShareClicked = {},
             onSaveClicked = {},
+            onExportSvgClicked = {},
             onDismissRequest = {},
         )
     }

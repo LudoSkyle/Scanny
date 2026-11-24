@@ -165,6 +165,7 @@
     <plurals name="every_years">
         <item quantity="other">%1$d년마다</item>
     </plurals>
+    <string name="export_svg">SVG로 내보내기</string>
     <string name="extended_address">상세 주소</string>
     <string name="fax">팩스</string>
     <string name="feedback">의견</string>
