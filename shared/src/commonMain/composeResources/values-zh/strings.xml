@@ -8,14 +8,15 @@
     <string name="add_phone">添加电话</string>
     <string name="add_to_authenticator">添加到验证器</string>
     <string name="add_to_calendar">添加到日历</string>
+    <string name="add_to_favorites">加入收藏</string>
     <string name="add_website">添加网站</string>
     <string name="address">地址</string>
     <string name="addresses">地址</string>
     <string name="advanced_options">高级选项</string>
     <string name="algorithm">算法</string>
-    <string name="all_creations_deleted">所有创建的码都将被删除。</string>
+    <string name="all_creations_deleted">所有创建的码都将被删除，包括收藏。</string>
     <string name="all_day">全天</string>
-    <string name="all_scans_deleted">所有扫描记录都将被删除。</string>
+    <string name="all_scans_deleted">所有扫描记录都将被删除，包括收藏。</string>
     <string name="allow_camera">允许使用相机</string>
     <string name="altitude">海拔</string>
     <string name="altitude_in_meters">海拔（米）</string>
@@ -166,6 +167,8 @@
         <item quantity="other">每 %1$d 年</item>
     </plurals>
     <string name="extended_address">楼栋、门牌号</string>
+    <string name="favorite_not_changed">无法更改收藏</string>
+    <string name="favorites">收藏</string>
     <string name="fax">传真</string>
     <string name="feedback">反馈</string>
     <string name="feedback_about_other">其他</string>
@@ -345,6 +348,7 @@
     <string name="region">省/州</string>
     <string name="reminder">提醒</string>
     <string name="remove">移除</string>
+    <string name="remove_from_favorites">取消收藏</string>
     <string name="remove_logo">移除 Logo</string>
     <string name="repeat_interval">重复间隔</string>
     <string name="repeats_on">重复于</string>

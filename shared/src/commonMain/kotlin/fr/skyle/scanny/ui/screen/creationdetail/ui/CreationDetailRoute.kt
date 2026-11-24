@@ -19,6 +19,7 @@ import fr.skyle.scanny.platform.image.rememberSavedImageOpener
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.code_not_deleted
 import fr.skyle.scanny.resources.copied_to_clipboard
+import fr.skyle.scanny.resources.favorite_not_changed
 import fr.skyle.scanny.resources.image_not_saved
 import fr.skyle.scanny.resources.image_not_shared
 import fr.skyle.scanny.resources.image_saved
@@ -67,6 +68,10 @@ fun CreationDetailRoute(
                         snackbarState.show(message = getString(Res.string.code_not_deleted))
                     }
 
+                    CreationDetailViewModel.CreationDetailEvent.FavoriteNotChanged -> launch {
+                        snackbarState.show(message = getString(Res.string.favorite_not_changed))
+                    }
+
                     // Told in the sheet, with the way to the photos, or to the files for an SVG image
                     is CreationDetailViewModel.CreationDetailEvent.ImageSaved -> launch {
                         val isSeeClicked = sheetSnackbarState.show(
@@ -109,6 +114,7 @@ fun CreationDetailRoute(
             isInfoSheetVisible = true
         },
         onEditClicked = navigateToCreateCode,
+        onFavoriteClicked = viewModel::onFavoriteClicked,
         onDeleteClicked = {
             isDeleteDialogVisible = true
         },

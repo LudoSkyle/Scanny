@@ -30,6 +30,7 @@ import fr.skyle.scanny.resources.ic_delete
 import fr.skyle.scanny.resources.ic_share
 import fr.skyle.scanny.resources.share
 import fr.skyle.scanny.ui.core.code.component.CodeRow
+import fr.skyle.scanny.ui.core.code.component.FavoriteButton
 import fr.skyle.scanny.ui.core.code.model.CodeRowItem
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
@@ -44,6 +45,7 @@ fun ScanGroupScreen(
     group: ScanGroupItem?,
     snackbarState: SCSnackbarState,
     onBackClicked: () -> Unit,
+    onFavoriteClicked: () -> Unit,
     onShareClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
     onCodeClicked: (codeId: Long) -> Unit,
@@ -59,6 +61,12 @@ fun ScanGroupScreen(
                 onBackClicked = onBackClicked,
                 actions = {
                     if (group != null) {
+                        FavoriteButton(
+                            modifier = Modifier.wrapContentSize(),
+                            isFavorite = group.isFavorite,
+                            onClick = onFavoriteClicked,
+                        )
+
                         SCIconButton(
                             modifier = Modifier.wrapContentSize(),
                             icon = painterResource(Res.drawable.ic_share),
@@ -178,12 +186,14 @@ private fun PreviewScanGroupScreen() {
                         summary = "4006381333931",
                     ),
                 ),
+                isFavorite = false,
             ),
             snackbarState = rememberSCSnackbarState(),
             onBackClicked = {},
             onShareClicked = {},
             onDeleteClicked = {},
             onCodeClicked = {},
+            onFavoriteClicked = {},
         )
     }
 }

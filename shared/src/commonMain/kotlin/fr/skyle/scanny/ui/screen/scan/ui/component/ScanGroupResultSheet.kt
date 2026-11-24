@@ -19,6 +19,7 @@ import fr.skyle.scanny.designsystem.core.button.SCButton
 import fr.skyle.scanny.designsystem.core.button.SCButtonDefaults
 import fr.skyle.scanny.designsystem.core.iconbadge.SCIconBadge
 import fr.skyle.scanny.designsystem.core.iconbadge.SCIconBadgeDefaults
+import fr.skyle.scanny.designsystem.core.snackbar.SCSnackbarState
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.resources.Res
@@ -27,6 +28,7 @@ import fr.skyle.scanny.resources.group
 import fr.skyle.scanny.resources.ic_stacks
 import fr.skyle.scanny.resources.see_group
 import fr.skyle.scanny.ui.core.code.component.CodeRow
+import fr.skyle.scanny.ui.core.code.component.FavoriteButton
 import fr.skyle.scanny.ui.core.code.model.CodeRowItem
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
@@ -37,14 +39,19 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ScanGroupResultSheet(
     codes: List<CodeRowItem>,
+    isFavorite: Boolean,
     onCodeClicked: (codeId: Long) -> Unit,
     onSeeGroupClicked: () -> Unit,
+    onFavoriteClicked: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
+    // What came of the star: a message of the screen would show under the sheet
+    snackbarState: SCSnackbarState? = null,
 ) {
     SCBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
+        snackbarState = snackbarState,
     ) {
         Row(
             modifier = Modifier
@@ -67,6 +74,13 @@ fun ScanGroupResultSheet(
                 text = stringResource(Res.string.code_count, codes.size),
                 style = SCTheme.typography.h3,
                 color = SCTheme.colors.textDark,
+            )
+
+            // The group as a whole
+            FavoriteButton(
+                modifier = Modifier.wrapContentSize(),
+                isFavorite = isFavorite,
+                onClick = onFavoriteClicked,
             )
         }
 
@@ -134,6 +148,8 @@ private fun PreviewScanGroupResultSheet() {
             onCodeClicked = {},
             onSeeGroupClicked = {},
             onDismissRequest = {},
+            isFavorite = false,
+            onFavoriteClicked = {},
         )
     }
 }

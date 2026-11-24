@@ -8,14 +8,15 @@
     <string name="add_phone">電話番号を追加</string>
     <string name="add_to_authenticator">認証アプリに追加</string>
     <string name="add_to_calendar">カレンダーに追加</string>
+    <string name="add_to_favorites">お気に入りに追加</string>
     <string name="add_website">Webサイトを追加</string>
     <string name="address">住所</string>
     <string name="addresses">住所</string>
     <string name="advanced_options">詳細オプション</string>
     <string name="algorithm">アルゴリズム</string>
-    <string name="all_creations_deleted">作成したコードはすべて削除されます。</string>
+    <string name="all_creations_deleted">作成したコードはお気に入りも含めてすべて削除されます。</string>
     <string name="all_day">終日</string>
-    <string name="all_scans_deleted">スキャンはすべて削除されます。</string>
+    <string name="all_scans_deleted">スキャンはお気に入りも含めてすべて削除されます。</string>
     <string name="allow_camera">カメラを許可</string>
     <string name="altitude">高度</string>
     <string name="altitude_in_meters">高度（メートル）</string>
@@ -166,6 +167,8 @@
         <item quantity="other">%1$d年ごと</item>
     </plurals>
     <string name="extended_address">建物名・部屋番号</string>
+    <string name="favorite_not_changed">お気に入りを変更できませんでした</string>
+    <string name="favorites">お気に入り</string>
     <string name="fax">FAX</string>
     <string name="feedback">フィードバック</string>
     <string name="feedback_about_other">その他</string>
@@ -345,6 +348,7 @@
     <string name="region">都道府県</string>
     <string name="reminder">通知</string>
     <string name="remove">削除</string>
+    <string name="remove_from_favorites">お気に入りから削除</string>
     <string name="remove_logo">ロゴを削除</string>
     <string name="repeat_interval">間隔</string>
     <string name="repeats_on">曜日</string>

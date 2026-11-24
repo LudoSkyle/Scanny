@@ -37,6 +37,7 @@ import fr.skyle.scanny.resources.ic_qr_code
 import fr.skyle.scanny.resources.show_code
 import fr.skyle.scanny.ui.core.code.component.CodeFieldRow
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
+import fr.skyle.scanny.ui.core.code.component.FavoriteButton
 import fr.skyle.scanny.ui.core.code.component.RawContentCard
 import fr.skyle.scanny.ui.core.code.component.codeFieldValueText
 import fr.skyle.scanny.ui.core.code.mapper.toText
@@ -59,6 +60,7 @@ fun CreationDetailScreen(
     onShowCodeClicked: () -> Unit,
     onFormatInfoClicked: () -> Unit,
     onEditClicked: () -> Unit,
+    onFavoriteClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
     onCopyClicked: (text: String) -> Unit,
 ) {
@@ -72,6 +74,12 @@ fun CreationDetailScreen(
                 onBackClicked = onBackClicked,
                 actions = {
                     if (creation != null) {
+                        FavoriteButton(
+                            modifier = Modifier.wrapContentSize(),
+                            isFavorite = creation.isFavorite,
+                            onClick = onFavoriteClicked,
+                        )
+
                         // As in the detail of a scan: the code in a sheet, with the actions on its image
                         if (creation.format != null) {
                             SCIconButton(
@@ -193,6 +201,7 @@ private fun PreviewCreationDetailScreen() {
                 rawValue = "https://scanny.app",
                 isRawValueShown = false,
                 style = CodeStyle(),
+                isFavorite = false,
             ),
             isDeleting = false,
             snackbarState = rememberSCSnackbarState(),
@@ -202,6 +211,7 @@ private fun PreviewCreationDetailScreen() {
             onEditClicked = {},
             onDeleteClicked = {},
             onCopyClicked = {},
+            onFavoriteClicked = {},
         )
     }
 }

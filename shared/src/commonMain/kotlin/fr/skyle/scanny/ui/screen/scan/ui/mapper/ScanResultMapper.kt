@@ -28,6 +28,7 @@ internal fun Scan.toScanResult(
         codes = codes.map { code ->
             code.toCodeRowItem()
         },
+        isFavorite = isFavorite,
     )
 
 // The text of the code as it was read, rather than its fields, when the user asks for it
@@ -37,6 +38,7 @@ internal fun ScannedCode.toScanResultItem(
 ): ScanResultItem =
     ScanResultItem(
         codeId = id,
+        scanId = scanId,
         type = content.toCodeType(),
         format = format,
         fields = if (isRawContentShown) {
@@ -51,4 +53,5 @@ internal fun ScannedCode.toScanResultItem(
         },
         rawValue = rawValue,
         action = content.toCodeAction(canJoinWifi = canJoinWifi),
+        isFavorite = isFavorite,
     )

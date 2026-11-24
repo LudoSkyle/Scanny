@@ -8,14 +8,15 @@
     <string name="add_phone">Telefon hinzufügen</string>
     <string name="add_to_authenticator">Zum Authenticator hinzufügen</string>
     <string name="add_to_calendar">Zum Kalender hinzufügen</string>
+    <string name="add_to_favorites">Zu Favoriten hinzufügen</string>
     <string name="add_website">Website hinzufügen</string>
     <string name="address">Adresse</string>
     <string name="addresses">Adressen</string>
     <string name="advanced_options">Erweiterte Optionen</string>
     <string name="algorithm">Algorithmus</string>
-    <string name="all_creations_deleted">Alle erstellten Codes werden gelöscht.</string>
+    <string name="all_creations_deleted">Alle erstellten Codes werden gelöscht, auch die Favoriten.</string>
     <string name="all_day">Ganztägig</string>
-    <string name="all_scans_deleted">Alle Scans werden gelöscht.</string>
+    <string name="all_scans_deleted">Alle Scans werden gelöscht, auch die Favoriten.</string>
     <string name="allow_camera">Kamera erlauben</string>
     <string name="altitude">Höhe</string>
     <string name="altitude_in_meters">Höhe in Metern</string>
@@ -172,6 +173,8 @@
         <item quantity="other">Alle %1$d Jahre</item>
     </plurals>
     <string name="extended_address">Wohnung, Gebäude</string>
+    <string name="favorite_not_changed">Der Favorit konnte nicht geändert werden</string>
+    <string name="favorites">Favoriten</string>
     <string name="fax">Fax</string>
     <string name="feedback">Feedback</string>
     <string name="feedback_about_other">Etwas anderes</string>
@@ -353,6 +356,7 @@
     <string name="region">Region</string>
     <string name="reminder">Erinnerung</string>
     <string name="remove">Entfernen</string>
+    <string name="remove_from_favorites">Aus Favoriten entfernen</string>
     <string name="remove_logo">Logo entfernen</string>
     <string name="repeat_interval">Intervall</string>
     <string name="repeats_on">Am</string>
