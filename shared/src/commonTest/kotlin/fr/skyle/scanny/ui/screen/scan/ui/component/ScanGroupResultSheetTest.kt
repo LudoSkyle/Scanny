@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.code_count
 import fr.skyle.scanny.resources.discard
@@ -13,9 +14,9 @@ import fr.skyle.scanny.resources.see_group
 import fr.skyle.scanny.ui.core.code.model.CodeRowItem
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.test.ComposeTest
-import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import org.jetbrains.compose.resources.getString
 
 @OptIn(ExperimentalTestApi::class)
 internal class ScanGroupResultSheetTest : ComposeTest() {
@@ -32,11 +33,13 @@ internal class ScanGroupResultSheetTest : ComposeTest() {
                             codeId = 1,
                             type = CodeType.TEXT,
                             summary = "First of two",
+                            format = BarcodeFormat.QR_CODE,
                         ),
                         CodeRowItem(
                             codeId = 2,
                             type = CodeType.TEXT,
                             summary = "Second of two",
+                            format = BarcodeFormat.QR_CODE,
                         ),
                     ),
                     onCodeClicked = { codeId -> clicks += "code $codeId" },

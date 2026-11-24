@@ -919,11 +919,13 @@ class ScanViewModelTest {
                             codeId = 1,
                             type = CodeType.TEXT,
                             summary = "First",
+                            format = BarcodeFormat.QR_CODE,
                         ),
                         CodeRowItem(
                             codeId = 2,
                             type = CodeType.TEXT,
                             summary = "Second",
+                            format = BarcodeFormat.QR_CODE,
                         ),
                     ),
                     isFavorite = false,
