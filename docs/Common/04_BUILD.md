@@ -142,7 +142,8 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 - **La fiche des stores est dans le dépôt** : `fastlane/metadata/android` (textes, images, captures
   et notes « Nouveautés » par `versionCode`, `changelogs/20000.txt`) et `fastlane/metadata/ios`. Chaque
   publication l'envoie avec l'app ; elle se change par une pull request. Les notes d'une release GitHub
-  sont `fastlane/release_notes/X.Y.md`.
+  sont `fastlane/release_notes/X.Y.md` ; celles des testeurs (Firebase App Distribution, TestFlight),
+  `fastlane/release_notes/X.Y-testers.txt`, en français, prises quand le workflow n'en donne pas.
 - **Une version suit toujours le même chemin** : Release and Publish la publie aux testeurs (piste
   interne, App Store Connect sans review), puis Promote la passe à tous, sans rien reconstruire : ce
   qui sort est ce qui a été testé.
