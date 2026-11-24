@@ -165,7 +165,6 @@
     <plurals name="every_years">
         <item quantity="other">%1$d년마다</item>
     </plurals>
-    <string name="export_svg">SVG로 내보내기</string>
     <string name="extended_address">상세 주소</string>
     <string name="fax">팩스</string>
     <string name="feedback">의견</string>
@@ -395,6 +394,7 @@
     <string name="street">도로명 주소</string>
     <string name="subject">제목</string>
     <string name="support">지원</string>
+    <string name="svg_saved">SVG 이미지를 저장했습니다</string>
     <string name="text">텍스트</string>
     <string name="the_code">코드</string>
     <string name="the_logo">로고</string>

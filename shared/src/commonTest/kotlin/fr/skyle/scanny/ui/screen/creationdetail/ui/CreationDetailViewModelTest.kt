@@ -14,9 +14,17 @@ import fr.skyle.scanny.fake.FixedClock
 import fr.skyle.scanny.platform.image.SavedImage
 import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
 import fr.skyle.scanny.ui.core.code.model.CodeField
+import fr.skyle.scanny.ui.core.code.model.CodeImageFormat
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.screen.creationdetail.ui.model.CreationDetailItem
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
@@ -27,13 +35,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.time.Instant
 
 // The test dispatchers of kotlinx-coroutines-test are still experimental
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -134,7 +135,7 @@ class CreationDetailViewModelTest {
         )
 
         // When
-        viewModel.onShareImageClicked()
+        viewModel.onShareImageClicked(imageFormat = CodeImageFormat.PNG)
 
         // Then
         assertEquals(
@@ -164,7 +165,7 @@ class CreationDetailViewModelTest {
         )
 
         // When
-        viewModel.onShareSvgClicked()
+        viewModel.onShareImageClicked(imageFormat = CodeImageFormat.SVG)
 
         // Then
         assertEquals(
@@ -184,6 +185,46 @@ class CreationDetailViewModelTest {
     }
 
     @Test
+    fun `saving an svg image keeps it in the files and says it`() = runTest(testDispatcher) {
+        // Given
+        val imageSaver = FakeImageSaver()
+        val viewModel = creationDetailViewModel(
+            codeImageRenderer = FakeCodeImageRenderer(svg = "<svg>code</svg>"),
+            imageSaver = imageSaver,
+        )
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onSaveImageClicked(imageFormat = CodeImageFormat.SVG)
+
+        // Then
+        assertEquals(
+            expected = listOf("<svg>code</svg>" to "scanny-3.svg") to listOf<CreationDetailViewModel.CreationDetailEvent>(
+                CreationDetailViewModel.CreationDetailEvent.ImageSaved(
+                    savedImage = SavedImage(id = "saved/scanny-3.svg", mimeType = SavedImage.SVG_MIME_TYPE),
+                ),
+            ),
+            actual = imageSaver.savedSvgs to events,
+        )
+    }
+
+    @Test
+    fun `an svg image the user chose not to keep is not reported`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = creationDetailViewModel(imageSaver = FakeImageSaver(isSvgCancelled = true))
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onSaveImageClicked(imageFormat = CodeImageFormat.SVG)
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = events,
+        )
+    }
+
+    @Test
     fun `an image that cannot be drawn is reported instead of shared`() = runTest(testDispatcher) {
         // Given
         val imageSharer = FakeImageSharer()
@@ -194,7 +235,7 @@ class CreationDetailViewModelTest {
         val events = collectEvents(viewModel = viewModel)
 
         // When
-        viewModel.onShareImageClicked()
+        viewModel.onShareImageClicked(imageFormat = CodeImageFormat.PNG)
 
         // Then
         assertEquals(
@@ -215,7 +256,7 @@ class CreationDetailViewModelTest {
         val events = collectEvents(viewModel = viewModel)
 
         // When
-        viewModel.onSaveImageClicked()
+        viewModel.onSaveImageClicked(imageFormat = CodeImageFormat.PNG)
 
         // Then
         assertEquals(
@@ -235,7 +276,7 @@ class CreationDetailViewModelTest {
         val events = collectEvents(viewModel = viewModel)
 
         // When
-        viewModel.onSaveImageClicked()
+        viewModel.onSaveImageClicked(imageFormat = CodeImageFormat.PNG)
 
         // Then
         assertEquals(

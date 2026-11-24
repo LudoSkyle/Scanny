@@ -171,7 +171,6 @@
         <item quantity="one">Her yıl</item>
         <item quantity="other">%1$d yılda bir</item>
     </plurals>
-    <string name="export_svg">SVG olarak dışa aktar</string>
     <string name="extended_address">Daire, bina</string>
     <string name="fax">Faks</string>
     <string name="feedback">Geri bildirim</string>
@@ -403,6 +402,7 @@
     <string name="street">Sokak</string>
     <string name="subject">Konu</string>
     <string name="support">Destek</string>
+    <string name="svg_saved">SVG görseli kaydedildi</string>
     <string name="text">Metin</string>
     <string name="the_code">Kod</string>
     <string name="the_logo">Logo</string>

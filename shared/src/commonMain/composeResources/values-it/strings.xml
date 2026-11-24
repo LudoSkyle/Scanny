@@ -171,7 +171,6 @@
         <item quantity="one">Ogni anno</item>
         <item quantity="other">Ogni %1$d anni</item>
     </plurals>
-    <string name="export_svg">Esporta in SVG</string>
     <string name="extended_address">Appartamento, edificio</string>
     <string name="fax">Fax</string>
     <string name="feedback">Feedback</string>
@@ -403,6 +402,7 @@
     <string name="street">Via</string>
     <string name="subject">Oggetto</string>
     <string name="support">Supporto</string>
+    <string name="svg_saved">Immagine SVG salvata</string>
     <string name="text">Testo</string>
     <string name="the_code">Il codice</string>
     <string name="the_logo">Il logo</string>

@@ -171,7 +171,6 @@
         <item quantity="one">Elk jaar</item>
         <item quantity="other">Elke %1$d jaar</item>
     </plurals>
-    <string name="export_svg">Exporteren als SVG</string>
     <string name="extended_address">Appartement, gebouw</string>
     <string name="fax">Fax</string>
     <string name="feedback">Feedback</string>
@@ -403,6 +402,7 @@
     <string name="street">Straat</string>
     <string name="subject">Onderwerp</string>
     <string name="support">Ondersteuning</string>
+    <string name="svg_saved">SVG-afbeelding opgeslagen</string>
     <string name="text">Tekst</string>
     <string name="the_code">De code</string>
     <string name="the_logo">Het logo</string>

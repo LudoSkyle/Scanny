@@ -224,8 +224,9 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   des exemples sont exacts.
 - Le code se montre dans une feuille (`CodeImageSheet`), ouverte par « Afficher le code » du détail
   d'un scan comme de celui d'une création, en grand pour qu'un autre téléphone le scanne, avec les
-  actions sur son image : la partager, l'enregistrer dans les photos, l'exporter en SVG
-  (`CodeImageExporter`, qui la dessine puis la confie à `ImageSharer` ou `ImageSaver`). Enregistrée, un message le dit dans la
+  actions sur son image, au format choisi au-dessus d'elles, PNG ou SVG (`CodeImageFormat`) : la
+  partager, l'enregistrer (`CodeImageExporter`, qui la dessine puis la confie à `ImageSharer` ou
+  `ImageSaver`). Enregistrée, un message le dit dans la
   feuille, avec « Voir » pour l'ouvrir dans les photos : un message de l'écran passerait sous elle ;
   un échec la ferme, pour que le message se lise. Un code scanné y est redessiné sombre sur blanc, une création dans son style.
 - L'image d'un code se dessine en commun (`CodeImageRenderer`, hors du fil principal) : un PNG
@@ -258,6 +259,11 @@ Tout vit dans `shared`, sous `platform/camera/` et `platform/gallery/` :
   feuille propose alors de la garder dans les photos. Un SVG, que les photos ne gardent pas, se
   partage en fichier sur les deux : `image/svg+xml` sur Android, un fichier du dossier temporaire sur
   iOS, que la feuille propose de garder dans Fichiers.
+- Un SVG, que les photos ne prennent pas, s'enregistre dans les fichiers : Android l'écrit par
+  `MediaStore` dans `Download/Scanny`, et « Voir » ouvre les téléchargements (la galerie prend un SVG
+  mais le montre blanc) ; iOS montre son écran « Enregistrer dans Fichiers »
+  (`UIDocumentPickerViewController`), où l'utilisateur choisit le dossier, ou renonce : rien n'est
+  alors dit. « Voir » l'ouvre dans Fichiers (`shareddocuments://`).
 - L'enregistrer passe par `ImageSaver`. Android l'écrit par `MediaStore` dans `Pictures/Scanny`,
   sans permission à partir d'Android 10 ; en dessous, l'action n'est pas proposée (`canSave`), la
   feuille de partage gardant l'image ailleurs. iOS l'ajoute aux photos par `PHPhotoLibrary`, en accès

@@ -6,6 +6,8 @@ import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.fake.FakeCodeImageRenderer
 import fr.skyle.scanny.fake.FakeImageSaver
 import fr.skyle.scanny.fake.FakeImageSharer
+import fr.skyle.scanny.platform.image.SavedImage
+import fr.skyle.scanny.ui.core.code.model.CodeImageFormat
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -24,6 +26,7 @@ class CodeImageExporterTest {
             rawValue = "https://scanny.app",
             format = BarcodeFormat.QR_CODE,
             style = STYLE,
+            imageFormat = CodeImageFormat.PNG,
             fileName = "scanny-1.png",
         )
 
@@ -47,10 +50,11 @@ class CodeImageExporterTest {
             codeImageRenderer = FakeCodeImageRenderer(svg = "<svg>code</svg>"),
             imageSharer = imageSharer,
             imageSaver = imageSaver,
-        ).shareSvg(
+        ).share(
             rawValue = "https://scanny.app",
             format = BarcodeFormat.QR_CODE,
             style = STYLE,
+            imageFormat = CodeImageFormat.SVG,
             fileName = "scanny-1.svg",
         )
 
@@ -62,12 +66,35 @@ class CodeImageExporterTest {
     }
 
     @Test
+    fun `saving an svg image keeps it in the files`() = runTest {
+        // When
+        val savedImage = CodeImageExporter(
+            codeImageRenderer = FakeCodeImageRenderer(svg = "<svg>code</svg>"),
+            imageSharer = imageSharer,
+            imageSaver = imageSaver,
+        ).save(
+            rawValue = "https://scanny.app",
+            format = BarcodeFormat.QR_CODE,
+            style = STYLE,
+            imageFormat = CodeImageFormat.SVG,
+            fileName = "scanny-1.svg",
+        )
+
+        // Then
+        assertEquals<Pair<List<Pair<String, String>>, String?>>(
+            expected = listOf("<svg>code</svg>" to "scanny-1.svg") to SavedImage.SVG_MIME_TYPE,
+            actual = imageSaver.savedSvgs to savedImage?.mimeType,
+        )
+    }
+
+    @Test
     fun `saving draws the code and keeps its image in the photos`() = runTest {
         // When
         codeImageExporter().save(
             rawValue = "4006381333931",
             format = BarcodeFormat.EAN_13,
             style = CodeStyle(),
+            imageFormat = CodeImageFormat.PNG,
             fileName = "scanny-scan-2.png",
         )
 
@@ -93,6 +120,7 @@ class CodeImageExporterTest {
                 rawValue = "Too long",
                 format = BarcodeFormat.QR_CODE,
                 style = CodeStyle(),
+                imageFormat = CodeImageFormat.PNG,
                 fileName = "scanny-1.png",
             )
         }
@@ -101,6 +129,7 @@ class CodeImageExporterTest {
                 rawValue = "Too long",
                 format = BarcodeFormat.QR_CODE,
                 style = CodeStyle(),
+                imageFormat = CodeImageFormat.PNG,
                 fileName = "scanny-1.png",
             )
         }
