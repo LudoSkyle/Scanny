@@ -130,7 +130,7 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
 
 | Workflow | Lane | Ce qu'elle fait |
 |---|---|---|
-| Distribute Android | `android distribute` | L'app signée, release ou debug, aux testeurs de Firebase App Distribution (groupes, notes de version) |
+| Distribute Android | `android distribute` | L'app signée, release ou debug, aux testeurs de Firebase App Distribution (groupes par leur alias, `developper` par défaut, le seul du projet ; notes de version) |
 | Release and Publish Android | `android release_and_publish` | Le bundle signé et la fiche au Play Store (piste et état au choix), puis le bundle et l'APK dans la release GitHub `vX.Y` |
 | Distribute iOS | `ios distribute` | L'app signée pour l'App Store aux testeurs de TestFlight |
 | Release and Publish iOS | `ios release_and_publish` | L'app et la fiche à App Store Connect (soumise à la review ou non), puis l'`.ipa` dans la release GitHub `vX.Y` |

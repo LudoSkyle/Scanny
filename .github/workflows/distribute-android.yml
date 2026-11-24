@@ -16,7 +16,7 @@ on:
       groups:
         description: Groups of testers, separated by commas
         type: string
-        default: Internal
+        default: developper
       releaseNotes:
         description: What the testers should try (empty for fastlane/release_notes/X.Y-testers.txt)
         type: string
