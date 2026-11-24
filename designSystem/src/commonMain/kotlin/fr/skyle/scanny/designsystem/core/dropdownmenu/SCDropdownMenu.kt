@@ -9,14 +9,13 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 
 /**
- * A menu of [options] that unfolds under the element it is placed in, moved by [offset] from its
- * start, the [selectedOption] in the color of a choice. It closes once an option is chosen.
+ * A menu of [options] that unfolds under the element it is placed in, the [selectedOption] in the
+ * color of a choice. It closes once an option is chosen.
  */
 @Composable
 fun <T> SCDropdownMenu(
@@ -28,12 +27,10 @@ fun <T> SCDropdownMenu(
     onOptionSelected: (T) -> Unit,
     style: SCDropdownMenuDefaults.Style,
     modifier: Modifier = Modifier,
-    offset: DpOffset = DpOffset.Zero,
 ) {
     DropdownMenu(
         modifier = modifier,
         expanded = isExpanded,
-        offset = offset,
         onDismissRequest = onDismissRequest,
         shape = SCTheme.shapes.medium,
         containerColor = style.containerColor,
