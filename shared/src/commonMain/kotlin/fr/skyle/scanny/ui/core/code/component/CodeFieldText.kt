@@ -1,16 +1,13 @@
 package fr.skyle.scanny.ui.core.code.component
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,10 +15,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButton
+import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButtonDefaults
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.resources.Res
@@ -79,7 +76,8 @@ fun CodeFieldText(
     }
 }
 
-// The value as dots, always as many to tell nothing of its length, shown or hidden again by a touch
+// The value as dots, always as many to tell nothing of its length, shown or hidden again by the eye at
+// the end of the line, which stays in place whatever the value
 @Composable
 private fun SecretValueText(
     value: String,
@@ -87,24 +85,13 @@ private fun SecretValueText(
     modifier: Modifier = Modifier,
 ) {
     var isShown by rememberSaveable(value) { mutableStateOf(false) }
-    val actionText = stringResource(if (isShown) Res.string.hide_password else Res.string.show_password)
 
     Row(
-        modifier = modifier
-            // Large enough to be touched, as a button
-            .heightIn(min = 48.dp)
-            .clickable(
-                role = Role.Button,
-                onClickLabel = actionText,
-                onClick = { isShown = !isShown },
-            ),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         SCText(
-            modifier = Modifier.weight(
-                weight = 1f,
-                fill = false,
-            ),
+            modifier = Modifier.weight(1f),
             text = if (isShown) value else stringResource(Res.string.hidden_password),
             style = SCTheme.typography.body1,
             color = SCTheme.colors.textDark,
@@ -114,13 +101,29 @@ private fun SecretValueText(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Image(
-            modifier = Modifier.size(20.dp),
-            painter = painterResource(if (isShown) Res.drawable.ic_visibility_off else Res.drawable.ic_visibility),
-            contentDescription = actionText,
-            colorFilter = ColorFilter.tint(color = SCTheme.colors.text),
+        SecretToggleButton(
+            modifier = Modifier.wrapContentSize(),
+            isShown = isShown,
+            onClick = { isShown = !isShown },
         )
     }
+}
+
+/** The eye that shows a secret value, a password, or hides it again. */
+@Composable
+internal fun SecretToggleButton(
+    isShown: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    SCIconButton(
+        modifier = modifier,
+        icon = painterResource(if (isShown) Res.drawable.ic_visibility_off else Res.drawable.ic_visibility),
+        contentDescription = stringResource(if (isShown) Res.string.hide_password else Res.string.show_password),
+        onClick = onClick,
+        style = SCIconButtonDefaults.Style.DARK,
+        size = SCIconButtonDefaults.Size.MEDIUM,
+    )
 }
 
 @AppPreviewWithBackground
