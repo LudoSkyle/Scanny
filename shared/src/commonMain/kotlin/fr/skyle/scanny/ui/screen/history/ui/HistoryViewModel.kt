@@ -4,16 +4,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.usecase.creation.DeleteAllCreationsUseCase
+import fr.skyle.scanny.domain.usecase.creation.DeleteCreationUseCase
+import fr.skyle.scanny.domain.usecase.creation.SetCreationFavoriteUseCase
 import fr.skyle.scanny.domain.usecase.creation.WatchCreationsUseCase
 import fr.skyle.scanny.domain.usecase.scan.DeleteAllScansUseCase
+import fr.skyle.scanny.domain.usecase.scan.DeleteScanUseCase
+import fr.skyle.scanny.domain.usecase.scan.SetScanFavoriteUseCase
 import fr.skyle.scanny.domain.usecase.scan.WatchScansUseCase
 import fr.skyle.scanny.ui.screen.history.ui.mapper.toCreationHistorySections
 import fr.skyle.scanny.ui.screen.history.ui.mapper.toScanHistorySections
 import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistorySection
-import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.HistoryView
+import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
+import kotlin.time.Clock
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,13 +31,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Clock
 
 class HistoryViewModel(
     private val watchScansUseCase: WatchScansUseCase,
     private val watchCreationsUseCase: WatchCreationsUseCase,
     private val deleteAllScansUseCase: DeleteAllScansUseCase,
     private val deleteAllCreationsUseCase: DeleteAllCreationsUseCase,
+    private val setScanFavoriteUseCase: SetScanFavoriteUseCase,
+    private val setCreationFavoriteUseCase: SetCreationFavoriteUseCase,
+    private val deleteScanUseCase: DeleteScanUseCase,
+    private val deleteCreationUseCase: DeleteCreationUseCase,
     private val clock: Clock,
     private val timeZone: TimeZone,
 ) : ViewModel() {
@@ -103,6 +111,56 @@ class HistoryViewModel(
         }
     }
 
+    // From the actions a held row shows: the history follows the change on its own
+    fun onScanFavoriteClicked(item: ScanHistoryItem) {
+        runAction(failure = HistoryEvent.FavoriteNotChanged, description = "change the favorite of the capture ${item.scanId}") {
+            setScanFavoriteUseCase(
+                scanId = item.scanId,
+                isFavorite = !item.isFavorite,
+            )
+        }
+    }
+
+    fun onCreationFavoriteClicked(item: CreationHistoryItem) {
+        runAction(failure = HistoryEvent.FavoriteNotChanged, description = "change the favorite of the creation ${item.creationId}") {
+            setCreationFavoriteUseCase(
+                creationId = item.creationId,
+                isFavorite = !item.isFavorite,
+            )
+        }
+    }
+
+    // Once the user confirmed it
+    fun onScanDeleteConfirmed(scanId: Long) {
+        runAction(failure = HistoryEvent.DeleteFailed, description = "delete the capture $scanId") {
+            deleteScanUseCase(scanId = scanId)
+        }
+    }
+
+    fun onCreationDeleteConfirmed(creationId: Long) {
+        runAction(failure = HistoryEvent.DeleteFailed, description = "delete the creation $creationId") {
+            deleteCreationUseCase(creationId = creationId)
+        }
+    }
+
+    private fun runAction(
+        failure: HistoryEvent,
+        description: String,
+        action: suspend () -> Unit,
+    ) {
+        viewModelScope.launch {
+            try {
+                action()
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                Logger.e(throwable = exception) { "Failed to $description" }
+
+                _event.send(failure)
+            }
+        }
+    }
+
     // Clears the view shown, the other one kept
     fun onClearConfirmed() {
         val view = _uiState.value.selectedView
@@ -131,6 +189,8 @@ class HistoryViewModel(
 
     sealed interface HistoryEvent {
         data object ClearFailed : HistoryEvent
+        data object FavoriteNotChanged : HistoryEvent
+        data object DeleteFailed : HistoryEvent
         data class OpenScanDetail(val codeId: Long) : HistoryEvent
         data class OpenScanGroup(val scanId: Long) : HistoryEvent
         data class OpenCreationDetail(val creationId: Long) : HistoryEvent

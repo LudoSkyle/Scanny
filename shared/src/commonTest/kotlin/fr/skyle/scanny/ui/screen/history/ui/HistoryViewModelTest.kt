@@ -10,6 +10,10 @@ import fr.skyle.scanny.domain.model.WifiEncryption
 import fr.skyle.scanny.domain.payload.toRawValue
 import fr.skyle.scanny.fake.FakeDeleteAllCreationsUseCase
 import fr.skyle.scanny.fake.FakeDeleteAllScansUseCase
+import fr.skyle.scanny.fake.FakeDeleteCreationUseCase
+import fr.skyle.scanny.fake.FakeDeleteScanUseCase
+import fr.skyle.scanny.fake.FakeSetCreationFavoriteUseCase
+import fr.skyle.scanny.fake.FakeSetScanFavoriteUseCase
 import fr.skyle.scanny.fake.FakeWatchCreationsUseCase
 import fr.skyle.scanny.fake.FakeWatchScansUseCase
 import fr.skyle.scanny.fake.FixedClock
@@ -130,6 +134,7 @@ class HistoryViewModelTest {
                             time = "21:48",
                             codeCount = 1,
                             codeTypes = listOf(CodeType.LINK),
+                            isFavorite = false,
                         ),
                         ScanHistoryItem(
                             scanId = 3,
@@ -141,6 +146,7 @@ class HistoryViewModelTest {
                             codeCount = 3,
                             // Each type once, in the order of the codes
                             codeTypes = listOf(CodeType.TEXT, CodeType.LINK),
+                            isFavorite = false,
                         ),
                     ),
                 ),
@@ -413,6 +419,7 @@ class HistoryViewModelTest {
                             format = BarcodeFormat.QR_CODE,
                             summary = "Scanny",
                             time = "21:48",
+                            isFavorite = false,
                         ),
                     ),
                 ),
@@ -425,6 +432,7 @@ class HistoryViewModelTest {
                             format = BarcodeFormat.QR_CODE,
                             summary = "Yesterday",
                             time = "18:00",
+                            isFavorite = false,
                         ),
                     ),
                 ),
@@ -447,6 +455,7 @@ class HistoryViewModelTest {
                 format = BarcodeFormat.QR_CODE,
                 summary = "Created",
                 time = "10:00",
+                isFavorite = false,
             ),
         )
 
@@ -478,17 +487,117 @@ class HistoryViewModelTest {
         )
     }
 
+    @Test
+    fun `a held row puts its capture or its creation among the favorites or takes it out`() = runTest(testDispatcher) {
+        // Given
+        val setScanFavoriteUseCase = FakeSetScanFavoriteUseCase()
+        val setCreationFavoriteUseCase = FakeSetCreationFavoriteUseCase()
+        val viewModel = historyViewModel(
+            setScanFavoriteUseCase = setScanFavoriteUseCase,
+            setCreationFavoriteUseCase = setCreationFavoriteUseCase,
+        )
+
+        // When
+        viewModel.onScanFavoriteClicked(item = scanItem(scanId = 4, isFavorite = false))
+        viewModel.onCreationFavoriteClicked(item = creationItem(creationId = 7, isFavorite = true))
+
+        // Then
+        assertEquals(
+            expected = listOf(4L to true) to listOf(7L to false),
+            actual = setScanFavoriteUseCase.setFavorites to setCreationFavoriteUseCase.setFavorites,
+        )
+    }
+
+    @Test
+    fun `a capture or a creation is deleted once confirmed`() = runTest(testDispatcher) {
+        // Given
+        val deleteScanUseCase = FakeDeleteScanUseCase()
+        val deleteCreationUseCase = FakeDeleteCreationUseCase()
+        val viewModel = historyViewModel(
+            deleteScanUseCase = deleteScanUseCase,
+            deleteCreationUseCase = deleteCreationUseCase,
+        )
+
+        // When
+        viewModel.onScanDeleteConfirmed(scanId = 4)
+        viewModel.onCreationDeleteConfirmed(creationId = 7)
+
+        // Then
+        assertEquals(
+            expected = listOf(4L) to listOf(7L),
+            actual = deleteScanUseCase.deletedScanIds to deleteCreationUseCase.deletedCreationIds,
+        )
+    }
+
+    @Test
+    fun `a favorite or a deletion that fails is reported`() = runTest(testDispatcher) {
+        // Given
+        val error = IllegalStateException("Database closed")
+        val viewModel = historyViewModel(
+            setScanFavoriteUseCase = FakeSetScanFavoriteUseCase(error = error),
+            deleteScanUseCase = FakeDeleteScanUseCase(error = error),
+        )
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onScanFavoriteClicked(item = scanItem(scanId = 4, isFavorite = false))
+        viewModel.onScanDeleteConfirmed(scanId = 4)
+
+        // Then
+        assertEquals(
+            expected = listOf(HistoryViewModel.HistoryEvent.FavoriteNotChanged, HistoryViewModel.HistoryEvent.DeleteFailed),
+            actual = events,
+        )
+    }
+
+    private fun scanItem(
+        scanId: Long,
+        isFavorite: Boolean,
+    ): ScanHistoryItem =
+        ScanHistoryItem(
+            scanId = scanId,
+            firstCodeId = scanId,
+            type = CodeType.TEXT,
+            format = BarcodeFormat.QR_CODE,
+            summary = "A text",
+            time = "09:05",
+            codeCount = 1,
+            codeTypes = listOf(CodeType.TEXT),
+            isFavorite = isFavorite,
+        )
+
+    private fun creationItem(
+        creationId: Long,
+        isFavorite: Boolean,
+    ): CreationHistoryItem =
+        CreationHistoryItem(
+            creationId = creationId,
+            type = CodeType.TEXT,
+            format = BarcodeFormat.QR_CODE,
+            summary = "A text",
+            time = "09:05",
+            isFavorite = isFavorite,
+        )
+
     private fun historyViewModel(
         watchScansUseCase: FakeWatchScansUseCase = FakeWatchScansUseCase(),
         watchCreationsUseCase: FakeWatchCreationsUseCase = FakeWatchCreationsUseCase(),
         deleteAllScansUseCase: FakeDeleteAllScansUseCase = FakeDeleteAllScansUseCase(),
         deleteAllCreationsUseCase: FakeDeleteAllCreationsUseCase = FakeDeleteAllCreationsUseCase(),
+        setScanFavoriteUseCase: FakeSetScanFavoriteUseCase = FakeSetScanFavoriteUseCase(),
+        setCreationFavoriteUseCase: FakeSetCreationFavoriteUseCase = FakeSetCreationFavoriteUseCase(),
+        deleteScanUseCase: FakeDeleteScanUseCase = FakeDeleteScanUseCase(),
+        deleteCreationUseCase: FakeDeleteCreationUseCase = FakeDeleteCreationUseCase(),
     ): HistoryViewModel =
         HistoryViewModel(
             watchScansUseCase = watchScansUseCase,
             watchCreationsUseCase = watchCreationsUseCase,
             deleteAllScansUseCase = deleteAllScansUseCase,
             deleteAllCreationsUseCase = deleteAllCreationsUseCase,
+            setScanFavoriteUseCase = setScanFavoriteUseCase,
+            setCreationFavoriteUseCase = setCreationFavoriteUseCase,
+            deleteScanUseCase = deleteScanUseCase,
+            deleteCreationUseCase = deleteCreationUseCase,
             clock = FixedClock(instant = Instant.parse("2026-11-20T23:00:00Z")),
             timeZone = TimeZone.UTC,
         )
@@ -562,5 +671,6 @@ class HistoryViewModelTest {
             time = time,
             codeCount = 1,
             codeTypes = listOf(CodeType.TEXT),
+            isFavorite = false,
         )
 }

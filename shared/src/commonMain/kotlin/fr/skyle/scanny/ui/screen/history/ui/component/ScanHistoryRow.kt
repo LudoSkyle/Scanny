@@ -1,6 +1,5 @@
 package fr.skyle.scanny.ui.screen.history.ui.component
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,81 +46,91 @@ private const val MAX_GROUP_TYPES = 3
 fun ScanHistoryRow(
     item: ScanHistoryItem,
     onClick: () -> Unit,
+    onFavoriteClicked: () -> Unit,
+    onDeleteClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     // A group is drawn as such, not as its first code
     val isGroup = item.codeCount > 1
 
-    Row(
-        modifier = modifier
-            .clickable(onClick = onClick)
-            .padding(
-                horizontal = 20.dp,
-                vertical = 12.dp,
-            ),
-        verticalAlignment = Alignment.CenterVertically,
+    HistoryRowActions(
+        modifier = modifier,
+        isFavorite = item.isFavorite,
+        onClick = onClick,
+        onFavoriteClicked = onFavoriteClicked,
+        onDeleteClicked = onDeleteClicked,
     ) {
-        SCIconBadge(
-            modifier = Modifier.wrapContentSize(),
-            icon = painterResource(if (isGroup) Res.drawable.ic_stacks else item.type.toIcon()),
-            contentDescription = stringResource(if (isGroup) Res.string.group else item.type.toText()),
-            style = if (isGroup) SCIconBadgeDefaults.Style.FILLED else SCIconBadgeDefaults.Style.PRIMARY,
-            size = SCIconBadgeDefaults.Size.LARGE,
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
-            SCText(
-                modifier = Modifier.fillMaxWidth(),
-                text = if (isGroup) stringResource(Res.string.group_of_n_codes, item.codeCount) else item.summary,
-                style = SCTheme.typography.body1,
-                color = SCTheme.colors.textDark,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 20.dp,
+                    vertical = 12.dp,
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SCIconBadge(
+                modifier = Modifier.wrapContentSize(),
+                icon = painterResource(if (isGroup) Res.drawable.ic_stacks else item.type.toIcon()),
+                contentDescription = stringResource(if (isGroup) Res.string.group else item.type.toText()),
+                style = if (isGroup) SCIconBadgeDefaults.Style.FILLED else SCIconBadgeDefaults.Style.PRIMARY,
+                size = SCIconBadgeDefaults.Size.LARGE,
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Row(
-                    modifier = Modifier.weight(weight = 1f, fill = false),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    // A single code shows its format, its type already drawn; one this version does not
-                    // know, its type
-                    val texts = if (isGroup) {
-                        item.codeTypes.map { type -> stringResource(type.toText()) }
-                    } else {
-                        listOf(stringResource(item.format?.toText() ?: item.type.toText()))
-                    }
-                    texts.take(MAX_GROUP_TYPES).forEach { text ->
-                        SCTag(
-                            text = text,
-                            style = SCTagDefaults.Style.LIGHT,
-                            size = SCTagDefaults.Size.MEDIUM,
-                        )
-                    }
-
-                    if (texts.size > MAX_GROUP_TYPES) {
-                        SCTag(
-                            text = stringResource(Res.string.more_count, texts.size - MAX_GROUP_TYPES),
-                            style = SCTagDefaults.Style.LIGHT,
-                            size = SCTagDefaults.Size.MEDIUM,
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
+            Column(modifier = Modifier.weight(1f)) {
                 SCText(
-                    text = item.time,
-                    style = SCTheme.typography.subtitle2,
-                    color = SCTheme.colors.text,
+                    modifier = Modifier.fillMaxWidth(),
+                    text = if (isGroup) stringResource(Res.string.group_of_n_codes, item.codeCount) else item.summary,
+                    style = SCTheme.typography.body1,
+                    color = SCTheme.colors.textDark,
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier.weight(weight = 1f, fill = false),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        // A single code shows its format, its type already drawn; one this version does not
+                        // know, its type
+                        val texts = if (isGroup) {
+                            item.codeTypes.map { type -> stringResource(type.toText()) }
+                        } else {
+                            listOf(stringResource(item.format?.toText() ?: item.type.toText()))
+                        }
+                        texts.take(MAX_GROUP_TYPES).forEach { text ->
+                            SCTag(
+                                text = text,
+                                style = SCTagDefaults.Style.LIGHT,
+                                size = SCTagDefaults.Size.MEDIUM,
+                            )
+                        }
+
+                        if (texts.size > MAX_GROUP_TYPES) {
+                            SCTag(
+                                text = stringResource(Res.string.more_count, texts.size - MAX_GROUP_TYPES),
+                                style = SCTagDefaults.Style.LIGHT,
+                                size = SCTagDefaults.Size.MEDIUM,
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    SCText(
+                        text = item.time,
+                        style = SCTheme.typography.subtitle2,
+                        color = SCTheme.colors.text,
+                        maxLines = 1,
+                    )
+                }
             }
-        }
+    }
     }
 }
 
@@ -140,8 +149,11 @@ private fun PreviewScanHistoryRow() {
                 time = "21:48",
                 codeCount = 1,
                 codeTypes = listOf(CodeType.LINK),
+                isFavorite = false,
             ),
             onClick = {},
+            onFavoriteClicked = {},
+            onDeleteClicked = {},
         )
     }
 }
@@ -161,8 +173,11 @@ private fun PreviewScanHistoryRow_Group() {
                 time = "09:05",
                 codeCount = 6,
                 codeTypes = listOf(CodeType.TEXT, CodeType.WIFI, CodeType.LINK, CodeType.CONTACT, CodeType.SMS),
+                isFavorite = false,
             ),
             onClick = {},
+            onFavoriteClicked = {},
+            onDeleteClicked = {},
         )
     }
 }

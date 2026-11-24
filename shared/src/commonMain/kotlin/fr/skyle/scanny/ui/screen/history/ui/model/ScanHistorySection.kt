@@ -21,4 +21,5 @@ data class ScanHistoryItem(
     val codeCount: Int,
     // The types of its codes, each once, in their order: a group shows them
     val codeTypes: List<CodeType>,
+    val isFavorite: Boolean,
 )

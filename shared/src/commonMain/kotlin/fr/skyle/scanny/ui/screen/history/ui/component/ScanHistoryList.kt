@@ -25,6 +25,8 @@ fun ScanHistoryList(
     sections: List<ScanHistorySection>?,
     contentPadding: PaddingValues,
     onScanClicked: (ScanHistoryItem) -> Unit,
+    onScanFavoriteClicked: (ScanHistoryItem) -> Unit,
+    onScanDeleteClicked: (ScanHistoryItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when {
@@ -67,6 +69,8 @@ fun ScanHistoryList(
                             .animateItem(),
                         item = item,
                         onClick = { onScanClicked(item) },
+                        onFavoriteClicked = { onScanFavoriteClicked(item) },
+                        onDeleteClicked = { onScanDeleteClicked(item) },
                     )
                 }
             }
@@ -93,12 +97,15 @@ private fun PreviewScanHistoryList() {
                             time = "21:48",
                             codeCount = 1,
                             codeTypes = listOf(CodeType.LINK),
+                            isFavorite = false,
                         ),
                     ),
                 ),
             ),
             contentPadding = PaddingValues(),
             onScanClicked = {},
+            onScanFavoriteClicked = {},
+            onScanDeleteClicked = {},
         )
     }
 }

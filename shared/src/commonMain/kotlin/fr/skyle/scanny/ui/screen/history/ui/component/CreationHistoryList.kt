@@ -25,6 +25,8 @@ fun CreationHistoryList(
     sections: List<CreationHistorySection>?,
     contentPadding: PaddingValues,
     onCreationClicked: (CreationHistoryItem) -> Unit,
+    onCreationFavoriteClicked: (CreationHistoryItem) -> Unit,
+    onCreationDeleteClicked: (CreationHistoryItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when {
@@ -67,6 +69,8 @@ fun CreationHistoryList(
                             .animateItem(),
                         item = item,
                         onClick = { onCreationClicked(item) },
+                        onFavoriteClicked = { onCreationFavoriteClicked(item) },
+                        onDeleteClicked = { onCreationDeleteClicked(item) },
                     )
                 }
             }
@@ -90,12 +94,15 @@ private fun PreviewCreationHistoryList() {
                             format = BarcodeFormat.QR_CODE,
                             summary = "Scanny",
                             time = "21:48",
+                            isFavorite = false,
                         ),
                     ),
                 ),
             ),
             contentPadding = PaddingValues(),
             onCreationClicked = {},
+            onCreationFavoriteClicked = {},
+            onCreationDeleteClicked = {},
         )
     }
 }
