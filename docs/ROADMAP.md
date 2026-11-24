@@ -47,8 +47,8 @@ Chaque lot est livré par une pull request vers `develop` (voir la section Git d
 
 ## Nouveautés
 
-- [x] Zoom (pincement) et mise au point (appui) *(zoom vérifié sur un Galaxy S21 FE ; mise au point
-      à vérifier)*
+- [x] Zoom (pincement) et mise au point (appui) *(vérifiés sur un Galaxy S21 FE et un iPhone 14 Pro,
+      macro comprise)* ; le niveau de zoom affiché dans le cadre, qui revient à 1× d'une touche
 - [x] Historique des scans : liste, détail, suppression ; l'enregistrer ou non, ignorer les doublons
       consécutifs, durée de conservation (30 jours par défaut, ou toujours)
 - [x] Scan multiple : un mode qu'on active, on passe autant de codes qu'on veut devant la caméra, on

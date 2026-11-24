@@ -349,6 +349,7 @@
     <string name="repeats_on">重复于</string>
     <string name="required_field">%1$s *</string>
     <string name="reset_customization">重置自定义</string>
+    <string name="reset_zoom">恢复到 1×</string>
     <string name="retention_forever">永久</string>
     <string name="retention_one_month">30 天</string>
     <string name="retention_one_week">7 天</string>
@@ -453,4 +454,5 @@
     <string name="write_mms">写彩信</string>
     <string name="write_sms">写短信</string>
     <string name="yesterday">昨天</string>
+    <string name="zoom_ratio">%1$d.%2$d×</string>
 </resources>
