@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
@@ -81,6 +82,7 @@ private fun PreviewScanHistoryList() {
                             scanId = 1,
                             firstCodeId = 1,
                             type = CodeType.LINK,
+                            format = BarcodeFormat.QR_CODE,
                             summary = "https://scanny.app",
                             time = "21:48",
                             codeCount = 1,

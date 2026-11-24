@@ -20,6 +20,7 @@ import fr.skyle.scanny.designsystem.core.tag.SCTag
 import fr.skyle.scanny.designsystem.core.tag.SCTagDefaults
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.ui.core.code.mapper.toIcon
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeType
@@ -28,7 +29,7 @@ import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistoryItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-/** A code created: what it holds, its type in a pill, and its time. */
+/** A code created: what it holds, its type drawn, its format in a pill, and its time. */
 @Composable
 fun CreationHistoryRow(
     item: CreationHistoryItem,
@@ -69,7 +70,8 @@ fun CreationHistoryRow(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 SCTag(
                     modifier = Modifier.weight(weight = 1f, fill = false),
-                    text = stringResource(item.type.toText()),
+                    // Its format, its type already drawn; one this version does not know, its type
+                    text = stringResource(item.format?.toText() ?: item.type.toText()),
                     style = SCTagDefaults.Style.LIGHT,
                     size = SCTagDefaults.Size.MEDIUM,
                 )
@@ -96,6 +98,7 @@ private fun PreviewCreationHistoryRow() {
             item = CreationHistoryItem(
                 creationId = 1,
                 type = CodeType.WIFI,
+                format = BarcodeFormat.QR_CODE,
                 summary = "Scanny",
                 time = "21:48",
             ),
