@@ -4,3 +4,4 @@ Scanny 2.0, fully rewritten:
 • Creates QR codes, Data Matrix, Aztec, PDF417 and barcodes, with all their fields
 • Customized QR codes: colors, shapes, logo
 • History of the scans and of the creations
+• Favorites, SVG export and 12 languages

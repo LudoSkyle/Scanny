@@ -4,3 +4,4 @@ Scanny 2.0, entièrement réécrite :
 • Création de QR codes, Data Matrix, Aztec, PDF417 et codes-barres, avec tous leurs champs
 • QR codes personnalisés : couleurs, formes, logo
 • Historique des scans et des créations
+• Favoris, export SVG et 12 langues
