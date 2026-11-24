@@ -39,6 +39,7 @@ import fr.skyle.scanny.ui.screen.history.ui.component.ScanHistoryList
 import fr.skyle.scanny.ui.screen.history.ui.mapper.toText
 import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistorySection
+import fr.skyle.scanny.ui.screen.history.ui.model.HistoryHeader
 import fr.skyle.scanny.ui.screen.history.ui.model.HistoryView
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
@@ -158,7 +159,7 @@ private fun PreviewHistoryScreen() {
             selectedView = HistoryView.SCANS,
             scanSections = listOf(
                 ScanHistorySection(
-                    day = CalendarDay.Today,
+                    header = HistoryHeader.Day(day = CalendarDay.Today),
                     items = listOf(
                         ScanHistoryItem(
                             scanId = 3,
@@ -183,13 +184,13 @@ private fun PreviewHistoryScreen() {
                     ),
                 ),
                 ScanHistorySection(
-                    day = CalendarDay.Date(
+                    header = HistoryHeader.Day(day = CalendarDay.Date(
                         date = LocalDate(
                             year = 2026,
                             month = 11,
                             day = 18,
                         ),
-                    ),
+                    )),
                     items = listOf(
                         ScanHistoryItem(
                             scanId = 1,

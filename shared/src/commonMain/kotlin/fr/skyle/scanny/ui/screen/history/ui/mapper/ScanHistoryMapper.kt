@@ -6,29 +6,44 @@ import fr.skyle.scanny.ui.core.code.mapper.toCodeSummary
 import fr.skyle.scanny.ui.core.code.mapper.toCodeType
 import fr.skyle.scanny.ui.core.date.mapper.toCalendarDay
 import fr.skyle.scanny.ui.core.date.mapper.toTimeText
+import fr.skyle.scanny.ui.screen.history.ui.model.HistoryHeader
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 
-/** The [Scan]s, already from the newest to the oldest, grouped by the day they were scanned. */
+/**
+ * The [Scan]s, already from the newest to the oldest: the favorites first, apart, then the others
+ * grouped by the day they were scanned.
+ */
 internal fun List<Scan>.toScanHistorySections(
     today: LocalDate,
     timeZone: TimeZone,
-): List<ScanHistorySection> =
-    groupBy { scan ->
+): List<ScanHistorySection> {
+    val (favorites, others) = partition { scan -> scan.isFavorite }
+    val favoriteSection = favorites.takeIf { it.isNotEmpty() }?.let { scans ->
+        ScanHistorySection(
+            header = HistoryHeader.Favorites,
+            items = scans.map { scan ->
+                scan.toScanHistoryItem(timeZone = timeZone)
+            },
+        )
+    }
+    val daySections = others.groupBy { scan ->
         scan.scannedAt.toCalendarDay(
             today = today,
             timeZone = timeZone,
         )
     }.map { (day, scans) ->
         ScanHistorySection(
-            day = day,
+            header = HistoryHeader.Day(day = day),
             items = scans.map { scan ->
                 scan.toScanHistoryItem(timeZone = timeZone)
             },
         )
     }
+    return listOfNotNull(favoriteSection) + daySections
+}
 
 private fun Scan.toScanHistoryItem(timeZone: TimeZone): ScanHistoryItem {
     // A capture always holds a code

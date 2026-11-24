@@ -2,11 +2,10 @@ package fr.skyle.scanny.ui.screen.history.ui.model
 
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.ui.core.code.model.CodeType
-import fr.skyle.scanny.ui.core.date.model.CalendarDay
 
-/** The captures of one day, from the newest to the oldest. */
+/** The favorite captures, or the others of one day, from the newest to the oldest. */
 data class ScanHistorySection(
-    val day: CalendarDay,
+    val header: HistoryHeader,
     val items: List<ScanHistoryItem>,
 )
 

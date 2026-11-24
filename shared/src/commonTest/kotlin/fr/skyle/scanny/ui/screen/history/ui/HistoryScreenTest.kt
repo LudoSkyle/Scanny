@@ -26,6 +26,7 @@ import fr.skyle.scanny.resources.clear_history
 import fr.skyle.scanny.resources.clear_history_question
 import fr.skyle.scanny.resources.contact
 import fr.skyle.scanny.resources.creations
+import fr.skyle.scanny.resources.favorites
 import fr.skyle.scanny.resources.group_of_n_codes
 import fr.skyle.scanny.resources.link
 import fr.skyle.scanny.resources.more_count
@@ -38,6 +39,7 @@ import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.screen.history.ui.component.ClearHistoryDialog
 import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistorySection
+import fr.skyle.scanny.ui.screen.history.ui.model.HistoryHeader
 import fr.skyle.scanny.ui.screen.history.ui.model.HistoryView
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
@@ -80,7 +82,7 @@ internal class HistoryScreenTest : ComposeTest() {
                 selectedView = HistoryView.SCANS,
                 scanSections = listOf(
                     ScanHistorySection(
-                        day = CalendarDay.Today,
+                        header = HistoryHeader.Day(day = CalendarDay.Today),
                         items = listOf(
                             ScanHistoryItem(
                                 scanId = 1,
@@ -114,7 +116,7 @@ internal class HistoryScreenTest : ComposeTest() {
                 selectedView = HistoryView.SCANS,
                 scanSections = listOf(
                     ScanHistorySection(
-                        day = CalendarDay.Today,
+                        header = HistoryHeader.Day(day = CalendarDay.Today),
                         items = listOf(LINK.copy(format = BarcodeFormat.AZTEC)),
                     ),
                 ),
@@ -134,7 +136,7 @@ internal class HistoryScreenTest : ComposeTest() {
                 selectedView = HistoryView.SCANS,
                 scanSections = listOf(
                     ScanHistorySection(
-                        day = CalendarDay.Today,
+                        header = HistoryHeader.Day(day = CalendarDay.Today),
                         items = listOf(LINK.copy(format = null)),
                     ),
                 ),
@@ -143,6 +145,26 @@ internal class HistoryScreenTest : ComposeTest() {
 
         // Then
         onNodeWithText(getString(Res.string.link)).assertExists()
+    }
+
+    @Test
+    fun `the favorites show under their own title at the top`() = runComposeUiTest {
+        // When
+        setContent {
+            historyScreen(
+                selectedView = HistoryView.SCANS,
+                scanSections = listOf(
+                    ScanHistorySection(
+                        header = HistoryHeader.Favorites,
+                        items = listOf(LINK),
+                    ),
+                ),
+            )
+        }
+
+        // Then
+        onNodeWithText(getString(Res.string.favorites)).assertExists()
+        onNodeWithText(LINK.summary).assertExists()
     }
 
     @Test
@@ -283,7 +305,7 @@ internal class HistoryScreenTest : ComposeTest() {
         )
         val SCAN_SECTIONS = listOf(
             ScanHistorySection(
-                day = CalendarDay.Today,
+                header = HistoryHeader.Day(day = CalendarDay.Today),
                 items = listOf(
                     LINK,
                     ScanHistoryItem(
@@ -308,7 +330,7 @@ internal class HistoryScreenTest : ComposeTest() {
         )
         val CREATION_SECTIONS = listOf(
             CreationHistorySection(
-                day = CalendarDay.Yesterday,
+                header = HistoryHeader.Day(day = CalendarDay.Yesterday),
                 items = listOf(CREATION),
             ),
         )
