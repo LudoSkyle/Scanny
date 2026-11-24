@@ -25,6 +25,7 @@ import fr.skyle.scanny.platform.gallery.rememberImageBarcodeScanner
 import fr.skyle.scanny.platform.wifi.WifiNetworkJoiner
 import fr.skyle.scanny.platform.wifi.rememberWifiNetworkJoiner
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.favorite_not_changed
 import fr.skyle.scanny.resources.no_app_to_open
 import fr.skyle.scanny.resources.no_code_in_image
 import fr.skyle.scanny.resources.scan_not_saved
@@ -124,6 +125,10 @@ fun ScanRoute(
                     }
 
                     // On the sheet of the result when it shows one, on the scan otherwise
+                    ScanViewModel.ScanEvent.FavoriteNotChanged -> launch {
+                        messages().show(message = getString(Res.string.favorite_not_changed))
+                    }
+
                     ScanViewModel.ScanEvent.ContactNotAdded,
                     ScanViewModel.ScanEvent.EventNotAdded,
                     -> launch {
@@ -178,6 +183,7 @@ fun ScanRoute(
         onSeeResultDetailClicked = viewModel::onSeeDetailClicked,
         onResultCodeClicked = viewModel::onResultCodeClicked,
         onSeeResultGroupClicked = viewModel::onSeeGroupClicked,
+        onResultFavoriteClicked = viewModel::onResultFavoriteClicked,
         onResultDismissed = {
             resultSnackbarState.dismiss()
             viewModel.onResultDismissed()

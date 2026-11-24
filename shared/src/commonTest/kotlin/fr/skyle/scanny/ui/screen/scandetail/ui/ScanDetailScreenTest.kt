@@ -13,6 +13,7 @@ import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.about_format
+import fr.skyle.scanny.resources.add_to_favorites
 import fr.skyle.scanny.resources.copy
 import fr.skyle.scanny.resources.edit_code
 import fr.skyle.scanny.resources.hidden_password
@@ -20,6 +21,7 @@ import fr.skyle.scanny.resources.hide_password
 import fr.skyle.scanny.resources.password
 import fr.skyle.scanny.resources.raw_content
 import fr.skyle.scanny.resources.recipient
+import fr.skyle.scanny.resources.remove_from_favorites
 import fr.skyle.scanny.resources.share
 import fr.skyle.scanny.resources.show_code
 import fr.skyle.scanny.resources.show_password
@@ -31,9 +33,9 @@ import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.screen.scandetail.ui.model.ScanDetailItem
 import fr.skyle.scanny.ui.test.ComposeTest
-import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import org.jetbrains.compose.resources.getString
 
 @OptIn(ExperimentalTestApi::class)
 internal class ScanDetailScreenTest : ComposeTest() {
@@ -203,6 +205,38 @@ internal class ScanDetailScreenTest : ComposeTest() {
         onNodeWithContentDescription(getString(Res.string.show_code)).assertExists()
     }
 
+    @Test
+    fun `the star puts a single code among the favorites and shows when it is one`() = runComposeUiTest {
+        // Given
+        var favoriteClickCount = 0
+        setContent {
+            scanDetailScreen(
+                code = EMAIL.copy(isFavorite = true),
+                onFavoriteClicked = { favoriteClickCount++ },
+            )
+        }
+
+        // When
+        onNodeWithContentDescription(getString(Res.string.remove_from_favorites)).performClick()
+
+        // Then
+        assertEquals(
+            expected = 1,
+            actual = favoriteClickCount,
+        )
+    }
+
+    @Test
+    fun `a code of a group has no star of its own`() = runComposeUiTest {
+        // When
+        setContent {
+            scanDetailScreen(code = EMAIL.copy(isInGroup = true))
+        }
+
+        // Then
+        onNodeWithContentDescription(getString(Res.string.add_to_favorites)).assertDoesNotExist()
+    }
+
     @Composable
     private fun scanDetailScreen(
         code: ScanDetailItem,
@@ -211,6 +245,7 @@ internal class ScanDetailScreenTest : ComposeTest() {
         onEditClicked: () -> Unit = {},
         onCopyClicked: (String) -> Unit = {},
         onActionClicked: (CodeAction) -> Unit = {},
+        onFavoriteClicked: () -> Unit = {},
     ) {
         SCTheme {
             ScanDetailScreen(
@@ -225,6 +260,7 @@ internal class ScanDetailScreenTest : ComposeTest() {
                 onDeleteClicked = {},
                 onCopyClicked = onCopyClicked,
                 onActionClicked = onActionClicked,
+                onFavoriteClicked = onFavoriteClicked,
             )
         }
     }
@@ -248,6 +284,9 @@ internal class ScanDetailScreenTest : ComposeTest() {
             rawValue = "mailto:john@doe.fr?subject=Hello%20Scanny",
             isRawValueShown = true,
             action = CodeAction.WriteEmail(link = "mailto:john@doe.fr?subject=Hello%20Scanny"),
+            scanId = 1,
+            isFavorite = false,
+            isInGroup = false,
         )
         val WIFI = ScanDetailItem(
             type = CodeType.WIFI,
@@ -267,6 +306,9 @@ internal class ScanDetailScreenTest : ComposeTest() {
             rawValue = "WIFI:T:WPA;S:ScannyNet;P:secret123;;",
             isRawValueShown = true,
             action = null,
+            scanId = 1,
+            isFavorite = false,
+            isInGroup = false,
         )
     }
 }

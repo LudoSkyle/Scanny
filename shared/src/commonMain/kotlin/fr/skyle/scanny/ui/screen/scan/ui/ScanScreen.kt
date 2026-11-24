@@ -76,6 +76,7 @@ fun ScanScreen(
     onSeeResultDetailClicked: () -> Unit,
     onResultCodeClicked: (codeId: Long) -> Unit,
     onSeeResultGroupClicked: () -> Unit,
+    onResultFavoriteClicked: () -> Unit,
     onResultDismissed: () -> Unit,
 ) {
     SCScreenStructure(
@@ -185,6 +186,7 @@ fun ScanScreen(
             onActionClicked = onResultActionClicked,
             onCopyClicked = { onCopyResultClicked(result.item.rawValue) },
             onSeeDetailClicked = onSeeResultDetailClicked,
+            onFavoriteClicked = onResultFavoriteClicked,
             onDismissRequest = onResultDismissed,
             snackbarState = resultSnackbarState,
         )
@@ -192,9 +194,12 @@ fun ScanScreen(
         is ScanResult.Group -> ScanGroupResultSheet(
             modifier = Modifier.fillMaxWidth(),
             codes = result.codes,
+            isFavorite = result.isFavorite,
             onCodeClicked = onResultCodeClicked,
             onSeeGroupClicked = onSeeResultGroupClicked,
+            onFavoriteClicked = onResultFavoriteClicked,
             onDismissRequest = onResultDismissed,
+            snackbarState = resultSnackbarState,
         )
 
         null -> Unit
@@ -238,6 +243,7 @@ private fun PreviewScanScreen() {
             onResultCodeClicked = {},
             onSeeResultGroupClicked = {},
             onResultDismissed = {},
+            onResultFavoriteClicked = {},
         )
     }
 }
@@ -279,6 +285,7 @@ private fun PreviewScanScreen_MultipleScan() {
             onResultCodeClicked = {},
             onSeeResultGroupClicked = {},
             onResultDismissed = {},
+            onResultFavoriteClicked = {},
         )
     }
 }
@@ -316,6 +323,7 @@ private fun PreviewScanScreen_CameraBlocked() {
             onResultCodeClicked = {},
             onSeeResultGroupClicked = {},
             onResultDismissed = {},
+            onResultFavoriteClicked = {},
         )
     }
 }

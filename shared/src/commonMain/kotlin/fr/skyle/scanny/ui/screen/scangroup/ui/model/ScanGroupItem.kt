@@ -8,4 +8,6 @@ data class ScanGroupItem(
     val scannedDay: CalendarDay,
     val scannedTime: String,
     val codes: List<CodeRowItem>,
+    // A favorite as a whole
+    val isFavorite: Boolean,
 )

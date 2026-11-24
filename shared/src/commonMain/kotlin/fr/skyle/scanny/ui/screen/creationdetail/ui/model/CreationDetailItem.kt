@@ -15,4 +15,5 @@ data class CreationDetailItem(
     val rawValue: String,
     val isRawValueShown: Boolean,
     val style: CodeStyle,
+    val isFavorite: Boolean,
 )

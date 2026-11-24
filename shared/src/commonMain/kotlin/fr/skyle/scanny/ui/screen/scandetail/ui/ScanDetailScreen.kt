@@ -39,6 +39,7 @@ import fr.skyle.scanny.resources.show_code
 import fr.skyle.scanny.ui.core.code.component.CodeActionButton
 import fr.skyle.scanny.ui.core.code.component.CodeFieldRow
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
+import fr.skyle.scanny.ui.core.code.component.FavoriteButton
 import fr.skyle.scanny.ui.core.code.component.RawContentCard
 import fr.skyle.scanny.ui.core.code.component.codeFieldValueText
 import fr.skyle.scanny.ui.core.code.mapper.toText
@@ -62,6 +63,7 @@ fun ScanDetailScreen(
     onShowCodeClicked: () -> Unit,
     onFormatInfoClicked: () -> Unit,
     onEditClicked: () -> Unit,
+    onFavoriteClicked: () -> Unit,
     onShareClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
     onCopyClicked: (text: String) -> Unit,
@@ -77,6 +79,15 @@ fun ScanDetailScreen(
                 onBackClicked = onBackClicked,
                 actions = {
                     if (code != null) {
+                        // A code of a group is not one apart: the group is a favorite from its screen
+                        if (!code.isInGroup) {
+                            FavoriteButton(
+                                modifier = Modifier.wrapContentSize(),
+                                isFavorite = code.isFavorite,
+                                onClick = onFavoriteClicked,
+                            )
+                        }
+
                         if (code.format != null) {
                             SCIconButton(
                                 modifier = Modifier.wrapContentSize(),
@@ -221,6 +232,9 @@ private fun PreviewScanDetailScreen() {
                 rawValue = "SMSTO:+33600000000:See you at 10:30",
                 isRawValueShown = true,
                 action = CodeAction.WriteSms(link = "sms:+33600000000?body=See%20you%20at%2010%3A30"),
+                scanId = 1,
+                isFavorite = false,
+                isInGroup = false,
             ),
             isDeleting = false,
             snackbarState = rememberSCSnackbarState(),
@@ -232,6 +246,7 @@ private fun PreviewScanDetailScreen() {
             onDeleteClicked = {},
             onCopyClicked = {},
             onActionClicked = {},
+            onFavoriteClicked = {},
         )
     }
 }
@@ -255,6 +270,9 @@ private fun PreviewScanDetailScreen_Text() {
                 rawValue = "Hello Scanny",
                 isRawValueShown = false,
                 action = null,
+                scanId = 1,
+                isFavorite = false,
+                isInGroup = false,
             ),
             isDeleting = false,
             snackbarState = rememberSCSnackbarState(),
@@ -266,6 +284,7 @@ private fun PreviewScanDetailScreen_Text() {
             onDeleteClicked = {},
             onCopyClicked = {},
             onActionClicked = {},
+            onFavoriteClicked = {},
         )
     }
 }
@@ -286,6 +305,7 @@ private fun PreviewScanDetailScreen_Loading() {
             onDeleteClicked = {},
             onCopyClicked = {},
             onActionClicked = {},
+            onFavoriteClicked = {},
         )
     }
 }

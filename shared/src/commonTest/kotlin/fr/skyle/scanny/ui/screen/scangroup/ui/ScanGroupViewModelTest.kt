@@ -5,6 +5,7 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.Scan
 import fr.skyle.scanny.domain.model.ScannedCode
 import fr.skyle.scanny.fake.FakeDeleteScanUseCase
+import fr.skyle.scanny.fake.FakeSetScanFavoriteUseCase
 import fr.skyle.scanny.fake.FakeTextSharer
 import fr.skyle.scanny.fake.FakeWatchScanUseCase
 import fr.skyle.scanny.fake.FixedClock
@@ -12,6 +13,12 @@ import fr.skyle.scanny.ui.core.code.model.CodeRowItem
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.screen.scangroup.ui.model.ScanGroupItem
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
@@ -22,12 +29,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
-import kotlin.time.Instant
 
 // The test dispatchers of kotlinx-coroutines-test are still experimental
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -74,6 +75,7 @@ class ScanGroupViewModelTest {
                         summary = "4006381333931",
                     ),
                 ),
+                isFavorite = false,
             ),
             actual = viewModel.uiState.value.group,
         )
@@ -160,15 +162,38 @@ class ScanGroupViewModelTest {
         )
     }
 
+    @Test
+    fun `the star puts the group among the favorites as a whole and takes it out`() = runTest(testDispatcher) {
+        // Given
+        val setScanFavoriteUseCase = FakeSetScanFavoriteUseCase()
+        val notFavorite = scanGroupViewModel(setScanFavoriteUseCase = setScanFavoriteUseCase)
+        val favorite = scanGroupViewModel(
+            watchScanUseCase = FakeWatchScanUseCase(scan = group().copy(isFavorite = true)),
+            setScanFavoriteUseCase = setScanFavoriteUseCase,
+        )
+
+        // When
+        notFavorite.onFavoriteClicked()
+        favorite.onFavoriteClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(SCAN_ID to true, SCAN_ID to false),
+            actual = setScanFavoriteUseCase.setFavorites,
+        )
+    }
+
     private fun scanGroupViewModel(
         watchScanUseCase: FakeWatchScanUseCase = FakeWatchScanUseCase(scan = group()),
         deleteScanUseCase: FakeDeleteScanUseCase = FakeDeleteScanUseCase(),
+        setScanFavoriteUseCase: FakeSetScanFavoriteUseCase = FakeSetScanFavoriteUseCase(),
         textSharer: FakeTextSharer = FakeTextSharer(),
     ): ScanGroupViewModel =
         ScanGroupViewModel(
             scanId = SCAN_ID,
             watchScanUseCase = watchScanUseCase,
             deleteScanUseCase = deleteScanUseCase,
+            setScanFavoriteUseCase = setScanFavoriteUseCase,
             textSharer = textSharer,
             clock = FixedClock(instant = SCANNED_AT),
             timeZone = TimeZone.UTC,

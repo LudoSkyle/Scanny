@@ -7,9 +7,11 @@ import fr.skyle.scanny.ui.core.code.model.CodeType
 
 data class ScanResultItem(
     val codeId: Long,
+    val scanId: Long,
     val type: CodeType,
     val format: BarcodeFormat?,
     val fields: List<CodeField>,
     val rawValue: String,
     val action: CodeAction?,
+    val isFavorite: Boolean,
 )

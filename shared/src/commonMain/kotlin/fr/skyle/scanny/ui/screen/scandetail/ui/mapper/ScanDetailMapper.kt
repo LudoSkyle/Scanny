@@ -18,6 +18,7 @@ internal fun ScannedCode.toScanDetailItem(
     timeZone: TimeZone,
 ): ScanDetailItem =
     ScanDetailItem(
+        scanId = scanId,
         type = content.toCodeType(),
         format = format,
         scannedDay = scannedAt.toCalendarDay(
@@ -29,4 +30,6 @@ internal fun ScannedCode.toScanDetailItem(
         rawValue = rawValue,
         isRawValueShown = content.hasDistinctRawValue(),
         action = content.toCodeAction(canJoinWifi = canJoinWifi),
+        isFavorite = isFavorite,
+        isInGroup = isInGroup,
     )

@@ -8,14 +8,15 @@
     <string name="add_phone">전화번호 추가</string>
     <string name="add_to_authenticator">인증 앱에 추가</string>
     <string name="add_to_calendar">캘린더에 추가</string>
+    <string name="add_to_favorites">즐겨찾기에 추가</string>
     <string name="add_website">웹사이트 추가</string>
     <string name="address">주소</string>
     <string name="addresses">주소</string>
     <string name="advanced_options">고급 옵션</string>
     <string name="algorithm">알고리즘</string>
-    <string name="all_creations_deleted">만든 코드가 모두 삭제됩니다.</string>
+    <string name="all_creations_deleted">즐겨찾기를 포함해 만든 코드가 모두 삭제됩니다.</string>
     <string name="all_day">하루 종일</string>
-    <string name="all_scans_deleted">스캔한 코드가 모두 삭제됩니다.</string>
+    <string name="all_scans_deleted">즐겨찾기를 포함해 스캔한 코드가 모두 삭제됩니다.</string>
     <string name="allow_camera">카메라 허용</string>
     <string name="altitude">고도</string>
     <string name="altitude_in_meters">고도(미터)</string>
@@ -166,6 +167,8 @@
         <item quantity="other">%1$d년마다</item>
     </plurals>
     <string name="extended_address">상세 주소</string>
+    <string name="favorite_not_changed">즐겨찾기를 변경하지 못했습니다</string>
+    <string name="favorites">즐겨찾기</string>
     <string name="fax">팩스</string>
     <string name="feedback">의견</string>
     <string name="feedback_about_other">기타</string>
@@ -345,6 +348,7 @@
     <string name="region">시/도</string>
     <string name="reminder">알림</string>
     <string name="remove">제거</string>
+    <string name="remove_from_favorites">즐겨찾기에서 삭제</string>
     <string name="remove_logo">로고 제거</string>
     <string name="repeat_interval">반복 간격</string>
     <string name="repeats_on">반복 요일</string>
