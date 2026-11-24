@@ -17,8 +17,9 @@ import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
 import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.CreationHistorySection
+import fr.skyle.scanny.ui.screen.history.ui.model.HistoryHeader
 
-/** The codes created by day, from the newest, or what shows before the first one. */
+/** The favorite creations, then the others by day, from the newest, or what shows before the first one. */
 @Composable
 fun CreationHistoryList(
     sections: List<CreationHistorySection>?,
@@ -43,12 +44,14 @@ fun CreationHistoryList(
         ) {
             sections.forEach { section ->
                 item(
-                    key = section.day.toString(),
-                    contentType = "day",
+                    key = section.header.toString(),
+                    contentType = "header",
                 ) {
-                    HistoryDayHeader(
-                        modifier = Modifier.fillMaxWidth(),
-                        day = section.day,
+                    HistorySectionHeader(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItem(),
+                        header = section.header,
                     )
                 }
 
@@ -57,8 +60,11 @@ fun CreationHistoryList(
                     key = { item -> item.creationId },
                     contentType = { "creation" },
                 ) { item ->
+                    // Moved between the favorites and its day without a blink
                     CreationHistoryRow(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItem(),
                         item = item,
                         onClick = { onCreationClicked(item) },
                     )
@@ -76,7 +82,7 @@ private fun PreviewCreationHistoryList() {
             modifier = Modifier.fillMaxSize(),
             sections = listOf(
                 CreationHistorySection(
-                    day = CalendarDay.Today,
+                    header = HistoryHeader.Day(day = CalendarDay.Today),
                     items = listOf(
                         CreationHistoryItem(
                             creationId = 1,
