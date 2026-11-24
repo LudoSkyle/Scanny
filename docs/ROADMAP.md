@@ -312,7 +312,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [ ] Captures des stores dans chaque langue
 14. **Favoris et annotations**
     - [x] Les favoris : une étoile dans le détail d'un scan, d'un groupe (en entier) et d'une création,
-          et sur la fiche du scan ; une section « Favoris » en haut de l'historique, où ils quittent
+          et sur la fiche du scan, ou par un appui long sur une ligne de l'historique, qui propose aussi
+          de la supprimer ; une section « Favoris » en haut de l'historique, où ils quittent
           leur journée ; épargnés par la durée de conservation, supprimés par « Tout supprimer »
     - [ ] Les annotations, sur une capture, depuis l'historique et l'écran du groupe
 

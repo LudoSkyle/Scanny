@@ -58,6 +58,10 @@ fun HistoryScreen(
     onClearClicked: () -> Unit,
     onScanClicked: (ScanHistoryItem) -> Unit,
     onCreationClicked: (CreationHistoryItem) -> Unit,
+    onScanFavoriteClicked: (ScanHistoryItem) -> Unit,
+    onScanDeleteClicked: (ScanHistoryItem) -> Unit,
+    onCreationFavoriteClicked: (CreationHistoryItem) -> Unit,
+    onCreationDeleteClicked: (CreationHistoryItem) -> Unit,
 ) {
     // A swipe between the views settles on a page: the page and the switch follow each other
     val pagerState = rememberPagerState(initialPage = selectedView.ordinal) { HistoryView.entries.size }
@@ -137,6 +141,8 @@ fun HistoryScreen(
                         sections = scanSections,
                         contentPadding = listPadding,
                         onScanClicked = onScanClicked,
+                        onScanFavoriteClicked = onScanFavoriteClicked,
+                        onScanDeleteClicked = onScanDeleteClicked,
                     )
 
                     HistoryView.CREATIONS -> CreationHistoryList(
@@ -144,6 +150,8 @@ fun HistoryScreen(
                         sections = creationSections,
                         contentPadding = listPadding,
                         onCreationClicked = onCreationClicked,
+                        onCreationFavoriteClicked = onCreationFavoriteClicked,
+                        onCreationDeleteClicked = onCreationDeleteClicked,
                     )
                 }
             }
@@ -170,6 +178,7 @@ private fun PreviewHistoryScreen() {
                             time = "21:48",
                             codeCount = 1,
                             codeTypes = listOf(CodeType.LINK),
+                            isFavorite = false,
                         ),
                         ScanHistoryItem(
                             scanId = 2,
@@ -180,6 +189,7 @@ private fun PreviewHistoryScreen() {
                             time = "09:05",
                             codeCount = 1,
                             codeTypes = listOf(CodeType.WIFI),
+                            isFavorite = false,
                         ),
                     ),
                 ),
@@ -201,6 +211,7 @@ private fun PreviewHistoryScreen() {
                             time = "18:30",
                             codeCount = 1,
                             codeTypes = listOf(CodeType.CONTACT),
+                            isFavorite = false,
                         ),
                     ),
                 ),
@@ -212,6 +223,10 @@ private fun PreviewHistoryScreen() {
             onClearClicked = {},
             onScanClicked = {},
             onCreationClicked = {},
+            onScanFavoriteClicked = {},
+            onScanDeleteClicked = {},
+            onCreationFavoriteClicked = {},
+            onCreationDeleteClicked = {},
         )
     }
 }
@@ -230,6 +245,10 @@ private fun PreviewHistoryScreen_EmptyCreations() {
             onClearClicked = {},
             onScanClicked = {},
             onCreationClicked = {},
+            onScanFavoriteClicked = {},
+            onScanDeleteClicked = {},
+            onCreationFavoriteClicked = {},
+            onCreationDeleteClicked = {},
         )
     }
 }
