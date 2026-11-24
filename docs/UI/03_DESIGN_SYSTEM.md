@@ -18,7 +18,10 @@ On y trouve :
   carte), `SCExpandableCardStructure` (une carte repliée
   sous son titre, titre compris dans la carte pour qu'elle se lise touchable, jusqu'à un toucher), `SCDialog`, `SCBottomSheet`, `SCSnackbarState`,
   `SCSwitch`, `SCTextField`, `SCDropdownField` (un choix dans un menu qui se déplie sous le champ),
-  `SCDropdownMenu` (le menu seul, sous l'élément où il est placé), `SCDivider` (une ligne entre deux
+  `SCDropdownMenu` (le menu seul, sous l'élément où il est placé), `SCContextMenu` (un menu qui
+  part du doigt qui tient un élément, dessous s'il a la place, sinon dessus, finissant au doigt :
+  le menu de Material s'ouvre au-dessus d'un élément de la moitié basse de l'écran et reste à 48 dp
+  de ses bords), `SCDivider` (une ligne entre deux
   rangées d'une carte), `SCSegmentedControl` (un choix entre quelques options côte à côte, chacune
   lue comme un onglet), `SCTag` (un court libellé dans une pastille, qui classe ce qu'il
   accompagne : le format d'un code, son type étant déjà dessiné, les types des codes d'un groupe), `SCDateField` (une date choisie
@@ -57,7 +60,7 @@ designSystem/src/commonMain/
 │       ├── timefield/         (SCTimeField : une heure choisie sur une horloge, effaçable)
 │       ├── divider/           (SCDivider : une ligne fine entre deux rangées, de la couleur du fond)
 │       ├── dropdownfield/     (SCDropdownField : un choix dans un menu, aux styles de SCTextField)
-│       ├── dropdownmenu/      (SCDropdownMenu : un menu d'options, le choix en cours en couleur)
+│       ├── dropdownmenu/      (SCDropdownMenu : un menu d'options, le choix en cours en couleur ; SCContextMenu : un menu au doigt)
 │       ├── iconbadge/         (SCIconBadge : une icône dans un rond, non cliquable ; MEDIUM dans une rangée, LARGE en tête d'un écran ; FILLED ressort parmi les PRIMARY)
 │       ├── iconbutton/
 │       │   ├── SCIconButton.kt

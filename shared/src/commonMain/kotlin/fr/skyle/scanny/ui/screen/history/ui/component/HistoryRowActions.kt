@@ -18,7 +18,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.IntOffset
-import fr.skyle.scanny.designsystem.core.dropdownmenu.SCDropdownMenu
+import fr.skyle.scanny.designsystem.core.dropdownmenu.SCContextMenu
 import fr.skyle.scanny.designsystem.core.dropdownmenu.SCDropdownMenuDefaults
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.add_to_favorites
@@ -72,8 +72,7 @@ fun HistoryRowActions(
     ) {
         content()
 
-        // A point under the finger for the menu to hang from: under the row or over it, it starts or
-        // ends there
+        // A point under the finger for the menu to hang from: under it or over it, it starts or ends there
         Box(
             modifier = Modifier.offset {
                 IntOffset(
@@ -82,11 +81,10 @@ fun HistoryRowActions(
                 )
             },
         ) {
-            SCDropdownMenu(
+            SCContextMenu(
                 isExpanded = isMenuExpanded,
                 onDismissRequest = { isMenuExpanded = false },
                 options = HistoryRowAction.entries,
-                selectedOption = null,
                 optionText = { action ->
                     stringResource(
                         when (action) {
