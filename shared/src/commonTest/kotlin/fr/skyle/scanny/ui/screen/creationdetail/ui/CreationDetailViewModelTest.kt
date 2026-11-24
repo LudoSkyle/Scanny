@@ -10,6 +10,7 @@ import fr.skyle.scanny.fake.FakeDeleteCreationUseCase
 import fr.skyle.scanny.fake.FakeImageSaver
 import fr.skyle.scanny.fake.FakeImageSharer
 import fr.skyle.scanny.fake.FakeSetCreationFavoriteUseCase
+import fr.skyle.scanny.fake.FakeTextSharer
 import fr.skyle.scanny.fake.FakeWatchCreationUseCase
 import fr.skyle.scanny.fake.FixedClock
 import fr.skyle.scanny.platform.image.SavedImage
@@ -317,10 +318,27 @@ class CreationDetailViewModelTest {
         )
     }
 
+    @Test
+    fun `sharing the creation shares the text put in its code`() = runTest(testDispatcher) {
+        // Given
+        val textSharer = FakeTextSharer()
+        val viewModel = creationDetailViewModel(textSharer = textSharer)
+
+        // When
+        viewModel.onShareClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf("https://scanny.app"),
+            actual = textSharer.sharedTexts,
+        )
+    }
+
     private fun creationDetailViewModel(
         watchCreationUseCase: FakeWatchCreationUseCase = FakeWatchCreationUseCase(creation = linkCreation()),
         deleteCreationUseCase: FakeDeleteCreationUseCase = FakeDeleteCreationUseCase(),
         setCreationFavoriteUseCase: FakeSetCreationFavoriteUseCase = FakeSetCreationFavoriteUseCase(),
+        textSharer: FakeTextSharer = FakeTextSharer(),
         codeImageRenderer: FakeCodeImageRenderer = FakeCodeImageRenderer(),
         imageSharer: FakeImageSharer = FakeImageSharer(),
         imageSaver: FakeImageSaver = FakeImageSaver(),
@@ -330,6 +348,7 @@ class CreationDetailViewModelTest {
             watchCreationUseCase = watchCreationUseCase,
             deleteCreationUseCase = deleteCreationUseCase,
             setCreationFavoriteUseCase = setCreationFavoriteUseCase,
+            textSharer = textSharer,
             codeImageExporter = CodeImageExporter(
                 codeImageRenderer = codeImageRenderer,
                 imageSharer = imageSharer,

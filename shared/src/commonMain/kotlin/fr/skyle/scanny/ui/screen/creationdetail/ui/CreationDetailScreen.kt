@@ -34,6 +34,8 @@ import fr.skyle.scanny.resources.edit_code
 import fr.skyle.scanny.resources.ic_delete
 import fr.skyle.scanny.resources.ic_edit
 import fr.skyle.scanny.resources.ic_qr_code
+import fr.skyle.scanny.resources.ic_share
+import fr.skyle.scanny.resources.share
 import fr.skyle.scanny.resources.show_code
 import fr.skyle.scanny.ui.core.code.component.CodeFieldRow
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
@@ -61,6 +63,7 @@ fun CreationDetailScreen(
     onFormatInfoClicked: () -> Unit,
     onEditClicked: () -> Unit,
     onFavoriteClicked: () -> Unit,
+    onShareClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
     onCopyClicked: (text: String) -> Unit,
 ) {
@@ -98,6 +101,15 @@ fun CreationDetailScreen(
                             icon = painterResource(Res.drawable.ic_edit),
                             contentDescription = stringResource(Res.string.edit_code),
                             onClick = onEditClicked,
+                            style = SCIconButtonDefaults.Style.DARK,
+                            size = SCIconButtonDefaults.Size.MEDIUM,
+                        )
+
+                        SCIconButton(
+                            modifier = Modifier.wrapContentSize(),
+                            icon = painterResource(Res.drawable.ic_share),
+                            contentDescription = stringResource(Res.string.share),
+                            onClick = onShareClicked,
                             style = SCIconButtonDefaults.Style.DARK,
                             size = SCIconButtonDefaults.Size.MEDIUM,
                         )
@@ -212,6 +224,7 @@ private fun PreviewCreationDetailScreen() {
             onDeleteClicked = {},
             onCopyClicked = {},
             onFavoriteClicked = {},
+            onShareClicked = {},
         )
     }
 }
