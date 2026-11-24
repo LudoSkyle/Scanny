@@ -30,6 +30,14 @@ def release_notes_file
   File.exist?(path) ? path : nil
 end
 
+# What the testers are told of the version, given or else written in fastlane/release_notes
+def testers_notes(given)
+  return given.to_s unless given.to_s.strip.empty?
+
+  path = File.join(ROOT, "fastlane/release_notes/#{app_version_name}-testers.txt")
+  File.exist?(path) ? File.read(path) : ""
+end
+
 # Releases the files of the version on GitHub, from the commit published: completed if it exists
 def release_on_github(files:)
   tag = "v#{app_version_name}"
@@ -55,7 +63,7 @@ platform :android do
   end
 
   desc "Sends the signed app to the testers of Firebase App Distribution"
-  desc "Options: variant (release, debug), groups (Internal), release_notes"
+  desc "Options: variant (release, debug), groups (Internal), release_notes (fastlane/release_notes/X.Y-testers.txt by default)"
   lane :distribute do |options|
     variant = options.fetch(:variant, "release")
     gradle(task: ":androidApp:assemble#{variant.capitalize}", project_dir: ROOT)
@@ -65,7 +73,7 @@ platform :android do
       android_artifact_type: "APK",
       android_artifact_path: File.join(ROOT, "androidApp/build/outputs/apk/#{variant}/androidApp-#{variant}.apk"),
       groups: options.fetch(:groups, "Internal"),
-      release_notes: options[:release_notes].to_s,
+      release_notes: testers_notes(options[:release_notes]),
     )
   end
 
@@ -182,13 +190,13 @@ platform :ios do
   end
 
   desc "Sends the signed app to the testers of TestFlight"
-  desc "Options: changelog"
+  desc "Options: changelog (fastlane/release_notes/X.Y-testers.txt by default)"
   lane :distribute do |options|
     # A number of its own, 20000.12 for the 12th run: the version code stays for the build of the store
     build_signed_app(build_number: "#{app_version_code}.#{ENV.fetch('GITHUB_RUN_NUMBER', Time.now.to_i)}")
     upload_to_testflight(
       api_key: app_store_connect_key,
-      changelog: options[:changelog].to_s,
+      changelog: testers_notes(options[:changelog]),
       skip_waiting_for_build_processing: true,
     )
   end
