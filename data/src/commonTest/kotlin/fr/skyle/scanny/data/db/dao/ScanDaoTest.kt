@@ -108,8 +108,110 @@ internal class ScanDaoTest : DatabaseTest() {
                     format = "QR_CODE",
                 ),
                 scannedAt = 1_700_000_000_123,
+                isScanFavorite = false,
+                scanCodeCount = 1,
             ),
             actual = code,
+        )
+    }
+
+    @Test
+    fun `a code is watched with whether its capture is a favorite and how many codes it holds`() = runTest {
+        // Given
+        val scanId = scanDao.insertWithCodes(
+            scan = ScanEntity(scannedAt = 0),
+            codes = listOf(
+                codeEntity(position = 0),
+                codeEntity(position = 1),
+            ),
+        )
+        scanDao.updateFavorite(
+            id = scanId,
+            isFavorite = true,
+        )
+        val codeId = scanDao.watchById(id = scanId).first()!!.codes.first().id
+
+        // When
+        val code = scanDao.watchCodeById(id = codeId).first()
+
+        // Then
+        assertEquals(
+            expected = true to 2,
+            actual = code?.isScanFavorite to code?.scanCodeCount,
+        )
+    }
+
+    @Test
+    fun `a favorite out of the history is in the history`() = runTest {
+        // Given
+        val keptId = insertScan(scannedAt = 1_000)
+        val favoriteId = insertScan(
+            scannedAt = 2_000,
+            isInHistory = false,
+            isFavorite = true,
+        )
+
+        // When
+        val scans = scanDao.watchHistory().first()
+
+        // Then
+        assertEquals(
+            expected = listOf(favoriteId to true, keptId to false),
+            actual = scans.map { it.scan.id to it.scan.isFavorite },
+        )
+    }
+
+    @Test
+    fun `a capture is put among the favorites and taken out`() = runTest {
+        // Given
+        val scanId = insertScan()
+
+        // When
+        scanDao.updateFavorite(
+            id = scanId,
+            isFavorite = true,
+        )
+        val favorite = scanDao.watchById(id = scanId).first()?.scan?.isFavorite
+        scanDao.updateFavorite(
+            id = scanId,
+            isFavorite = false,
+        )
+
+        // Then
+        assertEquals(
+            expected = true to false,
+            actual = favorite to scanDao.watchById(id = scanId).first()?.scan?.isFavorite,
+        )
+    }
+
+    @Test
+    fun `the purges keep the favorites and deleting everything does not`() = runTest {
+        // Given
+        val oldFavoriteId = insertScan(
+            scannedAt = 1_000,
+            isFavorite = true,
+        )
+        val outFavoriteId = insertScan(
+            scannedAt = 3_000,
+            isInHistory = false,
+            isFavorite = true,
+        )
+        insertScan(scannedAt = 1_000)
+        insertScan(
+            scannedAt = 3_000,
+            isInHistory = false,
+        )
+
+        // When
+        scanDao.deleteOutOfHistory()
+        scanDao.deleteScannedBefore(before = 2_000)
+        val kept = scanDao.watchHistory().first().map { it.scan.id }
+        scanDao.deleteAll()
+
+        // Then
+        assertEquals(
+            expected = listOf(outFavoriteId, oldFavoriteId) to emptyList(),
+            actual = kept to scanDao.watchHistory().first().map { it.scan.id },
         )
     }
 
@@ -318,11 +420,13 @@ internal class ScanDaoTest : DatabaseTest() {
     private suspend fun insertScan(
         scannedAt: Long = 0,
         isInHistory: Boolean = true,
+        isFavorite: Boolean = false,
     ): Long =
         scanDao.insertWithCodes(
             scan = ScanEntity(
                 scannedAt = scannedAt,
                 isInHistory = isInHistory,
+                isFavorite = isFavorite,
             ),
             codes = listOf(codeEntity()),
         )

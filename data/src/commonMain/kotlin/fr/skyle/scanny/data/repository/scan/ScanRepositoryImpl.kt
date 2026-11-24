@@ -74,6 +74,16 @@ internal class ScanRepositoryImpl(
             .distinctUntilChanged()
             .flowOn(Dispatchers.Default)
 
+    override suspend fun setScanFavorite(
+        id: Long,
+        isFavorite: Boolean,
+    ) {
+        scanDao.updateFavorite(
+            id = id,
+            isFavorite = isFavorite,
+        )
+    }
+
     override fun watchCode(id: Long): Flow<StoredCode?> =
         scanDao.watchCodeById(id = id)
             .map { code ->

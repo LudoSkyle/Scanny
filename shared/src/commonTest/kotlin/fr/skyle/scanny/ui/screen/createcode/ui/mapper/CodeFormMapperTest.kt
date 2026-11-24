@@ -338,6 +338,7 @@ class CodeFormMapperTest {
             format = BarcodeFormat.QR_CODE,
             style = CodeStyle(darkColor = 0xFF3B43BE),
             createdAt = Instant.fromEpochMilliseconds(0),
+            isFavorite = false,
         ).toCreationForm()
 
         // Then
@@ -358,5 +359,7 @@ class CodeFormMapperTest {
             content = content,
             format = format,
             scannedAt = Instant.fromEpochMilliseconds(0),
+            isFavorite = false,
+            isInGroup = false,
         )
 }

@@ -10,4 +10,10 @@ internal data class ScannedCodeWithScanTime(
     // The time of the capture of the code, in epoch milliseconds
     @ColumnInfo(name = "scanned_at")
     val scannedAt: Long,
+    // Whether its capture is a favorite
+    @ColumnInfo(name = "is_favorite")
+    val isScanFavorite: Boolean,
+    // How many codes its capture holds, this one included
+    @ColumnInfo(name = "code_count")
+    val scanCodeCount: Int,
 )

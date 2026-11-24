@@ -11,4 +11,6 @@ data class Creation(
     val format: BarcodeFormat?,
     val style: CodeStyle,
     val createdAt: Instant,
+    // Kept in the history whatever its setting, never purged
+    val isFavorite: Boolean,
 )

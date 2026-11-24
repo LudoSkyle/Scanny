@@ -109,8 +109,11 @@ class WatchScansUseCaseTest {
                             content = BarcodeContent.Text(text = "Hello"),
                             format = null,
                             scannedAt = SCANNED_AT,
+                            isFavorite = false,
+                            isInGroup = false,
                         ),
                     ),
+                    isFavorite = false,
                 ),
             ),
             actual = scans,
@@ -125,6 +128,7 @@ class WatchScansUseCaseTest {
             id = id,
             scannedAt = SCANNED_AT,
             codes = codes,
+            isFavorite = false,
         )
 
     private fun storedCode(
@@ -139,6 +143,8 @@ class WatchScansUseCaseTest {
             rawValue = rawValue,
             format = format,
             scannedAt = SCANNED_AT,
+            isScanFavorite = false,
+            scanCodeCount = 1,
         )
 
     private companion object {

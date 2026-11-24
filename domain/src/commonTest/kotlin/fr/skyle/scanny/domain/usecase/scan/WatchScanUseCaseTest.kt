@@ -28,6 +28,8 @@ class WatchScanUseCaseTest {
                         rawValue = "SMSTO:+33600000000:Hello",
                         format = BarcodeFormat.QR_CODE.name,
                         scannedAt = SCANNED_AT,
+                        isScanFavorite = false,
+                        scanCodeCount = 1,
                     ),
                     StoredCode(
                         id = 2,
@@ -35,8 +37,11 @@ class WatchScanUseCaseTest {
                         rawValue = "4006381333931",
                         format = BarcodeFormat.EAN_13.name,
                         scannedAt = SCANNED_AT,
+                        isScanFavorite = false,
+                        scanCodeCount = 1,
                     ),
                 ),
+                isFavorite = false,
             ),
         ),
     )
@@ -64,6 +69,8 @@ class WatchScanUseCaseTest {
                         ),
                         format = BarcodeFormat.QR_CODE,
                         scannedAt = SCANNED_AT,
+                        isFavorite = false,
+                        isInGroup = false,
                     ),
                     ScannedCode(
                         id = 2,
@@ -72,8 +79,11 @@ class WatchScanUseCaseTest {
                         content = BarcodeContent.Text(text = "4006381333931"),
                         format = BarcodeFormat.EAN_13,
                         scannedAt = SCANNED_AT,
+                        isFavorite = false,
+                        isInGroup = false,
                     ),
                 ),
+                isFavorite = false,
             ),
             actual = scan,
         )

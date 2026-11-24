@@ -11,6 +11,7 @@ import androidx.room.PrimaryKey
     indices = [
         Index(value = ["created_at"]),
         Index(value = ["is_in_history"]),
+        Index(value = ["is_favorite"]),
     ],
 )
 internal data class CreationEntity(
@@ -59,6 +60,9 @@ internal data class CreationEntity(
     // False when the user keeps no history of the creations: purged at the next start
     @ColumnInfo(name = "is_in_history", defaultValue = "1")
     val isInHistory: Boolean = true,
+    // True for a creation among the favorites: in the history whatever its setting, and never purged
+    @ColumnInfo(name = "is_favorite", defaultValue = "0")
+    val isFavorite: Boolean = false,
 ) {
 
     // The logo compared by its bytes, not by its array
@@ -79,7 +83,8 @@ internal data class CreationEntity(
             logoShape == other.logoShape &&
             logoMargin == other.logoMargin &&
             errorCorrection == other.errorCorrection &&
-            isInHistory == other.isInHistory
+            isInHistory == other.isInHistory &&
+            isFavorite == other.isFavorite
 
     override fun hashCode(): Int {
         var result = id.hashCode()
@@ -98,6 +103,7 @@ internal data class CreationEntity(
         result = 31 * result + logoMargin.hashCode()
         result = 31 * result + errorCorrection.hashCode()
         result = 31 * result + isInHistory.hashCode()
+        result = 31 * result + isFavorite.hashCode()
         return result
     }
 }

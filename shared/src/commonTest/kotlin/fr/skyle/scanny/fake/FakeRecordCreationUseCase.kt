@@ -41,6 +41,7 @@ internal class FakeRecordCreationUseCase(
             format = format,
             style = style,
             createdAt = Instant.fromEpochMilliseconds(0),
+            isFavorite = false,
         )
     }
 

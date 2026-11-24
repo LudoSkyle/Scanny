@@ -463,6 +463,8 @@ class ScanDetailViewModelTest {
             content = content,
             format = BarcodeFormat.QR_CODE,
             scannedAt = Instant.fromEpochMilliseconds(0),
+            isFavorite = false,
+            isInGroup = false,
         )
 
     private companion object {

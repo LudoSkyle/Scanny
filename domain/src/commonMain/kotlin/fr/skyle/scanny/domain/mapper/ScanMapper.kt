@@ -14,6 +14,7 @@ internal fun StoredScan.toScan(): Scan =
         codes = codes.map { code ->
             code.toScannedCode()
         },
+        isFavorite = isFavorite,
     )
 
 internal fun StoredCode.toScannedCode(): ScannedCode =
@@ -24,4 +25,6 @@ internal fun StoredCode.toScannedCode(): ScannedCode =
         content = BarcodeContentParser.parse(rawValue = rawValue),
         format = BarcodeFormat.entries.firstOrNull { it.name == format },
         scannedAt = scannedAt,
+        isFavorite = isScanFavorite,
+        isInGroup = scanCodeCount > 1,
     )
