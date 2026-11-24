@@ -10,6 +10,8 @@ import fr.skyle.scanny.domain.model.CodeLogoMargin
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.ui.core.code.image.ShapedLogoPainter
+import fr.skyle.scanny.ui.core.code.image.format
+import fr.skyle.scanny.ui.core.code.image.toSvgColor
 import fr.skyle.scanny.ui.core.code.model.CodeReadability
 import io.github.alexzhirkevich.qrose.matrix.qr.QrErrorCorrection
 import io.github.alexzhirkevich.qrose.options.QrBallShape
@@ -148,6 +150,32 @@ private fun CodeStyle.dotBrush(): QrBrush {
                 radius = size * HALF_DIAGONAL,
             )
         }
+    }
+}
+
+/**
+ * The gradient of the dots of a code in this style as an SVG definition named [id], null without one:
+ * the gradient [dotBrush] gives qrose, over the square of side [size] at ([left], [top]) the code is
+ * drawn in.
+ */
+internal fun CodeStyle.svgGradient(
+    id: String,
+    left: Float,
+    top: Float,
+    size: Float,
+): String? {
+    val stops = "<stop offset=\"0\" stop-color=\"${dotColor().toSvgColor()}\"/>" +
+        "<stop offset=\"1\" stop-color=\"${Color(color = gradientColor).toSvgColor()}\"/>"
+    return when (gradient) {
+        CodeGradient.NONE -> null
+
+        CodeGradient.LINEAR ->
+            "<linearGradient id=\"$id\" gradientUnits=\"userSpaceOnUse\" x1=\"${format(left)}\" " +
+                "y1=\"${format(top)}\" x2=\"${format(left + size)}\" y2=\"${format(top + size)}\">$stops</linearGradient>"
+
+        CodeGradient.RADIAL ->
+            "<radialGradient id=\"$id\" gradientUnits=\"userSpaceOnUse\" cx=\"${format(left + size / 2)}\" " +
+                "cy=\"${format(top + size / 2)}\" r=\"${format(size * HALF_DIAGONAL)}\">$stops</radialGradient>"
     }
 }
 

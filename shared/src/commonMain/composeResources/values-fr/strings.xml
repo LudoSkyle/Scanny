@@ -171,6 +171,7 @@
         <item quantity="one">Tous les ans</item>
         <item quantity="other">Tous les %1$d ans</item>
     </plurals>
+    <string name="export_svg">Exporter en SVG</string>
     <string name="extended_address">Appartement, bâtiment</string>
     <string name="fax">Fax</string>
     <string name="feedback">Votre avis</string>

@@ -242,9 +242,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     l'enregistrement de son image ; le contenu brut toujours accessible, replié, dans les deux détails
     (le réglage disparaît) ; dans l'historique, le type en pastille, les groupes mis en avant, et un
     glissement entre « Scans » et « Créations » ; une couleur libre en plus de la palette, avec un
-    avertissement si le code risque d'être mal lu. Décidé : PNG d'abord, l'export en SVG viendra
-    ensuite (qrose ne le fait pas : un dessin vectoriel à écrire, le plus coûteux pour les points
-    arrondis reliés et le logo).
+    avertissement si le code risque d'être mal lu. Décidé : PNG d'abord, puis l'export en SVG, fait
+    (un `Canvas` qui écrit du SVG, sur lequel dessinent les peintres de l'écran).
     - [x] La feuille d'un scan montre tous les champs du contenu (le message d'un SMS, le mot de
           passe d'un réseau…), un long texte coupé à quatre lignes
     - [x] Le code dans une feuille, depuis les deux détails, avec le partage et l'enregistrement de

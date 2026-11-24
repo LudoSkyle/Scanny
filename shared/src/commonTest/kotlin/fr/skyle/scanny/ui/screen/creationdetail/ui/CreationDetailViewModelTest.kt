@@ -154,6 +154,36 @@ class CreationDetailViewModelTest {
     }
 
     @Test
+    fun `exporting draws the code in its style and shares its svg image named after the creation`() = runTest(testDispatcher) {
+        // Given
+        val codeImageRenderer = FakeCodeImageRenderer(svg = "<svg>code</svg>")
+        val imageSharer = FakeImageSharer()
+        val viewModel = creationDetailViewModel(
+            codeImageRenderer = codeImageRenderer,
+            imageSharer = imageSharer,
+        )
+
+        // When
+        viewModel.onShareSvgClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                FakeCodeImageRenderer.RenderedCode(
+                    rawValue = "https://scanny.app",
+                    format = BarcodeFormat.QR_CODE,
+                    style = STYLE,
+                ),
+            ),
+            actual = codeImageRenderer.renderedCodes,
+        )
+        assertEquals(
+            expected = listOf("<svg>code</svg>" to "scanny-3.svg"),
+            actual = imageSharer.sharedSvgs,
+        )
+    }
+
+    @Test
     fun `an image that cannot be drawn is reported instead of shared`() = runTest(testDispatcher) {
         // Given
         val imageSharer = FakeImageSharer()

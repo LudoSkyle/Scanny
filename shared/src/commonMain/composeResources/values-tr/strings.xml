@@ -171,6 +171,7 @@
         <item quantity="one">Her yıl</item>
         <item quantity="other">%1$d yılda bir</item>
     </plurals>
+    <string name="export_svg">SVG olarak dışa aktar</string>
     <string name="extended_address">Daire, bina</string>
     <string name="fax">Faks</string>
     <string name="feedback">Geri bildirim</string>

@@ -171,6 +171,7 @@
         <item quantity="one">Ogni anno</item>
         <item quantity="other">Ogni %1$d anni</item>
     </plurals>
+    <string name="export_svg">Esporta in SVG</string>
     <string name="extended_address">Appartamento, edificio</string>
     <string name="fax">Fax</string>
     <string name="feedback">Feedback</string>

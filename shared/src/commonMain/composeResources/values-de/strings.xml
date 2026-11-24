@@ -171,6 +171,7 @@
         <item quantity="one">Jedes Jahr</item>
         <item quantity="other">Alle %1$d Jahre</item>
     </plurals>
+    <string name="export_svg">Als SVG exportieren</string>
     <string name="extended_address">Wohnung, Gebäude</string>
     <string name="fax">Fax</string>
     <string name="feedback">Feedback</string>

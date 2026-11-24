@@ -6,7 +6,7 @@ import fr.skyle.scanny.platform.image.ImageSaver
 import fr.skyle.scanny.platform.image.SavedImage
 import fr.skyle.scanny.platform.share.ImageSharer
 
-/** Draws the image of a code, then lends it to another app or keeps it in the photos. */
+/** Draws the image of a code, then lends it to another app, as a PNG or an SVG image, or keeps it in the photos. */
 class CodeImageExporter(
     private val codeImageRenderer: CodeImageRenderer,
     private val imageSharer: ImageSharer,
@@ -26,6 +26,23 @@ class CodeImageExporter(
     ) {
         imageSharer.shareImage(
             png = codeImageRenderer.renderPng(
+                rawValue = rawValue,
+                format = format,
+                style = style,
+            ),
+            fileName = fileName,
+        )
+    }
+
+    /** Throws when the SVG image cannot be drawn or shared. */
+    suspend fun shareSvg(
+        rawValue: String,
+        format: BarcodeFormat,
+        style: CodeStyle,
+        fileName: String,
+    ) {
+        imageSharer.shareSvg(
+            svg = codeImageRenderer.renderSvg(
                 rawValue = rawValue,
                 format = format,
                 style = style,

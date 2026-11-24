@@ -165,6 +165,7 @@
     <plurals name="every_years">
         <item quantity="other">%1$d年ごと</item>
     </plurals>
+    <string name="export_svg">SVGで書き出す</string>
     <string name="extended_address">建物名・部屋番号</string>
     <string name="fax">FAX</string>
     <string name="feedback">フィードバック</string>
