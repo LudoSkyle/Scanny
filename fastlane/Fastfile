@@ -166,6 +166,17 @@ platform :ios do
     profile = ENV.fetch("IOS_PROVISIONING_PROFILE_FILE")
     install_provisioning_profile(path: profile)
     profile_name = FastlaneCore::ProvisioningProfile.name(profile)
+    # Signed by hand, the target of the app alone: the packages of Swift, Firebase among them, take no
+    # profile. Set in the project of the runner only, for its build
+    update_code_signing_settings(
+      path: File.join(ROOT, "iosApp/iosApp.xcodeproj"),
+      use_automatic_signing: false,
+      targets: ["iosApp"],
+      build_configurations: ["Release"],
+      team_id: ENV.fetch("APPLE_TEAM_ID"),
+      code_sign_identity: "Apple Distribution",
+      profile_name: profile_name,
+    )
 
     build_app(
       project: File.join(ROOT, "iosApp/iosApp.xcodeproj"),
@@ -174,14 +185,11 @@ platform :ios do
       export_method: "app-store",
       output_directory: RELEASE_DIRECTORY,
       output_name: "scanny-#{app_version_name}.ipa",
-      # The version of the Android build, and the profile of the app, without touching the project
+      # The version of the Android build
       xcargs: [
         "MARKETING_VERSION=#{app_version_name}",
         "CURRENT_PROJECT_VERSION=#{build_number}",
         "DEVELOPMENT_TEAM=#{ENV.fetch('APPLE_TEAM_ID')}",
-        "CODE_SIGN_STYLE=Manual",
-        "CODE_SIGN_IDENTITY='Apple Distribution'",
-        "PROVISIONING_PROFILE_SPECIFIER='#{profile_name}'",
       ].join(" "),
       export_options: {
         provisioningProfiles: { APP_IDENTIFIER => profile_name },

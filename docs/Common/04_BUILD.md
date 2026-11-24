@@ -164,8 +164,10 @@ catalogue, dont les accesseurs typés n'existent pas dans `buildSrc`.
     NOM`).
 - Les fichiers de compte de service, le certificat et le profil sont écrits dans le dossier temporaire
   du runner, jamais dans le dépôt ; le certificat va dans un trousseau temporaire. iOS est construit
-  avec la version d'Android (`MARKETING_VERSION`, `CURRENT_PROJECT_VERSION`) et le profil App Store,
-  passés à `xcodebuild` sans toucher au projet.
+  avec la version d'Android (`MARKETING_VERSION`, `CURRENT_PROJECT_VERSION`), passée à `xcodebuild`.
+  La signature manuelle, par le certificat et le profil App Store, n'est posée que sur la cible de
+  l'app (`update_code_signing_settings`, dans le projet du runner seul) : les paquets Swift, Firebase
+  parmi eux, ne prennent aucun profil, et un réglage passé à `xcodebuild` vaudrait pour eux aussi.
 - En local : Ruby récente (`brew install ruby`), puis `bundle install` (les gems vont dans
   `vendor/bundle`, ignoré par git) et `bundle exec fastlane <plateforme> <lane>`.
 - Un workflow lancé à la main n'apparaît dans l'onglet Actions qu'une fois sur la branche par défaut.
