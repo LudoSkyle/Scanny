@@ -4,3 +4,4 @@ Scanny 2.0, volledig herschreven:
 • Maakt QR-codes, Data Matrix, Aztec, PDF417 en barcodes, met al hun velden
 • Gepersonaliseerde QR-codes: kleuren, vormen, logo
 • Geschiedenis van scans en creaties
+• Favorieten, SVG-export en 12 talen
