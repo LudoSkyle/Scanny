@@ -28,6 +28,7 @@ import fr.skyle.scanny.resources.image_not_shared
 import fr.skyle.scanny.resources.image_saved
 import fr.skyle.scanny.resources.no_app_to_open
 import fr.skyle.scanny.resources.see
+import fr.skyle.scanny.resources.svg_saved
 import fr.skyle.scanny.ui.core.code.action.open
 import fr.skyle.scanny.ui.core.code.component.CodeImageSheet
 import fr.skyle.scanny.ui.core.code.component.CodeInfoSheet
@@ -88,10 +89,10 @@ fun ScanDetailRoute(
                         snackbarState.show(message = getString(Res.string.no_app_to_open))
                     }
 
-                    // Told in the sheet, with the way to the photos
+                    // Told in the sheet, with the way to the photos, or to the files for an SVG image
                     is ScanDetailViewModel.ScanDetailEvent.ImageSaved -> launch {
                         val isSeeClicked = sheetSnackbarState.show(
-                            message = getString(Res.string.image_saved),
+                            message = getString(if (event.savedImage.isSvg) Res.string.svg_saved else Res.string.image_saved),
                             actionLabel = getString(Res.string.see),
                         )
                         if (isSeeClicked && !openSavedImage(event.savedImage)) {
@@ -169,7 +170,6 @@ fun ScanDetailRoute(
             snackbarState = sheetSnackbarState,
             onShareClicked = viewModel::onShareImageClicked,
             onSaveClicked = viewModel::onSaveImageClicked,
-            onExportSvgClicked = viewModel::onShareSvgClicked,
             onDismissRequest = {
                 sheetSnackbarState.dismiss()
                 isCodeSheetVisible = false

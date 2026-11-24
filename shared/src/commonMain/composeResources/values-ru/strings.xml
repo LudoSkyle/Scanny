@@ -183,7 +183,6 @@
         <item quantity="many">Каждые %1$d лет</item>
         <item quantity="other">Каждые %1$d года</item>
     </plurals>
-    <string name="export_svg">Экспорт в SVG</string>
     <string name="extended_address">Квартира, корпус</string>
     <string name="fax">Факс</string>
     <string name="feedback">Отзыв</string>
@@ -419,6 +418,7 @@
     <string name="street">Улица</string>
     <string name="subject">Тема</string>
     <string name="support">Поддержка</string>
+    <string name="svg_saved">SVG-изображение сохранено</string>
     <string name="text">Текст</string>
     <string name="the_code">Код</string>
     <string name="the_logo">Логотип</string>

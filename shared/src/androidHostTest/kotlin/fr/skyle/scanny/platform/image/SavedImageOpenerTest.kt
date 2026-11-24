@@ -1,6 +1,7 @@
 package fr.skyle.scanny.platform.image
 
 import android.app.Activity
+import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import androidx.compose.ui.platform.LocalContext
@@ -43,7 +44,29 @@ class SavedImageOpenerTest {
         )
     }
 
+    @Test
+    fun `a saved svg image opens the downloads where it is kept`() = runComposeUiTest {
+        // Given
+        lateinit var openSavedImage: (SavedImage) -> Boolean
+        lateinit var context: Context
+        setContent {
+            openSavedImage = rememberSavedImageOpener()
+            context = LocalContext.current
+        }
+
+        // When
+        val isOpened = openSavedImage(SavedImage(id = SVG_URI, mimeType = SavedImage.SVG_MIME_TYPE))
+
+        // Then
+        val intent = shadowOf(context as Activity).nextStartedActivity
+        assertEquals(
+            expected = true to DownloadManager.ACTION_VIEW_DOWNLOADS,
+            actual = isOpened to intent.action,
+        )
+    }
+
     private companion object {
         const val IMAGE_URI = "content://media/external/images/media/42"
+        const val SVG_URI = "content://media/external/downloads/43"
     }
 }

@@ -7,8 +7,10 @@ import fr.skyle.scanny.domain.usecase.creation.DeleteCreationUseCase
 import fr.skyle.scanny.domain.usecase.creation.WatchCreationUseCase
 import fr.skyle.scanny.platform.image.SavedImage
 import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
+import fr.skyle.scanny.ui.core.code.model.CodeImageFormat
 import fr.skyle.scanny.ui.screen.creationdetail.ui.mapper.toCreationDetailItem
 import fr.skyle.scanny.ui.screen.creationdetail.ui.model.CreationDetailItem
+import kotlin.time.Clock
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +23,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Clock
 
 class CreationDetailViewModel(
     private val creationId: Long,
@@ -58,7 +59,7 @@ class CreationDetailViewModel(
         }
     }
 
-    fun onShareImageClicked() {
+    fun onShareImageClicked(imageFormat: CodeImageFormat) {
         val creation = _uiState.value.creation ?: return
         val format = creation.format ?: return
         viewModelScope.launch {
@@ -67,7 +68,8 @@ class CreationDetailViewModel(
                     rawValue = creation.rawValue,
                     format = format,
                     style = creation.style,
-                    fileName = imageFileName(),
+                    imageFormat = imageFormat,
+                    fileName = imageFileName(imageFormat = imageFormat),
                 )
             } catch (exception: CancellationException) {
                 throw exception
@@ -79,28 +81,7 @@ class CreationDetailViewModel(
         }
     }
 
-    fun onShareSvgClicked() {
-        val creation = _uiState.value.creation ?: return
-        val format = creation.format ?: return
-        viewModelScope.launch {
-            try {
-                codeImageExporter.shareSvg(
-                    rawValue = creation.rawValue,
-                    format = format,
-                    style = creation.style,
-                    fileName = imageFileName(extension = "svg"),
-                )
-            } catch (exception: CancellationException) {
-                throw exception
-            } catch (exception: Exception) {
-                Logger.e(throwable = exception) { "Failed to share the SVG image of the creation $creationId" }
-
-                _event.send(CreationDetailEvent.ImageNotShared)
-            }
-        }
-    }
-
-    fun onSaveImageClicked() {
+    fun onSaveImageClicked(imageFormat: CodeImageFormat) {
         val creation = _uiState.value.creation ?: return
         val format = creation.format ?: return
         viewModelScope.launch {
@@ -109,10 +90,12 @@ class CreationDetailViewModel(
                     rawValue = creation.rawValue,
                     format = format,
                     style = creation.style,
-                    fileName = imageFileName(),
+                    imageFormat = imageFormat,
+                    fileName = imageFileName(imageFormat = imageFormat),
                 )
 
-                _event.send(CreationDetailEvent.ImageSaved(savedImage = savedImage))
+                // Null when the user chose not to keep it, iOS asking where: nothing to tell
+                savedImage?.let { saved -> _event.send(CreationDetailEvent.ImageSaved(savedImage = saved)) }
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: Exception) {
@@ -123,8 +106,8 @@ class CreationDetailViewModel(
         }
     }
 
-    private fun imageFileName(extension: String = "png"): String =
-        "scanny-$creationId.$extension"
+    private fun imageFileName(imageFormat: CodeImageFormat): String =
+        "scanny-$creationId.${imageFormat.extension}"
 
     fun onDeleteConfirmed() {
         viewModelScope.launch {

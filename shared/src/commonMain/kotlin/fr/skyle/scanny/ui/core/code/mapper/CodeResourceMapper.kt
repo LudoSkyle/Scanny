@@ -97,6 +97,8 @@ import fr.skyle.scanny.resources.ic_person
 import fr.skyle.scanny.resources.ic_sms
 import fr.skyle.scanny.resources.ic_wifi
 import fr.skyle.scanny.resources.identity
+import fr.skyle.scanny.resources.image_format_png
+import fr.skyle.scanny.resources.image_format_svg
 import fr.skyle.scanny.resources.issuer
 import fr.skyle.scanny.resources.itf
 import fr.skyle.scanny.resources.job_title
@@ -153,6 +155,7 @@ import fr.skyle.scanny.resources.write_mms
 import fr.skyle.scanny.resources.write_sms
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
+import fr.skyle.scanny.ui.core.code.model.CodeImageFormat
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
@@ -342,4 +345,11 @@ internal fun BarcodeFormat.toExample(): StringResource =
         BarcodeFormat.CODE_128 -> Res.string.format_code_128_example
         BarcodeFormat.ITF -> Res.string.format_itf_example
         BarcodeFormat.CODABAR -> Res.string.format_codabar_example
+    }
+
+/** The name of an image format, the same in every language. */
+internal fun CodeImageFormat.toText(): StringResource =
+    when (this) {
+        CodeImageFormat.PNG -> Res.string.image_format_png
+        CodeImageFormat.SVG -> Res.string.image_format_svg
     }

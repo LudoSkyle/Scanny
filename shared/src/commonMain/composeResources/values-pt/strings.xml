@@ -171,7 +171,6 @@
         <item quantity="one">Todos os anos</item>
         <item quantity="other">A cada %1$d anos</item>
     </plurals>
-    <string name="export_svg">Exportar em SVG</string>
     <string name="extended_address">Complemento</string>
     <string name="fax">Fax</string>
     <string name="feedback">Sua opinião</string>
@@ -403,6 +402,7 @@
     <string name="street">Rua</string>
     <string name="subject">Assunto</string>
     <string name="support">Suporte</string>
+    <string name="svg_saved">Imagem SVG salva</string>
     <string name="text">Texto</string>
     <string name="the_code">O código</string>
     <string name="the_logo">O logo</string>

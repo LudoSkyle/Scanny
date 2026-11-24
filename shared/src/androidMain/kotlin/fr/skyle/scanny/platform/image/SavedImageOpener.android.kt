@@ -1,5 +1,6 @@
 package fr.skyle.scanny.platform.image
 
+import android.app.DownloadManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import androidx.compose.runtime.Composable
@@ -14,10 +15,15 @@ internal actual fun rememberSavedImageOpener(): (SavedImage) -> Boolean {
 
     return remember(context) {
         { savedImage ->
-            val intent = Intent(Intent.ACTION_VIEW)
-                .setDataAndType(savedImage.id.toUri(), "image/png")
-                // The gallery reads the image the app wrote
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            val intent = if (savedImage.isSvg) {
+                // The downloads, where it is kept: the gallery claims an SVG image but shows it blank
+                Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
+            } else {
+                Intent(Intent.ACTION_VIEW)
+                    .setDataAndType(savedImage.id.toUri(), savedImage.mimeType)
+                    // The gallery reads the image the app wrote
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
             try {
                 context.startActivity(intent)
                 true
