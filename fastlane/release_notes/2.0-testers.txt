@@ -1,0 +1,32 @@
+Scanny 2.0 : l'app entièrement réécrite, désormais aussi sur iPhone, en 12 langues.
+
+SCAN
+• À la caméra, un code ou plusieurs à la fois (scan multiple), ou depuis une image de la galerie
+• 13 formats : QR Code, Data Matrix, Aztec, PDF417, EAN-13, EAN-8, UPC-A, UPC-E, Code 39, Code 93, Code 128, ITF, Codabar
+• Zoom au pincement avec son niveau affiché (une touche ramène à 1×), mise au point d'une touche, lampe, caméra avant
+• Sur iPhone, l'objectif macro de près
+
+CE QUE CONTIENT UN CODE
+• Chaque contenu lu champ par champ, avec son action : lien, e-mail, SMS, MMS, appel, Wi-Fi (WPA3 et entreprise compris, mot de passe masqué jusqu'à une touche), contact, événement, lieu, mot de passe à usage unique, paiement bitcoin
+• Copier, partager, voir le contenu brut
+
+HISTORIQUE
+• Scans et créations, gardés aussi longtemps que choisi, chaque code avec son format
+• Favoris : étoile dans le détail ou sur la fiche du scan, ou appui long sur une ligne ; regroupés en haut, jamais effacés par la durée de conservation
+• Appui long sur une ligne : favori ou suppression
+• Les groupes d'un scan multiple
+
+CRÉATION
+• QR codes, Data Matrix, Aztec, PDF417 et codes-barres, avec tous les champs de chaque contenu
+• QR codes personnalisés : couleurs, dégradé, formes des points et des coins, logo, correction d'erreur, avec un avertissement de lisibilité
+• Un code scanné ou créé repris dans l'éditeur
+• Partage et enregistrement en PNG ou en SVG
+
+RÉGLAGES
+• Vibration, son, copie ou ouverture automatique après un scan, doublons ignorés, durée de l'historique, langue de l'app (Android 13 et plus)
+
+À TESTER EN PRIORITÉ
+• Le scan en conditions réelles : de près, de loin, en faible lumière
+• Les favoris et l'appui long dans l'historique
+• L'export SVG
+• L'app dans une autre langue que le français

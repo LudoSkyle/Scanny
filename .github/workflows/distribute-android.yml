@@ -18,7 +18,7 @@ on:
         type: string
         default: Internal
       releaseNotes:
-        description: What the testers should try
+        description: What the testers should try (empty for fastlane/release_notes/X.Y-testers.txt)
         type: string
         default: ''
 
