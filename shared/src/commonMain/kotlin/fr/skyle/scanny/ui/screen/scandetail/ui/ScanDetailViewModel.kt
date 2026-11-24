@@ -13,8 +13,10 @@ import fr.skyle.scanny.platform.image.SavedImage
 import fr.skyle.scanny.platform.share.TextSharer
 import fr.skyle.scanny.platform.wifi.WifiNetworkSupport
 import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
+import fr.skyle.scanny.ui.core.code.model.CodeImageFormat
 import fr.skyle.scanny.ui.screen.scandetail.ui.mapper.toScanDetailItem
 import fr.skyle.scanny.ui.screen.scandetail.ui.model.ScanDetailItem
+import kotlin.time.Clock
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +29,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Clock
 
 class ScanDetailViewModel(
     private val codeId: Long,
@@ -76,7 +77,7 @@ class ScanDetailViewModel(
     }
 
     // A scanned code is drawn again dark on white, as any scanner reads it
-    fun onShareImageClicked() {
+    fun onShareImageClicked(imageFormat: CodeImageFormat) {
         val code = _uiState.value.code ?: return
         val format = code.format ?: return
         viewModelScope.launch {
@@ -85,7 +86,8 @@ class ScanDetailViewModel(
                     rawValue = code.rawValue,
                     format = format,
                     style = CodeStyle(),
-                    fileName = imageFileName(),
+                    imageFormat = imageFormat,
+                    fileName = imageFileName(imageFormat = imageFormat),
                 )
             } catch (exception: CancellationException) {
                 throw exception
@@ -97,28 +99,7 @@ class ScanDetailViewModel(
         }
     }
 
-    fun onShareSvgClicked() {
-        val code = _uiState.value.code ?: return
-        val format = code.format ?: return
-        viewModelScope.launch {
-            try {
-                codeImageExporter.shareSvg(
-                    rawValue = code.rawValue,
-                    format = format,
-                    style = CodeStyle(),
-                    fileName = imageFileName(extension = "svg"),
-                )
-            } catch (exception: CancellationException) {
-                throw exception
-            } catch (exception: Exception) {
-                Logger.e(throwable = exception) { "Failed to share the SVG image of the scanned code $codeId" }
-
-                _event.send(ScanDetailEvent.ImageNotShared)
-            }
-        }
-    }
-
-    fun onSaveImageClicked() {
+    fun onSaveImageClicked(imageFormat: CodeImageFormat) {
         val code = _uiState.value.code ?: return
         val format = code.format ?: return
         viewModelScope.launch {
@@ -127,10 +108,12 @@ class ScanDetailViewModel(
                     rawValue = code.rawValue,
                     format = format,
                     style = CodeStyle(),
-                    fileName = imageFileName(),
+                    imageFormat = imageFormat,
+                    fileName = imageFileName(imageFormat = imageFormat),
                 )
 
-                _event.send(ScanDetailEvent.ImageSaved(savedImage = savedImage))
+                // Null when the user chose not to keep it, iOS asking where: nothing to tell
+                savedImage?.let { saved -> _event.send(ScanDetailEvent.ImageSaved(savedImage = saved)) }
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: Exception) {
@@ -141,8 +124,8 @@ class ScanDetailViewModel(
         }
     }
 
-    private fun imageFileName(extension: String = "png"): String =
-        "scanny-scan-$codeId.$extension"
+    private fun imageFileName(imageFormat: CodeImageFormat): String =
+        "scanny-scan-$codeId.${imageFormat.extension}"
 
     fun onAddContactClicked(contact: BarcodeContent.Contact) {
         try {

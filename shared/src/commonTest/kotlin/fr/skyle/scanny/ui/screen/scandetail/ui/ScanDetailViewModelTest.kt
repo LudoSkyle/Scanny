@@ -21,9 +21,18 @@ import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
 import fr.skyle.scanny.ui.core.code.model.CodeAction
 import fr.skyle.scanny.ui.core.code.model.CodeField
 import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
+import fr.skyle.scanny.ui.core.code.model.CodeImageFormat
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.screen.scandetail.ui.model.ScanDetailItem
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
@@ -35,14 +44,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.time.Instant
 
 // The test dispatchers of kotlinx-coroutines-test are still experimental
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -270,7 +271,7 @@ class ScanDetailViewModelTest {
         )
 
         // When
-        viewModel.onShareImageClicked()
+        viewModel.onShareImageClicked(imageFormat = CodeImageFormat.PNG)
 
         // Then
         assertEquals(
@@ -300,7 +301,7 @@ class ScanDetailViewModelTest {
         )
 
         // When
-        viewModel.onShareSvgClicked()
+        viewModel.onShareImageClicked(imageFormat = CodeImageFormat.SVG)
 
         // Then
         assertEquals(
@@ -327,12 +328,52 @@ class ScanDetailViewModelTest {
         val events = collectEvents(viewModel = viewModel)
 
         // When
-        viewModel.onSaveImageClicked()
+        viewModel.onSaveImageClicked(imageFormat = CodeImageFormat.PNG)
 
         // Then
         assertEquals(
             expected = listOf(listOf<Byte>(1, 2, 3) to "scanny-scan-7.png") to listOf<ScanDetailViewModel.ScanDetailEvent>(ScanDetailViewModel.ScanDetailEvent.ImageSaved(savedImage = SavedImage(id = "saved/scanny-scan-7.png"))),
             actual = imageSaver.savedImages to events,
+        )
+    }
+
+    @Test
+    fun `saving an svg image keeps it in the files and says it`() = runTest(testDispatcher) {
+        // Given
+        val imageSaver = FakeImageSaver()
+        val viewModel = scanDetailViewModel(
+            codeImageRenderer = FakeCodeImageRenderer(svg = "<svg>code</svg>"),
+            imageSaver = imageSaver,
+        )
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onSaveImageClicked(imageFormat = CodeImageFormat.SVG)
+
+        // Then
+        assertEquals(
+            expected = listOf("<svg>code</svg>" to "scanny-scan-7.svg") to listOf<ScanDetailViewModel.ScanDetailEvent>(
+                ScanDetailViewModel.ScanDetailEvent.ImageSaved(
+                    savedImage = SavedImage(id = "saved/scanny-scan-7.svg", mimeType = SavedImage.SVG_MIME_TYPE),
+                ),
+            ),
+            actual = imageSaver.savedSvgs to events,
+        )
+    }
+
+    @Test
+    fun `an svg image the user chose not to keep is not reported`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanDetailViewModel(imageSaver = FakeImageSaver(isSvgCancelled = true))
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onSaveImageClicked(imageFormat = CodeImageFormat.SVG)
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = events,
         )
     }
 
@@ -346,8 +387,8 @@ class ScanDetailViewModelTest {
         val events = collectEvents(viewModel = viewModel)
 
         // When
-        viewModel.onShareImageClicked()
-        viewModel.onSaveImageClicked()
+        viewModel.onShareImageClicked(imageFormat = CodeImageFormat.PNG)
+        viewModel.onSaveImageClicked(imageFormat = CodeImageFormat.PNG)
 
         // Then
         assertEquals(

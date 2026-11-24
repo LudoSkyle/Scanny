@@ -6,12 +6,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.bottomsheet.SCBottomSheet
 import fr.skyle.scanny.designsystem.core.button.SCButton
 import fr.skyle.scanny.designsystem.core.button.SCButtonDefaults
+import fr.skyle.scanny.designsystem.core.segmentedcontrol.SCSegmentedControl
+import fr.skyle.scanny.designsystem.core.segmentedcontrol.SCSegmentedControlDefaults
 import fr.skyle.scanny.designsystem.core.snackbar.SCSnackbarState
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.designsystem.theme.SCTheme
@@ -19,10 +25,11 @@ import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.CodeShape
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.resources.Res
-import fr.skyle.scanny.resources.export_svg
 import fr.skyle.scanny.resources.save_image
 import fr.skyle.scanny.resources.share_image
 import fr.skyle.scanny.resources.the_code
+import fr.skyle.scanny.ui.core.code.mapper.toText
+import fr.skyle.scanny.ui.core.code.model.CodeImageFormat
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
 import org.jetbrains.compose.resources.stringResource
 
@@ -31,8 +38,8 @@ private const val CODE_WIDTH_FRACTION = 0.8f
 
 /**
  * A code drawn again, in its [style], for another phone to scan it from the screen, with the actions
- * on its image: share it, keep it in the photos, export it as an SVG image, which stays sharp at any
- * size for a print. The messages about the image show in the sheet
+ * on its image, in the format chosen: share it, keep it on the device. A PNG goes anywhere; an SVG
+ * image stays sharp at any size, for a print. The messages about the image show in the sheet
  * ([snackbarState]): a message of the screen would show under it.
  */
 @Composable
@@ -42,12 +49,13 @@ fun CodeImageSheet(
     style: CodeStyle,
     canSave: Boolean,
     snackbarState: SCSnackbarState,
-    onShareClicked: () -> Unit,
-    onSaveClicked: () -> Unit,
-    onExportSvgClicked: () -> Unit,
+    onShareClicked: (CodeImageFormat) -> Unit,
+    onSaveClicked: (CodeImageFormat) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var imageFormat by rememberSaveable { mutableStateOf(CodeImageFormat.PNG) }
+
     SCBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
@@ -70,10 +78,22 @@ fun CodeImageSheet(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            SCSegmentedControl(
+                modifier = Modifier.fillMaxWidth(),
+                options = CodeImageFormat.entries,
+                selectedOption = imageFormat,
+                optionText = { option -> stringResource(option.toText()) },
+                onOptionSelected = { option -> imageFormat = option },
+                style = SCSegmentedControlDefaults.Style.PRIMARY,
+                size = SCSegmentedControlDefaults.Size.MEDIUM,
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             SCButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(Res.string.share_image),
-                onClick = onShareClicked,
+                onClick = { onShareClicked(imageFormat) },
                 style = SCButtonDefaults.Style.PRIMARY,
                 size = SCButtonDefaults.Size.MEDIUM,
             )
@@ -84,21 +104,11 @@ fun CodeImageSheet(
                 SCButton(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(Res.string.save_image),
-                    onClick = onSaveClicked,
+                    onClick = { onSaveClicked(imageFormat) },
                     style = SCButtonDefaults.Style.SECONDARY,
                     size = SCButtonDefaults.Size.MEDIUM,
                 )
             }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            SCButton(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.export_svg),
-                onClick = onExportSvgClicked,
-                style = SCButtonDefaults.Style.SECONDARY,
-                size = SCButtonDefaults.Size.MEDIUM,
-            )
         }
     }
 }
@@ -118,7 +128,6 @@ private fun PreviewCodeImageSheet() {
             snackbarState = rememberSCSnackbarState(),
             onShareClicked = {},
             onSaveClicked = {},
-            onExportSvgClicked = {},
             onDismissRequest = {},
         )
     }

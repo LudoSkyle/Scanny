@@ -182,7 +182,6 @@
         <item quantity="one">Every year</item>
         <item quantity="other">Every %1$d years</item>
     </plurals>
-    <string name="export_svg">Export as SVG</string>
     <string name="extended_address">Apartment, building</string>
     <string name="faq" translatable="false">FAQ</string>
     <string name="fax">Fax</string>
@@ -269,6 +268,8 @@
         <item quantity="other">%1$d hours before</item>
     </plurals>
     <string name="identity">Identity</string>
+    <string name="image_format_png" translatable="false">PNG</string>
+    <string name="image_format_svg" translatable="false">SVG</string>
     <string name="image_not_saved">The image could not be saved</string>
     <string name="image_not_shared">The image could not be shared</string>
     <string name="image_saved">Image saved to the photos</string>
@@ -424,6 +425,7 @@
     <string name="street">Street</string>
     <string name="subject">Subject</string>
     <string name="support">Support</string>
+    <string name="svg_saved">SVG image saved</string>
     <string name="text">Text</string>
     <string name="the_code">The code</string>
     <string name="the_logo">The logo</string>
