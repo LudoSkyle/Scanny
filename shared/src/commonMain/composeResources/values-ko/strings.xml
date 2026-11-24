@@ -349,6 +349,7 @@
     <string name="repeats_on">반복 요일</string>
     <string name="required_field">%1$s *</string>
     <string name="reset_customization">꾸미기 초기화</string>
+    <string name="reset_zoom">1×로 돌아가기</string>
     <string name="retention_forever">영구</string>
     <string name="retention_one_month">30일</string>
     <string name="retention_one_week">7일</string>
@@ -453,4 +454,5 @@
     <string name="write_mms">MMS 쓰기</string>
     <string name="write_sms">SMS 쓰기</string>
     <string name="yesterday">어제</string>
+    <string name="zoom_ratio">%1$d.%2$d×</string>
 </resources>

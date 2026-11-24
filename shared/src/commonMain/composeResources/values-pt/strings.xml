@@ -357,6 +357,7 @@
     <string name="repeats_on">Nos dias</string>
     <string name="required_field">%1$s *</string>
     <string name="reset_customization">Redefinir a personalização</string>
+    <string name="reset_zoom">Voltar para 1×</string>
     <string name="retention_forever">Sempre</string>
     <string name="retention_one_month">30 dias</string>
     <string name="retention_one_week">7 dias</string>
@@ -462,4 +463,5 @@
     <string name="write_mms">Escrever um MMS</string>
     <string name="write_sms">Escrever um SMS</string>
     <string name="yesterday">Ontem</string>
+    <string name="zoom_ratio">%1$d,%2$d×</string>
 </resources>

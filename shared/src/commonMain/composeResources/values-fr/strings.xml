@@ -357,6 +357,7 @@
     <string name="repeats_on">Les</string>
     <string name="required_field">%1$s *</string>
     <string name="reset_customization">Réinitialiser la personnalisation</string>
+    <string name="reset_zoom">Revenir à 1×</string>
     <string name="retention_forever">Toujours</string>
     <string name="retention_one_month">30 jours</string>
     <string name="retention_one_week">7 jours</string>
@@ -462,4 +463,5 @@
     <string name="write_mms">Écrire un MMS</string>
     <string name="write_sms">Écrire un SMS</string>
     <string name="yesterday">Hier</string>
+    <string name="zoom_ratio">%1$d,%2$d×</string>
 </resources>
