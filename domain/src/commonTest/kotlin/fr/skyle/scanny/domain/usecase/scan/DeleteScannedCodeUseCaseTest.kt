@@ -22,6 +22,7 @@ class DeleteScannedCodeUseCaseTest {
                         storedCode(id = 1),
                         storedCode(id = 2),
                     ),
+                    isFavorite = false,
                 ),
             ),
         )
@@ -47,6 +48,8 @@ class DeleteScannedCodeUseCaseTest {
             rawValue = "https://scanny.app/$id",
             format = "QR_CODE",
             scannedAt = SCANNED_AT,
+            isScanFavorite = false,
+            scanCodeCount = 1,
         )
 
     private companion object {

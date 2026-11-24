@@ -7,4 +7,5 @@ data class StoredScan(
     val id: Long,
     val scannedAt: Instant,
     val codes: List<StoredCode>,
+    val isFavorite: Boolean,
 )

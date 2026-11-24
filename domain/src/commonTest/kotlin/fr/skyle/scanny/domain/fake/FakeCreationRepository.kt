@@ -39,6 +39,7 @@ internal class FakeCreationRepository(
                 format = format,
                 style = style,
                 createdAt = createdAt,
+                isFavorite = false,
             )
         }
         if (!isInHistory) {
@@ -56,6 +57,17 @@ internal class FakeCreationRepository(
         creations.map { storedCreations ->
             storedCreations.firstOrNull { it.id == id }
         }
+
+    override suspend fun setCreationFavorite(
+        id: Long,
+        isFavorite: Boolean,
+    ) {
+        creations.update { storedCreations ->
+            storedCreations.map { creation ->
+                if (creation.id == id) creation.copy(isFavorite = isFavorite) else creation
+            }
+        }
+    }
 
     override suspend fun deleteCreation(id: Long) {
         creations.update { storedCreations ->

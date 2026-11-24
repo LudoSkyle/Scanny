@@ -7,4 +7,6 @@ data class Scan(
     val id: Long,
     val scannedAt: Instant,
     val codes: List<ScannedCode>,
+    // Kept in the history whatever its setting, never purged
+    val isFavorite: Boolean,
 )

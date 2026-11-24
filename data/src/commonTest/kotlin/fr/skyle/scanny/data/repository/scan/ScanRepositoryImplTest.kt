@@ -120,8 +120,32 @@ internal class ScanRepositoryImplTest : DatabaseTest() {
                 rawValue = "https://scanny.app",
                 format = "QR_CODE",
                 scannedAt = Instant.fromEpochMilliseconds(1_000),
+                isScanFavorite = false,
+                scanCodeCount = 1,
             ),
             actual = code,
+        )
+    }
+
+    @Test
+    fun `a capture put among the favorites is watched as such with its codes`() = runTest {
+        // Given
+        val scanId = saveScan(
+            rawValue = "https://scanny.app",
+            scannedAtMillis = 1_000,
+        )
+
+        // When
+        scanRepository.setScanFavorite(
+            id = scanId,
+            isFavorite = true,
+        )
+
+        // Then
+        val scan = scanRepository.watchScan(id = scanId).first()
+        assertEquals(
+            expected = true to true,
+            actual = scan?.isFavorite to scan?.codes?.single()?.isScanFavorite,
         )
     }
 

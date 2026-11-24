@@ -24,4 +24,5 @@ internal fun CreationEntity.toStoredCreation(): StoredCreation =
             errorCorrection = errorCorrection,
         ),
         createdAt = Instant.fromEpochMilliseconds(createdAt),
+        isFavorite = isFavorite,
     )

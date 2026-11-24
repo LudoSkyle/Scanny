@@ -30,6 +30,7 @@ class WatchScannedCodeUseCaseTest {
                         rawValue = "mailto:john@doe.fr",
                     ),
                 ),
+                isFavorite = false,
             ),
         ),
     )
@@ -50,6 +51,8 @@ class WatchScannedCodeUseCaseTest {
                 content = BarcodeContent.Email(to = listOf("john@doe.fr")),
                 format = BarcodeFormat.QR_CODE,
                 scannedAt = SCANNED_AT,
+                isFavorite = false,
+                isInGroup = false,
             ),
             actual = scannedCode,
         )
@@ -74,6 +77,8 @@ class WatchScannedCodeUseCaseTest {
             rawValue = rawValue,
             format = BarcodeFormat.QR_CODE.name,
             scannedAt = SCANNED_AT,
+            isScanFavorite = false,
+            scanCodeCount = 1,
         )
 
     private companion object {

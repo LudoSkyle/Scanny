@@ -437,6 +437,7 @@ class HistoryViewModelTest {
             codes = codes.map { code ->
                 code.copy(scanId = id)
             },
+            isFavorite = false,
         )
 
     private fun code(
@@ -451,6 +452,8 @@ class HistoryViewModelTest {
             content = content,
             format = BarcodeFormat.QR_CODE,
             scannedAt = Instant.fromEpochMilliseconds(0),
+            isFavorite = false,
+            isInGroup = false,
         )
 
     private fun creation(
@@ -465,6 +468,7 @@ class HistoryViewModelTest {
             format = BarcodeFormat.QR_CODE,
             style = CodeStyle(),
             createdAt = Instant.parse(createdAt),
+            isFavorite = false,
         )
 
     private fun item(

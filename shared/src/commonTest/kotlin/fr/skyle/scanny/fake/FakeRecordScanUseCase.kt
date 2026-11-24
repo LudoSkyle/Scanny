@@ -41,8 +41,11 @@ internal class FakeRecordScanUseCase(
                     content = content(barcode.rawValue),
                     format = barcode.format,
                     scannedAt = SCANNED_AT,
+                    isFavorite = false,
+                    isInGroup = false,
                 )
             },
+            isFavorite = false,
         )
     }
 

@@ -9,4 +9,5 @@ data class StoredCreation(
     val format: String,
     val style: StoredCodeStyle,
     val createdAt: Instant,
+    val isFavorite: Boolean,
 )

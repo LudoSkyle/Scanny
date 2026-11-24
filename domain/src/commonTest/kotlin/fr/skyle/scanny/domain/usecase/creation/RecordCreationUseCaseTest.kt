@@ -72,6 +72,7 @@ class RecordCreationUseCaseTest {
                         errorCorrection = "HIGH",
                     ),
                     createdAt = NOW,
+                    isFavorite = false,
                 ),
             ),
             actual = creationRepository.storedCreations,
@@ -99,6 +100,7 @@ class RecordCreationUseCaseTest {
                 format = BarcodeFormat.EAN_13,
                 style = CodeStyle(),
                 createdAt = NOW,
+                isFavorite = false,
             ),
             actual = creation,
         )

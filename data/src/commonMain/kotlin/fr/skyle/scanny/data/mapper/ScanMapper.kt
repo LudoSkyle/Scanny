@@ -15,19 +15,34 @@ internal fun ScanWithCodes.toStoredScan(): StoredScan {
         codes = codes
             .sortedBy { code -> code.position }
             .map { code ->
-                code.toStoredCode(scannedAt = scannedAt)
+                code.toStoredCode(
+                    scannedAt = scannedAt,
+                    isScanFavorite = scan.isFavorite,
+                    scanCodeCount = codes.size,
+                )
             },
+        isFavorite = scan.isFavorite,
     )
 }
 
 internal fun ScannedCodeWithScanTime.toStoredCode(): StoredCode =
-    code.toStoredCode(scannedAt = Instant.fromEpochMilliseconds(scannedAt))
+    code.toStoredCode(
+        scannedAt = Instant.fromEpochMilliseconds(scannedAt),
+        isScanFavorite = isScanFavorite,
+        scanCodeCount = scanCodeCount,
+    )
 
-private fun ScannedCodeEntity.toStoredCode(scannedAt: Instant): StoredCode =
+private fun ScannedCodeEntity.toStoredCode(
+    scannedAt: Instant,
+    isScanFavorite: Boolean,
+    scanCodeCount: Int,
+): StoredCode =
     StoredCode(
         id = id,
         scanId = scanId,
         rawValue = rawValue,
         format = format,
         scannedAt = scannedAt,
+        isScanFavorite = isScanFavorite,
+        scanCodeCount = scanCodeCount,
     )

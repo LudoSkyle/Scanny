@@ -40,6 +40,7 @@ class WatchCreationsUseCaseTest {
                     errorCorrection = "QUARTILE",
                 ),
                 createdAt = CREATED_AT,
+                isFavorite = false,
             ),
         ),
     )
@@ -71,6 +72,7 @@ class WatchCreationsUseCaseTest {
                         errorCorrection = CodeErrorCorrection.QUARTILE,
                     ),
                     createdAt = CREATED_AT,
+                    isFavorite = false,
                 ),
             ),
             actual = creations,
@@ -100,6 +102,7 @@ class WatchCreationsUseCaseTest {
                         errorCorrection = "EXTREME",
                     ),
                     createdAt = CREATED_AT,
+                    isFavorite = false,
                 ),
             ),
         )

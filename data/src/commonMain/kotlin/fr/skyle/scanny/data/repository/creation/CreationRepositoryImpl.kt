@@ -68,6 +68,16 @@ internal class CreationRepositoryImpl(
         creationDao.deleteAll()
     }
 
+    override suspend fun setCreationFavorite(
+        id: Long,
+        isFavorite: Boolean,
+    ) {
+        creationDao.updateFavorite(
+            id = id,
+            isFavorite = isFavorite,
+        )
+    }
+
     override suspend fun purgeCreations(createdBefore: Instant?) {
         creationDao.deleteOutOfHistory()
         createdBefore?.let { before ->

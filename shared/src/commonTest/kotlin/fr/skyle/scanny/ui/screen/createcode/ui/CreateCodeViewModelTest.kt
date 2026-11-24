@@ -710,6 +710,8 @@ class CreateCodeViewModelTest {
                 content = BarcodeContent.Url(url = "https://scanny.app"),
                 format = BarcodeFormat.QR_CODE,
                 scannedAt = Instant.fromEpochMilliseconds(0),
+                isFavorite = false,
+                isInGroup = false,
             ),
         )
 
@@ -760,6 +762,7 @@ class CreateCodeViewModelTest {
                 format = BarcodeFormat.QR_CODE,
                 style = STYLE,
                 createdAt = Instant.fromEpochMilliseconds(0),
+                isFavorite = false,
             ),
         )
 
@@ -791,6 +794,7 @@ class CreateCodeViewModelTest {
                     format = BarcodeFormat.QR_CODE,
                     style = STYLE,
                     createdAt = Instant.fromEpochMilliseconds(0),
+                    isFavorite = false,
                 ),
             ),
         )
