@@ -21,6 +21,7 @@ import fr.skyle.scanny.designsystem.core.tag.SCTag
 import fr.skyle.scanny.designsystem.core.tag.SCTagDefaults
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.group
 import fr.skyle.scanny.resources.group_of_n_codes
@@ -38,8 +39,8 @@ import org.jetbrains.compose.resources.stringResource
 private const val MAX_GROUP_TYPES = 3
 
 /**
- * A capture of the history and its time: a single code by what it holds and its type in a pill, a
- * group by its number of codes and the types of its codes, each once. A group stands out among the
+ * A capture of the history and its time: a single code by what it holds, its type drawn and its
+ * format in a pill, a group by its number of codes and the types of its codes, each once. A group stands out among the
  * single codes, filled.
  */
 @Composable
@@ -87,18 +88,24 @@ fun ScanHistoryRow(
                     modifier = Modifier.weight(weight = 1f, fill = false),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    val types = if (isGroup) item.codeTypes else listOf(item.type)
-                    types.take(MAX_GROUP_TYPES).forEach { type ->
+                    // A single code shows its format, its type already drawn; one this version does not
+                    // know, its type
+                    val texts = if (isGroup) {
+                        item.codeTypes.map { type -> stringResource(type.toText()) }
+                    } else {
+                        listOf(stringResource(item.format?.toText() ?: item.type.toText()))
+                    }
+                    texts.take(MAX_GROUP_TYPES).forEach { text ->
                         SCTag(
-                            text = stringResource(type.toText()),
+                            text = text,
                             style = SCTagDefaults.Style.LIGHT,
                             size = SCTagDefaults.Size.MEDIUM,
                         )
                     }
 
-                    if (types.size > MAX_GROUP_TYPES) {
+                    if (texts.size > MAX_GROUP_TYPES) {
                         SCTag(
-                            text = stringResource(Res.string.more_count, types.size - MAX_GROUP_TYPES),
+                            text = stringResource(Res.string.more_count, texts.size - MAX_GROUP_TYPES),
                             style = SCTagDefaults.Style.LIGHT,
                             size = SCTagDefaults.Size.MEDIUM,
                         )
@@ -128,6 +135,7 @@ private fun PreviewScanHistoryRow() {
                 scanId = 1,
                 firstCodeId = 1,
                 type = CodeType.LINK,
+                format = BarcodeFormat.QR_CODE,
                 summary = "https://scanny.app/a/link/long/enough/to/be/cut/at/the/end/of/the/row",
                 time = "21:48",
                 codeCount = 1,
@@ -148,6 +156,7 @@ private fun PreviewScanHistoryRow_Group() {
                 scanId = 2,
                 firstCodeId = 2,
                 type = CodeType.TEXT,
+                format = BarcodeFormat.QR_CODE,
                 summary = "4006381333931",
                 time = "09:05",
                 codeCount = 6,

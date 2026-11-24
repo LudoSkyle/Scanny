@@ -252,7 +252,8 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] Le contenu brut replié dans les deux détails, sans réglage (pas pour un texte ou un lien,
           qui sont leur propre contenu brut)
     - [x] L'historique : le type en pastille, les groupes mis en avant (badge et pastille remplis), le
-          glissement entre les vues
+          glissement entre les vues ; puis le format d'un code seul dans sa pastille, son type étant
+          déjà dessiné, et l'onglet qui glisse avec le doigt
     - [x] Une couleur libre, avec un avertissement de lisibilité (contraste trop faible ou code clair
           sur fond sombre), qui n'empêche pas de créer
     - [ ] L'export en SVG *(décidé, non engagé)*

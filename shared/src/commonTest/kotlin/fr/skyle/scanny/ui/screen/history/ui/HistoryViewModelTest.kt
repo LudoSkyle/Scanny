@@ -124,6 +124,7 @@ class HistoryViewModelTest {
                             scanId = 4,
                             firstCodeId = 5,
                             type = CodeType.LINK,
+                            format = BarcodeFormat.QR_CODE,
                             summary = "https://scanny.app",
                             time = "21:48",
                             codeCount = 1,
@@ -133,6 +134,7 @@ class HistoryViewModelTest {
                             scanId = 3,
                             firstCodeId = 3,
                             type = CodeType.TEXT,
+                            format = BarcodeFormat.QR_CODE,
                             summary = "First",
                             time = "09:05",
                             codeCount = 3,
@@ -333,6 +335,7 @@ class HistoryViewModelTest {
                         CreationHistoryItem(
                             creationId = 2,
                             type = CodeType.WIFI,
+                            format = BarcodeFormat.QR_CODE,
                             summary = "Scanny",
                             time = "21:48",
                         ),
@@ -344,6 +347,7 @@ class HistoryViewModelTest {
                         CreationHistoryItem(
                             creationId = 1,
                             type = CodeType.TEXT,
+                            format = BarcodeFormat.QR_CODE,
                             summary = "Yesterday",
                             time = "18:00",
                         ),
@@ -365,6 +369,7 @@ class HistoryViewModelTest {
             item = CreationHistoryItem(
                 creationId = 7,
                 type = CodeType.TEXT,
+                format = BarcodeFormat.QR_CODE,
                 summary = "Created",
                 time = "10:00",
             ),
@@ -471,6 +476,7 @@ class HistoryViewModelTest {
             scanId = scanId,
             firstCodeId = scanId,
             type = CodeType.TEXT,
+            format = BarcodeFormat.QR_CODE,
             summary = summary,
             time = time,
             codeCount = 1,

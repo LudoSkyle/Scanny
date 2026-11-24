@@ -1,5 +1,6 @@
 package fr.skyle.scanny.ui.screen.history.ui.model
 
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 
@@ -12,6 +13,8 @@ data class CreationHistorySection(
 data class CreationHistoryItem(
     val creationId: Long,
     val type: CodeType,
+    // Shown, the type already drawn: null for one this version does not know
+    val format: BarcodeFormat?,
     val summary: String,
     val time: String,
 )
