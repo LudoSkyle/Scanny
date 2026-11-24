@@ -45,6 +45,7 @@ internal class CreationDetailScreenTest : ComposeTest() {
                         rawValue = "Created for the history",
                         isRawValueShown = false,
                         style = CodeStyle(),
+                        isFavorite = false,
                     ),
                     isDeleting = false,
                     snackbarState = rememberSCSnackbarState(),
@@ -54,6 +55,7 @@ internal class CreationDetailScreenTest : ComposeTest() {
                     onEditClicked = { clicks += "edit" },
                     onDeleteClicked = {},
                     onCopyClicked = {},
+                    onFavoriteClicked = {},
                 )
             }
         }

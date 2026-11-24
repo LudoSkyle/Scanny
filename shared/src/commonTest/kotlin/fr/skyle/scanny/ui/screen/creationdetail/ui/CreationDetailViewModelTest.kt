@@ -9,6 +9,7 @@ import fr.skyle.scanny.fake.FakeCodeImageRenderer
 import fr.skyle.scanny.fake.FakeDeleteCreationUseCase
 import fr.skyle.scanny.fake.FakeImageSaver
 import fr.skyle.scanny.fake.FakeImageSharer
+import fr.skyle.scanny.fake.FakeSetCreationFavoriteUseCase
 import fr.skyle.scanny.fake.FakeWatchCreationUseCase
 import fr.skyle.scanny.fake.FixedClock
 import fr.skyle.scanny.platform.image.SavedImage
@@ -73,6 +74,7 @@ class CreationDetailViewModelTest {
                 rawValue = "https://scanny.app",
                 isRawValueShown = false,
                 style = STYLE,
+                isFavorite = false,
             ),
             actual = viewModel.uiState.value.creation,
         )
@@ -294,9 +296,31 @@ class CreationDetailViewModelTest {
         assertFalse(viewModel.uiState.value.canSaveImage)
     }
 
+    @Test
+    fun `the star puts the creation among the favorites and takes it out`() = runTest(testDispatcher) {
+        // Given
+        val setCreationFavoriteUseCase = FakeSetCreationFavoriteUseCase()
+        val notFavorite = creationDetailViewModel(setCreationFavoriteUseCase = setCreationFavoriteUseCase)
+        val favorite = creationDetailViewModel(
+            watchCreationUseCase = FakeWatchCreationUseCase(creation = linkCreation().copy(isFavorite = true)),
+            setCreationFavoriteUseCase = setCreationFavoriteUseCase,
+        )
+
+        // When
+        notFavorite.onFavoriteClicked()
+        favorite.onFavoriteClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(CREATION_ID to true, CREATION_ID to false),
+            actual = setCreationFavoriteUseCase.setFavorites,
+        )
+    }
+
     private fun creationDetailViewModel(
         watchCreationUseCase: FakeWatchCreationUseCase = FakeWatchCreationUseCase(creation = linkCreation()),
         deleteCreationUseCase: FakeDeleteCreationUseCase = FakeDeleteCreationUseCase(),
+        setCreationFavoriteUseCase: FakeSetCreationFavoriteUseCase = FakeSetCreationFavoriteUseCase(),
         codeImageRenderer: FakeCodeImageRenderer = FakeCodeImageRenderer(),
         imageSharer: FakeImageSharer = FakeImageSharer(),
         imageSaver: FakeImageSaver = FakeImageSaver(),
@@ -305,6 +329,7 @@ class CreationDetailViewModelTest {
             creationId = CREATION_ID,
             watchCreationUseCase = watchCreationUseCase,
             deleteCreationUseCase = deleteCreationUseCase,
+            setCreationFavoriteUseCase = setCreationFavoriteUseCase,
             codeImageExporter = CodeImageExporter(
                 codeImageRenderer = codeImageRenderer,
                 imageSharer = imageSharer,

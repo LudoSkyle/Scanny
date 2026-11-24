@@ -12,6 +12,7 @@ import fr.skyle.scanny.fake.FakeDeleteScannedCodeUseCase
 import fr.skyle.scanny.fake.FakeEventAdder
 import fr.skyle.scanny.fake.FakeImageSaver
 import fr.skyle.scanny.fake.FakeImageSharer
+import fr.skyle.scanny.fake.FakeSetScanFavoriteUseCase
 import fr.skyle.scanny.fake.FakeTextSharer
 import fr.skyle.scanny.fake.FakeWatchScannedCodeUseCase
 import fr.skyle.scanny.fake.FakeWifiNetworkSupport
@@ -97,6 +98,9 @@ class ScanDetailViewModelTest {
                 rawValue = WIFI_RAW_VALUE,
                 isRawValueShown = true,
                 action = null,
+                scanId = 1,
+                isFavorite = false,
+                isInGroup = false,
             ),
             actual = viewModel.uiState.value.code,
         )
@@ -215,6 +219,43 @@ class ScanDetailViewModelTest {
         assertEquals(
             expected = listOf(WIFI_RAW_VALUE),
             actual = textSharer.sharedTexts,
+        )
+    }
+
+    @Test
+    fun `the star puts the capture of the code among the favorites and takes it out`() = runTest(testDispatcher) {
+        // Given
+        val setScanFavoriteUseCase = FakeSetScanFavoriteUseCase()
+        val notFavorite = scanDetailViewModel(setScanFavoriteUseCase = setScanFavoriteUseCase)
+        val favorite = scanDetailViewModel(
+            watchScannedCodeUseCase = FakeWatchScannedCodeUseCase(scannedCode = wifiCode().copy(isFavorite = true)),
+            setScanFavoriteUseCase = setScanFavoriteUseCase,
+        )
+
+        // When
+        notFavorite.onFavoriteClicked()
+        favorite.onFavoriteClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf(wifiCode().scanId to true, wifiCode().scanId to false),
+            actual = setScanFavoriteUseCase.setFavorites,
+        )
+    }
+
+    @Test
+    fun `a favorite that cannot be changed is reported`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanDetailViewModel(setScanFavoriteUseCase = FakeSetScanFavoriteUseCase(error = IllegalStateException("Database closed")))
+        val events = collectEvents(viewModel = viewModel)
+
+        // When
+        viewModel.onFavoriteClicked()
+
+        // Then
+        assertEquals(
+            expected = listOf<ScanDetailViewModel.ScanDetailEvent>(ScanDetailViewModel.ScanDetailEvent.FavoriteNotChanged),
+            actual = events,
         )
     }
 
@@ -412,6 +453,7 @@ class ScanDetailViewModelTest {
     private fun scanDetailViewModel(
         watchScannedCodeUseCase: FakeWatchScannedCodeUseCase = FakeWatchScannedCodeUseCase(scannedCode = wifiCode()),
         deleteScannedCodeUseCase: FakeDeleteScannedCodeUseCase = FakeDeleteScannedCodeUseCase(),
+        setScanFavoriteUseCase: FakeSetScanFavoriteUseCase = FakeSetScanFavoriteUseCase(),
         textSharer: FakeTextSharer = FakeTextSharer(),
         codeImageRenderer: FakeCodeImageRenderer = FakeCodeImageRenderer(),
         imageSharer: FakeImageSharer = FakeImageSharer(),
@@ -424,6 +466,7 @@ class ScanDetailViewModelTest {
             codeId = CODE_ID,
             watchScannedCodeUseCase = watchScannedCodeUseCase,
             deleteScannedCodeUseCase = deleteScannedCodeUseCase,
+            setScanFavoriteUseCase = setScanFavoriteUseCase,
             textSharer = textSharer,
             codeImageExporter = CodeImageExporter(
                 codeImageRenderer = codeImageRenderer,

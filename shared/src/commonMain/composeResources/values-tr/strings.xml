@@ -8,14 +8,15 @@
     <string name="add_phone">Telefon ekle</string>
     <string name="add_to_authenticator">Doğrulayıcıya ekle</string>
     <string name="add_to_calendar">Takvime ekle</string>
+    <string name="add_to_favorites">Favorilere ekle</string>
     <string name="add_website">Web sitesi ekle</string>
     <string name="address">Adres</string>
     <string name="addresses">Adresler</string>
     <string name="advanced_options">Gelişmiş seçenekler</string>
     <string name="algorithm">Algoritma</string>
-    <string name="all_creations_deleted">Oluşturulan tüm kodlar silinecek.</string>
+    <string name="all_creations_deleted">Oluşturulan tüm kodlar, favoriler dahil silinecek.</string>
     <string name="all_day">Tüm gün</string>
-    <string name="all_scans_deleted">Tüm taramalar silinecek.</string>
+    <string name="all_scans_deleted">Tüm taramalar, favoriler dahil silinecek.</string>
     <string name="allow_camera">Kameraya izin ver</string>
     <string name="altitude">Rakım</string>
     <string name="altitude_in_meters">Metre cinsinden rakım</string>
@@ -172,6 +173,8 @@
         <item quantity="other">%1$d yılda bir</item>
     </plurals>
     <string name="extended_address">Daire, bina</string>
+    <string name="favorite_not_changed">Favori değiştirilemedi</string>
+    <string name="favorites">Favoriler</string>
     <string name="fax">Faks</string>
     <string name="feedback">Geri bildirim</string>
     <string name="feedback_about_other">Başka bir konu</string>
@@ -353,6 +356,7 @@
     <string name="region">Bölge</string>
     <string name="reminder">Hatırlatıcı</string>
     <string name="remove">Kaldır</string>
+    <string name="remove_from_favorites">Favorilerden çıkar</string>
     <string name="remove_logo">Logoyu kaldır</string>
     <string name="repeat_interval">Tekrar aralığı</string>
     <string name="repeats_on">Günler</string>

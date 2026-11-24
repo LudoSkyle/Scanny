@@ -10,6 +10,7 @@ sealed interface ScanResult {
     data class Group(
         val scanId: Long,
         val codes: List<CodeRowItem>,
+        val isFavorite: Boolean,
     ) : ScanResult
 }
 

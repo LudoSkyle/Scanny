@@ -9,6 +9,7 @@ import fr.skyle.scanny.fake.FakeContactAdder
 import fr.skyle.scanny.fake.FakeEventAdder
 import fr.skyle.scanny.fake.FakeRecordScanUseCase
 import fr.skyle.scanny.fake.FakeScanBeeper
+import fr.skyle.scanny.fake.FakeSetScanFavoriteUseCase
 import fr.skyle.scanny.fake.FakeWatchScanSettingsUseCase
 import fr.skyle.scanny.fake.FakeWifiNetworkSupport
 import fr.skyle.scanny.fake.TestClock
@@ -23,6 +24,15 @@ import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.screen.scan.ui.model.MultipleScanSession
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResult
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultItem
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,15 +46,6 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 // The test dispatchers of kotlinx-coroutines-test are still experimental
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -94,11 +95,54 @@ class ScanViewModelTest {
                         ),
                         rawValue = "Hello",
                         action = null,
+                        scanId = 1,
+                        isFavorite = false,
                     ),
                 ),
             ),
             actual = viewModel.uiState.value,
         )
+    }
+
+    @Test
+    fun `the star of the result puts its capture among the favorites and shows it`() = runTest(testDispatcher) {
+        // Given
+        val setScanFavoriteUseCase = FakeSetScanFavoriteUseCase()
+        val viewModel = scanViewModel(setScanFavoriteUseCase = setScanFavoriteUseCase)
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+
+        // When
+        viewModel.onResultFavoriteClicked()
+        val favorite = (viewModel.uiState.value.result as? ScanResult.Code)?.item?.isFavorite
+        viewModel.onResultFavoriteClicked()
+
+        // Then
+        assertEquals<Pair<List<Pair<Long, Boolean>>, Boolean?>>(
+            expected = listOf(1L to true, 1L to false) to true,
+            actual = setScanFavoriteUseCase.setFavorites to favorite,
+        )
+        assertEquals(
+            expected = false,
+            actual = (viewModel.uiState.value.result as? ScanResult.Code)?.item?.isFavorite,
+        )
+    }
+
+    @Test
+    fun `a favorite that cannot be changed is reported and the result left as it was`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = scanViewModel(setScanFavoriteUseCase = FakeSetScanFavoriteUseCase(error = IllegalStateException("Database closed")))
+        val events = collectEvents(viewModel = viewModel)
+        viewModel.onBarcodeDetected(barcode = qrCode(rawValue = "Hello"))
+
+        // When
+        viewModel.onResultFavoriteClicked()
+
+        // Then
+        assertEquals(
+            expected = false,
+            actual = (viewModel.uiState.value.result as? ScanResult.Code)?.item?.isFavorite,
+        )
+        assertTrue(ScanViewModel.ScanEvent.FavoriteNotChanged in events)
     }
 
     @Test
@@ -455,6 +499,8 @@ class ScanViewModelTest {
                     ),
                     rawValue = "https://scanny.app",
                     action = CodeAction.OpenLink(link = "https://scanny.app"),
+                    scanId = 1,
+                    isFavorite = false,
                 ),
             ),
             actual = viewModel.uiState.value.result,
@@ -880,6 +926,7 @@ class ScanViewModelTest {
                             summary = "Second",
                         ),
                     ),
+                    isFavorite = false,
                 ),
             ),
             actual = viewModel.uiState.value,
@@ -1159,9 +1206,11 @@ class ScanViewModelTest {
         eventAdder: FakeEventAdder = FakeEventAdder(),
         wifiNetworkSupport: FakeWifiNetworkSupport = FakeWifiNetworkSupport(),
         scanBeeper: FakeScanBeeper = FakeScanBeeper(),
+        setScanFavoriteUseCase: FakeSetScanFavoriteUseCase = FakeSetScanFavoriteUseCase(),
     ): ScanViewModel =
         ScanViewModel(
             recordScanUseCase = recordScanUseCase,
+            setScanFavoriteUseCase = setScanFavoriteUseCase,
             watchScanSettingsUseCase = watchScanSettingsUseCase,
             contactAdder = contactAdder,
             eventAdder = eventAdder,

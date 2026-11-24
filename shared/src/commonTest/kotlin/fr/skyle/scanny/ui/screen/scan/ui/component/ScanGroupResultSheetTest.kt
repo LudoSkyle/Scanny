@@ -42,6 +42,8 @@ internal class ScanGroupResultSheetTest : ComposeTest() {
                     onCodeClicked = { codeId -> clicks += "code $codeId" },
                     onSeeGroupClicked = { clicks += "group" },
                     onDismissRequest = {},
+                    isFavorite = false,
+                    onFavoriteClicked = {},
                 )
             }
         }

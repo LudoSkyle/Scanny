@@ -49,12 +49,14 @@ internal class ScanGroupScreenTest : ComposeTest() {
                                 summary = "A text of the group",
                             ),
                         ),
+                        isFavorite = false,
                     ),
                     snackbarState = rememberSCSnackbarState(),
                     onBackClicked = {},
                     onShareClicked = {},
                     onDeleteClicked = {},
                     onCodeClicked = { codeId -> clicked += codeId },
+                    onFavoriteClicked = {},
                 )
             }
         }

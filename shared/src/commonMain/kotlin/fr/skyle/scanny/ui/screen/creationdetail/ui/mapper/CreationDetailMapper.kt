@@ -26,4 +26,5 @@ internal fun Creation.toCreationDetailItem(
         rawValue = rawValue,
         isRawValueShown = content.hasDistinctRawValue(),
         style = style,
+        isFavorite = isFavorite,
     )

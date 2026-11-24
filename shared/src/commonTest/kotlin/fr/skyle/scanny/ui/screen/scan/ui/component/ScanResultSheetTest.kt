@@ -127,6 +127,8 @@ internal class ScanResultSheetTest : ComposeTest() {
                     fields = event.toCodeFields(),
                     rawValue = "BEGIN:VEVENT",
                     action = CodeAction.AddEvent(event = event),
+                    scanId = 1,
+                    isFavorite = false,
                 ),
             )
         }
@@ -184,6 +186,8 @@ internal class ScanResultSheetTest : ComposeTest() {
                     ),
                     rawValue = "123456789012",
                     action = null,
+                    scanId = 1,
+                    isFavorite = false,
                 ),
             )
         }
@@ -262,6 +266,7 @@ internal class ScanResultSheetTest : ComposeTest() {
                 onSeeDetailClicked = onSeeDetailClicked,
                 onDismissRequest = {},
                 snackbarState = snackbarState,
+                onFavoriteClicked = {},
             )
         }
     }
@@ -283,6 +288,8 @@ internal class ScanResultSheetTest : ComposeTest() {
             ),
             rawValue = "SMSTO:+33600000000:See you at 10:30 & bring été",
             action = CodeAction.WriteSms(link = "sms:+33600000000"),
+            scanId = 1,
+            isFavorite = false,
         )
 
         val PHONE = ScanResultItem(
@@ -297,6 +304,8 @@ internal class ScanResultSheetTest : ComposeTest() {
             ),
             rawValue = "tel:+33600000000",
             action = CodeAction.Call(link = "tel:+33600000000"),
+            scanId = 1,
+            isFavorite = false,
         )
 
         val WIFI_NETWORK = BarcodeContent.Wifi(
@@ -317,6 +326,8 @@ internal class ScanResultSheetTest : ComposeTest() {
             ),
             rawValue = "WIFI:T:WPA;S:ScannyNet;P:secret123;;",
             action = CodeAction.JoinWifi(wifi = WIFI_NETWORK),
+            scanId = 1,
+            isFavorite = false,
         )
     }
 }

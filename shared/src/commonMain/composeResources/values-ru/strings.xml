@@ -8,14 +8,15 @@
     <string name="add_phone">Добавить телефон</string>
     <string name="add_to_authenticator">Добавить в аутентификатор</string>
     <string name="add_to_calendar">Добавить в календарь</string>
+    <string name="add_to_favorites">Добавить в избранное</string>
     <string name="add_website">Добавить сайт</string>
     <string name="address">Адрес</string>
     <string name="addresses">Адреса</string>
     <string name="advanced_options">Дополнительные параметры</string>
     <string name="algorithm">Алгоритм</string>
-    <string name="all_creations_deleted">Все созданные коды будут удалены.</string>
+    <string name="all_creations_deleted">Все созданные коды будут удалены, включая избранное.</string>
     <string name="all_day">Весь день</string>
-    <string name="all_scans_deleted">Все сканы будут удалены.</string>
+    <string name="all_scans_deleted">Все сканы будут удалены, включая избранное.</string>
     <string name="allow_camera">Разрешить доступ к камере</string>
     <string name="altitude">Высота</string>
     <string name="altitude_in_meters">Высота в метрах</string>
@@ -184,6 +185,8 @@
         <item quantity="other">Каждые %1$d года</item>
     </plurals>
     <string name="extended_address">Квартира, корпус</string>
+    <string name="favorite_not_changed">Не удалось изменить избранное</string>
+    <string name="favorites">Избранное</string>
     <string name="fax">Факс</string>
     <string name="feedback">Отзыв</string>
     <string name="feedback_about_other">Другое</string>
@@ -369,6 +372,7 @@
     <string name="region">Регион</string>
     <string name="reminder">Напоминание</string>
     <string name="remove">Убрать</string>
+    <string name="remove_from_favorites">Удалить из избранного</string>
     <string name="remove_logo">Убрать логотип</string>
     <string name="repeat_interval">Интервал повтора</string>
     <string name="repeats_on">Дни повтора</string>

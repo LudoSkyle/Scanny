@@ -12,6 +12,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.favorite_not_changed
 import fr.skyle.scanny.resources.group_not_deleted
 import fr.skyle.scanny.ui.screen.scangroup.ui.component.DeleteGroupDialog
 import kotlinx.coroutines.launch
@@ -45,6 +46,10 @@ fun ScanGroupRoute(
                     ScanGroupViewModel.ScanGroupEvent.DeleteFailed -> launch {
                         snackbarState.show(message = getString(Res.string.group_not_deleted))
                     }
+
+                    ScanGroupViewModel.ScanGroupEvent.FavoriteNotChanged -> launch {
+                        snackbarState.show(message = getString(Res.string.favorite_not_changed))
+                    }
                 }
             }
         }
@@ -54,6 +59,7 @@ fun ScanGroupRoute(
         group = uiState.group,
         snackbarState = snackbarState,
         onBackClicked = navigateBack,
+        onFavoriteClicked = viewModel::onFavoriteClicked,
         onShareClicked = viewModel::onShareClicked,
         onDeleteClicked = {
             isDeleteDialogVisible = true

@@ -7,6 +7,7 @@ import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 
 data class ScanDetailItem(
+    val scanId: Long,
     val type: CodeType,
     val format: BarcodeFormat?,
     val scannedDay: CalendarDay,
@@ -15,4 +16,7 @@ data class ScanDetailItem(
     val rawValue: String,
     val isRawValueShown: Boolean,
     val action: CodeAction?,
+    // Of its capture: a group is a favorite as a whole, from its own screen
+    val isFavorite: Boolean,
+    val isInGroup: Boolean,
 )

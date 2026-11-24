@@ -6,6 +6,7 @@ import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.CodeStyle
 import fr.skyle.scanny.domain.usecase.scan.DeleteScannedCodeUseCase
+import fr.skyle.scanny.domain.usecase.scan.SetScanFavoriteUseCase
 import fr.skyle.scanny.domain.usecase.scan.WatchScannedCodeUseCase
 import fr.skyle.scanny.platform.calendar.EventAdder
 import fr.skyle.scanny.platform.contact.ContactAdder
@@ -34,6 +35,7 @@ class ScanDetailViewModel(
     private val codeId: Long,
     private val watchScannedCodeUseCase: WatchScannedCodeUseCase,
     private val deleteScannedCodeUseCase: DeleteScannedCodeUseCase,
+    private val setScanFavoriteUseCase: SetScanFavoriteUseCase,
     private val textSharer: TextSharer,
     private val codeImageExporter: CodeImageExporter,
     private val contactAdder: ContactAdder,
@@ -67,6 +69,24 @@ class ScanDetailViewModel(
                         uiState.copy(code = code)
                     }
                 }
+        }
+    }
+
+    fun onFavoriteClicked() {
+        val code = _uiState.value.code ?: return
+        viewModelScope.launch {
+            try {
+                setScanFavoriteUseCase(
+                    scanId = code.scanId,
+                    isFavorite = !code.isFavorite,
+                )
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                Logger.e(throwable = exception) { "Failed to change the favorite of the scanned code $codeId" }
+
+                _event.send(ScanDetailEvent.FavoriteNotChanged)
+            }
         }
     }
 
@@ -184,6 +204,7 @@ class ScanDetailViewModel(
     sealed interface ScanDetailEvent {
         data object CodeDeleted : ScanDetailEvent
         data object DeleteFailed : ScanDetailEvent
+        data object FavoriteNotChanged : ScanDetailEvent
         data object ContactNotAdded : ScanDetailEvent
         data object EventNotAdded : ScanDetailEvent
         data class ImageSaved(val savedImage: SavedImage) : ScanDetailEvent

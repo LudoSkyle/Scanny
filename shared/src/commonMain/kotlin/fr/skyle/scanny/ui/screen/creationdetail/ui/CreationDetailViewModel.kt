@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import fr.skyle.scanny.domain.usecase.creation.DeleteCreationUseCase
+import fr.skyle.scanny.domain.usecase.creation.SetCreationFavoriteUseCase
 import fr.skyle.scanny.domain.usecase.creation.WatchCreationUseCase
 import fr.skyle.scanny.platform.image.SavedImage
 import fr.skyle.scanny.ui.core.code.image.CodeImageExporter
@@ -28,6 +29,7 @@ class CreationDetailViewModel(
     private val creationId: Long,
     private val watchCreationUseCase: WatchCreationUseCase,
     private val deleteCreationUseCase: DeleteCreationUseCase,
+    private val setCreationFavoriteUseCase: SetCreationFavoriteUseCase,
     private val codeImageExporter: CodeImageExporter,
     private val clock: Clock,
     private val timeZone: TimeZone,
@@ -56,6 +58,24 @@ class CreationDetailViewModel(
                         uiState.copy(creation = creation)
                     }
                 }
+        }
+    }
+
+    fun onFavoriteClicked() {
+        val creation = _uiState.value.creation ?: return
+        viewModelScope.launch {
+            try {
+                setCreationFavoriteUseCase(
+                    creationId = creationId,
+                    isFavorite = !creation.isFavorite,
+                )
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                Logger.e(throwable = exception) { "Failed to change the favorite of the creation $creationId" }
+
+                _event.send(CreationDetailEvent.FavoriteNotChanged)
+            }
         }
     }
 
@@ -142,6 +162,7 @@ class CreationDetailViewModel(
     sealed interface CreationDetailEvent {
         data object CreationDeleted : CreationDetailEvent
         data object DeleteFailed : CreationDetailEvent
+        data object FavoriteNotChanged : CreationDetailEvent
         data class ImageSaved(val savedImage: SavedImage) : CreationDetailEvent
         data object ImageNotSaved : CreationDetailEvent
         data object ImageNotShared : CreationDetailEvent

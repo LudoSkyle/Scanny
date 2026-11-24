@@ -8,14 +8,15 @@
     <string name="add_phone">Telefoon toevoegen</string>
     <string name="add_to_authenticator">Toevoegen aan authenticator</string>
     <string name="add_to_calendar">Toevoegen aan agenda</string>
+    <string name="add_to_favorites">Toevoegen aan favorieten</string>
     <string name="add_website">Website toevoegen</string>
     <string name="address">Adres</string>
     <string name="addresses">Adressen</string>
     <string name="advanced_options">Geavanceerde opties</string>
     <string name="algorithm">Algoritme</string>
-    <string name="all_creations_deleted">Alle creaties worden verwijderd.</string>
+    <string name="all_creations_deleted">Alle creaties worden verwijderd, ook de favorieten.</string>
     <string name="all_day">Hele dag</string>
-    <string name="all_scans_deleted">Alle scans worden verwijderd.</string>
+    <string name="all_scans_deleted">Alle scans worden verwijderd, ook de favorieten.</string>
     <string name="allow_camera">Camera toestaan</string>
     <string name="altitude">Hoogte</string>
     <string name="altitude_in_meters">Hoogte in meters</string>
@@ -172,6 +173,8 @@
         <item quantity="other">Elke %1$d jaar</item>
     </plurals>
     <string name="extended_address">Appartement, gebouw</string>
+    <string name="favorite_not_changed">De favoriet kon niet worden gewijzigd</string>
+    <string name="favorites">Favorieten</string>
     <string name="fax">Fax</string>
     <string name="feedback">Feedback</string>
     <string name="feedback_about_other">Iets anders</string>
@@ -353,6 +356,7 @@
     <string name="region">Regio</string>
     <string name="reminder">Herinnering</string>
     <string name="remove">Weghalen</string>
+    <string name="remove_from_favorites">Verwijderen uit favorieten</string>
     <string name="remove_logo">Logo weghalen</string>
     <string name="repeat_interval">Om de hoeveel</string>
     <string name="repeats_on">Op</string>

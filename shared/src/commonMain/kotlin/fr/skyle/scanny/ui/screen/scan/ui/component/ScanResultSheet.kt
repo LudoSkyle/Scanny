@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.bottomsheet.SCBottomSheet
@@ -28,6 +30,7 @@ import fr.skyle.scanny.resources.see_detail
 import fr.skyle.scanny.ui.core.code.component.CodeActionButton
 import fr.skyle.scanny.ui.core.code.component.CodeFieldText
 import fr.skyle.scanny.ui.core.code.component.CodeHeader
+import fr.skyle.scanny.ui.core.code.component.FavoriteButton
 import fr.skyle.scanny.ui.core.code.component.codeFieldValueText
 import fr.skyle.scanny.ui.core.code.mapper.toText
 import fr.skyle.scanny.ui.core.code.model.CodeAction
@@ -36,9 +39,9 @@ import fr.skyle.scanny.ui.core.code.model.CodeFieldLabel
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResultItem
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
-import kotlin.time.Duration.Companion.seconds
 
 private val COPIED_DURATION = 2.seconds
 
@@ -51,6 +54,7 @@ fun ScanResultSheet(
     onActionClicked: (CodeAction) -> Unit,
     onCopyClicked: () -> Unit,
     onSeeDetailClicked: () -> Unit,
+    onFavoriteClicked: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     // What came of its action, a network joined or a link no app opens: a message of the screen would show under it
@@ -77,11 +81,22 @@ fun ScanResultSheet(
                 .padding(horizontal = 24.dp)
                 .padding(bottom = 32.dp),
         ) {
-            CodeHeader(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                type = result.type,
-                format = result.format,
-            )
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                CodeHeader(
+                    modifier = Modifier.weight(1f),
+                    type = result.type,
+                    format = result.format,
+                )
+
+                FavoriteButton(
+                    modifier = Modifier.wrapContentSize(),
+                    isFavorite = result.isFavorite,
+                    onClick = onFavoriteClicked,
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -156,11 +171,14 @@ private fun PreviewScanResultSheet() {
                 ),
                 rawValue = "https://scanny.app",
                 action = CodeAction.OpenLink(link = "https://scanny.app"),
+                scanId = 1,
+                isFavorite = false,
             ),
             onActionClicked = {},
             onCopyClicked = {},
             onSeeDetailClicked = {},
             onDismissRequest = {},
+            onFavoriteClicked = {},
         )
     }
 }
@@ -187,11 +205,14 @@ private fun PreviewScanResultSheet_WithoutAction() {
                 ),
                 rawValue = "SMSTO:+33600000000:See you at eight in front of the cinema",
                 action = null,
+                scanId = 1,
+                isFavorite = false,
             ),
             onActionClicked = {},
             onCopyClicked = {},
             onSeeDetailClicked = {},
             onDismissRequest = {},
+            onFavoriteClicked = {},
         )
     }
 }

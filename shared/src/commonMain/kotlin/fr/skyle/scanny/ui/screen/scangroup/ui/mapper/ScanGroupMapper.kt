@@ -21,4 +21,5 @@ internal fun Scan.toScanGroupItem(
         codes = codes.map { code ->
             code.toCodeRowItem()
         },
+        isFavorite = isFavorite,
     )

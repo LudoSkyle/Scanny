@@ -23,6 +23,7 @@ import fr.skyle.scanny.platform.wifi.rememberWifiNetworkJoiner
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.code_not_deleted
 import fr.skyle.scanny.resources.copied_to_clipboard
+import fr.skyle.scanny.resources.favorite_not_changed
 import fr.skyle.scanny.resources.image_not_saved
 import fr.skyle.scanny.resources.image_not_shared
 import fr.skyle.scanny.resources.image_saved
@@ -83,6 +84,10 @@ fun ScanDetailRoute(
                         snackbarState.show(message = getString(Res.string.code_not_deleted))
                     }
 
+                    ScanDetailViewModel.ScanDetailEvent.FavoriteNotChanged -> launch {
+                        snackbarState.show(message = getString(Res.string.favorite_not_changed))
+                    }
+
                     ScanDetailViewModel.ScanDetailEvent.ContactNotAdded,
                     ScanDetailViewModel.ScanDetailEvent.EventNotAdded,
                     -> launch {
@@ -130,6 +135,7 @@ fun ScanDetailRoute(
             isInfoSheetVisible = true
         },
         onEditClicked = navigateToCreateCode,
+        onFavoriteClicked = viewModel::onFavoriteClicked,
         onBackClicked = navigateBack,
         onShareClicked = viewModel::onShareClicked,
         onDeleteClicked = {

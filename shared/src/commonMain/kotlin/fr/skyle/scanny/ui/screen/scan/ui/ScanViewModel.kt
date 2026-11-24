@@ -7,6 +7,7 @@ import fr.skyle.scanny.domain.model.BarcodeContent
 import fr.skyle.scanny.domain.model.DetectedBarcode
 import fr.skyle.scanny.domain.model.ScanSettings
 import fr.skyle.scanny.domain.usecase.scan.RecordScanUseCase
+import fr.skyle.scanny.domain.usecase.scan.SetScanFavoriteUseCase
 import fr.skyle.scanny.domain.usecase.settings.WatchScanSettingsUseCase
 import fr.skyle.scanny.platform.calendar.EventAdder
 import fr.skyle.scanny.platform.camera.CameraCapabilities
@@ -21,6 +22,9 @@ import fr.skyle.scanny.ui.screen.scan.ui.mapper.toScanResult
 import fr.skyle.scanny.ui.screen.scan.ui.mapper.toScanResultItem
 import fr.skyle.scanny.ui.screen.scan.ui.model.MultipleScanSession
 import fr.skyle.scanny.ui.screen.scan.ui.model.ScanResult
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -32,12 +36,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.Instant
 
 class ScanViewModel(
     private val recordScanUseCase: RecordScanUseCase,
+    private val setScanFavoriteUseCase: SetScanFavoriteUseCase,
     private val watchScanSettingsUseCase: WatchScanSettingsUseCase,
     private val contactAdder: ContactAdder,
     private val eventAdder: EventAdder,
@@ -298,6 +300,32 @@ class ScanViewModel(
         }
     }
 
+    // The star of the result, a single code or a group as a whole: the sheet shows the new state once kept
+    fun onResultFavoriteClicked() {
+        val (scanId, isFavorite) = when (val result = _uiState.value.result) {
+            is ScanResult.Code -> result.item.scanId to !result.item.isFavorite
+            is ScanResult.Group -> result.scanId to !result.isFavorite
+            null -> return
+        }
+        viewModelScope.launch {
+            try {
+                setScanFavoriteUseCase(
+                    scanId = scanId,
+                    isFavorite = isFavorite,
+                )
+                _uiState.update { uiState ->
+                    uiState.copy(result = uiState.result?.withFavorite(scanId = scanId, isFavorite = isFavorite))
+                }
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                Logger.e(throwable = exception) { "Failed to change the favorite of the capture $scanId" }
+
+                _event.send(ScanEvent.FavoriteNotChanged)
+            }
+        }
+    }
+
     fun onResultDismissed() {
         _uiState.update { uiState ->
             uiState.copy(result = null)
@@ -413,6 +441,7 @@ class ScanViewModel(
         data object ScanNotSaved : ScanEvent
         data object ContactNotAdded : ScanEvent
         data object EventNotAdded : ScanEvent
+        data object FavoriteNotChanged : ScanEvent
         data class OpenScanDetail(val codeId: Long) : ScanEvent
         data class OpenScanGroup(val scanId: Long) : ScanEvent
         data object ConfirmCodesDiscard : ScanEvent
@@ -430,3 +459,13 @@ class ScanViewModel(
         val CONFIRMATION_WINDOW = 1.seconds
     }
 }
+
+// The result with the favorite of its capture, if it is still the one shown
+private fun ScanResult.withFavorite(
+    scanId: Long,
+    isFavorite: Boolean,
+): ScanResult =
+    when (this) {
+        is ScanResult.Code -> if (item.scanId == scanId) copy(item = item.copy(isFavorite = isFavorite)) else this
+        is ScanResult.Group -> if (this.scanId == scanId) copy(isFavorite = isFavorite) else this
+    }
