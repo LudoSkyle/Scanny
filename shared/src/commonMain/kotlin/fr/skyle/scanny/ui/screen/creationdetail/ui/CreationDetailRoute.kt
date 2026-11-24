@@ -115,6 +115,7 @@ fun CreationDetailRoute(
         },
         onEditClicked = navigateToCreateCode,
         onFavoriteClicked = viewModel::onFavoriteClicked,
+        onShareClicked = viewModel::onShareClicked,
         onDeleteClicked = {
             isDeleteDialogVisible = true
         },
