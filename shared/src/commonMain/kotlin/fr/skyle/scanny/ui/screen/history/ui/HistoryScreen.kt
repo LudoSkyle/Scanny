@@ -26,6 +26,7 @@ import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBar
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBarDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.clear_history
 import fr.skyle.scanny.resources.history
@@ -163,6 +164,7 @@ private fun PreviewHistoryScreen() {
                             scanId = 3,
                             firstCodeId = 3,
                             type = CodeType.LINK,
+                            format = BarcodeFormat.QR_CODE,
                             summary = "https://scanny.app",
                             time = "21:48",
                             codeCount = 1,
@@ -172,6 +174,7 @@ private fun PreviewHistoryScreen() {
                             scanId = 2,
                             firstCodeId = 2,
                             type = CodeType.WIFI,
+                            format = BarcodeFormat.QR_CODE,
                             summary = "Scanny",
                             time = "09:05",
                             codeCount = 1,
@@ -192,6 +195,7 @@ private fun PreviewHistoryScreen() {
                             scanId = 1,
                             firstCodeId = 1,
                             type = CodeType.CONTACT,
+                            format = BarcodeFormat.QR_CODE,
                             summary = "John Doe",
                             time = "18:30",
                             codeCount = 1,

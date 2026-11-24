@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 import fr.skyle.scanny.ui.core.preview.AppPreviewWithBackground
@@ -80,6 +81,7 @@ private fun PreviewCreationHistoryList() {
                         CreationHistoryItem(
                             creationId = 1,
                             type = CodeType.WIFI,
+                            format = BarcodeFormat.QR_CODE,
                             summary = "Scanny",
                             time = "21:48",
                         ),

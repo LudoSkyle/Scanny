@@ -1,5 +1,6 @@
 package fr.skyle.scanny.ui.screen.history.ui.mapper
 
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.Scan
 import fr.skyle.scanny.ui.core.code.mapper.toCodeSummary
 import fr.skyle.scanny.ui.core.code.mapper.toCodeType
@@ -37,6 +38,7 @@ private fun Scan.toScanHistoryItem(timeZone: TimeZone): ScanHistoryItem {
         scanId = id,
         firstCodeId = firstCode.id,
         type = firstCode.content.toCodeType(),
+        format = firstCode.format,
         summary = firstCode.toCodeSummary(),
         time = scannedAt.toTimeText(timeZone = timeZone),
         codeCount = codes.size,

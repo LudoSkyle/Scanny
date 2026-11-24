@@ -16,15 +16,18 @@ import androidx.compose.ui.test.swipeRight
 import androidx.compose.ui.test.v2.runComposeUiTest
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.all_creations_deleted
 import fr.skyle.scanny.resources.all_scans_deleted
+import fr.skyle.scanny.resources.aztec
 import fr.skyle.scanny.resources.clear
 import fr.skyle.scanny.resources.clear_history
 import fr.skyle.scanny.resources.clear_history_question
 import fr.skyle.scanny.resources.contact
 import fr.skyle.scanny.resources.creations
 import fr.skyle.scanny.resources.group_of_n_codes
+import fr.skyle.scanny.resources.link
 import fr.skyle.scanny.resources.more_count
 import fr.skyle.scanny.resources.no_creation_yet
 import fr.skyle.scanny.resources.no_scan_yet
@@ -39,9 +42,9 @@ import fr.skyle.scanny.ui.screen.history.ui.model.HistoryView
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistoryItem
 import fr.skyle.scanny.ui.screen.history.ui.model.ScanHistorySection
 import fr.skyle.scanny.ui.test.ComposeTest
-import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import org.jetbrains.compose.resources.getString
 
 @OptIn(ExperimentalTestApi::class)
 internal class HistoryScreenTest : ComposeTest() {
@@ -83,6 +86,7 @@ internal class HistoryScreenTest : ComposeTest() {
                                 scanId = 1,
                                 firstCodeId = 1,
                                 type = CodeType.TEXT,
+                                format = BarcodeFormat.QR_CODE,
                                 summary = "First of six",
                                 time = "09:05",
                                 codeCount = 6,
@@ -100,6 +104,45 @@ internal class HistoryScreenTest : ComposeTest() {
         onNodeWithText(getString(Res.string.more_count, 2)).assertExists()
         // Told by its number, not by its first code
         onNodeWithText("First of six").assertDoesNotExist()
+    }
+
+    @Test
+    fun `a single code shows its format and not its type already drawn`() = runComposeUiTest {
+        // When
+        setContent {
+            historyScreen(
+                selectedView = HistoryView.SCANS,
+                scanSections = listOf(
+                    ScanHistorySection(
+                        day = CalendarDay.Today,
+                        items = listOf(LINK.copy(format = BarcodeFormat.AZTEC)),
+                    ),
+                ),
+            )
+        }
+
+        // Then
+        onNodeWithText(getString(Res.string.aztec)).assertExists()
+        onNodeWithText(getString(Res.string.link)).assertDoesNotExist()
+    }
+
+    @Test
+    fun `a code of a format this version does not know shows its type`() = runComposeUiTest {
+        // When
+        setContent {
+            historyScreen(
+                selectedView = HistoryView.SCANS,
+                scanSections = listOf(
+                    ScanHistorySection(
+                        day = CalendarDay.Today,
+                        items = listOf(LINK.copy(format = null)),
+                    ),
+                ),
+            )
+        }
+
+        // Then
+        onNodeWithText(getString(Res.string.link)).assertExists()
     }
 
     @Test
@@ -232,6 +275,7 @@ internal class HistoryScreenTest : ComposeTest() {
             scanId = 2,
             firstCodeId = 2,
             type = CodeType.LINK,
+            format = BarcodeFormat.QR_CODE,
             summary = "https://scanny.app",
             time = "21:48",
             codeCount = 1,
@@ -246,6 +290,7 @@ internal class HistoryScreenTest : ComposeTest() {
                         scanId = 1,
                         firstCodeId = 1,
                         type = CodeType.TEXT,
+                        format = BarcodeFormat.QR_CODE,
                         summary = "First of three",
                         time = "09:05",
                         codeCount = 3,
@@ -257,6 +302,7 @@ internal class HistoryScreenTest : ComposeTest() {
         val CREATION = CreationHistoryItem(
             creationId = 1,
             type = CodeType.TEXT,
+            format = BarcodeFormat.QR_CODE,
             summary = "Created for the history",
             time = "10:30",
         )

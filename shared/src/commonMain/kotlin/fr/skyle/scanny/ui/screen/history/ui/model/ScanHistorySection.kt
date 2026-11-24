@@ -1,5 +1,6 @@
 package fr.skyle.scanny.ui.screen.history.ui.model
 
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
 
@@ -14,6 +15,8 @@ data class ScanHistoryItem(
     val scanId: Long,
     val firstCodeId: Long,
     val type: CodeType,
+    // Shown for a single code, the type already drawn: null for one this version does not know
+    val format: BarcodeFormat?,
     val summary: String,
     val time: String,
     val codeCount: Int,

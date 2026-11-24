@@ -1,5 +1,6 @@
 package fr.skyle.scanny.ui.screen.history.ui.mapper
 
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.Creation
 import fr.skyle.scanny.ui.core.code.mapper.toCodeSummary
 import fr.skyle.scanny.ui.core.code.mapper.toCodeType
@@ -27,6 +28,7 @@ internal fun List<Creation>.toCreationHistorySections(
                 CreationHistoryItem(
                     creationId = creation.id,
                     type = creation.content.toCodeType(),
+                    format = creation.format,
                     summary = creation.toCodeSummary(),
                     time = creation.createdAt.toTimeText(timeZone = timeZone),
                 )
