@@ -5,14 +5,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.skyle.scanny.designsystem.core.card.SCCard
 import fr.skyle.scanny.designsystem.core.card.SCCardDefaults
-import fr.skyle.scanny.designsystem.core.card.SCCardStructure
-import fr.skyle.scanny.designsystem.core.divider.SCDivider
-import fr.skyle.scanny.designsystem.core.divider.SCDividerDefaults
 import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButton
 import fr.skyle.scanny.designsystem.core.iconbutton.SCIconButtonDefaults
 import fr.skyle.scanny.designsystem.core.screenstructure.SCScreenStructure
@@ -22,6 +20,7 @@ import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBar
 import fr.skyle.scanny.designsystem.core.topappbar.SCTopAppBarDefaults
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.codes_of_group
 import fr.skyle.scanny.resources.delete
@@ -34,6 +33,7 @@ import fr.skyle.scanny.ui.core.code.component.FavoriteButton
 import fr.skyle.scanny.ui.core.code.model.CodeRowItem
 import fr.skyle.scanny.ui.core.code.model.CodeType
 import fr.skyle.scanny.ui.core.date.model.CalendarDay
+import fr.skyle.scanny.ui.core.list.component.ListSectionHeader
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
 import fr.skyle.scanny.ui.screen.scangroup.ui.component.ScanGroupHeader
 import fr.skyle.scanny.ui.screen.scangroup.ui.model.ScanGroupItem
@@ -121,40 +121,27 @@ fun ScanGroupScreen(
                     }
                 }
 
+                // Titled and drawn as the codes of the history
                 item(
                     key = "codes",
                     contentType = "codes",
                 ) {
-                    SCCardStructure(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                start = 16.dp,
-                                top = 24.dp,
-                                end = 16.dp,
-                                bottom = 16.dp,
-                            ),
-                        title = stringResource(Res.string.codes_of_group),
-                        style = SCCardDefaults.Style.LIGHT,
-                    ) {
-                        group.codes.forEachIndexed { index, code ->
-                            if (index > 0) {
-                                // Under the text, past the badge
-                                SCDivider(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 84.dp),
-                                    style = SCDividerDefaults.Style.LIGHT,
-                                )
-                            }
+                    ListSectionHeader(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(Res.string.codes_of_group),
+                    )
+                }
 
-                            CodeRow(
-                                modifier = Modifier.fillMaxWidth(),
-                                item = code,
-                                onClick = { onCodeClicked(code.codeId) },
-                            )
-                        }
-                    }
+                items(
+                    items = group.codes,
+                    key = { code -> code.codeId },
+                    contentType = { "code" },
+                ) { code ->
+                    CodeRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        item = code,
+                        onClick = { onCodeClicked(code.codeId) },
+                    )
                 }
             }
         }
@@ -174,16 +161,19 @@ private fun PreviewScanGroupScreen() {
                         codeId = 1,
                         type = CodeType.LINK,
                         summary = "https://scanny.app",
+                        format = BarcodeFormat.QR_CODE,
                     ),
                     CodeRowItem(
                         codeId = 2,
                         type = CodeType.CONTACT,
                         summary = "John Doe",
+                        format = BarcodeFormat.QR_CODE,
                     ),
                     CodeRowItem(
                         codeId = 3,
                         type = CodeType.TEXT,
                         summary = "4006381333931",
+                        format = BarcodeFormat.QR_CODE,
                     ),
                 ),
                 isFavorite = false,

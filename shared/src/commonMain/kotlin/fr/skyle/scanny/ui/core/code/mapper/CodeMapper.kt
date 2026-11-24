@@ -1,6 +1,7 @@
 package fr.skyle.scanny.ui.core.code.mapper
 
 import fr.skyle.scanny.domain.model.BarcodeContent
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.domain.model.ContactAddress
 import fr.skyle.scanny.domain.model.ContactEntryType
 import fr.skyle.scanny.domain.model.ContactPhoneType
@@ -73,6 +74,7 @@ internal fun ScannedCode.toCodeRowItem(): CodeRowItem =
     CodeRowItem(
         codeId = id,
         type = content.toCodeType(),
+        format = format,
         summary = toCodeSummary(),
     )
 

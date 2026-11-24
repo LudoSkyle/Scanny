@@ -22,6 +22,7 @@ import fr.skyle.scanny.designsystem.core.iconbadge.SCIconBadgeDefaults
 import fr.skyle.scanny.designsystem.core.snackbar.SCSnackbarState
 import fr.skyle.scanny.designsystem.core.text.SCText
 import fr.skyle.scanny.designsystem.theme.SCTheme
+import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.code_count
 import fr.skyle.scanny.resources.group
@@ -133,16 +134,19 @@ private fun PreviewScanGroupResultSheet() {
                     codeId = 1,
                     type = CodeType.LINK,
                     summary = "https://scanny.app",
+                    format = BarcodeFormat.QR_CODE,
                 ),
                 CodeRowItem(
                     codeId = 2,
                     type = CodeType.WIFI,
                     summary = "Scanny",
+                    format = BarcodeFormat.QR_CODE,
                 ),
                 CodeRowItem(
                     codeId = 3,
                     type = CodeType.TEXT,
                     summary = "4006381333931",
+                    format = BarcodeFormat.QR_CODE,
                 ),
             ),
             onCodeClicked = {},
