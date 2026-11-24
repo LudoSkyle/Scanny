@@ -14,7 +14,7 @@ import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.favorite_not_changed
 import fr.skyle.scanny.resources.group_not_deleted
-import fr.skyle.scanny.ui.screen.scangroup.ui.component.DeleteGroupDialog
+import fr.skyle.scanny.ui.core.code.component.DeleteGroupDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel

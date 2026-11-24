@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -18,6 +19,7 @@ import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.designsystem.theme.SCTheme
 import fr.skyle.scanny.domain.model.BarcodeFormat
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.add_to_favorites
 import fr.skyle.scanny.resources.all_creations_deleted
 import fr.skyle.scanny.resources.all_scans_deleted
 import fr.skyle.scanny.resources.aztec
@@ -26,6 +28,7 @@ import fr.skyle.scanny.resources.clear_history
 import fr.skyle.scanny.resources.clear_history_question
 import fr.skyle.scanny.resources.contact
 import fr.skyle.scanny.resources.creations
+import fr.skyle.scanny.resources.delete
 import fr.skyle.scanny.resources.favorites
 import fr.skyle.scanny.resources.group_of_n_codes
 import fr.skyle.scanny.resources.link
@@ -93,6 +96,7 @@ internal class HistoryScreenTest : ComposeTest() {
                                 time = "09:05",
                                 codeCount = 6,
                                 codeTypes = listOf(CodeType.TEXT, CodeType.LINK, CodeType.WIFI, CodeType.CONTACT, CodeType.SMS),
+                                isFavorite = false,
                             ),
                         ),
                     ),
@@ -268,6 +272,31 @@ internal class HistoryScreenTest : ComposeTest() {
         )
     }
 
+    @Test
+    fun `a held row shows its actions to put it among the favorites or delete it`() = runComposeUiTest {
+        // Given
+        val actions = mutableListOf<String>()
+        setContent {
+            historyScreen(
+                selectedView = HistoryView.SCANS,
+                onScanFavoriteClicked = { item -> actions += "favorite ${item.scanId}" },
+                onScanDeleteClicked = { item -> actions += "delete ${item.scanId}" },
+            )
+        }
+
+        // When
+        onNodeWithText(LINK.summary).performTouchInput { longClick() }
+        onNodeWithText(getString(Res.string.add_to_favorites)).performClick()
+        onNodeWithText(LINK.summary).performTouchInput { longClick() }
+        onNodeWithText(getString(Res.string.delete)).performClick()
+
+        // Then
+        assertEquals(
+            expected = listOf("favorite ${LINK.scanId}", "delete ${LINK.scanId}"),
+            actual = actions,
+        )
+    }
+
     @Composable
     private fun historyScreen(
         selectedView: HistoryView,
@@ -276,6 +305,8 @@ internal class HistoryScreenTest : ComposeTest() {
         onViewSelected: (HistoryView) -> Unit = {},
         onScanClicked: (ScanHistoryItem) -> Unit = {},
         onCreationClicked: (CreationHistoryItem) -> Unit = {},
+        onScanFavoriteClicked: (ScanHistoryItem) -> Unit = {},
+        onScanDeleteClicked: (ScanHistoryItem) -> Unit = {},
     ) {
         SCTheme {
             HistoryScreen(
@@ -288,6 +319,10 @@ internal class HistoryScreenTest : ComposeTest() {
                 onClearClicked = {},
                 onScanClicked = onScanClicked,
                 onCreationClicked = onCreationClicked,
+                onScanFavoriteClicked = onScanFavoriteClicked,
+                onScanDeleteClicked = onScanDeleteClicked,
+                onCreationFavoriteClicked = {},
+                onCreationDeleteClicked = {},
             )
         }
     }
@@ -302,6 +337,7 @@ internal class HistoryScreenTest : ComposeTest() {
             time = "21:48",
             codeCount = 1,
             codeTypes = listOf(CodeType.LINK),
+            isFavorite = false,
         )
         val SCAN_SECTIONS = listOf(
             ScanHistorySection(
@@ -317,6 +353,7 @@ internal class HistoryScreenTest : ComposeTest() {
                         time = "09:05",
                         codeCount = 3,
                         codeTypes = listOf(CodeType.TEXT, CodeType.WIFI),
+                        isFavorite = false,
                     ),
                 ),
             ),
@@ -327,6 +364,7 @@ internal class HistoryScreenTest : ComposeTest() {
             format = BarcodeFormat.QR_CODE,
             summary = "Created for the history",
             time = "10:30",
+            isFavorite = false,
         )
         val CREATION_SECTIONS = listOf(
             CreationHistorySection(

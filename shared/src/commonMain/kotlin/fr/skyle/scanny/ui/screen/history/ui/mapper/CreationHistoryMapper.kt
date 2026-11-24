@@ -52,4 +52,5 @@ private fun Creation.toCreationHistoryItem(timeZone: TimeZone): CreationHistoryI
         format = format,
         summary = toCodeSummary(),
         time = createdAt.toTimeText(timeZone = timeZone),
+        isFavorite = isFavorite,
     )

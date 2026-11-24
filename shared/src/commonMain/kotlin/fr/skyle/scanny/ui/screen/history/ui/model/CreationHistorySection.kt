@@ -16,4 +16,5 @@ data class CreationHistoryItem(
     val format: BarcodeFormat?,
     val summary: String,
     val time: String,
+    val isFavorite: Boolean,
 )

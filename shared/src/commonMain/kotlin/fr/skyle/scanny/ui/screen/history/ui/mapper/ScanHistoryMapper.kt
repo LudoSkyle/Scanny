@@ -58,5 +58,6 @@ private fun Scan.toScanHistoryItem(timeZone: TimeZone): ScanHistoryItem {
         time = scannedAt.toTimeText(timeZone = timeZone),
         codeCount = codes.size,
         codeTypes = codes.map { code -> code.content.toCodeType() }.distinct(),
+        isFavorite = isFavorite,
     )
 }

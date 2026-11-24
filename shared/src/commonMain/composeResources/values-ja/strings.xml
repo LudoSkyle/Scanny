@@ -294,6 +294,7 @@
     </string-array>
     <string name="middle_name">ミドルネーム</string>
     <string name="mobile">携帯電話</string>
+    <string name="more_actions">その他の操作</string>
     <string name="more_options">その他のオプション</string>
     <string name="multiple_scan">複数スキャン</string>
     <string name="name">名前</string>

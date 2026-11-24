@@ -12,7 +12,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import fr.skyle.scanny.designsystem.core.snackbar.rememberSCSnackbarState
 import fr.skyle.scanny.resources.Res
+import fr.skyle.scanny.resources.code_not_deleted
+import fr.skyle.scanny.resources.favorite_not_changed
 import fr.skyle.scanny.resources.history_not_cleared
+import fr.skyle.scanny.ui.core.code.component.DeleteCodeDialog
+import fr.skyle.scanny.ui.core.code.component.DeleteGroupDialog
 import fr.skyle.scanny.ui.screen.history.ui.component.ClearHistoryDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -33,6 +37,10 @@ fun HistoryRoute(
     val snackbarState = rememberSCSnackbarState()
 
     var isClearDialogVisible by rememberSaveable { mutableStateOf(false) }
+    // What a held row asked to delete, confirmed first: a capture, of one code or a group, or a creation
+    var scanIdToDelete by rememberSaveable { mutableStateOf<Long?>(null) }
+    var isGroupToDelete by rememberSaveable { mutableStateOf(false) }
+    var creationIdToDelete by rememberSaveable { mutableStateOf<Long?>(null) }
 
     LaunchedEffect(Unit) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -40,6 +48,14 @@ fun HistoryRoute(
                 when (event) {
                     HistoryViewModel.HistoryEvent.ClearFailed -> launch {
                         snackbarState.show(message = getString(Res.string.history_not_cleared))
+                    }
+
+                    HistoryViewModel.HistoryEvent.FavoriteNotChanged -> launch {
+                        snackbarState.show(message = getString(Res.string.favorite_not_changed))
+                    }
+
+                    HistoryViewModel.HistoryEvent.DeleteFailed -> launch {
+                        snackbarState.show(message = getString(Res.string.code_not_deleted))
                     }
 
                     is HistoryViewModel.HistoryEvent.OpenScanDetail -> {
@@ -70,7 +86,49 @@ fun HistoryRoute(
         },
         onScanClicked = viewModel::onScanClicked,
         onCreationClicked = viewModel::onCreationClicked,
+        onScanFavoriteClicked = viewModel::onScanFavoriteClicked,
+        onScanDeleteClicked = { item ->
+            scanIdToDelete = item.scanId
+            isGroupToDelete = item.codeCount > 1
+        },
+        onCreationFavoriteClicked = viewModel::onCreationFavoriteClicked,
+        onCreationDeleteClicked = { item ->
+            creationIdToDelete = item.creationId
+        },
     )
+
+    scanIdToDelete?.let { scanId ->
+        val onConfirmClicked = {
+            scanIdToDelete = null
+            viewModel.onScanDeleteConfirmed(scanId = scanId)
+        }
+        val onDismissRequest = {
+            scanIdToDelete = null
+        }
+        if (isGroupToDelete) {
+            DeleteGroupDialog(
+                onConfirmClicked = onConfirmClicked,
+                onDismissRequest = onDismissRequest,
+            )
+        } else {
+            DeleteCodeDialog(
+                onConfirmClicked = onConfirmClicked,
+                onDismissRequest = onDismissRequest,
+            )
+        }
+    }
+
+    creationIdToDelete?.let { creationId ->
+        DeleteCodeDialog(
+            onConfirmClicked = {
+                creationIdToDelete = null
+                viewModel.onCreationDeleteConfirmed(creationId = creationId)
+            },
+            onDismissRequest = {
+                creationIdToDelete = null
+            },
+        )
+    }
 
     if (isClearDialogVisible) {
         ClearHistoryDialog(
