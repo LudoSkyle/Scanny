@@ -1,5 +1,8 @@
 package fr.skyle.scanny.ui.screen.scan.ui.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -8,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,6 +44,7 @@ import fr.skyle.scanny.resources.Res
 import fr.skyle.scanny.resources.place_code_in_frame
 import fr.skyle.scanny.ui.core.preview.AppScreenPreview
 import kotlinx.coroutines.delay
+import kotlin.math.abs
 import org.jetbrains.compose.resources.stringResource
 
 // Beyond, the digital zoom only enlarges the noise of the image
@@ -47,9 +52,13 @@ private const val MAX_ZOOM_RATIO = 8f
 private const val FRAME_SIZE_FRACTION = 0.7f
 private const val FOCUS_INDICATOR_DURATION_MILLIS = 800L
 
+// Closer to 1, the zoom reads 1.0×: the camera as it opens
+private const val UNZOOMED_TOLERANCE = 0.05f
+
 /**
  * The camera, the frame where to place a code, and the gestures on the preview: a pinch zooms, a tap
- * focuses on the point touched.
+ * focuses on the point touched. Once zoomed, the zoom shows at the bottom of the frame, and goes back
+ * to 1× when touched.
  */
 @Composable
 fun ScanCameraLayer(
@@ -154,6 +163,21 @@ fun ScanCameraLayer(
                     style = Stroke(width = 2.dp.toPx()),
                 )
             }
+        }
+
+        AnimatedVisibility(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = frameSize / 2 - 40.dp),
+            visible = abs(zoomRatio - 1f) >= UNZOOMED_TOLERANCE,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            ZoomRatioButton(
+                modifier = Modifier.wrapContentSize(),
+                zoomRatio = zoomRatio,
+                onClick = { zoomRatio = 1f },
+            )
         }
 
         SCText(
