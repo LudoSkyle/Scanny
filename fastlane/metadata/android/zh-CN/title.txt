@@ -1,1 +1,1 @@
-Scanny – 二维码和条形码扫描器
+Scanny – QR & Barcode
