@@ -103,8 +103,13 @@ s'écrit que pour un parcours qui passe par le système. Voir
   commits. La version est marquée d'un tag `vX.Y` et d'une release GitHub qui porte les fichiers
   signés, que créent les workflows « Release and Publish Android » et « Release and Publish iOS »
   (fastlane) lancés depuis `main`.
+- Le site de Scanny (accueil et politique de confidentialité, en anglais et en français) vit sur la
+  branche orpheline `gh-pages`, servie par GitHub Pages à `https://ludoskyle.github.io/Scanny/`
+  (chemin sensible à la casse). Sans historique commun avec `develop`, elle se pousse directement.
+  L'ancien dépôt `scanny.github.io` ne fait que rediriger vers elle, pour les liens déjà publiés.
 - Rien ne se pousse en dehors de ce circuit : pas de push direct sur `develop` ni sur `main`, sauf le
-  réalignement de `develop` sur `main` après une version, seul force-push permis.
+  réalignement de `develop` sur `main` après une version, seul force-push permis, et la branche
+  `gh-pages` du site.
 
 ## Mise à jour de cette documentation
 
