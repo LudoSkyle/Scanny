@@ -58,7 +58,7 @@ final class SettingsUITests: XCTestCase {
         app.terminate()
 
         // A link opens in Safari, without the sheet of the result
-        let scanningApp = launchScanning(code: "https://ludoskyle.github.io/scanny.github.io/privacy-policy.html")
+        let scanningApp = launchScanning(code: "https://ludoskyle.github.io/Scanny/privacy-policy.html")
         let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
         XCTAssertTrue(safari.wait(for: .runningForeground, timeout: 10))
         keepScreenshot(named: "content-opened", of: safari)
