@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy policy – Scanny</title>
+  <meta name="description" content="How Scanny handles your data: your codes stay on your phone, only crash reports are sent.">
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <link rel="alternate" hreflang="en" href="https://ludoskyle.github.io/Scanny/privacy-policy.html">
+  <link rel="alternate" hreflang="fr" href="https://ludoskyle.github.io/Scanny/fr/privacy-policy.html">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="./" onclick="localStorage.setItem('lang', 'en')"><img src="assets/img/icon.png" alt="">Scanny</a>
+      <a class="lang-switch" href="fr/privacy-policy.html" hreflang="fr" lang="fr" onclick="localStorage.setItem('lang', 'fr')">Français</a>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <div class="container">
+      <h1>Privacy policy</h1>
+      <p>Last updated: November 25, 2026</p>
+    </div>
+  </div>
+
+  <main class="policy">
+    <div class="container">
+      <p class="summary"><strong>In short:</strong> Scanny has no account, no ads and no analytics. The codes you scan and create stay on your phone. The only data that leaves it is a technical report when the app crashes or meets an error, sent to Firebase Crashlytics (Google) to fix the bug. These reports never hold the content of your codes.</p>
+
+      <h2>Who we are</h2>
+      <p>Scanny is published by Openium. This policy covers the Scanny app for Android and iOS. Its source code is public: <a href="https://github.com/LudoSkyle/Scanny">github.com/LudoSkyle/Scanny</a>.</p>
+
+      <h2>What stays on your phone</h2>
+      <p>Scanny stores in its own space on your phone, and nowhere else:</p>
+      <ul>
+        <li>the history of your scans and the codes you create, with their content;</li>
+        <li>your favorites;</li>
+        <li>your settings, such as how long the history is kept.</li>
+      </ul>
+      <p>We never receive this data. The history is deleted after the period you choose in the settings (favorites excepted), when you delete an entry, or when you uninstall the app.</p>
+      <p>If you have turned on the backups of your phone, the system may include Scanny's data in them: Android's backup to your Google account, or the iCloud or computer backup of your iPhone. These backups are managed by Google or Apple under your own account, not by us.</p>
+
+      <h2>Camera and photos</h2>
+      <ul>
+        <li><strong>Camera:</strong> used only to read codes. The images are analyzed on your phone, as they come, and are neither recorded nor sent.</li>
+        <li><strong>Image from the gallery:</strong> when you scan a code from an image, only the image you pick is read, on your phone.</li>
+        <li><strong>Saving a code:</strong> when you save a code as an image, Scanny adds it to your photos. On iPhone, it asks only for the permission to add photos, not to see the ones you have.</li>
+      </ul>
+
+      <h2>Crash reports</h2>
+      <p>To find and fix bugs, Scanny uses <a href="https://firebase.google.com/support/privacy">Firebase Crashlytics</a>, a service of Google. When the app crashes or meets an error, it sends a report that holds:</p>
+      <ul>
+        <li>the technical trace of the error and short technical messages, which refer to codes only by an internal number, never by their content;</li>
+        <li>the model of your phone, its system version, the version of Scanny, the date and time;</li>
+        <li>a random identifier of the installation, which lets us count how many installations a bug affects. It is not linked to your identity and changes if you reinstall the app.</li>
+      </ul>
+      <p>Like any connection to the Internet, sending a report reveals the network address of your phone to Google's servers. Google processes these reports on our behalf, possibly outside the European Union under the safeguards of its terms, and keeps them for 90 days. We use them on the basis of our legitimate interest in keeping the app working.</p>
+
+      <h2>What Scanny never does</h2>
+      <ul>
+        <li>No account, no sign-in.</li>
+        <li>No advertising, no analytics, no tracking across apps or websites.</li>
+        <li>No sale or sharing of your data with anyone, apart from the crash reports above.</li>
+      </ul>
+
+      <h2>Actions on a code</h2>
+      <p>When you choose an action on a code (open a link, join a Wi-Fi network, add a contact or an event, write an e-mail, show a place on the map…), Scanny hands its content to the app or website you open. That app or website then applies its own privacy policy.</p>
+
+      <h2>Children</h2>
+      <p>Scanny collects no personal data from anyone, children included.</p>
+
+      <h2>Your rights</h2>
+      <p>Your codes are in your hands: you can delete them in the app at any time, or all at once by uninstalling it. As crash reports are not linked to your identity, we cannot find yours. Under the GDPR, you can still ask us any question about your data, and lodge a complaint with your data protection authority (in France, the <a href="https://www.cnil.fr">CNIL</a>).</p>
+
+      <h2>Changes to this policy</h2>
+      <p>If Scanny comes to handle data differently, this page will be updated first, with its new date.</p>
+
+      <h2>Contact</h2>
+      <p>For any question about this policy or your data, open an issue on <a href="https://github.com/LudoSkyle/Scanny/issues">github.com/LudoSkyle/Scanny/issues</a>.</p>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span>© 2026 Openium</span>
+      <nav>
+        <a href="./" onclick="localStorage.setItem('lang', 'en')">Home</a>
+        <a href="https://github.com/LudoSkyle/Scanny">Source code</a>
+        <a href="https://github.com/LudoSkyle/Scanny/issues">Support</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
