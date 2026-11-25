@@ -181,8 +181,9 @@ Dans l'ordre. Chaque lot laisse l'app compilable sur les deux plateformes.
     - [x] `Route.About` : logo, version, description, auteur, lien GitHub (retiré au lot 10 bis, son
           contenu est passé dans l'en-tête des réglages)
     - La politique de confidentialité de la v1 (`skylekayma.github.io`) répond 404 depuis le
-      renommage du compte GitHub : l'app pointe vers `ludoskyle.github.io/scanny.github.io`. Le lien
-      GitHub pointe vers `LudoSkyle/Scanny`, où l'ancien redirige.
+      renommage du compte GitHub : l'app pointe vers `ludoskyle.github.io/Scanny`, le site de la
+      branche `gh-pages` (l'ancienne adresse `ludoskyle.github.io/scanny.github.io` y redirige). Le
+      lien GitHub pointe vers `LudoSkyle/Scanny`, où l'ancien redirige.
     - Vérifié sur l'émulateur Android (Play Store, Gmail ouvert par le feedback) et sur le simulateur
       iOS (tests d'interface : le réglage du contenu brut jusque dans un détail, À propos, feedback,
       politique de confidentialité dans Safari, textes français)
