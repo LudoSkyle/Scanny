@@ -13,7 +13,8 @@ Light, reliable, without ads, and without ZXing in the app.
 ![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin_Multiplatform-7F52FF?logo=kotlin&logoColor=white)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-<a href="https://play.google.com/store/apps/details?id=fr.skyle.scanny"><img width="200" alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"/></a>
+<a href="https://play.google.com/store/apps/details?id=fr.skyle.scanny"><img height="52" alt="Get it on Google Play" src="docs/badges/google-play.png"/></a>&nbsp;&nbsp;
+<a href="https://apps.apple.com/app/id6838346599"><img height="52" alt="Download on the App Store" src="docs/badges/app-store.svg"/></a>
 
 <img src="docs/screenshots/history.png" width="250" alt="The history of the scans" />&nbsp;&nbsp;
 <img src="docs/screenshots/scan-detail.png" width="250" alt="The detail of a scanned contact" />&nbsp;&nbsp;
